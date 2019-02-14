@@ -77,6 +77,8 @@ module Assets =
                 yield ("description", Encode.string this.Asset.Description)
                 if this.Asset.Source.IsSome then
                     yield ("source", Encode.string this.Asset.Source.Value)
+                if this.Asset.SourceId.IsSome then
+                    yield ("sourceId", Encode.string this.Asset.SourceId.Value)
             ]
 
     type Request = {
@@ -113,6 +115,13 @@ module Assets =
         let body = Encode.toString 0 assets.Encoder
 
         let! text = fetch Post context Url []
+
+        return Decode.fromString Response.Decoder text
+    }
+
+    let getAsset (context: Context) (assetId: int64) = async {
+        let url = Url + sprintf "/%d" assetId
+        let! text = fetch Get context url []
 
         return Decode.fromString Response.Decoder text
     }
