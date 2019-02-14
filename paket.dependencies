@@ -1,0 +1,12 @@
+source https://nuget.org/api/v2
+
+nuget FSharp.Data ~> 3
+nuget FSharp.Core 4.5.2
+nuget Thoth.Json.Net
+
+nuget Expecto ~> 8
+nuget Expecto.BenchmarkDotNet
+nuget Expecto.FsCheck
+nuget coverlet.msbuild
+
+nuget FsConfig ~> 2

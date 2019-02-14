@@ -1,2 +1,0 @@
-# CogniteNetSdk
-Cognite .NET SDK
