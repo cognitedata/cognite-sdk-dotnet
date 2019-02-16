@@ -24,7 +24,8 @@ let main argv =
 
     let ctx: Context = {
         ApiKey = Uri.EscapeDataString config.ApiKey
-        Project = Uri.EscapeDataString config.Project 
+        Project = Uri.EscapeDataString config.Project
+        Fetch = Request.fetch
     }
 
     async {

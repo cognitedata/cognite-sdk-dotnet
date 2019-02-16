@@ -2,7 +2,6 @@ namespace Cognite.Sdk
 
 open System
 open Thoth.Json.Net
-open Request
 
 module Assets =
     type Asset = {
@@ -34,8 +33,7 @@ module Assets =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type Data = {
-        Items: Asset list } with
+    type Data = { Items: Asset list } with
 
         static member Decoder : Decode.Decoder<Data> =
             Decode.object (fun get ->
@@ -43,8 +41,7 @@ module Assets =
                     Items = get.Required.Field "items" (Decode.list Asset.Decoder)
                 })
 
-    type Response = {
-        Data: Data } with
+    type Response = { Data: Data } with
 
         static member Decoder : Decode.Decoder<Response> =
             Decode.object (fun get ->
@@ -64,24 +61,32 @@ module Assets =
         | Cursor of string
 
     type AssetRequest = {
-        Asset : Asset
+        Name: string
+        Description: string
+        MetaData: Map<string, string>
+        Source: string option
+        SourceId: string option
+        CreatedTime: int64
+        LastUpdatedTime: int64
 
         RefId: string option
-        ParentName: string option
-        ParentRefId: string option } with
+        ParentRef: ParentRef option
+
+        } with
 
         member this.Encoder =
-            Encode.object [ 
-                yield ("id", Encode.int64 this.Asset.Id)
-                yield ("name", Encode.string this.Asset.Name)
-                yield ("description", Encode.string this.Asset.Description)
-                if this.Asset.Source.IsSome then
-                    yield ("source", Encode.string this.Asset.Source.Value)
-                if this.Asset.SourceId.IsSome then
-                    yield ("sourceId", Encode.string this.Asset.SourceId.Value)
+            Encode.object [
+                yield ("name", Encode.string this.Name)
+                yield ("description", Encode.string this.Description)
+                yield ("createdTime", Encode.int64 this.CreatedTime)
+
+                if this.Source.IsSome then
+                    yield ("source", Encode.string this.Source.Value)
+                if this.SourceId.IsSome then
+                    yield ("sourceId", Encode.string this.SourceId.Value)
             ]
 
-    type Request = {
+    type AssetsRequest = {
         Items: AssetRequest list } with
 
         member this.Encoder =
@@ -102,26 +107,27 @@ module Assets =
         | Cursor cursor -> ("cursor", cursor)
 
     [<Literal>]
-    let Url = "/assets?"
+    let Url = "/assets"
 
-    let getAssets (context: Context) (args: Args list) = async {
+    let getAssets (ctx: Context) (args: Args list) : Async<Result<Response, string>> = async {
         let query = args |> List.map renderArgs
-        let! text = fetch Get context Url query
+        let url = Resource Url
+        let! text = ctx.Fetch Get ctx url query
 
         return Decode.fromString Response.Decoder text
     }
 
-    let create (context: Context) (assets: Request) = async {
+    let create (ctx: Context) (assets: AssetsRequest) = async {
         let body = Encode.toString 0 assets.Encoder
-
-        let! text = fetch Post context Url []
+        let url = Resource Url
+        let! text = ctx.Fetch Post ctx url []
 
         return Decode.fromString Response.Decoder text
     }
 
-    let getAsset (context: Context) (assetId: int64) = async {
-        let url = Url + sprintf "/%d" assetId
-        let! text = fetch Get context url []
+    let getAsset (ctx: Context) (assetId: int64) : Async<Result<Response, string>> = async {
+        let url = Url + sprintf "/%d" assetId |> Resource
+        let! text = ctx.Fetch Get ctx url []
 
         return Decode.fromString Response.Decoder text
     }
