@@ -3,9 +3,10 @@ module Tests.Test
 open Expecto
 open Cognite.Sdk
 open Cognite.Sdk.Assets
+open Cognite.Sdk.Context
 
 
-let fetcher response (method: Method) (ctx: Context) (resource: Resource) (query: Params) =
+let fetcher response (ctx: Context) =
     async {
         return response
     }
@@ -32,11 +33,9 @@ let assetTests =
         let fetch = fetcher response
         //printfn "%A" response
 
-        let ctx: Context = {
-            ApiKey = "test"
-            Project = "testing"
-            Fetch = fetch
-        }
+        let ctx =
+            defaultContext
+            |> addHeader(("api-key", "test"))
 
         let! result = getAssets ctx [ Name "string"]
 

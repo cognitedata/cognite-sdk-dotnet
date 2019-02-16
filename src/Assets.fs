@@ -3,6 +3,8 @@ namespace Cognite.Sdk
 open System
 open Thoth.Json.Net
 
+open Cognite.Sdk.Context
+
 module Assets =
     type Asset = {
         Id: int64
@@ -36,16 +38,14 @@ module Assets =
     type Data = { Items: Asset list } with
 
         static member Decoder : Decode.Decoder<Data> =
-            Decode.object (fun get ->
-                {
+            Decode.object (fun get -> {
                     Items = get.Required.Field "items" (Decode.list Asset.Decoder)
                 })
 
     type Response = { Data: Data } with
 
         static member Decoder : Decode.Decoder<Response> =
-            Decode.object (fun get ->
-                {
+            Decode.object (fun get -> {
                     Data = get.Required.Field "data" Data.Decoder
                 })
 
@@ -87,11 +87,17 @@ module Assets =
             ]
 
     type AssetsRequest = {
-        Items: AssetRequest list } with
+        Items: AssetRequest list
+        PreviousCursor: string option
+        NextCursor : string option } with
 
         member this.Encoder =
             Encode.object [
-                ("items", List.map (fun (it: AssetRequest) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: AssetRequest) -> it.Encoder) this.Items |> Encode.list)
+                if this.PreviousCursor.IsSome then
+                    yield ("previousCursor", Encode.string this.PreviousCursor.Value)
+                if this.NextCursor.IsSome then
+                    yield ("nextCursor", Encode.string this.NextCursor.Value)
             ]
 
     let renderArgs arg =
@@ -112,22 +118,37 @@ module Assets =
     let getAssets (ctx: Context) (args: Args list) : Async<Result<Response, string>> = async {
         let query = args |> List.map renderArgs
         let url = Resource Url
-        let! text = ctx.Fetch Get ctx url query
+        let ctx' =
+            ctx
+            |> setMethod Get
+            |> addQueries query
+            |> setResource url
 
+        let! text = ctx.Fetch ctx'
         return Decode.fromString Response.Decoder text
     }
 
     let create (ctx: Context) (assets: AssetsRequest) = async {
         let body = Encode.toString 0 assets.Encoder
         let url = Resource Url
-        let! text = ctx.Fetch Post ctx url []
+        let ctx' =
+            ctx
+            |> setMethod Post
+            |> setBody body
+            |> setResource url
 
+        let! text = ctx.Fetch ctx'
         return Decode.fromString Response.Decoder text
     }
 
     let getAsset (ctx: Context) (assetId: int64) : Async<Result<Response, string>> = async {
         let url = Url + sprintf "/%d" assetId |> Resource
-        let! text = ctx.Fetch Get ctx url []
 
+        let ctx' =
+            ctx
+            |> setMethod Get
+            |> setResource url
+
+        let! text = ctx.Fetch ctx'
         return Decode.fromString Response.Decoder text
     }

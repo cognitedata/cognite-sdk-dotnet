@@ -4,7 +4,7 @@ open System
 open FsConfig
 
 open Cognite.Sdk.Assets
-open Cognite.Sdk
+open Cognite.Sdk.Context
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -22,11 +22,10 @@ let main argv =
         | Ok config -> config
         | Error error -> failwith "Unable to read config"
 
-    let ctx: Context = {
-        ApiKey = Uri.EscapeDataString config.ApiKey
-        Project = Uri.EscapeDataString config.Project
-        Fetch = Request.fetch
-    }
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+        |> setProject (Uri.EscapeDataString config.Project)
 
     async {
         let! result = getAssets ctx [ Name "string"]
