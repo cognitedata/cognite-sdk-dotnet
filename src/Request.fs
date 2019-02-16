@@ -36,8 +36,6 @@ module Request =
             return! Http.AsyncRequestString (url, ctx.Query, headers, method, ?body=body)
         }
 
-
-
 module Context =
     let defaultContext = {
         Method = Get
@@ -72,3 +70,6 @@ module Context =
 
     let setProject (project: string) (context: Context) =
         { context with Project = project }
+
+    let setFetch (fetch: Context -> Async<string>) (context: Context) =
+        { context with Fetch = fetch }

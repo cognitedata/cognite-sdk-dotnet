@@ -29,15 +29,18 @@ let item = """
 [<Tests>]
 let assetTests =
     testAsync "A simple test" {
+        // Arrenge
         let response = sprintf """{ "data": { "items": [%s]}}""" item
         let fetch = fetcher response
-        //printfn "%A" response
 
         let ctx =
             defaultContext
             |> addHeader(("api-key", "test"))
+            |> setFetch fetch
 
+        // Act
         let! result = getAssets ctx [ Name "string"]
 
+        // Assert
         Expect.isOk result "Should be OK"
     }
