@@ -43,12 +43,12 @@ module Assets =
             })
 
     type AssetResponse = { Data: Data } with
-
         static member Decoder : Decode.Decoder<AssetResponse> =
             Decode.object (fun get -> {
                 Data = get.Required.Field "data" Data.Decoder
             })
 
+    // Get arguments
     type Args =
         | Id of int64
         | Name of string
@@ -61,6 +61,7 @@ module Assets =
         | Limit of int
         | Cursor of string
 
+    /// Update arguments
     type UpdateArgs =
         | SetName of string option
         | SetDescription of string option
@@ -272,6 +273,37 @@ module Assets =
 
         let body = Encode.toString 0 encoder
         let url = Url + sprintf "/%d/update" assetId |> Resource
+        let ctx' =
+            ctx
+            |> setMethod Post
+            |> setBody body
+            |> setResource url
+
+        return! ctx.Fetch ctx'
+    }
+
+    /// **Description**
+    ///
+    /// Updates multiple assets within the same project. Updating assets does not replace the existing asset hierarchy.
+    /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `args` - parameter of type `(int64 * UpdateArgs list) list`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<string,exn>>`
+    ///
+    let updateAssets (ctx: Context) (args: (int64*UpdateArgs list) list) = async {
+        let encoder = Encode.object [
+            for (assetId, args) in args do
+                yield ("id", Encode.int64 assetId)
+                for arg in args do
+                    yield renderUpdateArgs arg
+        ]
+
+        let body = Encode.toString 0 encoder
+        let url = Url + sprintf "/update" |> Resource
         let ctx' =
             ctx
             |> setMethod Post
