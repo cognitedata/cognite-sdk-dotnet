@@ -23,7 +23,7 @@ let assetTests =
 
         let ctx =
             defaultContext
-            |> addHeader ("api-key", "test")
+            |> addHeader ("api-key", "test-key")
             |> setFetch fetch
 
         // Act

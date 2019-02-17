@@ -50,6 +50,7 @@ module Assets =
             })
 
     type Args =
+        | Id of int64
         | Name of string
         | Description of string
         | Path of string
@@ -59,6 +60,13 @@ module Assets =
         | AutoPaging of bool
         | Limit of int
         | Cursor of string
+
+    type UpdateArgs =
+        | SetName of string option
+        | SetDescription of string option
+        | SetMetaData of Map<string, string> option
+        | SetSource of string option
+        | SetSourceId of string option
 
     type AssetRequest = {
         Name: string
@@ -98,8 +106,9 @@ module Assets =
                     yield ("nextCursor", Encode.string this.NextCursor.Value)
             ]
 
-    let renderArgs arg =
+    let renderArgs (arg: Args) =
         match arg with
+        | Id id -> ("id", id.ToString())
         | Name name -> ("name", name)
         | Description desc -> ("desc", desc)
         | Path path -> ("path", path)
@@ -109,6 +118,21 @@ module Assets =
         | AutoPaging value -> ("autopaging", value.ToString().ToLower())
         | Limit limit -> ("limit", limit.ToString ())
         | Cursor cursor -> ("cursor", cursor)
+
+    let renderUpdateArgs (arg: UpdateArgs) =
+        match arg with
+        | SetName optname ->
+            ("name", Encode.object [
+                match optname with
+                | Some name -> yield ("set", Encode.string name)
+                | None -> yield ("setNull", Encode.bool true)
+            ])
+        | SetDescription optdesc ->
+            ("description", Encode.object [
+                match optdesc with
+                | Some desc -> yield ("set", Encode.string desc)
+                | None -> yield ("setNull", Encode.bool true)
+            ])
 
     [<Literal>]
     let Url = "/assets"
@@ -217,6 +241,37 @@ module Assets =
         ]
         let body = Encode.toString 0 encoder
         let url = Resource Url
+        let ctx' =
+            ctx
+            |> setMethod Post
+            |> setBody body
+            |> setResource url
+
+        return! ctx.Fetch ctx'
+    }
+
+
+    /// **Description**
+    ///
+    /// Updates an asset object. Supports partial updates i.e. updating only some fields but leaving the rest unchanged.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `assetId` - parameter of type `int64`
+    ///   * `args` - parameter of type `UpdateArgs list`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<string,exn>>`
+    ///
+    let updateAsset (ctx: Context) (assetId: int64) (args: UpdateArgs list) = async {
+        let encoder = Encode.object [
+            yield ("id", Encode.int64 assetId)
+            for arg in args do
+                yield renderUpdateArgs arg
+        ]
+
+        let body = Encode.toString 0 encoder
+        let url = Url + sprintf "/%d/update" assetId |> Resource
         let ctx' =
             ctx
             |> setMethod Post

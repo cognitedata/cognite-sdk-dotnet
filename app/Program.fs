@@ -20,13 +20,12 @@ let main argv =
     let config =
         match EnvConfig.Get<Config>() with
         | Ok config -> config
-        | Error error -> failwith "Unable to read config"
+        | Error error -> failwith "Failed to read config"
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> setProject (Uri.EscapeDataString config.Project)
-        // |> setFetch = Request.fetch
 
     async {
         let! result = getAssets ctx [ Name "string"]
