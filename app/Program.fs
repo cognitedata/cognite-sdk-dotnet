@@ -26,6 +26,7 @@ let main argv =
         defaultContext
         |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> setProject (Uri.EscapeDataString config.Project)
+        // |> setFetch = Request.fetch
 
     async {
         let! result = getAssets ctx [ Name "string"]

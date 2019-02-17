@@ -1,41 +1,29 @@
 module Tests.Test
 
+open System
+open System.IO
+
 open Expecto
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Context
 
 
-let fetcher response (ctx: Context) =
+let fetcher result (ctx: Context) =
     async {
-        return response
+        return result
     }
-
-let item = """
-{
-    "id": 5406108165931348,
-    "path": [ 5406108165931348 ],
-    "depth": 0,
-    "name": "string",
-    "description": "string",
-    "metadata": {},
-    "source": "string",
-    "sourceId": "string",
-    "createdTime": 1549374256347,
-    "lastUpdatedTime": 1549374256347
-}
-"""
 
 [<Tests>]
 let assetTests =
-    testAsync "A simple test" {
+    testAsync "Get asset is Ok" {
         // Arrenge
-        let response = sprintf """{ "data": { "items": [%s]}}""" item
-        let fetch = fetcher response
+        let response = File.ReadAllText("Assets.json")
+        let fetch = Ok response |> fetcher
 
         let ctx =
             defaultContext
-            |> addHeader(("api-key", "test"))
+            |> addHeader ("api-key", "test")
             |> setFetch fetch
 
         // Act

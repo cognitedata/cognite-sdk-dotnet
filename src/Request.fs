@@ -1,6 +1,8 @@
 namespace Cognite.Sdk
 
 open System
+open System.Net
+
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
@@ -19,10 +21,20 @@ type Context = {
     Resource: Resource
     Query: Params
     Headers: (string*string) list
-    Fetch: Context -> Async<string>
+    Fetch: Fetch
 
     Project: string
 }
+
+and Fetch = Context -> Async<Result<string, exn>>
+
+type RequestError = {
+    Code: int
+    Message: string
+    Extra: Map<string, string>
+}
+
+exception DecodeException of string
 
 module Request =
 
@@ -33,7 +45,11 @@ module Request =
             let headers = ctx.Headers
             let body = ctx.Body |> Option.map HttpRequestBody.TextRequest
             let method = ctx.Method.ToString().ToUpper()
-            return! Http.AsyncRequestString (url, ctx.Query, headers, method, ?body=body)
+            try
+                let! response = Http.AsyncRequestString (url, ctx.Query, headers, method, ?body=body)
+                return Ok response
+            with
+            | ex -> return Error ex
         }
 
 module Context =
@@ -45,6 +61,7 @@ module Context =
         Headers = [
             Accept HttpContentTypes.Json
             ContentType HttpContentTypes.Json
+            UserAgent "CogniteNetSdk (F#); Dag Brattli"
         ]
         Fetch = Request.fetch
         Project = ""
@@ -71,5 +88,5 @@ module Context =
     let setProject (project: string) (context: Context) =
         { context with Project = project }
 
-    let setFetch (fetch: Context -> Async<string>) (context: Context) =
+    let setFetch (fetch: Fetch) (context: Context) =
         { context with Fetch = fetch }

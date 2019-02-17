@@ -39,15 +39,15 @@ module Assets =
 
         static member Decoder : Decode.Decoder<Data> =
             Decode.object (fun get -> {
-                    Items = get.Required.Field "items" (Decode.list Asset.Decoder)
-                })
+                Items = get.Required.Field "items" (Decode.list Asset.Decoder)
+            })
 
-    type Response = { Data: Data } with
+    type AssetResponse = { Data: Data } with
 
-        static member Decoder : Decode.Decoder<Response> =
+        static member Decoder : Decode.Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                    Data = get.Required.Field "data" Data.Decoder
-                })
+                Data = get.Required.Field "data" Data.Decoder
+            })
 
     type Args =
         | Name of string
@@ -70,9 +70,7 @@ module Assets =
         LastUpdatedTime: int64
 
         RefId: string option
-        ParentRef: ParentRef option
-
-        } with
+        ParentRef: ParentRef option } with
 
         member this.Encoder =
             Encode.object [
@@ -106,7 +104,7 @@ module Assets =
         | Description desc -> ("desc", desc)
         | Path path -> ("path", path)
         | MetaData md -> ("metadata", "fixme")
-        | Depth depth -> ("depth", depth.ToString ())
+        | Depth depth -> ("depth", depth.ToString())
         | Fuzziness fuzz -> ("fuzziness", fuzz.ToString ())
         | AutoPaging value -> ("autopaging", value.ToString().ToLower())
         | Limit limit -> ("limit", limit.ToString ())
@@ -115,7 +113,33 @@ module Assets =
     [<Literal>]
     let Url = "/assets"
 
-    let getAssets (ctx: Context) (args: Args list) : Async<Result<Response, string>> = async {
+    /// JSON decode response and map decode error string to exception so we don't get more response error types.
+    let decodeResponse decoder result =
+        result
+        |> Result.bind (fun res ->
+            let ret = Decode.fromString decoder res
+            match ret with
+            | Error str -> Error (DecodeException str)
+            | Ok value -> Ok value
+        )
+
+    /// **Description**
+    ///
+    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
+    /// supports pagination.
+    ///
+    /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
+    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
+    /// maximum edit distance when considering matches for the name and description fields.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `args` - parameter of type `Args list`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<Response,exn>>`
+    ///
+    let getAssets (ctx: Context) (args: Args list) : Async<Result<AssetResponse, exn>> = async {
         let query = args |> List.map renderArgs
         let url = Resource Url
         let ctx' =
@@ -124,11 +148,47 @@ module Assets =
             |> addQueries query
             |> setResource url
 
-        let! text = ctx.Fetch ctx'
-        return Decode.fromString Response.Decoder text
+        let! result =
+            ctx.Fetch ctx'
+
+        return result |> decodeResponse AssetResponse.Decoder
     }
 
-    let create (ctx: Context) (assets: AssetsRequest) = async {
+    /// **Description**
+    ///
+    /// Retrieves information about an asset in a certain project given an asset id.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `assetId` - parameter of type `int64`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<Response,exn>>`
+    ///
+    let getAsset (ctx: Context) (assetId: int64) : Async<Result<AssetResponse, exn>> = async {
+        let url = Url + sprintf "/%d" assetId |> Resource
+
+        let ctx' =
+            ctx
+            |> setMethod Get
+            |> setResource url
+
+        let! result = ctx.Fetch ctx'
+        return result |> decodeResponse AssetResponse.Decoder
+    }
+
+    /// **Description**
+    ///
+    /// Creates new assets in the given project.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `assets` - parameter of type `AssetsRequest`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<Response,exn>>`
+    ///
+    let createAsset (ctx: Context) (assets: AssetsRequest) = async {
         let body = Encode.toString 0 assets.Encoder
         let url = Resource Url
         let ctx' =
@@ -137,18 +197,31 @@ module Assets =
             |> setBody body
             |> setResource url
 
-        let! text = ctx.Fetch ctx'
-        return Decode.fromString Response.Decoder text
+        return! ctx.Fetch ctx'
     }
 
-    let getAsset (ctx: Context) (assetId: int64) : Async<Result<Response, string>> = async {
-        let url = Url + sprintf "/%d" assetId |> Resource
-
+    /// **Description**
+    ///
+    /// Deletes multiple assets in the same project, along with all their descendants in the asset hierarchy.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `assets` - parameter of type `int64 list`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<Response,exn>>`
+    ///
+    let deleteAssets (ctx: Context) (assets: int64 list) = async {
+        let encoder = Encode.object [
+            ("items", List.map Encode.int64 assets |> Encode.list)
+        ]
+        let body = Encode.toString 0 encoder
+        let url = Resource Url
         let ctx' =
             ctx
-            |> setMethod Get
+            |> setMethod Post
+            |> setBody body
             |> setResource url
 
-        let! text = ctx.Fetch ctx'
-        return Decode.fromString Response.Decoder text
+        return! ctx.Fetch ctx'
     }
