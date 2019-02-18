@@ -27,6 +27,10 @@ type Context (context) =
         Context(defaultContext)
 
 
+type Args () =
+    static member Name() =
+        Cognite.Sdk.Assets.Args.Name
+
 type Client () =
     member this.GetAssets(ctx: Context, args: int List) =
         getAssets ctx.Ctx []
