@@ -78,7 +78,7 @@ module Assets =
 
     /// Update arguments
     type UpdateArgs =
-        | SetName of string option
+        | SetName of string // Name cannot be null
         | SetDescription of string option
         | SetMetaData of Map<string, string> option
         | SetSource of string option
@@ -132,11 +132,9 @@ module Assets =
 
     let renderUpdateArgs (arg: UpdateArgs) =
         match arg with
-        | SetName optname ->
+        | SetName name ->
             ("name", Encode.object [
-                match optname with
-                | Some name -> yield ("set", Encode.string name)
-                | None -> yield ("setNull", Encode.bool true)
+                ("set", Encode.string name)
             ])
         | SetDescription optdesc ->
             ("description", Encode.object [
