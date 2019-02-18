@@ -259,7 +259,6 @@ module Assets =
         return! ctx.Fetch ctx'
     }
 
-
     /// **Description**
     ///
     /// Updates an asset object. Supports partial updates i.e. updating only some fields but leaving the rest unchanged.

@@ -1,3 +1,5 @@
 FSharp.Data
 FSharp.Core
 Thoth.Json.Net
+
+System.ValueTuple
