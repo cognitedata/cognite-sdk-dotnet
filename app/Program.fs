@@ -28,7 +28,7 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        let! result = getAssets ctx [ Name "string"]
+        let! result = getAssets ctx [ Limit 1; Cursor "UuSPBRP8Xc60IRTHPTklVUQFi4yiIpmEKiu2IfMKE2A"]
         match result with
         | Ok res -> printfn "%A" res
         | Error err -> printfn "Error: %A" err

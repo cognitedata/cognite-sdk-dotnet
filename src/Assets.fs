@@ -6,6 +6,9 @@ open Thoth.Json.Net
 open Cognite.Sdk.Context
 
 module Assets =
+    [<Literal>]
+    let MaxLimitSize = 10000
+
     type Asset = {
         Id: int64
         Path: int64 list
@@ -35,11 +38,16 @@ module Assets =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type Data = { Items: Asset list } with
+    type Data = {
+        Items: Asset list
+        PreviousCursor: string option
+        NextCursor : string option } with
 
         static member Decoder : Decode.Decoder<Data> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list Asset.Decoder)
+                PreviousCursor = get.Optional.Field "previousCursor" Decode.string
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     type AssetResponse = { Data: Data } with
@@ -58,8 +66,15 @@ module Assets =
         | Depth of int
         | Fuzziness of int
         | AutoPaging of bool
-        | Limit of int
+        | NotLimit of int
         | Cursor of string
+
+        static member Limit limit =
+            if limit > MaxLimitSize || limit < 1 then
+                failwith "Limit must be set to 1000 or less"
+            NotLimit limit
+
+    let Limit = Args.Limit
 
     /// Update arguments
     type UpdateArgs =
@@ -95,16 +110,11 @@ module Assets =
 
     type AssetsRequest = {
         Items: AssetRequest list
-        PreviousCursor: string option
-        NextCursor : string option } with
+        } with
 
         member this.Encoder =
             Encode.object [
                 yield ("items", List.map (fun (it: AssetRequest) -> it.Encoder) this.Items |> Encode.list)
-                if this.PreviousCursor.IsSome then
-                    yield ("previousCursor", Encode.string this.PreviousCursor.Value)
-                if this.NextCursor.IsSome then
-                    yield ("nextCursor", Encode.string this.NextCursor.Value)
             ]
 
     let renderArgs (arg: Args) =
@@ -117,7 +127,7 @@ module Assets =
         | Depth depth -> ("depth", depth.ToString())
         | Fuzziness fuzz -> ("fuzziness", fuzz.ToString ())
         | AutoPaging value -> ("autopaging", value.ToString().ToLower())
-        | Limit limit -> ("limit", limit.ToString ())
+        | NotLimit limit -> ("limit", limit.ToString ())
         | Cursor cursor -> ("cursor", cursor)
 
     let renderUpdateArgs (arg: UpdateArgs) =
