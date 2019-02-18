@@ -15,10 +15,11 @@ namespace csharp
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
             var project = Environment.GetEnvironmentVariable("PROJECT");
 
-            var ctx = new Context();
-            ctx
+            var ctx = Context.Create()
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
+
+            await result = GetAssets(ctx [ Limit 1]);
         }
     }
 }
