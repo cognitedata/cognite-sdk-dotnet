@@ -2,12 +2,17 @@ namespace Cognite.Sdk.Api
 
 open Cognite.Sdk.Context
 
-type Context () =
-    let mutable context = defaultContext
+type Context (context) =
+    let context = context
 
-    member this.AddHeader(header: struct (string*string))  =
-        match header with
-        | struct (a, b) ->
-            context <- context |> addHeader (a, b)
-        this
+    new() = Context(defaultContext)
 
+    member this.AddHeader(name: string, value: string)  =
+        context
+        |> addHeader (name, value)
+        |> Context
+
+    member this.SetProject(project: string) =
+        context
+        |> setProject(project)
+        |> Context
