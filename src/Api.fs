@@ -42,7 +42,16 @@ type Client (context: Context) =
 
     static member Create() =
         Client(defaultContext)
-
+    
+    /// <summary>
+    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
+    /// supports pagination.
+    ///
+    /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
+    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
+    /// maximum edit distance when considering matches for the name and description fields.
+    /// </summary>
+    /// <param name="args">The </param>
     member this.GetAssets (args: AssetArgs) : Task<AssetResponse> =
         let worker () : Async<AssetResponse> = async {
             let! result = getAssets context args.Args

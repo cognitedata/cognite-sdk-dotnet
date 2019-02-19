@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteNetSdk", "src\CogniteNetSdk.fsproj", "{3FCFDA62-5F01-48DA-8C10-21BEF0A6767C}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteNetSdk", "src\CogniteNetSdk.fsproj", "{3FCFDA62-5F01-48DA-8C10-21BEF0A6767C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Tests", "test\Tests.fsproj", "{C9DC0397-6B73-40F0-BB71-ED3ABA2FFB5A}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests", "test\Tests.fsproj", "{C9DC0397-6B73-40F0-BB71-ED3ABA2FFB5A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "App", "app\App.fsproj", "{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "app\App.fsproj", "{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSharp", "csharp\CSharp.csproj", "{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,9 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{3FCFDA62-5F01-48DA-8C10-21BEF0A6767C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -58,5 +57,23 @@ Global
 		{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}.Release|x64.Build.0 = Release|Any CPU
 		{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}.Release|x86.ActiveCfg = Release|Any CPU
 		{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}.Release|x86.Build.0 = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|x64.Build.0 = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C79D0F4-F6B3-49CE-881F-EBBBDB494DF0}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1620E77D-E23E-4A4E-A1E9-D22AD9711302}
 	EndGlobalSection
 EndGlobal
