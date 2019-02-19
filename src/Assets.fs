@@ -109,8 +109,7 @@ module Assets =
             ]
 
     type AssetsRequest = {
-        Items: AssetRequest list
-        } with
+            Items: AssetRequest list } with
 
         member this.Encoder =
             Encode.object [
@@ -142,6 +141,9 @@ module Assets =
                 | Some desc -> yield ("set", Encode.string desc)
                 | None -> yield ("setNull", Encode.bool true)
             ])
+        | SetMetaData optmeta -> failwith "FIXME"
+        | SetSource source -> failwith "FIXME"
+        | SetSourceId sourceId -> failwith "FIXME"
 
     [<Literal>]
     let Url = "/assets"

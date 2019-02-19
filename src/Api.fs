@@ -1,15 +1,31 @@
 namespace Cognite.Sdk.Api
 
-open System.Collections.Generic
+open System
 open System.Threading.Tasks;
 
+open Cognite.Sdk
 open Cognite.Sdk.Context
 open Cognite.Sdk.Assets
 
-type Context (context) =
+
+type AssetArgs (args: Args list) =
+    let args  = args
+
+    member this.Name(name: string) =
+        let arg = Name name
+        let newArgs = arg :: args
+        AssetArgs(newArgs)
+
+    member internal this.Args = args
+
+    static member Create() =
+        AssetArgs([])
+
+
+type Client (context: Context) =
     let context = context
 
-    new() = Context(defaultContext)
+    new() = Client(defaultContext)
 
     member internal this.Ctx =
         context
@@ -17,25 +33,19 @@ type Context (context) =
     member this.AddHeader(name: string, value: string)  =
         context
         |> addHeader (name, value)
-        |> Context
+        |> Client
 
     member this.SetProject(project: string) =
         context
         |> setProject(project)
-        |> Context
+        |> Client
 
     static member Create() =
-        Context(defaultContext)
+        Client(defaultContext)
 
-
-type Args () =
-    static member Name() =
-        Cognite.Sdk.Assets.Args.Name
-
-type Client () =
-    member this.GetAssets(ctx: Context, args: int List) : Task<AssetResponse> =
+    member this.GetAssets (args: AssetArgs) : Task<AssetResponse> =
         let worker () : Async<AssetResponse> = async {
-            let! result = getAssets ctx.Ctx [] 
+            let! result = getAssets context args.Args
             match result with
             | Ok response ->
                 return response

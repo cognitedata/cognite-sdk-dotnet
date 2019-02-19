@@ -15,7 +15,7 @@ type Config = {
 
 [<EntryPoint>]
 let main argv =
-    printfn "Hello World from F#!"
+    printfn "F# Client"
 
     let config =
         match EnvConfig.Get<Config>() with
@@ -28,9 +28,9 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        //let! result = getAssets ctx [ Limit 1; Cursor "UuSPBRP8Xc60IRTHPTklVUQFi4yiIpmEKiu2IfMKE2A"]
+        let! result = getAssets ctx [ Limit 1]
 
-        let! result = updateAsset ctx 8402567771583372L [ SetName "string3" ]
+        //let! result = updateAsset ctx 8402567771583372L [ SetName "string3" ]
         match result with
         | Ok res -> printfn "%A" res
         | Error err -> printfn "Error: %A" err
