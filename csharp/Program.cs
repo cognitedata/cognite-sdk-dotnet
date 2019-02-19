@@ -22,7 +22,7 @@ namespace csharp
                 .SetProject(project);
 
             var assetArgs =
-                AssetArgs.Create()
+                AssetArgs.Empty()
                 .Name("string3");
 
             var result = await client.GetAssets(assetArgs);

@@ -18,7 +18,7 @@ type AssetArgs (args: Args list) =
 
     member internal this.Args = args
 
-    static member Create() =
+    static member Empty() =
         AssetArgs([])
 
 
@@ -62,5 +62,4 @@ type Client (context: Context) =
                 return raise ex
         }
 
-        let task = worker () |> Async.StartAsTask
-        task
+        worker () |> Async.StartAsTask

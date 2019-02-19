@@ -70,10 +70,10 @@ module Context =
     let addHeader (header: string*string) (context: Context) =
         { context with Headers = header :: context.Headers}
 
-    let addQueries (queries: Params) (context: Context) =
-        { context with Query = context.Query @ queries}
+    let addQuery (query: Params) (context: Context) =
+        { context with Query = context.Query @ query}
 
-    let addQuery (query: string*string) (context: Context) =
+    let addQueryItem (query: string*string) (context: Context) =
         { context with Query = query :: context.Query }
 
     let setResource (resource: Resource) (context: Context) =

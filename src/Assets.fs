@@ -56,8 +56,8 @@ module Assets =
                 Data = get.Required.Field "data" Data.Decoder
             })
 
-    // Get arguments
-    type Args =
+    // Get parameters
+    type GetParams =
         | Id of int64
         | Name of string
         | Description of string
@@ -74,10 +74,10 @@ module Assets =
                 failwith "Limit must be set to 1000 or less"
             NotLimit limit
 
-    let Limit = Args.Limit
+    let Limit = GetParams.Limit
 
-    /// Update arguments
-    type UpdateArgs =
+    /// Update parameters
+    type UpdateParams =
         | SetName of string // Name cannot be null
         | SetDescription of string option
         | SetMetaData of Map<string, string> option
@@ -116,7 +116,7 @@ module Assets =
                 yield ("items", List.map (fun (it: AssetRequest) -> it.Encoder) this.Items |> Encode.list)
             ]
 
-    let renderArgs (arg: Args) =
+    let renderArgs (arg: GetParams) =
         match arg with
         | Id id -> ("id", id.ToString())
         | Name name -> ("name", name)
@@ -129,21 +129,36 @@ module Assets =
         | NotLimit limit -> ("limit", limit.ToString ())
         | Cursor cursor -> ("cursor", cursor)
 
-    let renderUpdateArgs (arg: UpdateArgs) =
+    let renderUpdateArgs (arg: UpdateParams) =
         match arg with
         | SetName name ->
             ("name", Encode.object [
                 ("set", Encode.string name)
             ])
-        | SetDescription optdesc ->
+        | SetDescription optDesc ->
             ("description", Encode.object [
-                match optdesc with
+                match optDesc with
                 | Some desc -> yield ("set", Encode.string desc)
                 | None -> yield ("setNull", Encode.bool true)
             ])
-        | SetMetaData optmeta -> failwith "FIXME"
-        | SetSource source -> failwith "FIXME"
-        | SetSourceId sourceId -> failwith "FIXME"
+        | SetMetaData optMeta ->
+            ("metadata", Encode.object [
+                match optMeta with
+                | Some meta -> yield ("set", Encode.dict (Map.map (fun key value -> Encode.string value) meta))
+                | None -> yield ("setNull", Encode.bool true)
+            ])
+        | SetSource optSource ->
+            ("source", Encode.object [
+                match optSource with
+                | Some source -> yield ("set", Encode.string source)
+                | None -> yield ("setNull", Encode.bool true)
+            ])
+        | SetSourceId optSourceId ->
+            ("sourceId", Encode.object [
+                match optSourceId with
+                | Some sourceId -> yield ("set", Encode.string sourceId)
+                | None -> yield ("setNull", Encode.bool true)
+            ])
 
     [<Literal>]
     let Url = "/assets"
@@ -174,13 +189,13 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (ctx: Context) (args: Args list) : Async<Result<AssetResponse, exn>> = async {
+    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<AssetResponse, exn>> = async {
         let query = args |> List.map renderArgs
         let url = Resource Url
         let ctx' =
             ctx
             |> setMethod Get
-            |> addQueries query
+            |> addQuery query
             |> setResource url
 
         let! result =
@@ -273,7 +288,7 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAsset (ctx: Context) (assetId: int64) (args: UpdateArgs list) = async {
+    let updateAsset (ctx: Context) (assetId: int64) (args: UpdateParams list) = async {
         let encoder = Encode.object [
             yield ("id", Encode.int64 assetId)
             for arg in args do
@@ -303,7 +318,7 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (ctx: Context) (args: (int64*UpdateArgs list) list) = async {
+    let updateAssets (ctx: Context) (args: (int64*UpdateParams list) list) = async {
         let encoder = Encode.object [
             for (assetId, args) in args do
                 yield ("id", Encode.int64 assetId)
