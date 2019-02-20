@@ -12,14 +12,14 @@ type Method =
     | Get
     | Delete
 
-type Params = (string*string) list
+type QueryParams = (string*string) list
 type Resource = Resource of string
 
 type Context = {
     Method: Method
     Body: string option
     Resource: Resource
-    Query: Params
+    Query: QueryParams
     Headers: (string*string) list
     Fetch: Fetch
 
@@ -38,6 +38,7 @@ exception DecodeException of string
 
 module Request =
 
+    /// A request function for fetching from the Cognite API.
     let fetch (ctx: Context) =
         async {
             let (Resource res) = ctx.Resource
@@ -61,16 +62,26 @@ module Context =
         Headers = [
             Accept HttpContentTypes.Json
             ContentType HttpContentTypes.Json
-            UserAgent "CogniteNetSdk (F#); Dag Brattli"
+            UserAgent "CogniteNetSdk; Dag Brattli"
         ]
         Fetch = Request.fetch
         Project = ""
     }
 
+    /// Add HTTP header to context.
     let addHeader (header: string*string) (context: Context) =
         { context with Headers = header :: context.Headers}
 
-    let addQuery (query: Params) (context: Context) =
+    /// **Description**
+    ///
+    /// Add query parameters to context. These parameters will be added
+    /// to the query string of requests that uses this context.
+    /// 
+    /// **Parameters**
+    ///   * `query` - List of tuples (name, value)
+    ///   * `context` - The context to add the query to.
+    ///
+    let addQuery (query: QueryParams) (context: Context) =
         { context with Query = context.Query @ query}
 
     let addQueryItem (query: string*string) (context: Context) =
@@ -82,6 +93,19 @@ module Context =
     let setBody (body: string) (context: Context) =
         { context with Body = Some body }
 
+
+    /// **Description**
+    ///
+    /// Set the method to be used for requests using this context. 
+    /// 
+    /// **Parameters**
+    ///   * `method` - Method is a parameter of type `Method` and can be 
+    ///     `Put`, `Get`, `Post` or `Delete`. 
+    ///   * `context` - parameter of type `Context`
+    ///
+    /// **Output Type**
+    ///   * `Context`
+    ///
     let setMethod (method: Method) (context: Context) =
         { context with Method = method }
 

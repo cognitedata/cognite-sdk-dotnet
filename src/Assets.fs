@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.Runtime.InteropServices
 open Thoth.Json.Net
 
 open Cognite.Sdk.Context
@@ -21,6 +22,13 @@ module Assets =
         SourceId: string option
         CreatedTime: int64
         LastUpdatedTime: int64 } with
+
+        member this.TryGetParentId ([<Out>] parentId: byref<Int64>) =
+            match this.ParentId with
+            | Some id ->
+                parentId <- id
+                true
+            | None -> false
 
         static member Decoder : Decode.Decoder<Asset> =
             Decode.object (fun get ->
@@ -192,14 +200,12 @@ module Assets =
     let getAssets (ctx: Context) (args: GetParams list) : Async<Result<AssetResponse, exn>> = async {
         let query = args |> List.map renderArgs
         let url = Resource Url
-        let ctx' =
+        let! result =
             ctx
             |> setMethod Get
             |> addQuery query
             |> setResource url
-
-        let! result =
-            ctx.Fetch ctx'
+            |> ctx.Fetch
 
         return result |> decodeResponse AssetResponse.Decoder
     }

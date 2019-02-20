@@ -8,7 +8,7 @@ open Cognite.Sdk.Context
 open Cognite.Sdk.Assets
 
 
-type AssetArgs (args: Args list) =
+type AssetArgs (args: GetParams list) =
     let args  = args
 
     member this.Name(name: string) =
@@ -16,13 +16,18 @@ type AssetArgs (args: Args list) =
         let newArgs = arg :: args
         AssetArgs(newArgs)
 
+
     member internal this.Args = args
 
     static member Empty() =
         AssetArgs([])
 
 
-type Client (context: Context) =
+/// <summary>
+/// Client for accessing the API.
+/// </summary>
+/// <param name="context">Context to use for this session.</param>
+type Client private (context: Context) =
     let context = context
 
     new() = Client(defaultContext)
@@ -30,19 +35,30 @@ type Client (context: Context) =
     member internal this.Ctx =
         context
 
+    /// <summary>
+    /// Add header for accessing the API.
+    /// </summary>
+    /// <param name="project">Name of project.</param>
     member this.AddHeader(name: string, value: string)  =
         context
         |> addHeader (name, value)
         |> Client
 
+    /// <summary>
+    /// Set project for accessing the API.
+    /// </summary>
+    /// <param name="project">Name of project.</param>
     member this.SetProject(project: string) =
         context
         |> setProject(project)
         |> Client
 
+    /// <summary>
+    /// Creates a Client for accessing the API.
+    /// </summary>
     static member Create() =
         Client(defaultContext)
-    
+
     /// <summary>
     /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
     /// supports pagination.
