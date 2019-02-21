@@ -4,12 +4,12 @@ An SDK for accessing the Cognite API (v5). Made as part of the 2019 February 14t
 
 The goal was to learn the Cognite API and experiment with Domian Modelling and Type Driven Development. Thus make the code reflect the specification as much as possible and remove the need for unit-testing.
 
-The SDK is written as a dual domain SDK for both F# and C#.
+The SDK is written as a dual domain SDK for both C# and F#.
 
 ## C# API
 
 The C# API is a fluent API using objects and method chaining that wraps the F# API. Errors will be
-raised as exceptions. The API is asynchronous so API methods are awaitabel and returns `Task`.
+raised as exceptions. The API is asynchronous so API methods returns `Task` and are awaitabel.
 
 ## F# API
 
@@ -17,16 +17,14 @@ The F# API is written using plain asynchronous functions that returns `Async`, a
 
 ## F# Core Domain
 
-F# is a succinct and concise functional language that looks like Python but provides null safefy, correctness and completeness.
+[F#](https://fsharp.org/) is a mature succinct and concise functional language that looks like Python but provides null safefy, correctness and completeness.
 
-If it compiles it's usually correct, and this reduces the need for unit-tests as incorrect state will be much harder to produce.
+It allows us to [model our domain using types](https://fsharpforfunandprofit.com/ddd/). The code is also exception free and uses expressions at core. What this mean is that:
 
-- Domain modelled using types.
-- Exception free.
-- Null safety.
-- Correctness and completeness.
-- Expressions at core.
- 
+> If it compiles it's usually correct
+
+This reduces the need for unit-tests as incorrect state will be much harder to produce.
+
 ## Assets API
 
 - getAsset
