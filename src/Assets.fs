@@ -1,7 +1,6 @@
 namespace Cognite.Sdk
 
 open System
-open System.Runtime.InteropServices
 open Thoth.Json.Net
 
 open Cognite.Sdk.Context
@@ -10,59 +9,56 @@ module Assets =
     [<Literal>]
     let MaxLimitSize = 10000
 
-    type Asset = {
-        Id: int64
-        Path: int64 list
-        Depth: int
-        Name: string
-        Description: string
-        ParentId: int64 option
-        MetaData: Map<string, string>
-        Source: string option
-        SourceId: string option
-        CreatedTime: int64
-        LastUpdatedTime: int64 } with
+    [<Literal>]
+    let Url = "/assets"
 
-        member this.TryGetParentId ([<Out>] parentId: byref<Int64>) =
-            match this.ParentId with
-            | Some id ->
-                parentId <- id
-                true
-            | None -> false
+    module Response =
+        type Asset = {
+            Id: int64
+            Path: int64 list
+            Depth: int
+            Name: string
+            Description: string
+            ParentId: int64 option
+            MetaData: Map<string, string>
+            Source: string option
+            SourceId: string option
+            CreatedTime: int64
+            LastUpdatedTime: int64 } with
 
-        static member Decoder : Decode.Decoder<Asset> =
-            Decode.object (fun get ->
-                {
-                    Id = get.Required.Field "id" Decode.int64
-                    Name = get.Required.Field "name" Decode.string
-                    Description = get.Required.Field "description" Decode.string
-                    ParentId = get.Optional.Field "parentId" Decode.int64
-                    Path = get.Required.Field "path" (Decode.list Decode.int64)
-                    Source = get.Optional.Field "source" Decode.string
-                    SourceId = get.Optional.Field "sourceId" Decode.string
-                    Depth = get.Required.Field "depth" Decode.int
-                    MetaData = get.Required.Field "metadata" (Decode.dict Decode.string)
-                    CreatedTime = get.Required.Field "createdTime" Decode.int64
-                    LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
+            static member Decoder : Decode.Decoder<Asset> =
+                Decode.object (fun get ->
+                    {
+                        Id = get.Required.Field "id" Decode.int64
+                        Name = get.Required.Field "name" Decode.string
+                        Description = get.Required.Field "description" Decode.string
+                        ParentId = get.Optional.Field "parentId" Decode.int64
+                        Path = get.Required.Field "path" (Decode.list Decode.int64)
+                        Source = get.Optional.Field "source" Decode.string
+                        SourceId = get.Optional.Field "sourceId" Decode.string
+                        Depth = get.Required.Field "depth" Decode.int
+                        MetaData = get.Required.Field "metadata" (Decode.dict Decode.string)
+                        CreatedTime = get.Required.Field "createdTime" Decode.int64
+                        LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
+                    })
+
+        type Data = {
+            Items: Asset list
+            PreviousCursor: string option
+            NextCursor : string option } with
+
+            static member Decoder : Decode.Decoder<Data> =
+                Decode.object (fun get -> {
+                    Items = get.Required.Field "items" (Decode.list Asset.Decoder)
+                    PreviousCursor = get.Optional.Field "previousCursor" Decode.string
+                    NextCursor = get.Optional.Field "nextCursor" Decode.string
                 })
 
-    type Data = {
-        Items: Asset list
-        PreviousCursor: string option
-        NextCursor : string option } with
-
-        static member Decoder : Decode.Decoder<Data> =
-            Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list Asset.Decoder)
-                PreviousCursor = get.Optional.Field "previousCursor" Decode.string
-                NextCursor = get.Optional.Field "nextCursor" Decode.string
-            })
-
-    type AssetResponse = { Data: Data } with
-        static member Decoder : Decode.Decoder<AssetResponse> =
-            Decode.object (fun get -> {
-                Data = get.Required.Field "data" Data.Decoder
-            })
+        type AssetResponse = { Data: Data } with
+            static member Decoder : Decode.Decoder<AssetResponse> =
+                Decode.object (fun get -> {
+                    Data = get.Required.Field "data" Data.Decoder
+                })
 
     // Get parameters
     type GetParams =
@@ -70,7 +66,7 @@ module Assets =
         | Name of string
         | Description of string
         | Path of string
-        | MetaData of Map<string, string> option
+        | MetaData of Map<string, string>
         | Depth of int
         | Fuzziness of int
         | AutoPaging of bool
@@ -124,20 +120,22 @@ module Assets =
                 yield ("items", List.map (fun (it: AssetRequest) -> it.Encoder) this.Items |> Encode.list)
             ]
 
-    let renderArgs (arg: GetParams) =
+    let renderParams (arg: GetParams) =
         match arg with
         | Id id -> ("id", id.ToString())
         | Name name -> ("name", name)
         | Description desc -> ("desc", desc)
         | Path path -> ("path", path)
-        | MetaData md -> ("metadata", "fixme")
+        | MetaData meta ->
+            let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) meta) |> Encode.toString 0
+            ("metadata", metaString)
         | Depth depth -> ("depth", depth.ToString())
         | Fuzziness fuzz -> ("fuzziness", fuzz.ToString ())
         | AutoPaging value -> ("autopaging", value.ToString().ToLower())
         | NotLimit limit -> ("limit", limit.ToString ())
         | Cursor cursor -> ("cursor", cursor)
 
-    let renderUpdateArgs (arg: UpdateParams) =
+    let renderUpdateFields (arg: UpdateParams) =
         match arg with
         | SetName name ->
             ("name", Encode.object [
@@ -168,9 +166,6 @@ module Assets =
                 | None -> yield ("setNull", Encode.bool true)
             ])
 
-    [<Literal>]
-    let Url = "/assets"
-
     /// JSON decode response and map decode error string to exception so we don't get more response error types.
     let decodeResponse decoder result =
         result
@@ -197,8 +192,8 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<AssetResponse, exn>> = async {
-        let query = args |> List.map renderArgs
+    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<Response.Asset list, exn>> = async {
+        let query = args |> List.map renderParams
         let url = Resource Url
         let! result =
             ctx
@@ -207,7 +202,9 @@ module Assets =
             |> setResource url
             |> ctx.Fetch
 
-        return result |> decodeResponse AssetResponse.Decoder
+        return result
+            |> decodeResponse Response.AssetResponse.Decoder
+            |> Result.map (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -221,16 +218,18 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (ctx: Context) (assetId: int64) : Async<Result<AssetResponse, exn>> = async {
+    let getAsset (ctx: Context) (assetId: int64) : Async<Result<Response.Asset, exn>> = async {
         let url = Url + sprintf "/%d" assetId |> Resource
 
-        let ctx' =
+        let! result =
             ctx
             |> setMethod Get
             |> setResource url
+            |> ctx.Fetch
 
-        let! result = ctx.Fetch ctx'
-        return result |> decodeResponse AssetResponse.Decoder
+        return result
+            |> decodeResponse Response.AssetResponse.Decoder 
+            |> Result.map (fun res -> res.Data.Items.Head)
     }
 
     /// **Description**
@@ -244,16 +243,18 @@ module Assets =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAsset (ctx: Context) (assets: AssetsRequest) = async {
-        let body = Encode.toString 0 assets.Encoder
+    let createAsset (ctx: Context) (assets: AssetRequest list) = async {
+        let request = { Items = assets }
+        let body = Encode.toString 0 request.Encoder
         let url = Resource Url
-        let ctx' =
+
+        let! response =
             ctx
             |> setMethod Post
             |> setBody body
             |> setResource url
-
-        return! ctx.Fetch ctx'
+            |> ctx.Fetch
+        return response
     }
 
     /// **Description**
@@ -273,13 +274,14 @@ module Assets =
         ]
         let body = Encode.toString 0 encoder
         let url = Resource Url
-        let ctx' =
+
+        let! response =
             ctx
             |> setMethod Post
             |> setBody body
             |> setResource url
-
-        return! ctx.Fetch ctx'
+            |> ctx.Fetch
+        return response
     }
 
     /// **Description**
@@ -298,18 +300,19 @@ module Assets =
         let encoder = Encode.object [
             yield ("id", Encode.int64 assetId)
             for arg in args do
-                yield renderUpdateArgs arg
+                yield renderUpdateFields arg
         ]
 
         let body = Encode.toString 0 encoder
         let url = Url + sprintf "/%d/update" assetId |> Resource
-        let ctx' =
+
+        let! response =
             ctx
             |> setMethod Post
             |> setBody body
             |> setResource url
-
-        return! ctx.Fetch ctx'
+            |> ctx.Fetch
+        return response
     }
 
     /// **Description**
@@ -329,16 +332,17 @@ module Assets =
             for (assetId, args) in args do
                 yield ("id", Encode.int64 assetId)
                 for arg in args do
-                    yield renderUpdateArgs arg
+                    yield renderUpdateFields arg
         ]
 
         let body = Encode.toString 0 encoder
         let url = Url + sprintf "/update" |> Resource
-        let ctx' =
+
+        let! response =
             ctx
             |> setMethod Post
             |> setBody body
             |> setResource url
-
-        return! ctx.Fetch ctx'
+            |> ctx.Fetch
+        return response
     }

@@ -24,6 +24,9 @@ type DataPoint = {
         ]
 
 module TimeSeries =
+    [<Literal>]
+    let Url = "/timeseries"
+
     type Request = {
         Items: DataPoint list } with
 
@@ -32,7 +35,29 @@ module TimeSeries =
                 yield ("items", List.map (fun (it: DataPoint) -> it.Encoder) this.Items |> Encode.list)
             ]
 
+    /// **Description**
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `name` - parameter of type `string`
+    ///   * `items` - parameter of type `DataPoint list`
+    ///
+    /// **Output Type**
+    ///   * `Async<unit>`
+    ///
+    /// **Exceptions**
+    ///
     let insertData (ctx: Context) (name: string) (items: DataPoint list) = async {
-        return ()
+        let request = { Items = items }
+
+        let body = Encode.toString 0 request.Encoder
+        let url = Url + sprintf "/update" |> Resource
+
+        let! response =
+            ctx
+            |> setMethod Post
+            |> setBody body
+            |> setResource url
+            |> ctx.Fetch
+        return response
     }
-      

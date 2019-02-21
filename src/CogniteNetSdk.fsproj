@@ -9,7 +9,8 @@
     <Compile Include="Request.fs" />
     <Compile Include="TimeSeries.fs" />
     <Compile Include="Assets.fs" />
-    <Compile Include="Api.fs" />
+    <Compile Include="api\Client.fs" />
+    <Compile Include="api\Assets.fs" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

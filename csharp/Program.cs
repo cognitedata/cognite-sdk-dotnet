@@ -26,7 +26,8 @@ namespace csharp
                 .Name("string3");
 
             var result = await client.GetAssets(assetArgs);
-
+            Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
+            Console.WriteLine("{0}", parentId);
             Console.WriteLine("{0}", result);
         }
     }
