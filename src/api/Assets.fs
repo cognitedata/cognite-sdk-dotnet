@@ -43,6 +43,17 @@ type AssetArgs (args: GetParams list) =
     member this.Path(path: string) =
         AssetArgs (Path path :: args)
 
+    member this.MetaData(metaData: Dictionary<string, string>) =
+        let map =
+            metaData 
+            |> Seq.map (|KeyValue|)
+            |> Map.ofSeq
+            |> MetaData
+        AssetArgs (map :: args)
+
+    member this.Depth(depth: int) =
+        AssetArgs (Depth depth :: args)
+
     member internal this.Args = args
 
     static member Empty() =
@@ -59,6 +70,7 @@ type ClientExtensions =
     /// maximum edit distance when considering matches for the name and description fields.
     /// </summary>
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
+    /// <returns>List of assets.</returns>
     [<Extension>]
     static member GetAssets (this: Client) (args: AssetArgs) : Task<Response.Asset List> =
         let worker () : Async<Response.Asset List> = async {
@@ -66,6 +78,25 @@ type ClientExtensions =
             match result with
             | Ok response ->
                 return ResizeArray<Response.Asset> response
+            | Error ex ->
+                return raise ex
+        }
+
+        worker () |> Async.StartAsTask
+
+
+    /// <summary>
+    /// Retrieves information about an asset in a certain project given an asset id.
+    /// </summary>
+    /// <param name="assetId">The id of the asset to get.</param>
+    /// <returns>Asset with the given id.</returns>
+    [<Extension>]
+    static member GetAsset (this: Client) (assetId: int64) : Task<Response.Asset> =
+        let worker () : Async<Response.Asset> = async {
+            let! result = getAsset this.Ctx assetId
+            match result with
+            | Ok response ->
+                return response
             | Error ex ->
                 return raise ex
         }
