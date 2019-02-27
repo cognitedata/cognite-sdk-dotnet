@@ -9,4 +9,8 @@ nuget Expecto.BenchmarkDotNet
 nuget Expecto.FsCheck
 nuget coverlet.msbuild
 
+nuget nunit ~> 3
+nuget NUnit3TestAdapter ~> 3
+nuget Microsoft.NET.Test.Sdk ~> 15
+
 nuget FsConfig ~> 2

@@ -11,8 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../src/CogniteNetSdk.fsproj" />
+    <Content Include="..\json\*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CogniteNetSdk.fsproj" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

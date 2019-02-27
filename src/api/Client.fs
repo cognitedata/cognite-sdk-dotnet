@@ -1,5 +1,8 @@
 namespace Cognite.Sdk.Api
 
+open System
+open System.Threading.Tasks
+
 open Cognite.Sdk
 open Cognite.Sdk.Context
 
@@ -32,6 +35,23 @@ type Client private (context: Context) =
     member this.SetProject(project: string) =
         context
         |> setProject project
+        |> Client
+
+    member this.SetFetch(fetch: Func<Context, Task<string>>) =
+        let fetch' context = async {
+            let! response = async {
+                try
+                    let! result = fetch.Invoke(context) |> Async.AwaitTask
+                    return Ok result
+                with
+                | ex ->
+                    return Error ex
+            }
+            return response
+        }
+
+        context
+        |> setFetch fetch'
         |> Client
 
     /// <summary>

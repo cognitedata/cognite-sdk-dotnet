@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteNetSdk", "src\CogniteNetSdk.fsproj", "{3FCFDA62-5F01-48DA-8C10-21BEF0A6767C}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests", "test\Tests.fsproj", "{C9DC0397-6B73-40F0-BB71-ED3ABA2FFB5A}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Tests", "test\fsharp\Tests.fsproj", "{C9DC0397-6B73-40F0-BB71-ED3ABA2FFB5A}"
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "app\App.fsproj", "{470C6B46-4369-4E38-8AA1-D1D68BCE1C09}"
 EndProject

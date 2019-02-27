@@ -9,7 +9,7 @@ open Cognite.Sdk.Assets
 open Cognite.Sdk.Context
 
 
-type Fetcher (response) =
+type Fetcher (response: Result<string, exn>) =
     let mutable _ctx: Context option = None
 
     member this.Ctx =
@@ -21,10 +21,10 @@ type Fetcher (response) =
     }
 
 [<Tests>]
-let assetTests = testList "A test group" [
+let assetTests = testList "Asset tests" [
     testAsync "Get asset is Ok" {
         // Arrenge
-        let response = File.ReadAllText("Assets.json")
+        let response = File.ReadAllText("..\Assets.json")
         let fetcher = Ok response |> Fetcher
         let fetch = fetcher.Fetch
 
@@ -66,7 +66,7 @@ let assetTests = testList "A test group" [
         Expect.equal fetcher.Ctx.Value.Query [("name", "string")] "Should be equal"
     }
 
-    testAsync "Create asset empty is Ok" {
+    testAsync "Create assets empty is Ok" {
         // Arrenge
         let response = File.ReadAllText("Assets.json")
         let fetcher = Ok response |> Fetcher
@@ -78,7 +78,7 @@ let assetTests = testList "A test group" [
             |> setFetch fetch
 
         // Act
-        let! result = createAsset ctx []
+        let! result = createAssets ctx []
 
         // Assert
         Expect.isOk result "Should be OK"
@@ -88,7 +88,7 @@ let assetTests = testList "A test group" [
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
     }
 
-    testAsync "Create asset is Ok" {
+    testAsync "Create single asset is Ok" {
         // Arrenge
         let response = File.ReadAllText("Assets.json")
         let fetcher = Ok response |> Fetcher
@@ -99,15 +99,29 @@ let assetTests = testList "A test group" [
             |> addHeader ("api-key", "test-key")
             |> setFetch fetch
 
-        //let asset: Asset = {
-
-        //}
+        let asset: RequestAsset = {
+            Name = "myAsset"
+            Description = "Some description"
+            MetaData = Map.empty
+            Source = None
+            SourceId = None
+            RefId = None
+            ParentRef = None
+            CreatedTime = 0L
+            LastUpdatedTime = 0L
+        }
 
         // Act
-        let! result = createAsset ctx []
+        let! result = createAssets ctx [ asset ]
 
         // Assert
         Expect.isOk result "Should be OK"
+        match result with
+        | Ok assets ->
+            Expect.equal assets.Length 1 "Should be equal"
+        | Error error ->
+            raise error
+
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method Post "Should be equal"
         Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets") "Should be equal"

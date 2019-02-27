@@ -28,7 +28,7 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        let! result = getAssets ctx [ Limit 2]
+        let! result = getAssets ctx [ Limit 2; ]
 
         //let! result = updateAsset ctx 8402567771583372L [ SetName "string3" ]
 
