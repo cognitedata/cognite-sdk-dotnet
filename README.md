@@ -2,7 +2,7 @@
 
 An SDK for accessing the Cognite API (v5). Made as part of the 2019 February 14th hackathon and is work-in-progress (WIP).
 
-The goal was to learn the Cognite API and experiment with [Domian Modelling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and significantly reduce the need for unit-testing.
+The goal was to learn the Cognite API and experiment with [Domian Modelling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing.
 
 The SDK is written as a dual domain SDK for both C# and F#.
 
@@ -13,7 +13,7 @@ raised as exceptions. The API is asynchronous so API methods returns `Task` and 
 
 ## F# API
 
-The F# API is written using plain asynchronous functions that returns `Async`, and builds upon the core do main model.
+The F# API is written using plain asynchronous functions that returns `Async`, and builds upon the core domain model.
 
 ## F# Core Domain
 
