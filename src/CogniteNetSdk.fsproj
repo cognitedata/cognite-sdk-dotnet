@@ -8,7 +8,9 @@
     <Compile Include="Types.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="TimeSeries.fs" />
-    <Compile Include="Assets.fs" />
+    <Compile Include="assets\Model.fs" />
+    <Compile Include="assets\Json.fs" />
+    <Compile Include="assets\Methods.fs" />
     <Compile Include="api\Client.fs" />
     <Compile Include="api\Assets.fs" />
   </ItemGroup>

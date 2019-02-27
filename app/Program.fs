@@ -3,8 +3,8 @@
 open System
 open FsConfig
 
-open Cognite.Sdk.Assets
 open Cognite.Sdk.Context
+open Cognite.Sdk.Assets
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -31,6 +31,12 @@ let main argv =
         let! result = getAssets ctx [ Limit 2]
 
         //let! result = updateAsset ctx 8402567771583372L [ SetName "string3" ]
+
+        // let asset = {
+        //     Name = "new asset"
+
+        // }
+        // let result = createAsset
         match result with
         | Ok res -> printfn "%A" res
         | Error err -> printfn "Error: %A" err

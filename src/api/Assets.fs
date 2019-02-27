@@ -7,13 +7,14 @@ open System.Runtime.CompilerServices
 open System.Collections.Generic
 
 open Cognite.Sdk.Api
-open Cognite.Sdk.Assets
+open Cognite.Sdk.Assets.Model
+open Cognite.Sdk.Assets.Methods
 
 
 [<Extension>]
 type AssetExtension =
     [<Extension>]
-    static member TryGetParentId (this: Response.Asset, [<Out>] parentId: byref<Int64>) =
+    static member TryGetParentId (this: ResponseAsset, [<Out>] parentId: byref<Int64>) =
         match this.ParentId with
         | Some id ->
             parentId <- id
@@ -21,11 +22,11 @@ type AssetExtension =
         | None -> false
 
     [<Extension>]
-    static member HasParentId (this: Response.Asset) : bool =
+    static member HasParentId (this: ResponseAsset) : bool =
         this.ParentId.IsSome
 
     [<Extension>]
-    static member GetParentId (this: Response.Asset) =
+    static member GetParentId (this: ResponseAsset) =
         this.ParentId.Value
 
 type AssetArgs (args: GetParams list) =
@@ -45,7 +46,7 @@ type AssetArgs (args: GetParams list) =
 
     member this.MetaData(metaData: Dictionary<string, string>) =
         let map =
-            metaData 
+            metaData
             |> Seq.map (|KeyValue|)
             |> Map.ofSeq
             |> MetaData
@@ -72,18 +73,17 @@ type ClientExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssets (this: Client) (args: AssetArgs) : Task<Response.Asset List> =
-        let worker () : Async<Response.Asset List> = async {
+    static member GetAssets (this: Client) (args: AssetArgs) : Task<ResponseAsset List> =
+        let worker () : Async<ResponseAsset List> = async {
             let! result = getAssets this.Ctx args.Args
             match result with
             | Ok response ->
-                return ResizeArray<Response.Asset> response
+                return ResizeArray<ResponseAsset> response
             | Error ex ->
                 return raise ex
         }
 
         worker () |> Async.StartAsTask
-
 
     /// <summary>
     /// Retrieves information about an asset in a certain project given an asset id.
@@ -91,8 +91,8 @@ type ClientExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAsset (this: Client) (assetId: int64) : Task<Response.Asset> =
-        let worker () : Async<Response.Asset> = async {
+    static member GetAsset (this: Client) (assetId: int64) : Task<ResponseAsset> =
+        let worker () : Async<ResponseAsset> = async {
             let! result = getAsset this.Ctx assetId
             match result with
             | Ok response ->

@@ -99,9 +99,9 @@ let assetTests = testList "A test group" [
             |> addHeader ("api-key", "test-key")
             |> setFetch fetch
 
-        let asset: Asset = {
-
-        }
+        //let asset: Asset = {
+          
+        //}
 
         // Act
         let! result = createAsset ctx []
