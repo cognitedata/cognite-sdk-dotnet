@@ -6,6 +6,7 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
 
+open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets.Model
 open Cognite.Sdk.Assets.Methods
@@ -28,6 +29,54 @@ type AssetExtension =
     [<Extension>]
     static member GetParentId (this: ResponseAsset) =
         this.ParentId.Value
+
+    /// Create new RequestAsset with all non-optional values.
+    [<Extension>]
+    static member Create (name: string) (description: string) (createdTime: int64) (lastUpdatedTime: int64) : RequestAsset =
+        {
+            Name = name
+            Description = description
+            MetaData = Map.empty
+            Source = None
+            SourceId = None
+            CreatedTime = createdTime
+            LastUpdatedTime = lastUpdatedTime
+
+            RefId = None
+            ParentRef = None
+        }
+
+    [<Extension>]
+    static member SetMetaData (this: RequestAsset, metaData: Dictionary<string, string>) : RequestAsset =
+        let map =
+            metaData
+            |> Seq.map (|KeyValue|)
+            |> Map.ofSeq
+        { this with MetaData = map}
+
+    [<Extension>]
+    static member SetSource (this: RequestAsset, source: string) : RequestAsset =
+        { this with Source = Some source}
+
+    [<Extension>]
+    static member SetSourceId (this: RequestAsset, sourceId: string) : RequestAsset =
+        { this with SourceId = Some sourceId}
+
+    [<Extension>]
+    static member SetRefId (this: RequestAsset, refId: string) : RequestAsset =
+        { this with RefId = Some refId}
+
+    [<Extension>]
+    static member SetParentRefId (this: RequestAsset, parentRefId: string) : RequestAsset =
+        { this with ParentRef = ParentRefId parentRefId |> Some }
+
+    [<Extension>]
+    static member SetParentName (this: RequestAsset, parentName: string) : RequestAsset =
+        { this with ParentRef = ParentName parentName |> Some }
+
+    [<Extension>]
+    static member SetParentId (this: RequestAsset, parentId: string) : RequestAsset =
+        { this with ParentRef = ParentId parentId |> Some }
 
 type AssetArgs (args: GetParams list) =
     let args  = args
@@ -97,6 +146,24 @@ type ClientExtensions =
             match result with
             | Ok response ->
                 return response
+            | Error ex ->
+                return raise ex
+        }
+
+        worker () |> Async.StartAsTask
+
+    /// <summary>
+    /// Create assets.
+    /// </summary>
+    /// <param name="assets">The assets to create.</param>
+    /// <returns>List of created assets.</returns>
+    [<Extension>]
+    static member CreateAssets (this: Client) (asset: RequestAsset) : Task<ResponseAsset List> =
+        let worker () : Async<ResponseAsset List> = async {
+            let! result = createAssets this.Ctx [asset]
+            match result with
+            | Ok response ->
+                return ResizeArray<ResponseAsset> response
             | Error ex ->
                 return raise ex
         }

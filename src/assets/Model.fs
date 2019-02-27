@@ -60,6 +60,11 @@ module Model =
         | SetSource of string option
         | SetSourceId of string option
 
+    type ParentRef =
+        | ParentId of string
+        | ParentName of string
+        | ParentRefId of string
+
     type RequestAsset = {
         Name: string
         Description: string

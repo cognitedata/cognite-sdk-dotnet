@@ -76,7 +76,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAsset (ctx: Context) (assets: RequestAsset list) = async {
+    let createAssets (ctx: Context) (assets: RequestAsset list) = async {
         let request = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Resource Url
@@ -88,6 +88,8 @@ module Methods =
             |> setResource url
             |> ctx.Fetch
         return response
+            |> decodeResponse AssetResponse.Decoder
+            |> Result.map (fun res -> res.ResponseData.Items)
     }
 
     /// **Description**
