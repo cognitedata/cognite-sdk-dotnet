@@ -100,7 +100,7 @@ let assetTests = testList "A test group" [
             |> setFetch fetch
 
         //let asset: Asset = {
-          
+
         //}
 
         // Act
