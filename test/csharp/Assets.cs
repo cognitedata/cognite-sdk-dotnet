@@ -1,9 +1,9 @@
 using NUnit.Framework;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
@@ -20,9 +20,7 @@ namespace Tests
             this._response = response;
         }
 
-        public Context Ctx {
-            get { return _ctx; }
-        }
+        public Context Ctx => _ctx;
 
         public Task<string> Fetch(Context ctx)
         {
