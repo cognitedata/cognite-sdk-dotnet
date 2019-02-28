@@ -7,19 +7,14 @@ pipeline {
         msbuild '.NET Core 2.2.0'
     }
     stages {
-        stage('checkout') {
-          steps {
-            checkout([$class: 'GitSCM', ...])
-          }
-        }
         stage('restore') {
             steps {
-                bat 'dotnet restore'
+                sh 'dotnet restore'
             }
         }
         stage('build') {
             steps {
-                bat 'dotnet build'
+                sh 'dotnet build'
             }
         }
         stage('publish') {
