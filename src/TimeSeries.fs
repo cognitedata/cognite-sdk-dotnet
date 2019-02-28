@@ -51,7 +51,7 @@ module TimeSeries =
         let request = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
-        let url = Url + sprintf "/update" |> Resource
+        let url = Url + sprintf "/update"
 
         let! response =
             ctx

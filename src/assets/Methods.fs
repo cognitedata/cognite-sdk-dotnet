@@ -27,7 +27,7 @@ module Methods =
     ///
     let getAssets (ctx: Context) (args: GetParams list) : Async<Result<ResponseAsset list, exn>> = async {
         let query = args |> List.map renderParams
-        let url = Resource Url
+        let url = Url
         let! result =
             ctx
             |> setMethod Get
@@ -52,7 +52,7 @@ module Methods =
     ///   * `Async<Result<Response,exn>>`
     ///
     let getAsset (ctx: Context) (assetId: int64) : Async<Result<ResponseAsset, exn>> = async {
-        let url = Url + sprintf "/%d" assetId |> Resource
+        let url = Url + sprintf "/%d" assetId
 
         let! result =
             ctx
@@ -79,7 +79,7 @@ module Methods =
     let createAssets (ctx: Context) (assets: RequestAsset list) = async {
         let request = { Items = assets }
         let body = Encode.toString 0 request.Encoder
-        let url = Resource Url
+        let url = Url
 
         let! response =
             ctx
@@ -108,7 +108,7 @@ module Methods =
             ("items", List.map Encode.int64 assets |> Encode.list)
         ]
         let body = Encode.toString 0 encoder
-        let url = Resource Url
+        let url = Url
 
         let! response =
             ctx
@@ -139,7 +139,7 @@ module Methods =
         ]
 
         let body = Encode.toString 0 encoder
-        let url = Url + sprintf "/%d/update" assetId |> Resource
+        let url = Url + sprintf "/%d/update" assetId
 
         let! response =
             ctx
@@ -171,7 +171,7 @@ module Methods =
         ]
 
         let body = Encode.toString 0 encoder
-        let url = Url + sprintf "/update" |> Resource
+        let url = Url + sprintf "/update"
 
         let! response =
             ctx

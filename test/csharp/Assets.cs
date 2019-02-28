@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
@@ -61,8 +62,8 @@ namespace Tests
 
             var result = await client.GetAssets(assetArgs);
             Assert.AreEqual(fetcher.Ctx.Method, Method.Get, "Should be equal");
-            //Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets/42") "Should be equal"
-            //Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
+            Assert.AreEqual(fetcher.Ctx.Resource, "/assets", "Should be equal");
+            //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
             Assert.AreEqual(result.Count, 1);
         }
     }

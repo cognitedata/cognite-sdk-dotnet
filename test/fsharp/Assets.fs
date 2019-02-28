@@ -24,7 +24,7 @@ type Fetcher (response: Result<string, exn>) =
 let assetTests = testList "Asset tests" [
     testAsync "Get asset is Ok" {
         // Arrenge
-        let response = File.ReadAllText("..\Assets.json")
+        let response = File.ReadAllText("../json/Assets.json")
         let fetcher = Ok response |> Fetcher
         let fetch = fetcher.Fetch
 
@@ -44,9 +44,63 @@ let assetTests = testList "Asset tests" [
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
     }
 
+    testAsync "Get invalid asset is Error" {
+        // Arrenge
+        let response = File.ReadAllText("../json/InvalidAsset.json")
+        let fetcher = Ok response |> Fetcher
+        let fetch = fetcher.Fetch
+
+        let ctx =
+            defaultContext
+            |> addHeader ("api-key", "test-key")
+            |> setFetch fetch
+
+        // Act
+        let! result = getAsset ctx 42L
+
+        // Assert
+        Expect.isError result "Should be Error"
+    }
+
+    testAsync "Get asset with extra fields is Ok" {
+        // Arrenge
+        let response = File.ReadAllText("../json/AssetExtra.json")
+        let fetcher = Ok response |> Fetcher
+        let fetch = fetcher.Fetch
+
+        let ctx =
+            defaultContext
+            |> addHeader ("api-key", "test-key")
+            |> setFetch fetch
+
+        // Act
+        let! result = getAsset ctx 42L
+
+        // Assert
+        Expect.isOk result "Should be Ok"
+    }
+
+    testAsync "Get asset with missing optional fields is Ok" {
+        // Arrenge
+        let response = File.ReadAllText("../json/AssetOptional.json")
+        let fetcher = Ok response |> Fetcher
+        let fetch = fetcher.Fetch
+
+        let ctx =
+            defaultContext
+            |> addHeader ("api-key", "test-key")
+            |> setFetch fetch
+
+        // Act
+        let! result = getAsset ctx 42L
+
+        // Assert
+        Expect.isOk result "Should be Ok"
+    }
+
     testAsync "Get assets is Ok" {
         // Arrenge
-        let response = File.ReadAllText("Assets.json")
+        let response = File.ReadAllText("../json/Assets.json")
         let fetcher = Ok response |> Fetcher
         let fetch = fetcher.Fetch
 
@@ -68,7 +122,7 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Create assets empty is Ok" {
         // Arrenge
-        let response = File.ReadAllText("Assets.json")
+        let response = File.ReadAllText("../json/Assets.json")
         let fetcher = Ok response |> Fetcher
         let fetch = fetcher.Fetch
 
@@ -90,7 +144,7 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Create single asset is Ok" {
         // Arrenge
-        let response = File.ReadAllText("Assets.json")
+        let response = File.ReadAllText("../json/Assets.json")
         let fetcher = Ok response |> Fetcher
         let fetch = fetcher.Fetch
 

@@ -13,12 +13,11 @@ type Method =
     | Delete
 
 type QueryParams = (string*string) list
-type Resource = Resource of string
 
 type Context = {
     Method: Method
     Body: string option
-    Resource: Resource
+    Resource: string
     Query: QueryParams
     Headers: (string*string) list
     Fetch: Fetch
@@ -41,7 +40,7 @@ module Request =
     /// A request function for fetching from the Cognite API.
     let fetch (ctx: Context) =
         async {
-            let (Resource res) = ctx.Resource
+            let res = ctx.Resource
             let url = sprintf "https://api.cognitedata.com/api/0.5/projects/%s%s" ctx.Project res
             let headers = ctx.Headers
             let body = ctx.Body |> Option.map HttpRequestBody.TextRequest
@@ -57,7 +56,7 @@ module Context =
     let defaultContext = {
         Method = Get
         Body = None
-        Resource = Resource String.Empty
+        Resource = String.Empty
         Query = []
         Headers = [
             Accept HttpContentTypes.Json
@@ -76,7 +75,7 @@ module Context =
     ///
     /// Add query parameters to context. These parameters will be added
     /// to the query string of requests that uses this context.
-    /// 
+    ///
     /// **Parameters**
     ///   * `query` - List of tuples (name, value)
     ///   * `context` - The context to add the query to.
@@ -87,7 +86,7 @@ module Context =
     let addQueryItem (query: string*string) (context: Context) =
         { context with Query = query :: context.Query }
 
-    let setResource (resource: Resource) (context: Context) =
+    let setResource (resource: string) (context: Context) =
         { context with Resource = resource }
 
     let setBody (body: string) (context: Context) =
@@ -96,11 +95,11 @@ module Context =
 
     /// **Description**
     ///
-    /// Set the method to be used for requests using this context. 
-    /// 
+    /// Set the method to be used for requests using this context.
+    ///
     /// **Parameters**
-    ///   * `method` - Method is a parameter of type `Method` and can be 
-    ///     `Put`, `Get`, `Post` or `Delete`. 
+    ///   * `method` - Method is a parameter of type `Method` and can be
+    ///     `Put`, `Get`, `Post` or `Delete`.
     ///   * `context` - parameter of type `Context`
     ///
     /// **Output Type**
