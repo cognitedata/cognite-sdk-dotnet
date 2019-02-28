@@ -10,5 +10,7 @@
     <ProjectReference Include="../src/CogniteNetSdk.fsproj" />
   </ItemGroup>
 
-  <Import Project="..\.paket\Paket.Restore.targets" />
+   <ItemGroup>
+     <PackageReference Include="FSharp.Core" Version="4.6.2" />
+   </ItemGroup>
 </Project>

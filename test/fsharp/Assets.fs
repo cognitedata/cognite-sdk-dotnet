@@ -40,7 +40,7 @@ let assetTests = testList "Asset tests" [
         Expect.isOk result "Should be OK"
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method Get "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets/42") "Should be equal"
+        Expect.equal fetcher.Ctx.Value.Resource "/assets/42" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
     }
 
@@ -116,7 +116,7 @@ let assetTests = testList "Asset tests" [
         Expect.isOk result "Should be OK"
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method Get "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets") "Should be equal"
+        Expect.equal fetcher.Ctx.Value.Resource "/assets" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [("name", "string")] "Should be equal"
     }
 
@@ -138,7 +138,7 @@ let assetTests = testList "Asset tests" [
         Expect.isOk result "Should be OK"
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method Post "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets") "Should be equal"
+        Expect.equal fetcher.Ctx.Value.Resource "/assets" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
     }
 
@@ -178,7 +178,7 @@ let assetTests = testList "Asset tests" [
 
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method Post "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Resource (Resource "/assets") "Should be equal"
+        Expect.equal fetcher.Ctx.Value.Resource "/assets" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
     }
 ]

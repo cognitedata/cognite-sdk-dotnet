@@ -14,5 +14,8 @@
     <ProjectReference Include="..\..\src\CogniteNetSdk.fsproj" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="Expecto" Version="8.9.1" />
+  </ItemGroup>
+
 </Project>

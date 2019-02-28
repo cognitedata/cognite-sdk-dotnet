@@ -14,5 +14,8 @@
     <Compile Include="api\Client.fs" />
     <Compile Include="api\Assets.fs" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <PackageReference Include="FSharp.Data" Version="3.0.0" />
+    <PackageReference Include="Thoth.Json.Net" Version="2.5.0" />
+  </ItemGroup>
 </Project>
