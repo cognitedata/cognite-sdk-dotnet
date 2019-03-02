@@ -63,6 +63,70 @@ namespace Tests
             Assert.AreEqual(fetcher.Ctx.Resource, "/assets", "Should be equal");
             //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
             Assert.AreEqual(result.Count, 1);
+            Console.WriteLine(fetcher.Ctx.Body);
+        }
+
+        [Test]
+        public void TestGetInvalidAssetsThrowsException()
+        {
+            var apiKey = "api-key";
+            var project = "project";
+
+            var response = File.ReadAllText("InvalidAsset.json");
+            var fetcher = new Fetcher(response);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            var assetArgs =
+                AssetArgs.Empty()
+                .Name("string3");
+
+            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
+        }
+
+        [Test]
+        public async Task TestGetInvaldAssetThrowsException()
+        {
+            var apiKey = "api-key";
+            var project = "project";
+
+            var response = File.ReadAllText("Assets.json");
+            var fetcher = new Fetcher(response);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            var result = await client.GetAsset(42L);
+            Assert.AreEqual(fetcher.Ctx.Method, Method.Get, "Should be equal");
+            Assert.AreEqual(fetcher.Ctx.Resource, "/assets/42", "Should be equal");
+            //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
+            //Assert.AreEqual(result.Count, 2);
+            Console.WriteLine(fetcher.Ctx.Body);
+        }
+
+        [Test]
+        public void TestGetAsset()
+        {
+            var apiKey = "api-key";
+            var project = "project";
+
+            var response = File.ReadAllText("InvalidAsset.json");
+            var fetcher = new Fetcher(response);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            Assert.ThrowsAsync<DecodeException>(async () => await client.GetAsset(42L));
         }
     }
 }

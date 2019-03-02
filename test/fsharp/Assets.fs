@@ -180,5 +180,7 @@ let assetTests = testList "Asset tests" [
         Expect.equal fetcher.Ctx.Value.Method Post "Should be equal"
         Expect.equal fetcher.Ctx.Value.Resource "/assets" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
+        printfn "%A" fetcher.Ctx.Value.Body
+
     }
 ]

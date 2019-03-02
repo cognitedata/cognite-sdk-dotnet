@@ -4,3 +4,4 @@
 **/paket-files
 .vs/
 *.user
+.vscode

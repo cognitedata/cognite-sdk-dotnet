@@ -42,11 +42,24 @@ module AssetsExtensions =
                 yield ("name", Encode.string this.Name)
                 yield ("description", Encode.string this.Description)
                 yield ("createdTime", Encode.int64 this.CreatedTime)
-
+                yield ("lastUpdatedTime", Encode.int64 this.LastUpdatedTime)
+                if not this.MetaData.IsEmpty then
+                    let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
+                    yield ("metadata", metaString)
                 if this.Source.IsSome then
                     yield ("source", Encode.string this.Source.Value)
                 if this.SourceId.IsSome then
                     yield ("sourceId", Encode.string this.SourceId.Value)
+                if this.RefId.IsSome then
+                    yield ("refId", Encode.string this.RefId.Value)
+                match this.ParentRef with
+                | Some (ParentId parentId) ->
+                    yield ("parentId", Encode.string parentId)
+                | Some (ParentName parentName) ->
+                    yield ("parentId", Encode.string parentName)
+                | Some (ParentRefId parentRefId) ->
+                    yield ("parentId", Encode.string parentRefId)
+                | None -> ()
             ]
     type AssetsRequest with
          member this.Encoder =

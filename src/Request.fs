@@ -33,6 +33,8 @@ type RequestError = {
     Extra: Map<string, string>
 }
 
+
+/// Will be raised if decoding a response fails.
 exception DecodeException of string
 
 module Request =
@@ -53,6 +55,7 @@ module Request =
         }
 
 module Context =
+    /// Default context to use. Fetches from http://api.cognitedata.com.
     let defaultContext = {
         Method = Get
         Body = None
@@ -61,7 +64,7 @@ module Context =
         Headers = [
             Accept HttpContentTypes.Json
             ContentType HttpContentTypes.Json
-            UserAgent "CogniteNetSdk; Dag Brattli"
+            UserAgent "CogniteSdk.NET; Dag Brattli"
         ]
         Fetch = Request.fetch
         Project = ""
@@ -108,8 +111,33 @@ module Context =
     let setMethod (method: Method) (context: Context) =
         { context with Method = method }
 
+
+    /// **Description**
+    ///
+    /// Set the project to connect to.
+    ///
+    /// **Parameters**
+    ///   * `project` - parameter of type `string`
+    ///   * `context` - parameter of type `Context`
+    ///
+    /// **Output Type**
+    ///   * `Context`
+    ///
     let setProject (project: string) (context: Context) =
         { context with Project = project }
 
+
+    /// **Description**
+    ///
+    /// Set the fetch method to be used for making requests. Should not
+    /// be needed for most scenarios, but nice for unit-testing.
+    ///
+    /// **Parameters**
+    ///   * `fetch` - parameter of type `Fetch`
+    ///   * `context` - parameter of type `Context`
+    ///
+    /// **Output Type**
+    ///   * `Context`
+    ///
     let setFetch (fetch: Fetch) (context: Context) =
         { context with Fetch = fetch }
