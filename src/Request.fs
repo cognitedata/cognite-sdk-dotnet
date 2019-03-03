@@ -6,16 +6,19 @@ open System.Net
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
-type Method =
-    | Post
-    | Put
-    | Get
-    | Delete
+/// Will be raised if decoding a response fails.
+exception DecodeException of string
+
+type HttpMethod =
+    | POST
+    | PUT
+    | GET
+    | DELETE
 
 type QueryParams = (string*string) list
 
 type Context = {
-    Method: Method
+    Method: HttpMethod
     Body: string option
     Resource: string
     Query: QueryParams
@@ -33,12 +36,7 @@ type RequestError = {
     Extra: Map<string, string>
 }
 
-
-/// Will be raised if decoding a response fails.
-exception DecodeException of string
-
 module Request =
-
     /// A request function for fetching from the Cognite API.
     let fetch (ctx: Context) =
         async {
@@ -54,10 +52,9 @@ module Request =
             | ex -> return Error ex
         }
 
-module Context =
     /// Default context to use. Fetches from http://api.cognitedata.com.
-    let defaultContext = {
-        Method = Get
+    let defaultContext : Context = {
+        Method = GET
         Body = None
         Resource = String.Empty
         Query = []
@@ -66,12 +63,17 @@ module Context =
             ContentType HttpContentTypes.Json
             UserAgent "CogniteSdk.NET; Dag Brattli"
         ]
-        Fetch = Request.fetch
+        Fetch = fetch
         Project = ""
     }
 
     /// Add HTTP header to context.
     let addHeader (header: string*string) (context: Context) =
+        { context with Headers = header :: context.Headers}
+
+    /// Helper for setting Bearer token as Authorization header.
+    let setToken (token: string) (context: Context) =
+        let header = ("Authorization", sprintf "Bearer: %s" token)
         { context with Headers = header :: context.Headers}
 
     /// **Description**
@@ -108,7 +110,7 @@ module Context =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setMethod (method: Method) (context: Context) =
+    let setMethod (method: HttpMethod) (context: Context) =
         { context with Method = method }
 
 

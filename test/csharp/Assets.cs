@@ -59,7 +59,7 @@ namespace Tests
                 .Name("string3");
 
             var result = await client.GetAssets(assetArgs);
-            Assert.AreEqual(fetcher.Ctx.Method, Method.Get, "Should be equal");
+            Assert.AreEqual(fetcher.Ctx.Method, HttpMethod.GET, "Should be equal");
             Assert.AreEqual(fetcher.Ctx.Resource, "/assets", "Should be equal");
             //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
             Assert.AreEqual(result.Count, 1);
@@ -104,7 +104,7 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             var result = await client.GetAsset(42L);
-            Assert.AreEqual(fetcher.Ctx.Method, Method.Get, "Should be equal");
+            Assert.AreEqual(fetcher.Ctx.Method, HttpMethod.GET, "Should be equal");
             Assert.AreEqual(fetcher.Ctx.Resource, "/assets/42", "Should be equal");
             //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
             //Assert.AreEqual(result.Count, 2);

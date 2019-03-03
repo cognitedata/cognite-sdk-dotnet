@@ -3,7 +3,7 @@ namespace Cognite.Sdk.Assets
 open Thoth.Json.Net
 
 open Cognite.Sdk
-open Cognite.Sdk.Context
+open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
 
 [<AutoOpen>]
@@ -30,7 +30,7 @@ module Methods =
         let url = Url
         let! result =
             ctx
-            |> setMethod Get
+            |> setMethod GET
             |> addQuery query
             |> setResource url
             |> ctx.Fetch
@@ -56,7 +56,7 @@ module Methods =
 
         let! result =
             ctx
-            |> setMethod Get
+            |> setMethod GET
             |> setResource url
             |> ctx.Fetch
 
@@ -83,7 +83,7 @@ module Methods =
 
         let! response =
             ctx
-            |> setMethod Post
+            |> setMethod POST
             |> setBody body
             |> setResource url
             |> ctx.Fetch
@@ -112,7 +112,7 @@ module Methods =
 
         let! response =
             ctx
-            |> setMethod Post
+            |> setMethod POST
             |> setBody body
             |> setResource url
             |> ctx.Fetch
@@ -143,7 +143,7 @@ module Methods =
 
         let! response =
             ctx
-            |> setMethod Post
+            |> setMethod POST
             |> setBody body
             |> setResource url
             |> ctx.Fetch
@@ -175,7 +175,7 @@ module Methods =
 
         let! response =
             ctx
-            |> setMethod Post
+            |> setMethod POST
             |> setBody body
             |> setResource url
             |> ctx.Fetch

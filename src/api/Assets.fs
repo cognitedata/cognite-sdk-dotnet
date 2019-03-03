@@ -6,7 +6,6 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
 
-open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets.Model
 open Cognite.Sdk.Assets.Methods

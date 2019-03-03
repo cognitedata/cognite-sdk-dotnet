@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CogniteNetSdk.fsproj" />
+    <ProjectReference Include="..\..\src\CogniteSdk.fsproj" />
   </ItemGroup>
 
   <ItemGroup>

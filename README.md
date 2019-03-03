@@ -2,7 +2,7 @@
 
 An SDK for accessing the Cognite API (v5). Made as part of the 2019 February 14th hackathon and is *work-in-progress (WIP)*.
 
-The goal was to learn the Cognite API and experiment with [Domian Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using OpenAPI tools as the generated code is often bloated and quality usually not good (imo).
+The goal was to learn the Cognite API and experiment with [Domian Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using OpenAPI tools as the generated code is often bloated and quality usually not as good (imo).
 
 The SDK is written as a dual domain SDK for both C# and F#.
 
@@ -38,4 +38,7 @@ This reduces the need for unit-tests as incorrect state will be much harder to p
 
 ## Time Series API
 
-- `insertData`- Insert data into time series.
+- `insertDataByName` - Insert data into named time series.
+- `createTimeSeries` - Create a new time series.
+- `getTimeSeries` -
+- `queryTimeSeries`

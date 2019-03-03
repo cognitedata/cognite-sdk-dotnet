@@ -4,8 +4,7 @@ open System
 open System.Threading.Tasks
 
 open Cognite.Sdk
-open Cognite.Sdk.Context
-
+open Cognite.Sdk.Request
 
 /// <summary>
 /// Client for accessing the API.

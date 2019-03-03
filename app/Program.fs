@@ -3,7 +3,7 @@
 open System
 open FsConfig
 
-open Cognite.Sdk.Context
+open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
 
 type Config = {
