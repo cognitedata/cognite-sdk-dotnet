@@ -5,7 +5,7 @@ open Thoth.Json.Net
 
 [<AutoOpen>]
 module TimeseriesExtensions =
-    type DataPoint with
+    type DataPointDto with
         member this.Encoder =
             Encode.object [
                 yield ("timestamp", Encode.int64 this.TimeStamp)
@@ -18,7 +18,7 @@ module TimeseriesExtensions =
     type PointRequest with
         member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: DataPoint) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: DataPointDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
     type Timeseries with

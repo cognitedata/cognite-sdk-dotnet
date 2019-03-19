@@ -5,13 +5,13 @@ type Numeric =
     | Integer of int64
     | Float of double
 
-type DataPoint = {
+type DataPointDto = {
     TimeStamp: int64
     Value: Numeric
 }
 
 type PointRequest = {
-    Items: DataPoint list
+    Items: DataPointDto list
 }
 
 type Timeseries = {

@@ -10,7 +10,7 @@ open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
 
 [<Extension>]
-type AssetRequestDto =
+type TimeseriesExtension =
     [<Extension>]
     static member TryGetParentId (this: ResponseAssetDto, [<Out>] parentId: byref<Int64>) =
         match this.ParentId with
@@ -75,7 +75,7 @@ type AssetRequestDto =
     static member SetParentId (this: RequestAssetDto, parentId: string) : RequestAssetDto =
         { this with ParentRef = ParentId parentId |> Some }
 
-type AssetArgs (args: GetParams list) =
+type TimeseriesArgs (args: GetParams list) =
     let args  = args
 
     member this.Id(id: int64) =
@@ -107,7 +107,7 @@ type AssetArgs (args: GetParams list) =
         AssetArgs []
 
 [<Extension>]
-type ClientAssetExtensions =
+type ClientTimeseriesExtensions =
     /// <summary>
     /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
     /// supports pagination.
@@ -119,7 +119,7 @@ type ClientAssetExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssets (this: Client) (args: AssetArgs) : Task<ResponseAssetDto List> =
+    static member GetAssets2 (this: Client) (args: AssetArgs) : Task<ResponseAssetDto List> =
         let worker () : Async<ResponseAssetDto List> = async {
             let! result = getAssets this.Ctx args.Args
             match result with
@@ -131,38 +131,3 @@ type ClientAssetExtensions =
 
         worker () |> Async.StartAsTask
 
-    /// <summary>
-    /// Retrieves information about an asset in a certain project given an asset id.
-    /// </summary>
-    /// <param name="assetId">The id of the asset to get.</param>
-    /// <returns>Asset with the given id.</returns>
-    [<Extension>]
-    static member GetAsset (this: Client) (assetId: int64) : Task<ResponseAssetDto> =
-        let worker () : Async<ResponseAssetDto> = async {
-            let! result = getAsset this.Ctx assetId
-            match result with
-            | Ok response ->
-                return response
-            | Error ex ->
-                return raise ex
-        }
-
-        worker () |> Async.StartAsTask
-
-    /// <summary>
-    /// Create assets.
-    /// </summary>
-    /// <param name="assets">The assets to create.</param>
-    /// <returns>List of created assets.</returns>
-    [<Extension>]
-    static member CreateAssets (this: Client) (assets: ResizeArray<RequestAssetDto>) : Task<ResponseAssetDto List> =
-        let worker () : Async<ResponseAssetDto List> = async {
-            let! result = createAssets this.Ctx (Seq.toList assets)
-            match result with
-            | Ok response ->
-                return ResizeArray<ResponseAssetDto> response
-            | Error ex ->
-                return raise ex
-        }
-
-        worker () |> Async.StartAsTask

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
+using Cognite.Sdk.Assets;
 
 namespace Tests
 {
@@ -127,6 +128,27 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             Assert.ThrowsAsync<DecodeException>(async () => await client.GetAsset(42L));
+        }
+
+        [Test]
+        public async Task TestCreateAssets()
+        {
+            var apiKey = "api-key";
+            var project = "project";
+
+            var response = File.ReadAllText("Assets.json");
+            var fetcher = new Fetcher(response);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            var assets = new List<RequestAssetDto> {
+                AssetRequestDto.Create ("name", "description", 0, 0)
+            };
+            var result = await client.CreateAssets(assets);
         }
     }
 }

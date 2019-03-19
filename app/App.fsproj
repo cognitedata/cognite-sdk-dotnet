@@ -16,5 +16,6 @@
   <ItemGroup>
     <PackageReference Include="FsConfig" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="TypeShape" Version="5.1.0" />
   </ItemGroup>
 </Project>

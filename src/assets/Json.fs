@@ -5,8 +5,8 @@ open Cognite.Sdk
 
 [<AutoOpen>]
 module AssetsExtensions =
-    type ResponseAsset with
-        static member Decoder : Decode.Decoder<ResponseAsset> =
+    type ResponseAssetDto with
+        static member Decoder : Decode.Decoder<ResponseAssetDto> =
             Decode.object (fun get ->
                 {
                     Id = get.Required.Field "id" Decode.int64
@@ -25,7 +25,7 @@ module AssetsExtensions =
     type ResponseData with
         static member Decoder : Decode.Decoder<ResponseData> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ResponseAsset.Decoder)
+                Items = get.Required.Field "items" (Decode.list ResponseAssetDto.Decoder)
                 PreviousCursor = get.Optional.Field "previousCursor" Decode.string
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
@@ -36,7 +36,7 @@ module AssetsExtensions =
                     ResponseData = get.Required.Field "data" ResponseData.Decoder
                 })
 
-    type RequestAsset with
+    type RequestAssetDto with
         member this.Encoder =
             Encode.object [
                 yield ("name", Encode.string this.Name)
@@ -64,7 +64,7 @@ module AssetsExtensions =
     type AssetsRequest with
          member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: RequestAsset) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: RequestAssetDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
     let renderParams (arg: GetParams) =

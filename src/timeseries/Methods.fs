@@ -28,7 +28,7 @@ module TimeSeries =
     ///
     /// **Exceptions**
     ///
-    let insertDataByName (ctx: Context) (name: string) (items: DataPoint list) = async {
+    let insertDataByName (ctx: Context) (name: string) (items: DataPointDto list) = async {
         let request : PointRequest = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
@@ -70,10 +70,11 @@ module TimeSeries =
         return response
     }
 
-
     /// **Description**
     ///
-    /// Get timeseries with given id.
+    /// Get timeseries with given id. Retrieves the details of an existing time
+    /// series given a project id and the unique time series identifier
+    /// generated when the time series was created.
     ///
     /// **Parameters**
     ///   * `ctx` - parameter of type `Context`
@@ -93,6 +94,21 @@ module TimeSeries =
         return response
     }
 
+    /// **Description**
+    ///
+    /// Query time series. Retrieves a list of data points from a single time series.
+    /// This operation supports aggregation but not pagination.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - parameter of type `Context`
+    ///   * `name` - parameter of type `string`
+    ///   * `query` - parameter of type `QueryParams list`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<string,exn>>`
+    ///
+    /// **Exceptions**
+    ///
     let gueryTimeseries (ctx: Context) (name: string) (query: QueryParams list) = async {
         let url = Url + sprintf "/data/%s" name
         let query = query |> List.map renderQuery
