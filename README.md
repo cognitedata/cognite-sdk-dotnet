@@ -1,6 +1,8 @@
 # Cognite .NET SDK
 
-An SDK for accessing the Cognite API (v5). Made as part of the 2019 February 14th hackathon and is **work-in-progress (WIP)**.
+An SDK for accessing the Cognite API (v5). Made as part of the 2019 February 14th hackathon.
+
+> Work in Progress (WIP)
 
 The goal was to learn the Cognite API and experiment with [Domian Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using the OpenAPI tool chain.
 
