@@ -4,7 +4,7 @@ An SDK for accessing the Cognite API (v5) using [.NET Standard 2.0](https://docs
 
 > Work in Progress (WIP)
 
-The goal was to learn the Cognite API and experiment with [Domian Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using the OpenAPI tool chain.
+The goal was to learn the Cognite API and experiment with [Domain Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using the OpenAPI tool chain.
 
 The SDK is written as a dual domain SDK for both C# and F# with F# as the core domain model.
 
@@ -44,7 +44,7 @@ It allows us to [model our domain using types](https://fsharpforfunandprofit.com
 
 > If it compiles it's usually correct.
 
-The goal is to reduces the need for unit-tests as incorrect state will be much harder to produce.
+The goal is to reduce the need for unit-tests as incorrect state will be much harder to produce.
 
 ## Assets API
 
