@@ -2,6 +2,7 @@ namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
 open Cognite.Sdk
+open System
 
 [<AutoOpen>]
 module AssetsExtensions =
@@ -119,6 +120,7 @@ module AssetsExtensions =
         |> Result.bind (fun res ->
             let ret = Decode.fromString decoder res
             match ret with
-            | Error str -> Error (DecodeException str)
+            | Error error ->
+                DecodeError error |> Error
             | Ok value -> Ok value
         )

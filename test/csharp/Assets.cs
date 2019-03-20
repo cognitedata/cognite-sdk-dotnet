@@ -84,7 +84,9 @@ namespace Tests
 
             var assetArgs =
                 AssetArgs.Empty()
-                .Name("string3");
+                .Name("string3")
+                .Description("my description")
+                .Depth(3);
 
             Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
         }
@@ -146,7 +148,9 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             var assets = new List<RequestAssetDto> {
-                AssetRequestDto.Create ("name", "description", 0, 0)
+                AssetRequestDto.Create ("name1", "description1", 0, 0),
+                AssetRequestDto.Create ("name2", "description2", 0, 0),
+                AssetRequestDto.Create ("name3", "description3", 0, 0)
             };
             var result = await client.CreateAssets(assets);
         }

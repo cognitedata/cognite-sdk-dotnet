@@ -44,7 +44,7 @@ type Client private (context: Context) =
                     return Ok result
                 with
                 | ex ->
-                    return Error ex
+                    return RequestException ex |> Error
             }
             return response
         }

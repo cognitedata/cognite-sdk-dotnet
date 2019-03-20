@@ -17,6 +17,11 @@ type HttpMethod =
 
 type QueryParams = (string*string) list
 
+type ResponseError =
+    | RequestException of exn
+    | DecodeError of string
+    | ErrorResponse of HttpResponse
+
 type Context = {
     Method: HttpMethod
     Body: string option
@@ -28,7 +33,7 @@ type Context = {
     Project: string
 }
 
-and Fetch = Context -> Async<Result<string, exn>>
+and Fetch = Context -> Async<Result<string, ResponseError>>
 
 type RequestError = {
     Code: int
@@ -37,6 +42,18 @@ type RequestError = {
 }
 
 module Request =
+    let (|Informal|Success|Redirection|ClientError|ServerError|) x =
+        if x < 200 then
+            Informal
+        else if x < 300 then
+            Success
+        else if x < 400 then
+            Redirection
+        else if x < 500 then
+            ClientError
+        else
+            ServerError
+
     /// A request function for fetching from the Cognite API.
     let fetch (ctx: Context) =
         async {
@@ -46,10 +63,18 @@ module Request =
             let body = ctx.Body |> Option.map HttpRequestBody.TextRequest
             let method = ctx.Method.ToString().ToUpper()
             try
-                let! response = Http.AsyncRequestString (url, ctx.Query, headers, method, ?body=body)
-                return Ok response
+                let! response = Http.AsyncRequest (url, ctx.Query, headers, method, ?body=body, silentHttpErrors=true)
+                match response.StatusCode with
+                | Success ->
+                    match response.Body with
+                    | Text text ->
+                        return Ok text
+                    | Binary _ ->
+                        return ErrorResponse response |> Error
+                | _ ->
+                    return ErrorResponse response |> Error
             with
-            | ex -> return Error ex
+            | ex -> return RequestException ex |> Error
         }
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
@@ -143,3 +168,23 @@ module Request =
     ///
     let setFetch (fetch: Fetch) (context: Context) =
         { context with Fetch = fetch }
+
+    /// **Description**
+    ///
+    /// Translate response error to exception that we can raise for the
+    /// C# API.
+    ///
+    /// **Parameters**
+    ///   * `error` - parameter of type `ResponseError`
+    ///
+    /// **Output Type**
+    ///   * `exn`
+    let error2Exception error =
+        match error with
+        | RequestException ex ->
+            ex
+        | DecodeError err ->
+            DecodeException err
+        | ErrorResponse err ->
+            // FIXME: Make a better error type
+            Exception (err.ToString ())

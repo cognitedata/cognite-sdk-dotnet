@@ -25,7 +25,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<ResponseAssetDto list, exn>> = async {
+    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<ResponseAssetDto list, ResponseError>> = async {
         let query = args |> List.map renderParams
         let url = Url
         let! result =
@@ -51,7 +51,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (ctx: Context) (assetId: int64) : Async<Result<ResponseAssetDto, exn>> = async {
+    let getAsset (ctx: Context) (assetId: int64) : Async<Result<ResponseAssetDto, ResponseError>> = async {
         let url = Url + sprintf "/%d" assetId
 
         let! result =

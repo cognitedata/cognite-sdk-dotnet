@@ -6,6 +6,7 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Collections.Generic
 
+open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
 
@@ -125,8 +126,8 @@ type ClientTimeseriesExtensions =
             match result with
             | Ok response ->
                 return ResizeArray<ResponseAssetDto> response
-            | Error ex ->
-                return raise ex
+            | Error error ->
+                return raise (Request.error2Exception error)
         }
 
         worker () |> Async.StartAsTask

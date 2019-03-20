@@ -9,7 +9,7 @@ open Cognite.Sdk.Assets
 open Cognite.Sdk.Request
 
 
-type Fetcher (response: Result<string, exn>) =
+type Fetcher (response: Result<string, ResponseError>) =
     let mutable _ctx: Context option = None
 
     member this.Ctx =
@@ -174,7 +174,7 @@ let assetTests = testList "Asset tests" [
         | Ok assets ->
             Expect.equal assets.Length 1 "Should be equal"
         | Error error ->
-            raise error
+            raise (Request.error2Exception error)
 
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method POST "Should be equal"
