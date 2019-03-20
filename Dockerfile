@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.2-sdk AS build
+FROM eu.gcr.io/cognitedata/dotnet-mono:2.1-sdk AS build
 COPY . .
 
 RUN dotnet build
