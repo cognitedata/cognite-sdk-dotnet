@@ -36,10 +36,7 @@ export API_KEY=mysecretkey
 ## C# API
 
 The C# API is a fluent API using objects and method chaining that wraps the F# API. Errors will be
-raised as exceptions. The API is asynchronous and all API methods returnins `Task` and is thus awaitable using async/await.
-
-The C# API is implemented in F# but hides F# specific datatypes such as
-`Options` and `Discriminated Unions`.
+raised as exceptions. The API is asynchronous and all API methods returns `Task` and is thus awaitable using async/await.
 
 ## F# API
 
@@ -54,6 +51,8 @@ It allows us to [model our domain using types](https://fsharpforfunandprofit.com
 > If it compiles it's usually correct.
 
 The goal is to reduce the need for unit-tests as incorrect state will be much harder to produce.
+
+The C# API is also implemented in F# but hides F# specific datatypes such as `Options` and `Discriminated Unions`.
 
 ## Assets API
 
