@@ -37,13 +37,11 @@ module AssetsExtensions =
                     ResponseData = get.Required.Field "data" ResponseData.Decoder
                 })
 
-    type RequestAssetDto with
+    type CreateAssetDto with
         member this.Encoder =
             Encode.object [
                 yield ("name", Encode.string this.Name)
                 yield ("description", Encode.string this.Description)
-                yield ("createdTime", Encode.int64 this.CreatedTime)
-                yield ("lastUpdatedTime", Encode.int64 this.LastUpdatedTime)
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
                     yield ("metadata", metaString)
@@ -65,7 +63,7 @@ module AssetsExtensions =
     type AssetsRequest with
          member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: RequestAssetDto) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: CreateAssetDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
     let renderParams (arg: GetParams) =

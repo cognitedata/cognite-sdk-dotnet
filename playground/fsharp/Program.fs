@@ -38,8 +38,6 @@ let createAssetsExample ctx = async {
         MetaData = Map.empty
         Source = None
         SourceId = None
-        CreatedTime = 0L
-        LastUpdatedTime = 0L
         RefId = None
         ParentRef = None
     }]

@@ -36,8 +36,8 @@ type ParentRef =
     | ParentRefId of string
 
 
-/// Asset type for requests.
-type RequestAssetDto = {
+/// Asset type for create requests.
+type CreateAssetDto = {
     /// Name of asset. Often referred to as tag.
     Name: string
     /// Description of asset.
@@ -49,10 +49,6 @@ type RequestAssetDto = {
     /// ID of the asset in the source. Only applicable if source is specified.
     /// The combination of source and sourceId must be unique.
     SourceId: string option
-    /// Time when this asset was created in CDP in milliseconds since Jan 1, 1970.
-    CreatedTime: int64
-    /// The last time this asset was updated in CDP, in milliseconds since Jan 1, 1970.
-    LastUpdatedTime: int64
     /// Reference ID used only in post request to disambiguate references to duplicate names.
     RefId: string option
     /// Reference to parent (Id, Name or RefId).
@@ -112,5 +108,5 @@ module Model =
         | SetSourceId of string option
 
     type AssetsRequest = {
-        Items: RequestAssetDto list
+        Items: CreateAssetDto list
     }

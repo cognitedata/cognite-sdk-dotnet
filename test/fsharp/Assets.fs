@@ -153,7 +153,7 @@ let assetTests = testList "Asset tests" [
             |> addHeader ("api-key", "test-key")
             |> setFetch fetch
 
-        let asset: RequestAssetDto = {
+        let asset: CreateAssetDto = {
             Name = "myAsset"
             Description = "Some description"
             MetaData = Map.empty
@@ -161,8 +161,6 @@ let assetTests = testList "Asset tests" [
             SourceId = None
             RefId = None
             ParentRef = None
-            CreatedTime = 0L
-            LastUpdatedTime = 0L
         }
 
         // Act

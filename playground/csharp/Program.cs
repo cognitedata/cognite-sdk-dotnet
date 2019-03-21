@@ -9,6 +9,11 @@ namespace csharp
 {
     class Program
     {
+        /// <summary>
+        /// Get Assets example.
+        /// </summary>
+        /// <param name="client">CDP client.</param>
+        /// <returns>Task</returns>
         static async Task GetAssetsExample(Client client)
         {
             var assetArgs =

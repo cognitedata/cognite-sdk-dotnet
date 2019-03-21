@@ -76,7 +76,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (ctx: Context) (assets: RequestAssetDto list) = async {
+    let createAssets (ctx: Context) (assets: CreateAssetDto list) = async {
         let request = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Url

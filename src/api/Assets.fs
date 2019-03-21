@@ -30,22 +30,20 @@ type AssetRequestDto =
 
     /// Create new RequestAsset with all non-optional values.
     [<Extension>]
-    static member Create (name: string) (description: string) (createdTime: int64) (lastUpdatedTime: int64) : RequestAssetDto =
+    static member Create (name: string) (description: string) (createdTime: int64) (lastUpdatedTime: int64) : CreateAssetDto =
         {
             Name = name
             Description = description
             MetaData = Map.empty
             Source = None
             SourceId = None
-            CreatedTime = createdTime
-            LastUpdatedTime = lastUpdatedTime
 
             RefId = None
             ParentRef = None
         }
 
     [<Extension>]
-    static member SetMetaData (this: RequestAssetDto, metaData: Dictionary<string, string>) : RequestAssetDto =
+    static member SetMetaData (this: CreateAssetDto, metaData: Dictionary<string, string>) : CreateAssetDto =
         let map =
             metaData
             |> Seq.map (|KeyValue|)
@@ -53,27 +51,27 @@ type AssetRequestDto =
         { this with MetaData = map }
 
     [<Extension>]
-    static member SetSource (this: RequestAssetDto, source: string) : RequestAssetDto =
+    static member SetSource (this: CreateAssetDto, source: string) : CreateAssetDto =
         { this with Source = Some source }
 
     [<Extension>]
-    static member SetSourceId (this: RequestAssetDto, sourceId: string) : RequestAssetDto =
+    static member SetSourceId (this: CreateAssetDto, sourceId: string) : CreateAssetDto =
         { this with SourceId = Some sourceId }
 
     [<Extension>]
-    static member SetRefId (this: RequestAssetDto, refId: string) : RequestAssetDto =
+    static member SetRefId (this: CreateAssetDto, refId: string) : CreateAssetDto =
         { this with RefId = Some refId }
 
     [<Extension>]
-    static member SetParentRefId (this: RequestAssetDto, parentRefId: string) : RequestAssetDto =
+    static member SetParentRefId (this: CreateAssetDto, parentRefId: string) : CreateAssetDto =
         { this with ParentRef = ParentRefId parentRefId |> Some }
 
     [<Extension>]
-    static member SetParentName (this: RequestAssetDto, parentName: string) : RequestAssetDto =
+    static member SetParentName (this: CreateAssetDto, parentName: string) : CreateAssetDto =
         { this with ParentRef = ParentName parentName |> Some }
 
     [<Extension>]
-    static member SetParentId (this: RequestAssetDto, parentId: string) : RequestAssetDto =
+    static member SetParentId (this: CreateAssetDto, parentId: string) : CreateAssetDto =
         { this with ParentRef = ParentId parentId |> Some }
 
 type AssetArgs (args: GetParams list) =
@@ -156,7 +154,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssets (this: Client) (assets: ResizeArray<RequestAssetDto>) : Task<ResponseAssetDto List> =
+    static member CreateAssets (this: Client) (assets: ResizeArray<CreateAssetDto>) : Task<ResponseAssetDto List> =
         let worker () : Async<ResponseAssetDto List> = async {
             let! result = createAssets this.Ctx (Seq.toList assets)
             match result with

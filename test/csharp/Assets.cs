@@ -147,7 +147,7 @@ namespace Tests
                 .SetProject(project)
                 .SetFetch(fetcher.Fetch);
 
-            var assets = new List<RequestAssetDto> {
+            var assets = new List<CreateAssetDto> {
                 AssetRequestDto.Create ("name1", "description1", 0, 0),
                 AssetRequestDto.Create ("name2", "description2", 0, 0),
                 AssetRequestDto.Create ("name3", "description3", 0, 0)
