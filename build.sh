@@ -1,5 +1,5 @@
 #!/bin/sh
-DIRS="src app csharp test/fsharp test/csharp"
+DIRS="src test/fsharp test/csharp playground/fsharp playground/csharp"
 for dir in $DIRS; do
 	rm -rf $dir/bin $dir/obj
 done
