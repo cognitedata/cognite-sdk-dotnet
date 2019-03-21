@@ -18,6 +18,15 @@ To build the sources:
 > dotnet build
 ```
 
+## Examples
+
+ There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDP project and API key as environment variables in the shell.
+
+```sh
+export PROJECT=myprojet
+export API_KEY=mysecretkey
+```
+
 ## Dependencies
 
 - [FSharp.Data](https://www.nuget.org/packages/FSharp.Data/) - for HTTP Utilities.
