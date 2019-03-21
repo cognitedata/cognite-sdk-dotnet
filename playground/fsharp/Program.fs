@@ -13,6 +13,43 @@ type Config = {
     Project: string
 }
 
+let getAssetsExample ctx = async {
+    let! result = getAssets ctx [ Limit 2 ]
+
+    match result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
+
+let updateAssetExample ctx = async {
+
+    let! result = updateAsset ctx 84025677715833721L [ SetName "string3" ]
+
+    match result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
+
+let createAssetsExample ctx = async {
+
+    let assets = [{
+        Name = "My new asset"
+        Description = "My description"
+        MetaData = Map.empty
+        Source = None
+        SourceId = None
+        CreatedTime = 0L
+        LastUpdatedTime = 0L
+        RefId = None
+        ParentRef = None
+    }]
+
+    let! result = createAssets ctx assets
+    match result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
+
 [<EntryPoint>]
 let main argv =
     printfn "F# Client"
@@ -28,19 +65,7 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        //let! result = getAssets ctx [ Limit 2 ]
-
-        let! result = updateAsset ctx 84025677715833721L [ SetName "string3" ]
-
-        // let asset = {
-        //     Name = "new asset"
-
-        // }
-        // let result = createAsset
-        match result with
-        | Ok res -> printfn "%A" res
-        | Error err -> printfn "Error: %A" err
-
+        do! getAssetsExample ctx
     } |> Async.RunSynchronously
 
     0 // return an integer exit code

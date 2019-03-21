@@ -9,6 +9,19 @@ namespace csharp
 {
     class Program
     {
+        static async Task GetAssetsExample(Client client)
+        {
+            var assetArgs =
+                AssetArgs.Empty()
+                .Name("string3");
+
+            var result = await client.GetAssets(assetArgs);
+
+            Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
+            Console.WriteLine("{0}", parentId);
+            Console.WriteLine("{0}", result);
+        }
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("C# Client");
@@ -21,16 +34,7 @@ namespace csharp
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-
-            var assetArgs =
-                AssetArgs.Empty()
-                .Name("string3");
-
-            var result = await client.GetAssets(assetArgs);
-
-            Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
-            Console.WriteLine("{0}", parentId);
-            Console.WriteLine("{0}", result);
+            await GetAssetsExample(client);
         }
     }
 }
