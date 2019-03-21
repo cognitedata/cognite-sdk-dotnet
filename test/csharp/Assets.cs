@@ -6,8 +6,8 @@ using System.IO;
 using System.Threading.Tasks;
 
 using Cognite.Sdk;
-using Cognite.Sdk.Api;
 using Cognite.Sdk.Assets;
+using Cognite.Sdk.Api;
 
 namespace Tests
 {
@@ -148,9 +148,9 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             var assets = new List<CreateAssetDto> {
-                AssetRequestDto.Create ("name1", "description1", 0, 0),
-                AssetRequestDto.Create ("name2", "description2", 0, 0),
-                AssetRequestDto.Create ("name3", "description3", 0, 0)
+                Asset.Create("name1", "description1"),
+                Asset.Create("name2", "description2"),
+                Asset.Create("name3", "description3")
             };
             var result = await client.CreateAssets(assets);
         }

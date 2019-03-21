@@ -11,7 +11,7 @@ open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
 
 [<Extension>]
-type AssetRequestDto =
+type Asset =
     [<Extension>]
     static member TryGetParentId (this: ResponseAssetDto, [<Out>] parentId: byref<Int64>) =
         match this.ParentId with
@@ -30,7 +30,7 @@ type AssetRequestDto =
 
     /// Create new RequestAsset with all non-optional values.
     [<Extension>]
-    static member Create (name: string) (description: string) (createdTime: int64) (lastUpdatedTime: int64) : CreateAssetDto =
+    static member Create (name: string) (description: string) : CreateAssetDto =
         {
             Name = name
             Description = description
