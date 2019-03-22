@@ -44,10 +44,10 @@ type CreateAssetDto = {
     Description: string
     /// Custom, application specific metadata. String key -> String value
     MetaData: Map<string, string>
-    /// The source of this asset
+    /// The source of this asset (NOTE: will be replaced with external Id)
     Source: string option
     /// ID of the asset in the source. Only applicable if source is specified.
-    /// The combination of source and sourceId must be unique.
+    /// The combination of source and sourceId must be unique (NOTE: will be replaced with external Id)
     SourceId: string option
     /// Reference ID used only in post request to disambiguate references to duplicate names.
     RefId: string option
