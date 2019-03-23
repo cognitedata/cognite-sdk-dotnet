@@ -77,19 +77,19 @@ type Asset =
 type AssetArgs (args: GetParams list) =
     let args  = args
 
-    member this.Id(id: int64) =
+    member this.Id (id: int64) =
         AssetArgs (Id id :: args)
 
-    member this.Name(name: string) =
+    member this.Name (name: string) =
         AssetArgs (Name name :: args)
 
-    member this.Description(description: string) =
+    member this.Description (description: string) =
         AssetArgs (Description description :: args)
 
-    member this.Path(path: string) =
+    member this.Path (path: string) =
         AssetArgs (Path path :: args)
 
-    member this.MetaData(metaData: Dictionary<string, string>) =
+    member this.MetaData (metaData: Dictionary<string, string>) =
         let map =
             metaData
             |> Seq.map (|KeyValue|)
@@ -97,12 +97,12 @@ type AssetArgs (args: GetParams list) =
             |> MetaData
         AssetArgs (map :: args)
 
-    member this.Depth(depth: int) =
+    member this.Depth (depth: int) =
         AssetArgs (Depth depth :: args)
 
     member internal this.Args = args
 
-    static member Empty() =
+    static member Empty () =
         AssetArgs []
 
 [<Extension>]

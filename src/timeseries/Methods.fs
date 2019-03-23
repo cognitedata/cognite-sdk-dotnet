@@ -3,6 +3,7 @@ namespace Cognite.Sdk.Timeseries
 open Thoth.Json.Net
 
 open Cognite.Sdk
+open Cognite.Sdk.Common
 open Cognite.Sdk.Request
 
 
@@ -115,5 +116,8 @@ module Methods =
             |> setResource url
             |> addQuery query
             |> ctx.Fetch
+
         return response
+            |> decodeResponse TimeseriesResponse.Decoder
+            |> Result.map (fun res -> res.Data.Items)
     }

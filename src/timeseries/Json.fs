@@ -34,7 +34,6 @@ module TimeseriesExtensions =
                     yield "metadata", metaString
                 if this.Unit.IsSome then
                     yield "unit", Encode.string this.Unit.Value
-
                 if this.IsStep.IsSome then
                     yield "isStep", Encode.bool this.IsStep.Value
                 if this.AssetId.IsSome then
@@ -42,23 +41,49 @@ module TimeseriesExtensions =
                 if not this.SecurityCategories.IsEmpty then
                     yield "securityCategories", Encode.list (List.map Encode.int64 this.SecurityCategories)
             ]
+
+    type TimeseriesReadDto with
+        static member Decoder : Decode.Decoder<TimeseriesReadDto> =
+            Decode.object (fun get ->
+                {
+                    Name = get.Required.Field "name" Decode.string
+                    Description = get.Optional.Field "description" Decode.string
+                    IsString = get.Optional.Field "isString" Decode.bool
+                    MetaData = get.Optional.Field "metadata" (Decode.dict Decode.string)
+                    Unit = get.Optional.Field "unit" Decode.string
+                    AssetId = get.Optional.Field "assetId" Decode.int64
+                    IsStep = get.Optional.Field "isStep" Decode.bool
+                    SecurityCategories = get.Optional.Field "securityCategories" (Decode.list Decode.int64)
+                    CreatedTime = get.Required.Field "createdTime" Decode.int64
+                    LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
+                })
+
     type TimeseriesRequest with
         member this.Encoder =
             Encode.object [
                 yield ("items", List.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
+    type TimeseriesData with
+        static member Decoder : Decode.Decoder<TimeseriesData> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
+            })
+
     type TimeseriesResponse with
-        member this.Decoder =
-            ()
+        static member Decoder : Decode.Decoder<TimeseriesResponse> =
+            Decode.object (fun get -> {
+                Data = get.Required.Field "data" TimeseriesData.Decoder
+            })
+
 
     let renderQuery (query: QueryParams) =
         match query with
-        | Start start -> ("start", start.ToString ())
-        | End end'  -> ("end", end'.ToString ())
+        | Start start -> "start", start.ToString ()
+        | End end'  -> "end", end'.ToString ()
         | Aggregates aggr ->
             let list = aggr |> List.map (fun a -> a.ToString ()) |> ResizeArray<string>
-            ("aggregates", String.Join(",", list))
+            "aggregates", String.Join(",", list)
         | Granularity gr -> ("granularity", gr.ToString ())
-        | Limit limit -> ("limit", limit.ToString ())
-        | IncludeOutsidePoints iop -> ("includeOutsidePoints", iop.ToString())
+        | Limit limit -> "limit", limit.ToString ()
+        | IncludeOutsidePoints iop -> "includeOutsidePoints", iop.ToString()

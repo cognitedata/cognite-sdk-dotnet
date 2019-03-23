@@ -38,7 +38,7 @@ module Methods =
 
         return result
             |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.ResponseData.Items)
+            |> Result.map (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -63,7 +63,7 @@ module Methods =
 
         return result
             |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.ResponseData.Items.Head)
+            |> Result.map (fun res -> res.Data.Items.Head)
     }
 
     /// **Description**
@@ -90,7 +90,7 @@ module Methods =
             |> ctx.Fetch
         return response
             |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.ResponseData.Items)
+            |> Result.map (fun res -> res.Data.Items)
     }
 
     /// **Description**

@@ -1,6 +1,5 @@
 namespace Cognite.Sdk.Assets
 
-open Cognite.Sdk
 open Thoth.Json.Net
 
 [<AutoOpen>]
@@ -22,8 +21,8 @@ module AssetsExtensions =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type ResponseData with
-        static member Decoder : Decode.Decoder<ResponseData> =
+    type AssetResponseData with
+        static member Decoder : Decode.Decoder<AssetResponseData> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder)
                 PreviousCursor = get.Optional.Field "previousCursor" Decode.string
@@ -33,7 +32,7 @@ module AssetsExtensions =
     type AssetResponse with
             static member Decoder : Decode.Decoder<AssetResponse> =
                 Decode.object (fun get -> {
-                    ResponseData = get.Required.Field "data" ResponseData.Decoder
+                    Data = get.Required.Field "data" AssetResponseData.Decoder
                 })
 
     type AssetCreateDto with

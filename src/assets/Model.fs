@@ -63,14 +63,14 @@ module Model =
     [<Literal>]
     let Url = "/assets"
 
-    type ResponseData = {
+    type AssetResponseData = {
         Items: AssetReadDto list
         PreviousCursor: string option
         NextCursor : string option
     }
 
     type AssetResponse = {
-        ResponseData: ResponseData
+        Data: AssetResponseData
     }
 
     // Get parameters

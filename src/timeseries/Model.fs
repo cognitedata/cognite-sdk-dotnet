@@ -38,14 +38,22 @@ type TimeseriesRequest = {
 }
 
 type TimeseriesReadDto = {
+    /// Unique name of time series
     Name: string
+    /// Description of the time series.
     Description: string option
+    /// Whether the time series is string valued or not.
     IsString: bool option
-    MetaData: Map<string, string>
+    /// Additional metadata. String key -> String value.
+    MetaData: Map<string, string> option
+    /// The physical unit of the time series.
     Unit: string option
+    /// Asset that this time series belongs to.
     AssetId: int64 option
+    /// Whether the time series is a step series or not.
     IsStep: bool option
-    SecurityCategories: int64 list
+    /// Security categories required in order to access this time series.
+    SecurityCategories: int64 list option
     /// Time when this asset was created in CDP in milliseconds since Jan 1, 1970.
     CreatedTime: int64
     /// The last time this asset was updated in CDP, in milliseconds since Jan 1, 1970.
