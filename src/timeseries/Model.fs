@@ -14,19 +14,50 @@ type PointRequest = {
     Items: DataPointDto list
 }
 
-type Timeseries = {
+type TimeseriesCreateDto = {
+    /// Unique name of time series
     Name: string
-    Description: string
-    IsString: bool
+    /// Description of the time series.
+    Description: string option
+    /// Whether the time series is string valued or not.
+    IsString: bool option
+    /// Additional metadata. String key -> String value.
     MetaData: Map<string, string>
-    Unit: string
-    AssetId: int64
-    IsStep: bool
+    /// The physical unit of the time series.
+    Unit: string option
+    /// Asset that this time series belongs to.
+    AssetId: int64 option
+    /// Whether the time series is a step series or not.
+    IsStep: bool option
+    /// Security categories required in order to access this time series.
     SecurityCategories: int64 list
 }
 
 type TimeseriesRequest = {
-    Items: Timeseries list
+    Items: TimeseriesCreateDto list
+}
+
+type TimeseriesReadDto = {
+    Name: string
+    Description: string option
+    IsString: bool option
+    MetaData: Map<string, string>
+    Unit: string option
+    AssetId: int64 option
+    IsStep: bool option
+    SecurityCategories: int64 list
+    /// Time when this asset was created in CDP in milliseconds since Jan 1, 1970.
+    CreatedTime: int64
+    /// The last time this asset was updated in CDP, in milliseconds since Jan 1, 1970.
+    LastUpdatedTime: int64
+}
+
+type TimeseriesData = {
+    Items: TimeseriesReadDto list
+}
+
+type TimeseriesResponse = {
+    Data: TimeseriesData
 }
 
 type Aggregate =

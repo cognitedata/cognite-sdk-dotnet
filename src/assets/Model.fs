@@ -3,7 +3,7 @@ namespace Cognite.Sdk.Assets
 open Cognite.Sdk
 
 /// Asset type for responses.
-type ResponseAssetDto = {
+type AssetReadDto = {
     /// The Id of the asset.
     Id: int64
     Path: int64 list
@@ -37,7 +37,7 @@ type ParentRef =
 
 
 /// Asset type for create requests.
-type CreateAssetDto = {
+type AssetCreateDto = {
     /// Name of asset. Often referred to as tag.
     Name: string
     /// Description of asset.
@@ -64,7 +64,7 @@ module Model =
     let Url = "/assets"
 
     type ResponseData = {
-        Items: ResponseAssetDto list
+        Items: AssetReadDto list
         PreviousCursor: string option
         NextCursor : string option
     }
@@ -108,5 +108,5 @@ module Model =
         | SetSourceId of string option
 
     type AssetsRequest = {
-        Items: CreateAssetDto list
+        Items: AssetCreateDto list
     }

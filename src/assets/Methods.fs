@@ -3,6 +3,7 @@ namespace Cognite.Sdk.Assets
 open Thoth.Json.Net
 
 open Cognite.Sdk
+open Cognite.Sdk.Common
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
 
@@ -25,7 +26,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<ResponseAssetDto list, ResponseError>> = async {
+    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<AssetReadDto list, ResponseError>> = async {
         let query = args |> List.map renderParams
         let url = Url
         let! result =
@@ -51,7 +52,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (ctx: Context) (assetId: int64) : Async<Result<ResponseAssetDto, ResponseError>> = async {
+    let getAsset (ctx: Context) (assetId: int64) : Async<Result<AssetReadDto, ResponseError>> = async {
         let url = Url + sprintf "/%d" assetId
 
         let! result =
@@ -76,7 +77,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (ctx: Context) (assets: CreateAssetDto list) = async {
+    let createAssets (ctx: Context) (assets: AssetCreateDto list) = async {
         let request = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Url

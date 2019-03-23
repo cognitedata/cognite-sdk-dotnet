@@ -8,11 +8,11 @@ module TimeseriesExtensions =
     type DataPointDto with
         member this.Encoder =
             Encode.object [
-                yield ("timestamp", Encode.int64 this.TimeStamp)
+                yield "timestamp", Encode.int64 this.TimeStamp
                 match this.Value with
-                | String value -> yield ("value", Encode.string value)
-                | Integer value -> yield ("value", Encode.int64 value)
-                | Float value -> yield ("value", Encode.float value)
+                | String value -> yield "value", Encode.string value
+                | Integer value -> yield "value", Encode.int64 value
+                | Float value -> yield "value", Encode.float value
             ]
 
     type PointRequest with
@@ -21,26 +21,36 @@ module TimeseriesExtensions =
                 yield ("items", List.map (fun (it: DataPointDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
-    type Timeseries with
+    type TimeseriesCreateDto with
         member this.Encoder =
             Encode.object [
-                yield ("name", Encode.string this.Name)
-                yield ("description", Encode.string this.Description)
-                yield ("isString", Encode.bool this.IsString)
+                yield "name", Encode.string this.Name
+                if this.Description.IsSome then
+                    yield "description", Encode.string this.Description.Value
+                if this.IsString.IsSome then
+                    yield ("isString", Encode.bool this.IsString.Value)
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
-                    yield ("metadata", metaString)
-                yield ("unit", Encode.string this.Unit)
-                yield ("isStep", Encode.bool this.IsStep)
-                yield ("assetId", Encode.int64 this.AssetId)
-                yield ("securityCategories", Encode.list (List.map Encode.int64 this.SecurityCategories))
+                    yield "metadata", metaString
+                if this.Unit.IsSome then
+                    yield "unit", Encode.string this.Unit.Value
+
+                if this.IsStep.IsSome then
+                    yield "isStep", Encode.bool this.IsStep.Value
+                if this.AssetId.IsSome then
+                    yield "assetId", Encode.int64 this.AssetId.Value
+                if not this.SecurityCategories.IsEmpty then
+                    yield "securityCategories", Encode.list (List.map Encode.int64 this.SecurityCategories)
             ]
     type TimeseriesRequest with
         member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: Timeseries) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
+    type TimeseriesResponse with
+        member this.Decoder =
+            ()
 
     let renderQuery (query: QueryParams) =
         match query with

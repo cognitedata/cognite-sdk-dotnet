@@ -6,7 +6,8 @@ open Cognite.Sdk
 open Cognite.Sdk.Request
 
 
-module TimeSeries =
+[<AutoOpen>]
+module Methods =
     [<Literal>]
     let Url = "/timeseries"
 
@@ -24,9 +25,7 @@ module TimeSeries =
     ///   * `items` - parameter of type `DataPoint list`
     ///
     /// **Output Type**
-    ///   * `Async<unit>`
-    ///
-    /// **Exceptions**
+    ///   * `Async<Result<string,ResponseError>>`
     ///
     let insertDataByName (ctx: Context) (name: string) (items: DataPointDto list) = async {
         let request : PointRequest = { Items = items }
@@ -43,7 +42,6 @@ module TimeSeries =
         return response
     }
 
-
     /// **Description**
     ///
     /// Create new timeseries
@@ -55,7 +53,7 @@ module TimeSeries =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let createTimeseries (ctx: Context) (items: Timeseries list) = async {
+    let createTimeseries (ctx: Context) (items: TimeseriesCreateDto list) = async {
         let request : TimeseriesRequest = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
@@ -106,8 +104,6 @@ module TimeSeries =
     ///
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
-    ///
-    /// **Exceptions**
     ///
     let gueryTimeseries (ctx: Context) (name: string) (query: QueryParams list) = async {
         let url = Url + sprintf "/data/%s" name

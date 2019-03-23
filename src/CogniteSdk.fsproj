@@ -5,7 +5,8 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Types.fs" />
+    <Compile Include="Error.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="timeseries\Model.fs" />
     <Compile Include="timeseries\Json.fs" />

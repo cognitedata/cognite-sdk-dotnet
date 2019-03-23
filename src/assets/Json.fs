@@ -1,13 +1,12 @@
 namespace Cognite.Sdk.Assets
 
-open Thoth.Json.Net
 open Cognite.Sdk
-open System
+open Thoth.Json.Net
 
 [<AutoOpen>]
 module AssetsExtensions =
-    type ResponseAssetDto with
-        static member Decoder : Decode.Decoder<ResponseAssetDto> =
+    type AssetReadDto with
+        static member Decoder : Decode.Decoder<AssetReadDto> =
             Decode.object (fun get ->
                 {
                     Id = get.Required.Field "id" Decode.int64
@@ -26,7 +25,7 @@ module AssetsExtensions =
     type ResponseData with
         static member Decoder : Decode.Decoder<ResponseData> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ResponseAssetDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder)
                 PreviousCursor = get.Optional.Field "previousCursor" Decode.string
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
@@ -37,88 +36,77 @@ module AssetsExtensions =
                     ResponseData = get.Required.Field "data" ResponseData.Decoder
                 })
 
-    type CreateAssetDto with
+    type AssetCreateDto with
         member this.Encoder =
             Encode.object [
-                yield ("name", Encode.string this.Name)
-                yield ("description", Encode.string this.Description)
+                yield "name", Encode.string this.Name
+                yield "description", Encode.string this.Description
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
-                    yield ("metadata", metaString)
+                    yield "metadata", metaString
                 if this.Source.IsSome then
-                    yield ("source", Encode.string this.Source.Value)
+                    yield "source", Encode.string this.Source.Value
                 if this.SourceId.IsSome then
-                    yield ("sourceId", Encode.string this.SourceId.Value)
+                    yield "sourceId", Encode.string this.SourceId.Value
                 if this.RefId.IsSome then
-                    yield ("refId", Encode.string this.RefId.Value)
+                    yield "refId", Encode.string this.RefId.Value
                 match this.ParentRef with
                 | Some (ParentId parentId) ->
-                    yield ("parentId", Encode.string parentId)
+                    yield "parentId", Encode.string parentId
                 | Some (ParentName parentName) ->
-                    yield ("parentId", Encode.string parentName)
+                    yield "parentId", Encode.string parentName
                 | Some (ParentRefId parentRefId) ->
-                    yield ("parentId", Encode.string parentRefId)
+                    yield "parentId", Encode.string parentRefId
                 | None -> ()
             ]
     type AssetsRequest with
          member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: CreateAssetDto) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", List.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
     let renderParams (arg: GetParams) =
         match arg with
-        | Id id -> ("id", id.ToString())
-        | Name name -> ("name", name)
-        | Description desc -> ("desc", desc)
-        | Path path -> ("path", path)
+        | Id id -> "id", id.ToString()
+        | Name name -> "name", name
+        | Description desc -> "desc", desc
+        | Path path -> "path", path
         | MetaData meta ->
             let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) meta) |> Encode.toString 0
-            ("metadata", metaString)
-        | Depth depth -> ("depth", depth.ToString())
-        | Fuzziness fuzz -> ("fuzziness", fuzz.ToString ())
-        | AutoPaging value -> ("autopaging", value.ToString().ToLower())
-        | NotLimit limit -> ("limit", limit.ToString ())
-        | Cursor cursor -> ("cursor", cursor)
+            "metadata", metaString
+        | Depth depth -> "depth", depth.ToString()
+        | Fuzziness fuzz -> "fuzziness", fuzz.ToString ()
+        | AutoPaging value -> "autopaging", value.ToString().ToLower()
+        | NotLimit limit -> "limit", limit.ToString ()
+        | Cursor cursor -> "cursor", cursor
 
     let renderUpdateFields (arg: UpdateParams) =
         match arg with
         | SetName name ->
-            ("name", Encode.object [
-                ("set", Encode.string name)
-            ])
+            "name", Encode.object [
+                "set", Encode.string name
+            ]
         | SetDescription optDesc ->
-            ("description", Encode.object [
+            "description", Encode.object [
                 match optDesc with
                 | Some desc -> yield ("set", Encode.string desc)
                 | None -> yield ("setNull", Encode.bool true)
-            ])
+            ]
         | SetMetaData optMeta ->
-            ("metadata", Encode.object [
+            "metadata", Encode.object [
                 match optMeta with
                 | Some meta -> yield ("set", Encode.dict (Map.map (fun key value -> Encode.string value) meta))
-                | None -> yield ("setNull", Encode.bool true)
-            ])
+                | None -> yield "setNull", Encode.bool true
+            ]
         | SetSource optSource ->
-            ("source", Encode.object [
+            "source", Encode.object [
                 match optSource with
-                | Some source -> yield ("set", Encode.string source)
-                | None -> yield ("setNull", Encode.bool true)
-            ])
+                | Some source -> yield "set", Encode.string source
+                | None -> yield "setNull", Encode.bool true
+            ]
         | SetSourceId optSourceId ->
-            ("sourceId", Encode.object [
+            "sourceId", Encode.object [
                 match optSourceId with
-                | Some sourceId -> yield ("set", Encode.string sourceId)
-                | None -> yield ("setNull", Encode.bool true)
-            ])
-
-    /// JSON decode response and map decode error string to exception so we don't get more response error types.
-    let decodeResponse decoder result =
-        result
-        |> Result.bind (fun res ->
-            let ret = Decode.fromString decoder res
-            match ret with
-            | Error error ->
-                DecodeError error |> Error
-            | Ok value -> Ok value
-        )
+                | Some sourceId -> yield "set", Encode.string sourceId
+                | None -> yield "setNull", Encode.bool true
+            ]

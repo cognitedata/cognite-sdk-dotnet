@@ -6,9 +6,6 @@ open System.Net
 open FSharp.Data
 open FSharp.Data.HttpRequestHeaders
 
-/// Will be raised if decoding a response fails.
-exception DecodeException of string
-
 type HttpMethod =
     | POST
     | PUT
@@ -16,11 +13,6 @@ type HttpMethod =
     | DELETE
 
 type QueryParams = (string*string) list
-
-type ResponseError =
-    | RequestException of exn
-    | DecodeError of string
-    | ErrorResponse of HttpResponse
 
 type Context = {
     Method: HttpMethod
@@ -34,12 +26,6 @@ type Context = {
 }
 
 and Fetch = Context -> Async<Result<string, ResponseError>>
-
-type RequestError = {
-    Code: int
-    Message: string
-    Extra: Map<string, string>
-}
 
 module Request =
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
@@ -138,7 +124,6 @@ module Request =
     let setMethod (method: HttpMethod) (context: Context) =
         { context with Method = method }
 
-
     /// **Description**
     ///
     /// Set the project to connect to.
@@ -152,7 +137,6 @@ module Request =
     ///
     let setProject (project: string) (context: Context) =
         { context with Project = project }
-
 
     /// **Description**
     ///
@@ -168,23 +152,3 @@ module Request =
     ///
     let setFetch (fetch: Fetch) (context: Context) =
         { context with Fetch = fetch }
-
-    /// **Description**
-    ///
-    /// Translate response error to exception that we can raise for the
-    /// C# API.
-    ///
-    /// **Parameters**
-    ///   * `error` - parameter of type `ResponseError`
-    ///
-    /// **Output Type**
-    ///   * `exn`
-    let error2Exception error =
-        match error with
-        | RequestException ex ->
-            ex
-        | DecodeError err ->
-            DecodeException err
-        | ErrorResponse err ->
-            // FIXME: Make a better error type
-            Exception (err.ToString ())

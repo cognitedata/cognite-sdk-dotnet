@@ -1,4 +1,4 @@
-module Tests.Test
+module Tests.Assets
 
 open System
 open System.IO
@@ -153,7 +153,7 @@ let assetTests = testList "Asset tests" [
             |> addHeader ("api-key", "test-key")
             |> setFetch fetch
 
-        let asset: CreateAssetDto = {
+        let asset: AssetCreateDto = {
             Name = "myAsset"
             Description = "Some description"
             MetaData = Map.empty
@@ -172,13 +172,11 @@ let assetTests = testList "Asset tests" [
         | Ok assets ->
             Expect.equal assets.Length 1 "Should be equal"
         | Error error ->
-            raise (Request.error2Exception error)
+            raise (Error.error2Exception error)
 
         Expect.isSome fetcher.Ctx "Should be set"
         Expect.equal fetcher.Ctx.Value.Method POST "Should be equal"
         Expect.equal fetcher.Ctx.Value.Resource "/assets" "Should be equal"
         Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
-        printfn "%A" fetcher.Ctx.Value.Body
-
     }
 ]

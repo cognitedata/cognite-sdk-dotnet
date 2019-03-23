@@ -1,10 +1,10 @@
 namespace Cognite.Sdk.Api
 
 open System
-open System.Threading.Tasks;
+open System.Collections.Generic
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
-open System.Collections.Generic
+open System.Threading.Tasks;
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
@@ -13,7 +13,7 @@ open Cognite.Sdk.Assets
 [<Extension>]
 type Asset =
     [<Extension>]
-    static member TryGetParentId (this: ResponseAssetDto, [<Out>] parentId: byref<Int64>) =
+    static member TryGetParentId (this: AssetReadDto, [<Out>] parentId: byref<Int64>) =
         match this.ParentId with
         | Some id ->
             parentId <- id
@@ -21,16 +21,16 @@ type Asset =
         | None -> false
 
     [<Extension>]
-    static member HasParentId (this: ResponseAssetDto) : bool =
+    static member HasParentId (this: AssetReadDto) : bool =
         this.ParentId.IsSome
 
     [<Extension>]
-    static member GetParentId (this: ResponseAssetDto) =
+    static member GetParentId (this: AssetReadDto) =
         this.ParentId.Value
 
     /// Create new RequestAsset with all non-optional values.
     [<Extension>]
-    static member Create (name: string) (description: string) : CreateAssetDto =
+    static member Create (name: string) (description: string) : AssetCreateDto =
         {
             Name = name
             Description = description
@@ -43,7 +43,7 @@ type Asset =
         }
 
     [<Extension>]
-    static member SetMetaData (this: CreateAssetDto, metaData: Dictionary<string, string>) : CreateAssetDto =
+    static member SetMetaData (this: AssetCreateDto, metaData: Dictionary<string, string>) : AssetCreateDto =
         let map =
             metaData
             |> Seq.map (|KeyValue|)
@@ -51,27 +51,27 @@ type Asset =
         { this with MetaData = map }
 
     [<Extension>]
-    static member SetSource (this: CreateAssetDto, source: string) : CreateAssetDto =
+    static member SetSource (this: AssetCreateDto, source: string) : AssetCreateDto =
         { this with Source = Some source }
 
     [<Extension>]
-    static member SetSourceId (this: CreateAssetDto, sourceId: string) : CreateAssetDto =
+    static member SetSourceId (this: AssetCreateDto, sourceId: string) : AssetCreateDto =
         { this with SourceId = Some sourceId }
 
     [<Extension>]
-    static member SetRefId (this: CreateAssetDto, refId: string) : CreateAssetDto =
+    static member SetRefId (this: AssetCreateDto, refId: string) : AssetCreateDto =
         { this with RefId = Some refId }
 
     [<Extension>]
-    static member SetParentRefId (this: CreateAssetDto, parentRefId: string) : CreateAssetDto =
+    static member SetParentRefId (this: AssetCreateDto, parentRefId: string) : AssetCreateDto =
         { this with ParentRef = ParentRefId parentRefId |> Some }
 
     [<Extension>]
-    static member SetParentName (this: CreateAssetDto, parentName: string) : CreateAssetDto =
+    static member SetParentName (this: AssetCreateDto, parentName: string) : AssetCreateDto =
         { this with ParentRef = ParentName parentName |> Some }
 
     [<Extension>]
-    static member SetParentId (this: CreateAssetDto, parentId: string) : CreateAssetDto =
+    static member SetParentId (this: AssetCreateDto, parentId: string) : AssetCreateDto =
         { this with ParentRef = ParentId parentId |> Some }
 
 type AssetArgs (args: GetParams list) =
@@ -118,14 +118,14 @@ type ClientAssetExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssets (this: Client) (args: AssetArgs) : Task<ResponseAssetDto List> =
-        let worker () : Async<ResponseAssetDto List> = async {
+    static member GetAssets (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
+        let worker () : Async<AssetReadDto List> = async {
             let! result = getAssets this.Ctx args.Args
             match result with
             | Ok response ->
-                return ResizeArray<ResponseAssetDto> response
+                return ResizeArray<AssetReadDto> response
             | Error error ->
-                return raise (Request.error2Exception error)
+                return raise (Error.error2Exception error)
         }
 
         worker () |> Async.StartAsTask
@@ -136,14 +136,14 @@ type ClientAssetExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAsset (this: Client) (assetId: int64) : Task<ResponseAssetDto> =
-        let worker () : Async<ResponseAssetDto> = async {
+    static member GetAsset (this: Client) (assetId: int64) : Task<AssetReadDto> =
+        let worker () : Async<AssetReadDto> = async {
             let! result = getAsset this.Ctx assetId
             match result with
             | Ok response ->
                 return response
             | Error error ->
-                return raise (Request.error2Exception error)
+                return raise (Error.error2Exception error)
         }
 
         worker () |> Async.StartAsTask
@@ -154,14 +154,14 @@ type ClientAssetExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssets (this: Client) (assets: ResizeArray<CreateAssetDto>) : Task<ResponseAssetDto List> =
-        let worker () : Async<ResponseAssetDto List> = async {
+    static member CreateAssets (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
+        let worker () : Async<AssetReadDto List> = async {
             let! result = createAssets this.Ctx (Seq.toList assets)
             match result with
             | Ok response ->
-                return ResizeArray<ResponseAssetDto> response
+                return ResizeArray<AssetReadDto> response
             | Error error ->
-               return raise (Request.error2Exception error)
+               return raise (Error.error2Exception error)
         }
 
         worker () |> Async.StartAsTask
