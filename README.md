@@ -66,5 +66,6 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 
 - `insertDataByName` - Insert data into named time series.
 - `createTimeSeries` - Create a new time series.
-- `getTimeSeries` -
-- `queryTimeSeries`
+- `getTimeSeries` - Get timeseries with given id.
+- `queryTimeSeries` - Retrieves a list of data points from a single time series.
+- `deleteTimeseries`- Deletes a time series object given the name of the time series.

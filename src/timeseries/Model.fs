@@ -60,12 +60,12 @@ type TimeseriesReadDto = {
     LastUpdatedTime: int64
 }
 
-type TimeseriesData = {
+type TimeseriesResponseData = {
     Items: TimeseriesReadDto list
 }
 
 type TimeseriesResponse = {
-    Data: TimeseriesData
+    Data: TimeseriesResponseData
 }
 
 type Aggregate =

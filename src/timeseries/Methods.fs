@@ -83,14 +83,17 @@ module Methods =
     ///   * `Async<Result<string,exn>>`
     ///
     let getTimeseries (ctx: Context) (id: int64) = async {
-        let url = Url
+        let url = Url + sprintf "/%d" id
 
         let! response =
             ctx
             |> setMethod GET
             |> setResource url
             |> ctx.Fetch
+
         return response
+            |> decodeResponse TimeseriesResponse.Decoder
+            |> Result.map (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -120,4 +123,28 @@ module Methods =
         return response
             |> decodeResponse TimeseriesResponse.Decoder
             |> Result.map (fun res -> res.Data.Items)
+    }
+
+
+    /// **Description**
+    ///
+    /// Deletes a time series object given the name of the time series.
+    ///
+    /// **Parameters**
+    ///   * `ctx` - The client context. Parameter of type `Context`
+    ///   * `name` - The name of timeseries to delete. Parameter of type `string`.
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<string,ResponseError>>`
+    ///
+    let deleteTimeseries (ctx: Context) (name: string) = async {
+        let url = Url + sprintf "/data/%s" name
+
+        let! response =
+            ctx
+            |> setMethod DELETE
+            |> setResource url
+            |> ctx.Fetch
+
+        return response
     }

@@ -64,8 +64,8 @@ module TimeseriesExtensions =
                 yield ("items", List.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.list)
             ]
 
-    type TimeseriesData with
-        static member Decoder : Decode.Decoder<TimeseriesData> =
+    type TimeseriesResponseData with
+        static member Decoder : Decode.Decoder<TimeseriesResponseData> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
             })
@@ -73,7 +73,7 @@ module TimeseriesExtensions =
     type TimeseriesResponse with
         static member Decoder : Decode.Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Data = get.Required.Field "data" TimeseriesData.Decoder
+                Data = get.Required.Field "data" TimeseriesResponseData.Decoder
             })
 
 

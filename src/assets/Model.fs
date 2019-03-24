@@ -1,7 +1,5 @@
 namespace Cognite.Sdk.Assets
 
-open Cognite.Sdk
-
 /// Asset type for responses.
 type AssetReadDto = {
     /// The Id of the asset.

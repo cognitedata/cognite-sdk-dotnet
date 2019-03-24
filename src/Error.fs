@@ -7,8 +7,11 @@ open FSharp.Data
 exception DecodeException of string
 
 type ResponseError =
+    /// Exception (internal error). This should never happen.
     | RequestException of exn
+    /// JSON decode error (unable to decode the response)
     | DecodeError of string
+    /// Error response from server.
     | ErrorResponse of HttpResponse
 
 type RequestError = {
@@ -35,7 +38,7 @@ module Error =
         | DecodeError err ->
             DecodeException err
         | ErrorResponse err ->
-            // FIXME: Make a better error type
+            // FIXME: Make a better error type. I.e decode into RequestError
             Exception (err.ToString ())
 
 
