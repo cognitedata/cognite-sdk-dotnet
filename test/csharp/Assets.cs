@@ -11,25 +11,6 @@ using Cognite.Sdk.Api;
 
 namespace Tests
 {
-    public class Fetcher
-    {
-        private readonly string _response;
-        private Context _ctx = null;
-
-        public Fetcher(string response)
-        {
-            this._response = response;
-        }
-
-        public Context Ctx => _ctx;
-
-        public Task<string> Fetch(Context ctx)
-        {
-            _ctx = ctx;
-            return Task.FromResult(_response);
-        }
-    }
-
     public class AssetTests
     {
         //private Func<Context, string> fetcher;
@@ -46,8 +27,8 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var response = File.ReadAllText("Assets.json");
-            var fetcher = new Fetcher(response);
+            var json = File.ReadAllText("Assets.json");
+            var fetcher = Fetcher.FromJson(json);
 
             var client =
                 Client.Create()
@@ -73,8 +54,8 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var response = File.ReadAllText("InvalidAsset.json");
-            var fetcher = new Fetcher(response);
+            var json = File.ReadAllText("InvalidAsset.json");
+            var fetcher = Fetcher.FromJson(json);
 
             var client =
                 Client.Create()
@@ -97,8 +78,8 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var response = File.ReadAllText("Assets.json");
-            var fetcher = new Fetcher(response);
+            var json = File.ReadAllText("Assets.json");
+            var fetcher = Fetcher.FromJson(json);
 
             var client =
                 Client.Create()
@@ -120,8 +101,8 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var response = File.ReadAllText("InvalidAsset.json");
-            var fetcher = new Fetcher(response);
+            var json = File.ReadAllText("InvalidAsset.json");
+            var fetcher = Fetcher.FromJson(json);
 
             var client =
                 Client.Create()
@@ -138,8 +119,8 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var response = File.ReadAllText("Assets.json");
-            var fetcher = new Fetcher(response);
+            var json = File.ReadAllText("Assets.json");
+            var fetcher = Fetcher.FromJson(json);
 
             var client =
                 Client.Create()

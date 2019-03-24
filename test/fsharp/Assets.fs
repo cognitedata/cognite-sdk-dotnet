@@ -1,37 +1,25 @@
 module Tests.Assets
 
-open System
 open System.IO
 
 open Expecto
+
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Request
 
 
-type Fetcher (response: Result<string, ResponseError>) =
-    let mutable _ctx: Context option = None
-
-    member this.Ctx =
-        _ctx
-
-    member this.Fetch (ctx: Context) = async {
-        _ctx <- Some ctx
-        return response
-    }
-
 [<Tests>]
 let assetTests = testList "Asset tests" [
     testAsync "Get asset is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/Assets.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+        let json = File.ReadAllText ("../json/Assets.json")
+        let fetcher = Fetcher.FromJson json
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
 
         // Act
         let! result = getAsset ctx 42L
@@ -46,14 +34,14 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Get invalid asset is Error" {
         // Arrenge
-        let response = File.ReadAllText("../json/InvalidAsset.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+        let json = File.ReadAllText("../json/InvalidAsset.json")
+        let fetcher = Fetcher.FromJson json
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
+
 
         // Act
         let! result = getAsset ctx 42L
@@ -64,14 +52,13 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Get asset with extra fields is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/AssetExtra.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+        let json = File.ReadAllText("../json/AssetExtra.json")
+        let fetcher = Fetcher.FromJson json
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
 
         // Act
         let! result = getAsset ctx 42L
@@ -82,14 +69,13 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Get asset with missing optional fields is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/AssetOptional.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+
+        let fetcher = Fetcher.FromJson (File.ReadAllText("../json/AssetOptional.json"))
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
 
         // Act
         let! result = getAsset ctx 42L
@@ -100,14 +86,13 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Get assets is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/Assets.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+        let json = File.ReadAllText("../json/Assets.json")
+        let fetcher = Fetcher.FromJson json
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
 
         // Act
         let! result = getAssets ctx [ Name "string"]
@@ -122,8 +107,8 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Create assets empty is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/Assets.json")
-        let fetcher = Ok response |> Fetcher
+        let json = File.ReadAllText("../json/Assets.json")
+        let fetcher = Fetcher.FromJson json
         let fetch = fetcher.Fetch
 
         let ctx =
@@ -144,14 +129,13 @@ let assetTests = testList "Asset tests" [
 
     testAsync "Create single asset is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/Assets.json")
-        let fetcher = Ok response |> Fetcher
-        let fetch = fetcher.Fetch
+        let json = File.ReadAllText("../json/Assets.json")
+        let fetcher = Fetcher.FromJson json
 
         let ctx =
             defaultContext
             |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+            |> setFetch fetcher.Fetch
 
         let asset: AssetCreateDto = {
             Name = "myAsset"

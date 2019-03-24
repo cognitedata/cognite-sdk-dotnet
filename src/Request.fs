@@ -14,6 +14,15 @@ type HttpMethod =
 
 type QueryParams = (string*string) list
 
+// type ResponseData =
+//     | Text of string
+//     | Binary of byte array
+
+// type Response = {
+//     HttpStatus: int
+//     Data: ResponseData
+// }
+
 type Context = {
     Method: HttpMethod
     Body: string option
@@ -25,7 +34,8 @@ type Context = {
     Project: string
 }
 
-and Fetch = Context -> Async<Result<string, ResponseError>>
+and Fetch = Context -> Async<Result<HttpResponse, ResponseError>>
+
 
 module Request =
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
@@ -51,14 +61,8 @@ module Request =
             try
                 let! response = Http.AsyncRequest (url, ctx.Query, headers, method, ?body=body, silentHttpErrors=true)
                 match response.StatusCode with
-                | Success ->
-                    match response.Body with
-                    | Text text ->
-                        return Ok text
-                    | Binary _ ->
-                        return ErrorResponse response |> Error
-                | _ ->
-                    return ErrorResponse response |> Error
+                | Success -> return Ok response
+                | _ -> return ErrorResponse response |> Error
             with
             | ex -> return RequestException ex |> Error
         }

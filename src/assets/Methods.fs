@@ -88,6 +88,7 @@ module Methods =
             |> setBody body
             |> setResource url
             |> ctx.Fetch
+
         return response
             |> decodeResponse AssetResponse.Decoder
             |> Result.map (fun res -> res.Data.Items)

@@ -24,8 +24,8 @@ type Fetcher (response: Result<string, ResponseError>) =
 let timeseriesTests = testList "Timeseries tests" [
     testAsync "Create timeseries is Ok" {
         // Arrenge
-        let response = File.ReadAllText("../json/Assets.json")
-        let fetcher = Ok response |> Fetcher
+        let json = File.ReadAllText("../json/Assets.json")
+        let fetcher = Fetcher.FromJson json
         let fetch = fetcher.Fetch
 
         let ctx =

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Fetcher.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="Timeseries.fs" />
     <Compile Include="Main.fs" />

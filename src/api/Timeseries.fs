@@ -8,7 +8,7 @@ open System.Collections.Generic
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
-open Cognite.Sdk.Assets
+open Cognite.Sdk.Timeseries
 
 [<Extension>]
 type TimeseriesExtension =
@@ -18,4 +18,20 @@ type TimeseriesExtension =
 
 [<Extension>]
 type ClientTimeseriesExtensions =
-    exn
+    /// <summary>
+    /// Delete timeseries.
+    /// </summary>
+    /// <param name="name">The name of the time series to delete.</param>
+    /// <returns>List of created assets.</returns>
+    [<Extension>]
+    static member DeleteTimeseries (this: Client) (name: string) : Task<int> =
+        let worker () : Async<int> = async {
+            let! result = deleteTimeseries this.Ctx name
+            match result with
+            | Ok response ->
+                return response.StatusCode
+            | Error error ->
+               return raise (Error.error2Exception error)
+        }
+
+        worker () |> Async.StartAsTask

@@ -6,6 +6,11 @@ open System.Threading.Tasks
 open Cognite.Sdk
 open Cognite.Sdk.Request
 
+type HttpResponse (code: int, text: string) =
+    member this.Code = code
+    member this.Text = text
+
+
 /// <summary>
 /// Client for accessing the API.
 /// </summary>
@@ -13,7 +18,7 @@ open Cognite.Sdk.Request
 type Client private (context: Context) =
     let context = context
 
-    new() = Client(defaultContext)
+    new () = Client defaultContext
 
     member internal __.Ctx =
         context
@@ -22,7 +27,7 @@ type Client private (context: Context) =
     /// Add header for accessing the API.
     /// </summary>
     /// <param name="project">Name of project.</param>
-    member this.AddHeader(name: string, value: string)  =
+    member this.AddHeader (name: string, value: string)  =
         context
         |> addHeader (name, value)
         |> Client
@@ -31,17 +36,24 @@ type Client private (context: Context) =
     /// Set project for accessing the API.
     /// </summary>
     /// <param name="project">Name of project.</param>
-    member this.SetProject(project: string) =
+    member this.SetProject (project: string) =
         context
         |> setProject project
         |> Client
 
-    member this.SetFetch(fetch: Func<Context, Task<string>>) =
+    member this.SetFetch (fetch: Func<Context, Task<HttpResponse>>) =
         let fetch' context = async {
             let! response = async {
                 try
                     let! result = fetch.Invoke(context) |> Async.AwaitTask
-                    return Ok result
+                    let httpResponse : FSharp.Data.HttpResponse = {
+                        StatusCode = result.Code
+                        Body = FSharp.Data.Text result.Text
+                        ResponseUrl = ""
+                        Headers = Map.empty
+                        Cookies = Map.empty
+                    }
+                    return Ok httpResponse
                 with
                 | ex ->
                     return RequestException ex |> Error

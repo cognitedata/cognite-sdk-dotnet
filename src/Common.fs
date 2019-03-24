@@ -1,5 +1,7 @@
 /// Common types for the SDK.
 namespace Cognite.Sdk
+
+open FSharp.Data
 open Thoth.Json.Net
 
 module Common =
@@ -18,8 +20,15 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse decoder result =
+    let decodeResponse decoder (result: Result<HttpResponse, ResponseError>) =
         result
+        |> Result.map (fun response ->
+            match response.Body with
+            | Text text ->
+                text
+            | Binary _ ->
+                failwith "binary format not supported"
+        )
         |> Result.bind (fun res ->
             let ret = Decode.fromString decoder res
             match ret with
