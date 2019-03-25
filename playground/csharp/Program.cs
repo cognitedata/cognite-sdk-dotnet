@@ -37,7 +37,7 @@ namespace csharp
 
             var result = await client.QueryTimeseries("myseries", query);
 
-            Console.WriteLine("{0}", result[0].TryGetValue(out long value));
+            Console.WriteLine("{0}", result[0].DataPoints[0].TryGetValue(out long value));
             Console.WriteLine("{0}", value);
             Console.WriteLine("{0}", result);
         }

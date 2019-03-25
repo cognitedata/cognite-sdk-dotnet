@@ -35,6 +35,110 @@ type TimeseriesExtension =
             true
         | _ -> false
 
+    [<Extension>]
+    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<Int64>) =
+        match this.Value with
+        | Integer value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<string>) =
+        match this.Value with
+        | String value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Value with
+        | Float value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetAverage (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Average with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetMax (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Max with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetMin (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Min with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetCount (this: DataPointReadDto, [<Out>] value: byref<int>) =
+        match this.Count with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetSum (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Sum with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetInterpolation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.Interpolation with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetStepInterpolation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.StepInterpolation with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetContinousVariance (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.ContinousVariance with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetDiscreteVariance (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.DiscreteVariance with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetTotalVariation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+        match this.TotalVariation with
+        | Some value' ->
+            value <- value'
+            true
+        | _ -> false
+
 type Query (query: QueryParams list) =
     let query = query
 
