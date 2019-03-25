@@ -14,6 +14,14 @@ type PointRequest = {
     Items: DataPointDto list
 }
 
+type PointResponseData = {
+    Items: DataPointDto list
+}
+
+type PointResponse = {
+    Data: PointResponseData
+}
+
 type TimeseriesCreateDto = {
     /// Unique name of time series
     Name: string

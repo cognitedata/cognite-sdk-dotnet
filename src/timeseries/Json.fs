@@ -14,12 +14,35 @@ module TimeseriesExtensions =
                 | Integer value -> yield "value", Encode.int64 value
                 | Float value -> yield "value", Encode.float value
             ]
+        static member Decoder : Decode.Decoder<DataPointDto> =
+            Decode.object (fun get ->
+                {
+                    TimeStamp = get.Required.Field "timestamp" Decode.int64
+                    Value = get.Required.Field "value" (Decode.oneOf [
+                            Decode.int64 |> Decode.map Integer
+                            Decode.float |> Decode.map Float
+                            Decode.string |> Decode.map Numeric.String
+                        ])
+                })
 
     type PointRequest with
         member this.Encoder =
             Encode.object [
                 yield ("items", List.map (fun (it: DataPointDto) -> it.Encoder) this.Items |> Encode.list)
             ]
+
+    type PointResponseData with
+        static member Decoder : Decode.Decoder<PointResponseData> =
+            Decode.object (fun get ->
+                {
+                    Items = get.Required.Field "items" (Decode.list DataPointDto.Decoder)
+                })
+
+    type PointResponse with
+        static member Decoder : Decode.Decoder<PointResponse> =
+            Decode.object (fun get -> {
+                Data = get.Required.Field "data" PointResponseData.Decoder
+            })
 
     type TimeseriesCreateDto with
         member this.Encoder =

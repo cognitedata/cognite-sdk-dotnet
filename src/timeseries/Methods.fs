@@ -80,7 +80,7 @@ module Methods =
     ///   * `id` - parameter of type `int64`
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,exn>>`
+    ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
     let getTimeseries (ctx: Context) (id: int64) = async {
         let url = Url + sprintf "/%d" id
@@ -93,7 +93,7 @@ module Methods =
 
         return response
             |> decodeResponse TimeseriesResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items)
+            |> Result.map (fun res -> res.Data.Items.[0])
     }
 
     /// **Description**
@@ -121,10 +121,9 @@ module Methods =
             |> ctx.Fetch
 
         return response
-            |> decodeResponse TimeseriesResponse.Decoder
+            |> decodeResponse PointResponse.Decoder
             |> Result.map (fun res -> res.Data.Items)
     }
-
 
     /// **Description**
     ///

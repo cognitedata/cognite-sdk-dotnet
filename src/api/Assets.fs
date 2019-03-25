@@ -166,13 +166,18 @@ type ClientAssetExtensions =
 
         worker () |> Async.StartAsTask
 
+    /// <summary>
+    /// Delete assets.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member DeleteAssets (this: Client) (assets: ResizeArray<int64>) : Task<int> =
-        let worker () : Async<int> = async {
+    static member DeleteAssets (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
+        let worker () : Async<HttpResponse> = async {
             let! result = deleteAssets this.Ctx (Seq.toList assets)
             match result with
             | Ok response ->
-                return response.StatusCode
+                return HttpResponse(response.StatusCode, String.Empty)
             | Error error ->
                return raise (Error.error2Exception error)
         }
