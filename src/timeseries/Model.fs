@@ -5,17 +5,37 @@ type Numeric =
     | Integer of int64
     | Float of double
 
-type DataPointDto = {
+type DataPointCreateDto = {
     TimeStamp: int64
     Value: Numeric
 }
 
 type PointRequest = {
-    Items: DataPointDto list
+    Items: DataPointCreateDto list
+}
+
+type DataPointReadDto = {
+    TimeStamp: int64
+    Value: Numeric
+    Average: float option
+    Max: float option
+    Min: float option
+    Count: int option
+    Sum: float option
+    Interpolation: float option
+    StepInterpolation: float option
+    ContinousVariance: float option
+    DiscreteVariance: float option
+    TotalVariation: float option
+}
+
+type PointResponseDataPoints = {
+    Name: string
+    DataPoints: DataPointReadDto list
 }
 
 type PointResponseData = {
-    Items: DataPointDto list
+    Items: PointResponseDataPoints list
 }
 
 type PointResponse = {

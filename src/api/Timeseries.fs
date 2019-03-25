@@ -4,7 +4,6 @@ open System
 open System.Threading.Tasks;
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
-open System.Collections.Generic
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
@@ -13,7 +12,7 @@ open Cognite.Sdk.Timeseries
 [<Extension>]
 type TimeseriesExtension =
     [<Extension>]
-    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<Int64>) =
+    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<Int64>) =
         match this.Value with
         | Integer value' ->
             value <- value'
@@ -21,7 +20,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<string>) =
+    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<string>) =
         match this.Value with
         | String value' ->
             value <- value'
@@ -29,7 +28,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<float>) =
+    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<float>) =
         match this.Value with
         | Float value' ->
             value <- value'
@@ -68,8 +67,8 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member QueryTimeseries (this: Client) (name: string) (query: Query) : Task<ResizeArray<DataPointDto>> =
-        let worker () : Async<ResizeArray<DataPointDto>> = async {
+    static member QueryTimeseries (this: Client) (name: string) (query: Query) : Task<ResizeArray<PointResponseDataPoints>> =
+        let worker () : Async<ResizeArray<PointResponseDataPoints>> = async {
             let! result = gueryTimeseries this.Ctx name (List.ofSeq query.Query)
             match result with
             | Ok response ->
@@ -87,7 +86,7 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member InsertDataByName (this: Client) (name: string) (items: ResizeArray<DataPointDto>) : Task<int> =
+    static member InsertDataByName (this: Client) (name: string) (items: ResizeArray<DataPointCreateDto>) : Task<int> =
         let worker () : Async<int> = async {
             let! result = insertDataByName this.Ctx name (List.ofSeq items)
             match result with

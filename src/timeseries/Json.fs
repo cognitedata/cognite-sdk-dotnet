@@ -5,7 +5,7 @@ open Thoth.Json.Net
 
 [<AutoOpen>]
 module TimeseriesExtensions =
-    type DataPointDto with
+    type DataPointCreateDto with
         member this.Encoder =
             Encode.object [
                 yield "timestamp", Encode.int64 this.TimeStamp
@@ -14,7 +14,15 @@ module TimeseriesExtensions =
                 | Integer value -> yield "value", Encode.int64 value
                 | Float value -> yield "value", Encode.float value
             ]
-        static member Decoder : Decode.Decoder<DataPointDto> =
+
+    type PointRequest with
+        member this.Encoder =
+            Encode.object [
+                yield ("items", List.map (fun (it: DataPointCreateDto) -> it.Encoder) this.Items |> Encode.list)
+            ]
+
+    type DataPointReadDto with
+        static member Decoder : Decode.Decoder<DataPointReadDto> =
             Decode.object (fun get ->
                 {
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
@@ -23,19 +31,31 @@ module TimeseriesExtensions =
                             Decode.float |> Decode.map Float
                             Decode.string |> Decode.map Numeric.String
                         ])
+                    Average = get.Optional.Field "average" Decode.float
+                    Max = get.Optional.Field "max" Decode.float
+                    Min = get.Optional.Field "min" Decode.float
+                    Count = get.Optional.Field "count" Decode.int
+                    Sum = get.Optional.Field "sum" Decode.float
+                    Interpolation = get.Optional.Field "interpolation" Decode.float
+                    StepInterpolation = get.Optional.Field "stepInterpolation" Decode.float
+                    ContinousVariance = get.Optional.Field "continousVariance" Decode.float
+                    DiscreteVariance = get.Optional.Field "descreteVariaance" Decode.float
+                    TotalVariation = get.Optional.Field "totalVariance" Decode.float
                 })
 
-    type PointRequest with
-        member this.Encoder =
-            Encode.object [
-                yield ("items", List.map (fun (it: DataPointDto) -> it.Encoder) this.Items |> Encode.list)
-            ]
+    type PointResponseDataPoints with
+        static member Decoder : Decode.Decoder<PointResponseDataPoints> =
+            Decode.object (fun get ->
+                {
+                    Name = get.Required.Field "name" Decode.string
+                    DataPoints = get.Required.Field "items" (Decode.list DataPointReadDto.Decoder)
+                })
 
     type PointResponseData with
         static member Decoder : Decode.Decoder<PointResponseData> =
             Decode.object (fun get ->
                 {
-                    Items = get.Required.Field "items" (Decode.list DataPointDto.Decoder)
+                    Items = get.Required.Field "items" (Decode.list PointResponseDataPoints.Decoder)
                 })
 
     type PointResponse with

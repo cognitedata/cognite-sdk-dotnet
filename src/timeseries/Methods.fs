@@ -26,7 +26,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,ResponseError>>`
     ///
-    let insertDataByName (ctx: Context) (name: string) (items: DataPointDto list) = async {
+    let insertDataByName (ctx: Context) (name: string) (items: DataPointCreateDto list) = async {
         let request : PointRequest = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
