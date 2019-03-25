@@ -12,8 +12,52 @@ open Cognite.Sdk.Timeseries
 
 [<Extension>]
 type TimeseriesExtension =
-    exn
+    [<Extension>]
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<Int64>) =
+        match this.Value with
+        | Integer value' ->
+            value <- value'
+            true
+        | _ -> false
 
+    [<Extension>]
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<string>) =
+        match this.Value with
+        | String value' ->
+            value <- value'
+            true
+        | _ -> false
+
+    [<Extension>]
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<float>) =
+        match this.Value with
+        | Float value' ->
+            value <- value'
+            true
+        | _ -> false
+
+type Query (query: QueryParams list) =
+    let query = query
+
+    member this.Start (start: int64) =
+        Query (Start start :: query)
+
+    member this.End (endTime: int64) =
+        Query (End endTime :: query)
+
+    member this.Limit (limit: int) =
+        Query (Limit limit :: query)
+
+    member this.Aggregates (aggregate: ResizeArray<Aggregate>) =
+        Query (QueryParams.Aggregates (List.ofSeq aggregate) :: query)
+
+    member this.IncludeOutsidePoints (iop: bool) =
+        Query (IncludeOutsidePoints iop :: query)
+
+    member internal this.Query = query
+
+    static member Create () =
+        Query []
 
 [<Extension>]
 type ClientTimeseriesExtensions =
@@ -24,9 +68,9 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member QueryTimeseries (this: Client) (name: string) (query: ResizeArray<QueryParams>) : Task<ResizeArray<DataPointDto>> =
+    static member QueryTimeseries (this: Client) (name: string) (query: Query) : Task<ResizeArray<DataPointDto>> =
         let worker () : Async<ResizeArray<DataPointDto>> = async {
-            let! result = gueryTimeseries this.Ctx name (List.ofSeq query)
+            let! result = gueryTimeseries this.Ctx name (List.ofSeq query.Query)
             match result with
             | Ok response ->
                 return response |> ResizeArray

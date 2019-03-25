@@ -12,8 +12,6 @@ module Methods =
     [<Literal>]
     let Url = "/timeseries"
 
-    type QueryParams = Cognite.Sdk.Timeseries.QueryParams
-
     /// **Description**
     ///
     /// Inserts a list of data points to a time series. If a data point is

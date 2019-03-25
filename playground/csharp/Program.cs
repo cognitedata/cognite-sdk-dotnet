@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
+using Cognite.Sdk.Timeseries;
 
 
 namespace csharp
@@ -24,6 +26,19 @@ namespace csharp
 
             Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
             Console.WriteLine("{0}", parentId);
+            Console.WriteLine("{0}", result);
+        }
+
+        static async Task QueryTimeseriesExample(Client client)
+        {
+            var query =
+                Query.Create()
+                .Aggregates(new List<Aggregate> { Aggregate.Average });
+
+            var result = await client.QueryTimeseries("myseries", query);
+
+            Console.WriteLine("{0}", result[0].TryGetValue(out long value));
+            Console.WriteLine("{0}", value);
             Console.WriteLine("{0}", result);
         }
 

@@ -12,7 +12,7 @@ type HttpMethod =
     | GET
     | DELETE
 
-type QueryParams = (string*string) list
+type QueryStringParams = (string*string) list
 
 // type ResponseData =
 //     | Text of string
@@ -27,7 +27,7 @@ type Context = {
     Method: HttpMethod
     Body: string option
     Resource: string
-    Query: QueryParams
+    Query: QueryStringParams
     Headers: (string*string) list
     Fetch: Fetch
 
@@ -100,7 +100,7 @@ module Request =
     ///   * `query` - List of tuples (name, value)
     ///   * `context` - The context to add the query to.
     ///
-    let addQuery (query: QueryParams) (context: Context) =
+    let addQuery (query: QueryStringParams) (context: Context) =
         { context with Query = context.Query @ query}
 
     let addQueryItem (query: string*string) (context: Context) =
