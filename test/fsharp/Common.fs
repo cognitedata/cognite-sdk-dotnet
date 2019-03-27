@@ -3,6 +3,13 @@ namespace Tests
 open FSharp.Data
 open Cognite.Sdk
 
+[<RequireQualifiedAccess>]
+module Result =
+    let isOk = function
+        | Ok _ -> true
+        | Error _ -> false
+
+    let isError res = not (isOk res)
 
 type Fetcher (response: Result<HttpResponse, ResponseError>) =
     let mutable _ctx: Context option = None

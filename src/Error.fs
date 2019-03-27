@@ -5,6 +5,7 @@ open FSharp.Data
 
 /// Will be raised if decoding a response fails.
 exception DecodeException of string
+exception MyFSharpError1 of string
 
 type ResponseError =
     /// Exception (internal error). This should never happen.

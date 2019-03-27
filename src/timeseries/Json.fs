@@ -119,7 +119,6 @@ module TimeseriesExtensions =
                 Data = get.Required.Field "data" TimeseriesResponseData.Decoder
             })
 
-
     let renderQuery (query: QueryParams) =
         match query with
         | Start start -> "start", start.ToString ()

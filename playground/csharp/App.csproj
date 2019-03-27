@@ -1,16 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
-
-   <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="../../src/CogniteSdk.fsproj" />
   </ItemGroup>
-
-   <ItemGroup>
-     <PackageReference Include="FSharp.Core" Version="4.6.2" />
-   </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

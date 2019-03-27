@@ -3,7 +3,9 @@ module Tests.Timeseries
 open System
 open System.IO
 
-open Expecto
+open Xunit
+open Swensen.Unquote
+
 open Cognite.Sdk
 open Cognite.Sdk.Timeseries
 open Cognite.Sdk.Request
@@ -20,27 +22,25 @@ type Fetcher (response: Result<string, ResponseError>) =
         return response
     }
 
-[<Tests>]
-let timeseriesTests = testList "Timeseries tests" [
-    testAsync "Create timeseries is Ok" {
-        // Arrenge
-        let json = File.ReadAllText("../json/Assets.json")
-        let fetcher = Fetcher.FromJson json
-        let fetch = fetcher.Fetch
+[<Fact>]
+let ``Create timeseries is Ok`` () = async {
+    // Arrenge
+    let json = File.ReadAllText("Assets.json")
+    let fetcher = Fetcher.FromJson json
+    let fetch = fetcher.Fetch
 
-        let ctx =
-            defaultContext
-            |> addHeader ("api-key", "test-key")
-            |> setFetch fetch
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", "test-key")
+        |> setFetch fetch
 
-        // Act
-        let! result = createTimeseries ctx []
+    // Act
+    let! result = createTimeseries ctx []
 
-        // Assert
-        Expect.isOk result "Should be OK"
-        Expect.isSome fetcher.Ctx "Should be set"
-        Expect.equal fetcher.Ctx.Value.Method POST "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Resource "/timeseries" "Should be equal"
-        Expect.equal fetcher.Ctx.Value.Query [] "Should be equal"
-    }
-]
+    // Assert
+    test <@ Result.isOk result @>
+    test <@ Option.isSome fetcher.Ctx @>
+    test <@ fetcher.Ctx.Value.Method = POST @>
+    test <@ fetcher.Ctx.Value.Resource = "/timeseries" @>
+    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+}

@@ -1,0 +1,15 @@
+source https://www.nuget.org/api/v2
+
+nuget coverlet.msbuild 2.5.1
+nuget FsConfig 2.0.2
+nuget FSharp.Core 4.6.2
+nuget FSharp.Data 3.0.0
+nuget Microsoft.Extensions.Configuration 2.2.0
+nuget Microsoft.NET.Test.Sdk 16.0.0
+nuget nunit 3.11.0
+nuget NUnit3TestAdapter 3.13.0
+nuget Thoth.Json.Net 2.5.0
+nuget TypeShape 5.1.0
+nuget Unquote ~> 4
+nuget xunit 2.4.0
+nuget xunit.runner.visualstudio 2.4.0

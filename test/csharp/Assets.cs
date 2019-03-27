@@ -1,4 +1,4 @@
-using NUnit.Framework;
+using Xunit;
 
 using System;
 using System.Collections.Generic;
@@ -15,20 +15,36 @@ namespace Tests
     {
         //private Func<Context, string> fetcher;
 
-        [SetUp]
-        public void Setup()
-        {
-
-        }
-
-        [Test]
-        public async Task TestGetAssets()
+        [Fact]
+        public void TestGetAssets()
         {
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(json);
+            var fetcher = Fetcher.FromJson(200, json);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            var assetArgs =
+                AssetArgs.Empty()
+                .Name("string3");
+
+            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
+        }
+
+        [Fact]
+        public async Task TestGetAssetsServerUnavailable()
+        {
+            var apiKey = "api-key";
+            var project = "project";
+
+            var json = File.ReadAllText("Assets.json");
+            var fetcher = Fetcher.FromJson(503, json);
 
             var client =
                 Client.Create()
@@ -41,21 +57,21 @@ namespace Tests
                 .Name("string3");
 
             var result = await client.GetAssets(assetArgs);
-            Assert.AreEqual(fetcher.Ctx.Method, HttpMethod.GET, "Should be equal");
-            Assert.AreEqual(fetcher.Ctx.Resource, "/assets", "Should be equal");
-            //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
-            Assert.AreEqual(result.Count, 1);
+            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
+            Assert.Equal("/assets", fetcher.Ctx.Resource);
+            //Assert.Equal(fetcher.Ctx.Query, new List<string>());
+            Assert.Single(result);
             Console.WriteLine(fetcher.Ctx.Body);
         }
 
-        [Test]
+        [Fact]
         public void TestGetInvalidAssetsThrowsException()
         {
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("InvalidAsset.json");
-            var fetcher = Fetcher.FromJson(json);
+            var fetcher = Fetcher.FromJson(200, json);
 
             var client =
                 Client.Create()
@@ -72,14 +88,14 @@ namespace Tests
             Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
         }
 
-        [Test]
+        [Fact]
         public async Task TestGetInvaldAssetThrowsException()
         {
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(json);
+            var fetcher = Fetcher.FromJson(200, json);
 
             var client =
                 Client.Create()
@@ -88,21 +104,21 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             var result = await client.GetAsset(42L);
-            Assert.AreEqual(fetcher.Ctx.Method, HttpMethod.GET, "Should be equal");
-            Assert.AreEqual(fetcher.Ctx.Resource, "/assets/42", "Should be equal");
-            //Assert.AreEqual(fetcher.Ctx.Query, new List<string>(), "Should be equal");
-            //Assert.AreEqual(result.Count, 2);
+            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
+            Assert.Equal("/assets/42", fetcher.Ctx.Resource);
+            //Assert.Equal(fetcher.Ctx.Query, new List<string>());
+            //Assert.Equal(result.Count, 2);
             Console.WriteLine(fetcher.Ctx.Body);
         }
 
-        [Test]
+        [Fact]
         public void TestGetAsset()
         {
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("InvalidAsset.json");
-            var fetcher = Fetcher.FromJson(json);
+            var fetcher = Fetcher.FromJson(200, json);
 
             var client =
                 Client.Create()
@@ -113,14 +129,14 @@ namespace Tests
             Assert.ThrowsAsync<DecodeException>(async () => await client.GetAsset(42L));
         }
 
-        [Test]
+        [Fact]
         public async Task TestCreateAssets()
         {
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(json);
+            var fetcher = Fetcher.FromJson(200, json);
 
             var client =
                 Client.Create()
@@ -131,7 +147,7 @@ namespace Tests
             var assets = new List<AssetCreateDto> {
                 Asset.Create("name1", "description1"),
                 Asset.Create("name2", "description2"),
-                Asset.Create("name3", "description3")
+                Asset.Create("name3", "description3").SetParentId("parentId")
             };
             var result = await client.CreateAssets(assets);
         }

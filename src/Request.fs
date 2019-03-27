@@ -79,7 +79,7 @@ module Request =
             UserAgent "CogniteSdk.NET; Dag Brattli"
         ]
         Fetch = fetch
-        Project = ""
+        Project = String.Empty
     }
 
     /// Add HTTP header to context.

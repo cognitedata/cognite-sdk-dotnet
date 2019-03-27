@@ -49,11 +49,14 @@ type Client private (context: Context) =
                     let httpResponse : FSharp.Data.HttpResponse = {
                         StatusCode = result.Code
                         Body = FSharp.Data.Text result.Text
-                        ResponseUrl = ""
+                        ResponseUrl = String.Empty
                         Headers = Map.empty
                         Cookies = Map.empty
                     }
-                    return Ok httpResponse
+                    match result.Code with
+                    | Success ->
+                        return Ok httpResponse
+                    | _ -> return Error (ErrorResponse httpResponse)
                 with
                 | ex ->
                     return RequestException ex |> Error

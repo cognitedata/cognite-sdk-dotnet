@@ -1,5 +1,3 @@
-using NUnit.Framework;
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,9 +27,9 @@ namespace Tests
             return Task.FromResult(_response);
         }
 
-        public static Fetcher FromJson(string json)
+        public static Fetcher FromJson(int statusCode, string json)
         {
-            var response = new HttpResponse(200, json);
+            var response = new HttpResponse(statusCode, json);
             return new Fetcher(response);
         }
     }
