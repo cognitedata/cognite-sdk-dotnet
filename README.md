@@ -1,8 +1,6 @@
 # Cognite .NET SDK
 
-A fully asynchronous SDK for accessing the Cognite API (v5) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard), thus it should work for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework). Made as part of the 2019 February 14th hackathon.
-
-> Work in Progress (WIP)
+A cross platform and asynchronous SDK for accessing the Cognite API (v5) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard), thus it should work for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework). Made as part of the 2019 February 14th hackathon.
 
 The goal was to learn the Cognite API and experiment with [Domain Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using the OpenAPI tool chain.
 
@@ -12,9 +10,17 @@ The SDK is written as a dual domain SDK for both C# and F# with F# as the core d
 
 Download .NET Core (Mac/Linux/Windows) or .NET Framework (Windows) from https://dotnet.microsoft.com/download.
 
-To build the sources:
+To build the sources on Linux/Mac:
 
 ```sh
+> mono .paket/paket.exe install
+> dotnet build
+```
+
+To build the sources on Windows:
+
+```sh
+> .paket\paket.exe install
 > dotnet build
 ```
 
