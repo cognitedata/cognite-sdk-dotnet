@@ -1,5 +1,6 @@
 namespace Tests
 
+open System
 open FSharp.Data
 open Cognite.Sdk
 
@@ -26,7 +27,7 @@ type Fetcher (response: Result<HttpResponse, ResponseError>) =
         let response = {
             StatusCode = 200
             Body = Text json
-            ResponseUrl = ""
+            ResponseUrl = String.Empty
             Headers = Map.empty
             Cookies = Map.empty
         }
