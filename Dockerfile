@@ -6,7 +6,4 @@ COPY . .
 RUN mono .paket/paket.exe install
 RUN dotnet build
 
-WORKDIR /build/test/csharp
-RUN dotnet test
-WORKDIR /build/test/fsharp
-RUN dotnet test
+RUN ./test.sh

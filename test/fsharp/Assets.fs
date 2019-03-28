@@ -51,6 +51,7 @@ let ``Get invalid asset is Error`` () = async {
     test <@ Result.isError result @>
 }
 
+[<Fact>]
 let ``Get asset with extra fields is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("AssetExtra.json")
@@ -68,6 +69,7 @@ let ``Get asset with extra fields is Ok`` () = async {
     test <@ Result.isOk result @>
 }
 
+[<Fact>]
 let ``Get asset with missing optional fields is Ok`` () = async {
     // Arrenge
 
@@ -85,6 +87,7 @@ let ``Get asset with missing optional fields is Ok`` () = async {
     test <@ Result.isOk result @>
 }
 
+[<Fact>]
 let ``Get assets is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
@@ -106,6 +109,7 @@ let ``Get assets is Ok`` () = async {
     test <@ fetcher.Ctx.Value.Query = [("name", "string")] @>
 }
 
+[<Fact>]
 let ``Create assets empty is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
@@ -128,6 +132,7 @@ let ``Create assets empty is Ok`` () = async {
     test <@ fetcher.Ctx.Value.Query.IsEmpty @>
 }
 
+[<Fact>]
 let ``Create single asset is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
@@ -158,13 +163,9 @@ let ``Create single asset is Ok`` () = async {
     test <@ fetcher.Ctx.Value.Resource = "/assets" @>
     test <@ fetcher.Ctx.Value.Query.IsEmpty @>
 
-
-    (*
     match result with
     | Ok assets ->
-        Expect.equal assets.Length 1 "Should be equal"
+        test <@ assets.Length = 1 @>
     | Error error ->
         raise (Error.error2Exception error)
-
-    *)
 }

@@ -16,7 +16,7 @@ namespace Tests
         //private Func<Context, string> fetcher;
 
         [Fact]
-        public void TestGetAssets()
+        public async Task TestGetAssets()
         {
             var apiKey = "api-key";
             var project = "project";
@@ -34,11 +34,16 @@ namespace Tests
                 AssetArgs.Empty()
                 .Name("string3");
 
-            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
+            var result = await client.GetAssets(assetArgs);
+            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
+            Assert.Equal("/assets", fetcher.Ctx.Resource);
+            //Assert.Equal(fetcher.Ctx.Query, new List<string>());
+            Assert.Single(result);
+            Console.WriteLine(fetcher.Ctx.Body);
         }
 
         [Fact]
-        public async Task TestGetAssetsServerUnavailable()
+        public void TestGetAssetsServerUnavailable()
         {
             var apiKey = "api-key";
             var project = "project";
@@ -56,12 +61,7 @@ namespace Tests
                 AssetArgs.Empty()
                 .Name("string3");
 
-            var result = await client.GetAssets(assetArgs);
-            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
-            Assert.Equal("/assets", fetcher.Ctx.Resource);
-            //Assert.Equal(fetcher.Ctx.Query, new List<string>());
-            Assert.Single(result);
-            Console.WriteLine(fetcher.Ctx.Body);
+            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
         }
 
         [Fact]
