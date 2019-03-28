@@ -74,8 +74,6 @@ podTemplate(
 
           stage('Build') {
             sh('dotnet build')
-            //sh('dotnet publish -c Release -o out Main/Cognite.OptimizerJob/')
-            buildDirectory = 'build'
           }
 
           stage('Run tests') {
@@ -85,23 +83,5 @@ podTemplate(
             archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
           }
         }
-
-        //container('docker') {
-            // stage("Authenticate Docker") {
-            //      sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
-            // }
-
-            // stage('Build container') {
-            //     sh("docker build -t eu.gcr.io/cognitedata/cognite-sdk-net-master:${gitCommit} .")
-            // }
-
-            //stage('Push container') {
-            //    if(env.BRANCH_NAME == 'master') {
-            //        sh("docker push eu.gcr.io/cognitedata/cognite-net-sdk-master:${gitCommit}")
-            //    } else if(env.BRANCH_NAME == 'release') {
-            //        sh("docker push eu.gcr.io/cognitedata/cognite-net-sdk-master:${gitCommit}")
-            //    }
-            //}
-        //}
     }
 }
