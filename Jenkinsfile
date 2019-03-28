@@ -74,10 +74,9 @@ podTemplate(
           }
 
           stage('Run tests') {
-            sh('dotnet test test/fsharp /p:Exclude="[xunit*]*" /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:CoverletOutput=\'coverage.json\'')
-            sh('dotnet test test/csharp /p:Exclude="[xunit*]*" /p:CollectCoverage=true /p:MergeWith=\'../fsharp/coverage.json\' /p:CoverletOutputFormat=opencover /p:CoverletOutput=\'../../TestResult.xml\'')
+            sh('./test.sh')
 
-            archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
+            archiveArtifacts artifacts: 'coverage.lcov', fingerprint: true
           }
 
           stage("Upload report to codecov.io") {
