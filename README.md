@@ -1,5 +1,6 @@
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/CogniteSdk.NET/master)](https://jenkins.cognite.ai/job/github-builds/job/CogniteSdk.NET/job/master/)
-[![codecov](https://codecov.io/gh/cognitedata/CogniteSdk.NET/branch/master/graph/badge.svg)](https://codecov.io/gh/cognitedata/CogniteSdk.NET)
+[![codecov](https://codecov.io/gh/cognitedata/CogniteSdk.NET/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/CogniteSdk.NET)
+
 
 # Cognite .NET SDK
 
