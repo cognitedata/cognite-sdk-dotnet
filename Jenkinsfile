@@ -1,26 +1,105 @@
-pipeline {
-    agent any
-    environment {
-        myVersion = '0.9'
-    }
-    tools {
-        msbuild '.NET Core 2.2.0'
-    }
-    stages {
-        stage('restore') {
-            steps {
-                sh 'dotnet restore'
-            }
-        }
-        stage('build') {
-            steps {
-                sh 'dotnet build'
-            }
-        }
-        stage('publish') {
-            steps {
+@Library('jenkins-helpers@v0.1.10') _
 
+def label = "cognite-net-sdk-${UUID.randomUUID().toString()}"
+
+podTemplate(
+    label: label,
+    annotations: [
+            podAnnotation(key: "jenkins/build-url", value: env.BUILD_URL ?: ""),
+            podAnnotation(key: "jenkins/github-pr-url", value: env.CHANGE_URL ?: ""),
+    ],
+    containers: [containerTemplate(name: 'docker',
+                                   command: '/bin/cat -',
+                                   image: 'docker:17.06.2-ce',
+                                   resourceRequestCpu: '1000m',
+                                   resourceRequestMemory: '500Mi',
+                                   resourceLimitCpu: '1000m',
+                                   resourceLimitMemory: '500Mi',
+                                   ttyEnabled: true),
+                 containerTemplate(name: 'dotnet-mono',
+                                   image: 'eu.gcr.io/cognitedata/dotnet-mono:2.1-sdk',
+                                   envVars: [
+                                             //secretEnvVar(
+                                             //    key: 'CODECOV_TOKEN',
+                                             //    secretName: 'codecov-token-...',
+                                             //    secretKey: 'token.txt'),
+                                             // /codecov-script/upload-report.sh relies on the following
+                                             // Jenkins and Github environment variables.
+                                             envVar(key: 'JENKINS_URL', value: env.JENKINS_URL),
+                                             envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
+                                             envVar(key: 'BUILD_NUMBER', value: env.BUILD_NUMBER),
+                                             envVar(key: 'BUILD_URL', value: env.BUILD_URL),
+                                             envVar(key: 'CHANGE_ID', value: env.CHANGE_ID),
+                                   ],
+                                   resourceRequestCpu: '1500m',
+                                   resourceRequestMemory: '3000Mi',
+                                   resourceLimitCpu: '1500m',
+                                   resourceLimitMemory: '3000Mi',
+                                   ttyEnabled: true)],
+    volumes: [secretVolume(secretName: 'jenkins-docker-builder',
+                           mountPath: '/jenkins-docker-builder',
+                           readOnly: true),
+              configMapVolume(configMapName: 'codecov-script-configmap', mountPath: '/codecov-script'),
+              hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
+              configMapVolume(configMapName: 'mysql-test-scripts', mountPath: '/mysql-test-scripts', readOnly: true)]
+) {
+    properties([buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '20'))])
+    node(label) {
+        def gitCommit
+        def buildDirectory
+        container('jnlp') {
+            stage('Checkout') {
+                checkout([$class: 'GitSCM',
+                  branches: scm.branches,
+                  extensions: [
+                    [ $class: 'SubmoduleOption',
+                      disableSubmodules: false,
+                      parentCredentials: true,
+                      recursiveSubmodules: true,
+                      reference: '',
+                      trackingSubmodules: false],
+                    [ $class: 'CleanCheckout' ]
+                  ],
+                  userRemoteConfigs: scm.userRemoteConfigs
+                ])
+
+                gitCommit = sh(returnStdout: true, script: 'git rev-parse --short=12 HEAD').trim()
             }
+        }
+
+        container('dotnet-mono') {
+          stage('Install dependencies') {
+            sh('mono .paket/paket.exe install')
+          }
+
+          stage('Build') {
+            sh('dotnet build')
+            //sh('dotnet publish -c Release -o out Main/Cognite.OptimizerJob/')
+            buildDirectory = 'build'
+          }
+
+          stage('Run tests') {
+            sh('./test.sh')
+            //archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
+          }
+        }
+
+        container('docker') {
+            stage("Authenticate Docker") {
+                 sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
+            }
+
+            stage('Build container') {
+                sh("docker build -t eu.gcr.io/cognitedata/cognite-sdk-net-master:${gitCommit} .")
+            }
+
+            //stage('Push container') {
+            //    if(env.BRANCH_NAME == 'master') {
+            //        sh("docker push eu.gcr.io/cognitedata/cognite-net-sdk-master:${gitCommit}")
+            //    } else if(env.BRANCH_NAME == 'release') {
+            //        sh("docker push eu.gcr.io/cognitedata/cognite-net-sdk-master:${gitCommit}")
+            //    }
+            //}
         }
     }
 }
