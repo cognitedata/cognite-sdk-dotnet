@@ -9,6 +9,9 @@ using Cognite.Sdk.Api;
 
 namespace Tests
 {
+    /// <summary>
+    /// Mock class for creating a test fetch function.
+    /// </summary>
     public class Fetcher
     {
         private readonly HttpResponse _response;
