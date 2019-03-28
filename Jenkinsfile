@@ -79,19 +79,21 @@ podTemplate(
           }
 
           stage('Run tests') {
-            sh('./test.sh')
-            //archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
+            sh('dotnet test test/fsharp /p:Exclude="[xunit*]*" /p:CollectCoverage=true /p:CoverletOutputFormat=json /p:CoverletOutput=\'coverage.json\'')
+            sh('dotnet test test/csharp /p:Exclude="[xunit*]*" /p:CollectCoverage=true /p:MergeWith=\'../fsharp/coverage.json\' /p:CoverletOutputFormat=opencover /p:CoverletOutput=\'../../TestResult.xml\'')
+
+            archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
           }
         }
 
-        container('docker') {
-            stage("Authenticate Docker") {
-                 sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
-            }
+        //container('docker') {
+            // stage("Authenticate Docker") {
+            //      sh('#!/bin/sh -e\n' + 'docker login -u _json_key -p "$(cat /jenkins-docker-builder/credentials.json)" https://eu.gcr.io')
+            // }
 
-            stage('Build container') {
-                sh("docker build -t eu.gcr.io/cognitedata/cognite-sdk-net-master:${gitCommit} .")
-            }
+            // stage('Build container') {
+            //     sh("docker build -t eu.gcr.io/cognitedata/cognite-sdk-net-master:${gitCommit} .")
+            // }
 
             //stage('Push container') {
             //    if(env.BRANCH_NAME == 'master') {
@@ -100,6 +102,6 @@ podTemplate(
             //        sh("docker push eu.gcr.io/cognitedata/cognite-net-sdk-master:${gitCommit}")
             //    }
             //}
-        }
+        //}
     }
 }
