@@ -19,10 +19,7 @@ podTemplate(
                  containerTemplate(name: 'dotnet-mono',
                                    image: 'eu.gcr.io/cognitedata/dotnet-mono:2.1-sdk',
                                    envVars: [
-                                             //secretEnvVar(
-                                             //    key: 'CODECOV_TOKEN',
-                                             //    secretName: 'codecov-token-...',
-                                             //    secretKey: 'token.txt'),
+                                             secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-cognite-sdk-net', secretKey: 'token.txt'),
                                              // /codecov-script/upload-report.sh relies on the following
                                              // Jenkins and Github environment variables.
                                              envVar(key: 'JENKINS_URL', value: env.JENKINS_URL),
@@ -81,6 +78,10 @@ podTemplate(
             sh('dotnet test test/csharp /p:Exclude="[xunit*]*" /p:CollectCoverage=true /p:MergeWith=\'../fsharp/coverage.json\' /p:CoverletOutputFormat=opencover /p:CoverletOutput=\'../../TestResult.xml\'')
 
             archiveArtifacts artifacts: 'TestResult.xml', fingerprint: true
+          }
+
+          stage("Upload report to codecov.io") {
+             sh('bash </codecov-script/upload-report.sh')
           }
         }
     }
