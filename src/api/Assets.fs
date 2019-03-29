@@ -118,7 +118,7 @@ type ClientAssetExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssets (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
+    static member GetAssetsAsync (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
             let! result = getAssets this.Ctx args.Args
             match result with
@@ -136,7 +136,7 @@ type ClientAssetExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAsset (this: Client) (assetId: int64) : Task<AssetReadDto> =
+    static member GetAssetAsync (this: Client) (assetId: int64) : Task<AssetReadDto> =
         let worker () : Async<AssetReadDto> = async {
             let! result = getAsset this.Ctx assetId
             match result with
@@ -154,7 +154,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssets (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
+    static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
             let! result = createAssets this.Ctx (Seq.toList assets)
             match result with
@@ -172,7 +172,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member DeleteAssets (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
+    static member DeleteAssetsAsync (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
             let! result = deleteAssets this.Ctx (Seq.toList assets)
             match result with

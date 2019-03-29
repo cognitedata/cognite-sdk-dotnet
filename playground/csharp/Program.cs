@@ -22,7 +22,7 @@ namespace csharp
                 AssetArgs.Empty()
                 .Name("string3");
 
-            var result = await client.GetAssets(assetArgs);
+            var result = await client.GetAssetsAsync(assetArgs);
 
             Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
             Console.WriteLine("{0}", parentId);
@@ -35,7 +35,7 @@ namespace csharp
                 Query.Create()
                 .Aggregates(new List<Aggregate> { Aggregate.Average });
 
-            var result = await client.QueryTimeseries("myseries", query);
+            var result = await client.QueryTimeseriesAsync("myseries", query);
 
             Console.WriteLine("{0}", result[0].DataPoints[0].TryGetValue(out long value));
             Console.WriteLine("{0}", value);

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Assets;
@@ -22,7 +23,7 @@ namespace Tests
 
             var json = File.ReadAllText("Assets.json");
             var fetcher = Fetcher.FromJson(200, json);
-            var query = new List<Tuple<string, string>> { ("name", "string3").ToTuple () };
+            var query = new List<(string, string)> { ("name", "string3") };
 
             var client =
                 Client.Create()
@@ -35,12 +36,13 @@ namespace Tests
                 .Name("string3");
 
             // Act
-            var result = await client.GetAssets(assetArgs);
+            var result = await client.GetAssetsAsync(assetArgs);
 
             // Assert
             Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
             Assert.Equal("/assets", fetcher.Ctx.Resource);
-            Assert.Equal(new List<Tuple<string, string>>(fetcher.Ctx.Query), query);
+            var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Query);
+            Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()));
             Assert.Single(result);
         }
 
@@ -65,7 +67,7 @@ namespace Tests
                 .Name("string3");
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssets(assetArgs));
+            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(assetArgs));
         }
 
         [Fact]
@@ -91,7 +93,7 @@ namespace Tests
                 .Depth(3);
 
             // Act/Assert
-            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssets(assetArgs));
+            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetsAsync(assetArgs));
         }
 
         [Fact]
@@ -111,7 +113,7 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             // Act
-            var result = await client.GetAsset(42L);
+            var result = await client.GetAssetAsync(42L);
 
             // Assert
             Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
@@ -137,7 +139,7 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             // Act/Assert
-            await Assert.ThrowsAsync<DecodeException>(() => client.GetAsset(42L));
+            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetAsync(42L));
         }
 
         [Fact]
@@ -159,11 +161,18 @@ namespace Tests
             var assets = new List<AssetCreateDto> {
                 Asset.Create("name1", "description1"),
                 Asset.Create("name2", "description2"),
-                Asset.Create("name3", "description3").SetParentId("parentId")
+                Asset.Create("name3", "description3")
+                    .SetParentId("parentId")
+                    .SetParentName("parent")
+                    .SetSource("source")
+                    .SetSourceId("sourceId")
+                    .SetParentRefId("parentRefId")
+                    .SetRefId("refId")
+                    .SetMetaData(new Dictionary<string, string> {{ "data1", "value" }})
             };
 
             // Act
-            var result = await client.CreateAssets(assets);
+            var result = await client.CreateAssetsAsync (assets);
 
             // Assert
             Assert.Single(result);
