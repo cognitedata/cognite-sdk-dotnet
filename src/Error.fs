@@ -5,7 +5,7 @@ open FSharp.Data
 
 /// Will be raised if decoding a response fails.
 exception DecodeException of string
-exception MyFSharpError1 of string
+exception ResponseException of string
 
 type ResponseError =
     /// Exception (internal error). This should never happen.
@@ -39,7 +39,7 @@ module Error =
         | DecodeError err ->
             DecodeException err
         | ErrorResponse err ->
-            // FIXME: Make a better error type. I.e decode into RequestError
-            Exception (err.ToString ())
+            // FIXME: Add more error information. I.e decode into RequestError
+            ResponseException (err.ToString ())
 
 

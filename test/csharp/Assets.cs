@@ -13,8 +13,6 @@ namespace Tests
 {
     public class AssetTests
     {
-        //private Func<Context, string> fetcher;
-
         [Fact]
         public async Task TestGetAssets()
         {
@@ -47,7 +45,7 @@ namespace Tests
         }
 
         [Fact]
-        public void TestGetAssetsServerUnavailable()
+        public async Task TestGetAssetsServerUnavailable()
         {
             // Arrange
             var apiKey = "api-key";
@@ -67,11 +65,11 @@ namespace Tests
                 .Name("string3");
 
             // Act/Assert
-            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
+            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssets(assetArgs));
         }
 
         [Fact]
-        public void TestGetInvalidAssetsThrowsException()
+        public async Task TestGetInvalidAssetsThrowsException()
         {
             // Arrange
             var apiKey = "api-key";
@@ -93,11 +91,11 @@ namespace Tests
                 .Depth(3);
 
             // Act/Assert
-            Assert.ThrowsAsync<DecodeException>( async () => await client.GetAssets(assetArgs));
+            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssets(assetArgs));
         }
 
         [Fact]
-        public async Task TestGetInvaldAssetThrowsException()
+        public async Task TestGetAsset()
         {
             // Arrange
             var apiKey = "api-key";
@@ -118,13 +116,12 @@ namespace Tests
             // Assert
             Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
             Assert.Equal("/assets/42", fetcher.Ctx.Resource);
-            //Assert.Equal(fetcher.Ctx.Query, new List<string>());
-            //Assert.Equal(result.Count, 2);
+            Assert.Equal(fetcher.Ctx.Query, new List<Tuple<string, string>>());
             Console.WriteLine(fetcher.Ctx.Body);
         }
 
         [Fact]
-        public void TestGetAsset()
+        public async Task TestGetInvaldAssetThrowsException()
         {
             // Arrange
             var apiKey = "api-key";
@@ -140,7 +137,7 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             // Act/Assert
-            Assert.ThrowsAsync<DecodeException>(async () => await client.GetAsset(42L));
+            await Assert.ThrowsAsync<DecodeException>(() => client.GetAsset(42L));
         }
 
         [Fact]
