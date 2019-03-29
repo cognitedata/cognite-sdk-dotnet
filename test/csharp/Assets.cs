@@ -10,6 +10,8 @@ using Cognite.Sdk;
 using Cognite.Sdk.Assets;
 using Cognite.Sdk.Api;
 
+using Newtonsoft.Json;
+
 namespace Tests
 {
     public class AssetTests
@@ -23,7 +25,14 @@ namespace Tests
 
             var json = File.ReadAllText("Assets.json");
             var fetcher = Fetcher.FromJson(200, json);
-            var query = new List<(string, string)> { ("name", "string3") };
+            var metadata = ("metadata", JsonConvert.SerializeObject(new Dictionary<string, string> { { "option1", "value1" } }));
+            var query = new List<(string, string)> {
+                    metadata,
+                    ("id", "42"),
+                    ("depth", "5"),
+                    ("desc", "my description"),
+                    ("name", "string3")
+                };
 
             var client =
                 Client.Create()
@@ -33,7 +42,11 @@ namespace Tests
 
             var assetArgs =
                 AssetArgs.Empty()
-                .Name("string3");
+                .Name("string3")
+                .Description("my description")
+                .Depth(5)
+                .Id(42L)
+                .MetaData(new Dictionary<string, string> {{ "option1", "value1"}});
 
             // Act
             var result = await client.GetAssetsAsync(assetArgs);
@@ -42,7 +55,7 @@ namespace Tests
             Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
             Assert.Equal("/assets", fetcher.Ctx.Resource);
             var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Query);
-            Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()));
+            Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()).ToList());
             Assert.Single(result);
         }
 
@@ -177,5 +190,33 @@ namespace Tests
             // Assert
             Assert.Single(result);
         }
+
+        /*
+        [Fact]
+        public async Task TestUpdateAssets()
+        {
+            // Arrange
+            var apiKey = "api-key";
+            var project = "project";
+
+            var json = File.ReadAllText("Assets.json");
+            var fetcher = Fetcher.FromJson(200, json);
+
+            var client =
+                Client.Create()
+                .AddHeader("api-key", apiKey)
+                .SetProject(project)
+                .SetFetch(fetcher.Fetch);
+
+            var assets = new List<Tuple<Int64, List<Model.UpdateParams>>> {
+                Tuple.Create(42L, new Model.UpdateParams. ())
+            };
+
+            // Act
+            var result = await client.UpdateAssetsAsync (assets);
+
+            // Assert
+            Assert.Single(result);
+        } */
     }
 }

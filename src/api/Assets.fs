@@ -183,3 +183,21 @@ type ClientAssetExtensions =
         }
 
         worker () |> Async.StartAsTask
+
+    /// <summary>
+    /// Update assets.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <returns>HttpResponse with status code.</returns>
+    [<Extension>]
+    static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<Tuple<int64, ResizeArray<UpdateParams>>>) : Task<HttpResponse> =
+        let worker () : Async<HttpResponse> = async {
+            let! result = updateAssets this.Ctx (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList)
+            match result with
+            | Ok response ->
+                return HttpResponse(response.StatusCode, String.Empty)
+            | Error error ->
+               return raise (Error.error2Exception error)
+        }
+
+        worker () |> Async.StartAsTask

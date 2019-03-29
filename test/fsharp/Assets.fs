@@ -169,3 +169,51 @@ let ``Create single asset is Ok`` () = async {
     | Error error ->
         raise (Error.error2Exception error)
 }
+
+[<Fact>]
+let ``Update single asset with no updates is Ok`` () = async {
+    // Arrenge
+    let json = File.ReadAllText("Assets.json")
+    let fetcher = Fetcher.FromJson json
+
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", "test-key")
+        |> setFetch fetcher.Fetch
+
+    // Act
+    let! result = updateAsset ctx 42L [  ]
+
+    // Assert
+    test <@ Result.isOk result @>
+    test <@ Option.isSome fetcher.Ctx @>
+    test <@ fetcher.Ctx.Value.Method = POST @>
+    test <@ fetcher.Ctx.Value.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+}
+
+[<Fact>]
+let ``Update single asset with is Ok`` () = async {
+    // Arrenge
+    let json = File.ReadAllText("Assets.json")
+    let fetcher = Fetcher.FromJson json
+
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", "test-key")
+        |> setFetch fetcher.Fetch
+
+    // Act
+    let! result = updateAsset ctx 42L [
+        SetName "New name"
+        SetDescription (Some "New description")
+        SetSource None
+    ]
+
+    // Assert
+    test <@ Result.isOk result @>
+    test <@ Option.isSome fetcher.Ctx @>
+    test <@ fetcher.Ctx.Value.Method = POST @>
+    test <@ fetcher.Ctx.Value.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+}

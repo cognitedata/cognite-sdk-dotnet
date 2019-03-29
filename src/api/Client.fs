@@ -72,4 +72,4 @@ type Client private (context: Context) =
     /// Creates a Client for accessing the API.
     /// </summary>
     static member Create () =
-        Client defaultContext
+        Client ()
