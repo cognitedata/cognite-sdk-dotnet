@@ -66,14 +66,14 @@ module AssetsExtensions =
 
     let renderParams (arg: GetParams) =
         match arg with
-        | Id id -> "id", id.ToString()
+        | Id id -> "id", id.ToString ()
         | Name name -> "name", name
         | Description desc -> "desc", desc
         | Path path -> "path", path
         | MetaData meta ->
             let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) meta) |> Encode.toString 0
             "metadata", metaString
-        | Depth depth -> "depth", depth.ToString()
+        | Depth depth -> "depth", depth.ToString ()
         | Fuzziness fuzz -> "fuzziness", fuzz.ToString ()
         | AutoPaging value -> "autopaging", value.ToString().ToLower()
         | NotLimit limit -> "limit", limit.ToString ()
@@ -88,13 +88,13 @@ module AssetsExtensions =
         | SetDescription optDesc ->
             "description", Encode.object [
                 match optDesc with
-                | Some desc -> yield ("set", Encode.string desc)
-                | None -> yield ("setNull", Encode.bool true)
+                | Some desc -> yield "set", Encode.string desc
+                | None -> yield "setNull", Encode.bool true
             ]
         | SetMetaData optMeta ->
             "metadata", Encode.object [
                 match optMeta with
-                | Some meta -> yield ("set", Encode.dict (Map.map (fun key value -> Encode.string value) meta))
+                | Some meta -> yield "set", Encode.dict (Map.map (fun key value -> Encode.string value) meta)
                 | None -> yield "setNull", Encode.bool true
             ]
         | SetSource optSource ->

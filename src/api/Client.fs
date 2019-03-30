@@ -18,6 +18,7 @@ type HttpResponse (code: int, text: string) =
 type Client private (context: Context) =
     let context = context
 
+    /// Create new client with a default context (e.g will connect to CDP when used.)
     new () = Client defaultContext
 
     member internal __.Ctx =

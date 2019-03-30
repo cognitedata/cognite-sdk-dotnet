@@ -11,6 +11,7 @@ open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
 
 [<Extension>]
+///Helper methods for creating Assets.
 type Asset =
     [<Extension>]
     static member TryGetParentId (this: AssetReadDto, [<Out>] parentId: byref<Int64>) =
@@ -28,7 +29,8 @@ type Asset =
     static member GetParentId (this: AssetReadDto) =
         this.ParentId.Value
 
-    /// Create new RequestAsset with all non-optional values.
+    /// Create a new Asset with name and description (non optional).
+    /// Optional properties can then be added using Set* methods such as e.g {SetMetaData}.
     [<Extension>]
     static member Create (name: string) (description: string) : AssetCreateDto =
         {
@@ -42,6 +44,7 @@ type Asset =
             ParentRef = None
         }
 
+    /// Set custom, application specific metadata. String key -> String value.
     [<Extension>]
     static member SetMetaData (this: AssetCreateDto, metaData: Dictionary<string, string>) : AssetCreateDto =
         let map =
@@ -50,18 +53,23 @@ type Asset =
             |> Map.ofSeq
         { this with MetaData = map }
 
+    /// Set the source of this asset.
     [<Extension>]
     static member SetSource (this: AssetCreateDto, source: string) : AssetCreateDto =
         { this with Source = Some source }
 
+    /// The the source ID of the asset. Only applicable if source is specified.
+    /// The combination of source and sourceId must be unique.
     [<Extension>]
     static member SetSourceId (this: AssetCreateDto, sourceId: string) : AssetCreateDto =
         { this with SourceId = Some sourceId }
 
+    /// Set the reference ID used only in post request to disambiguate references to duplicate names.
     [<Extension>]
     static member SetRefId (this: AssetCreateDto, refId: string) : AssetCreateDto =
         { this with RefId = Some refId }
 
+    /// Set the reference ID of parent, to disambiguate if multiple nodes have the same name.
     [<Extension>]
     static member SetParentRefId (this: AssetCreateDto, parentRefId: string) : AssetCreateDto =
         { this with ParentRef = ParentRefId parentRefId |> Some }
@@ -70,6 +78,7 @@ type Asset =
     static member SetParentName (this: AssetCreateDto, parentName: string) : AssetCreateDto =
         { this with ParentRef = ParentName parentName |> Some }
 
+    /// Set the ID of parent asset in CDP, if any. If parentName or parentRefId are also specified, this will be ignored.
     [<Extension>]
     static member SetParentId (this: AssetCreateDto, parentId: string) : AssetCreateDto =
         { this with ParentRef = ParentId parentId |> Some }

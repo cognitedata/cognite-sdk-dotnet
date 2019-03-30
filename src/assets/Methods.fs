@@ -107,7 +107,7 @@ module Methods =
     ///
     let deleteAssets (ctx: Context) (assets: int64 list) = async {
         let encoder = Encode.object [
-            ("items", List.map Encode.int64 assets |> Encode.list)
+            "items", List.map Encode.int64 assets |> Encode.list
         ]
         let body = Encode.toString 0 encoder
         let url = Url
