@@ -30,6 +30,7 @@ namespace Tests
                     metadata,
                     ("id", "42"),
                     ("depth", "5"),
+                    ("path", "test"),
                     ("desc", "my description"),
                     ("name", "string3")
                 };
@@ -44,6 +45,7 @@ namespace Tests
                 AssetArgs.Empty()
                 .Name("string3")
                 .Description("my description")
+                .Path("test")
                 .Depth(5)
                 .Id(42L)
                 .MetaData(new Dictionary<string, string> {{ "option1", "value1"}});

@@ -4,6 +4,7 @@ open System.IO
 
 open Xunit
 open Swensen.Unquote
+open Newtonsoft.Json
 
 open Cognite.Sdk
 open Cognite.Sdk.Assets
@@ -99,14 +100,36 @@ let ``Get assets is Ok`` () = async {
         |> setFetch fetcher.Fetch
 
     // Act
-    let! result = getAssets ctx [ Name "string"]
+    let! result = getAssets ctx [
+        Name "string"
+        Path "path"
+        Description "mydescription"
+        MetaData (Map.ofSeq [ ("key", "value") ])
+        Depth 3
+        Fuzziness 2
+        AutoPaging true
+        NotLimit 10
+        Cursor "mycursor"
+    ]
 
     // Assert
     test <@ Result.isOk result @>
     test <@ Option.isSome fetcher.Ctx @>
     test <@ fetcher.Ctx.Value.Method = GET @>
     test <@ fetcher.Ctx.Value.Resource = "/assets" @>
-    test <@ fetcher.Ctx.Value.Query = [("name", "string")] @>
+
+    let meta =  JsonConvert.SerializeObject(Map.ofSeq [("key", "value")]);
+    test <@ fetcher.Ctx.Value.Query = [
+        ("name", "string")
+        ("path", "path")
+        ("desc", "mydescription")
+        ("metadata", meta)
+        ("depth", "3")
+        ("fuzziness", "2")
+        ("autopaging", "true")
+        ("limit", "10")
+        ("cursor", "mycursor")
+        ]@>
 }
 
 [<Fact>]
