@@ -58,7 +58,7 @@ module AssetsExtensions =
                     yield "parentId", Encode.string parentRefId
                 | None -> ()
             ]
-    type AssetsRequest with
+    type AssetsCreateRequest with
          member this.Encoder =
             Encode.object [
                 yield ("items", List.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.list)
@@ -108,4 +108,25 @@ module AssetsExtensions =
                 match optSourceId with
                 | Some sourceId -> yield "set", Encode.string sourceId
                 | None -> yield "setNull", Encode.bool true
+            ]
+
+    type AssetUpdateRequest with
+        member this.Encoder =
+            Encode.object [
+                yield ("id", Encode.int64 this.Id)
+                for arg in this.Params do
+                    yield renderUpdateFields arg
+            ]
+
+    type AssetsUpdateRequest with
+        member this.Encoder =
+            Encode.object [
+                "items", List.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.list
+            ]
+
+
+    type AssetsDeleteRequest with
+        member this.Encoder =
+            Encode.object [
+                "items", List.map Encode.int64 this.Items |> Encode.list
             ]

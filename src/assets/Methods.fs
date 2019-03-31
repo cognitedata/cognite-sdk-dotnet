@@ -78,7 +78,7 @@ module Methods =
     ///   * `Async<Result<Response,exn>>`
     ///
     let createAssets (ctx: Context) (assets: AssetCreateDto list) = async {
-        let request = { Items = assets }
+        let request : AssetsCreateRequest = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Url
 
@@ -106,10 +106,8 @@ module Methods =
     ///   * `Async<Result<Response,exn>>`
     ///
     let deleteAssets (ctx: Context) (assets: int64 list) = async {
-        let encoder = Encode.object [
-            "items", List.map Encode.int64 assets |> Encode.list
-        ]
-        let body = Encode.toString 0 encoder
+        let request : AssetsDeleteRequest = { Items = assets }
+        let body = Encode.toString 0 request.Encoder
         let url = Url
 
         let! response =
@@ -134,13 +132,8 @@ module Methods =
     ///   * `Async<Result<string,exn>>`
     ///
     let updateAsset (ctx: Context) (assetId: int64) (args: UpdateParams list) = async {
-        let encoder = Encode.object [
-            yield ("id", Encode.int64 assetId)
-            for arg in args do
-                yield renderUpdateFields arg
-        ]
-
-        let body = Encode.toString 0 encoder
+        let request = { Id = assetId; Params = args }
+        let body = Encode.toString 0 request.Encoder
         let url = Url + sprintf "/%d/update" assetId
 
         let! response =
@@ -165,14 +158,14 @@ module Methods =
     ///   * `Async<Result<string,exn>>`
     ///
     let updateAssets (ctx: Context) (args: (int64*UpdateParams list) list) = async {
-        let encoder = Encode.object [
-            for (assetId, args) in args do
-                yield ("id", Encode.int64 assetId)
-                for arg in args do
-                    yield renderUpdateFields arg
-        ]
+        let request : AssetsUpdateRequest = {
+            Items = [
+                for (assetId, args) in args do
+                    yield { Id = assetId; Params = args }
+            ]
+        }
 
-        let body = Encode.toString 0 encoder
+        let body = Encode.toString 0 request.Encoder
         let url = Url + sprintf "/update"
 
         let! response =

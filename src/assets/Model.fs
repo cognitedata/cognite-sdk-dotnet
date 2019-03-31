@@ -91,7 +91,7 @@ module Model =
 
     let Limit = GetParams.Limit
 
-    /// Update parameters
+    /// Asset update parameters
     type UpdateParams =
         /// Set the name of the asset. Often referred to as tag.
         | SetName of string // Name cannot be null
@@ -105,6 +105,19 @@ module Model =
         /// The combination of source and sourceId must be unique.
         | SetSourceId of string option
 
-    type AssetsRequest = {
+    type AssetsCreateRequest = {
         Items: AssetCreateDto list
+    }
+
+    type AssetUpdateRequest = {
+        Id: int64
+        Params: UpdateParams list
+    }
+
+    type AssetsUpdateRequest = {
+        Items: AssetUpdateRequest list
+    }
+
+    type AssetsDeleteRequest = {
+        Items: int64 list
     }
