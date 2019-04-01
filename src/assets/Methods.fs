@@ -116,7 +116,7 @@ module Methods =
             |> setBody body
             |> setResource url
             |> ctx.Fetch
-        return response
+        return response.Result
     }
 
     /// **Description**
@@ -142,7 +142,7 @@ module Methods =
             |> setBody body
             |> setResource url
             |> ctx.Fetch
-        return response
+        return response.Result
     }
 
     /// **Description**
@@ -174,5 +174,5 @@ module Methods =
             |> setBody body
             |> setResource url
             |> ctx.Fetch
-        return response
+        return response.Result
     }

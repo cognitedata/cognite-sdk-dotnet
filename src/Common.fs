@@ -20,8 +20,8 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse decoder (result: Result<HttpResponse, ResponseError>) =
-        result
+    let decodeResponse decoder (context: Context) =
+        context.Result
         |> Result.map (fun response ->
             match response.Body with
             | Text text ->

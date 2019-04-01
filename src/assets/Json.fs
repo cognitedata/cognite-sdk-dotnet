@@ -1,6 +1,8 @@
 namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
+open System.Text
+
 
 [<AutoOpen>]
 module AssetsExtensions =
@@ -61,7 +63,7 @@ module AssetsExtensions =
     type AssetsCreateRequest with
          member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.list)
+                yield "items", List.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.list
             ]
 
     let renderParams (arg: GetParams) =

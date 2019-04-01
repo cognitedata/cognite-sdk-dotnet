@@ -15,22 +15,18 @@ open Cognite.Sdk.Request
 let ``Get asset is Ok``() = async {
     // Arrange
     let json = File.ReadAllText ("Assets.json")
-    let fetcher = Fetcher.FromJson json
-
     let ctx =
-        defaultContext
+        Context.FromJson json
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
     let! result = getAsset ctx 42L
 
     // Assert
     test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = GET @>
-    test <@ fetcher.Ctx.Value.Resource = "/assets/42" @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ fetcher.Request.Method = GET @>
+    test <@ fetcher.Request.Resource = "/assets/42" @>
+    test <@ fetcher.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -42,7 +38,6 @@ let ``Get invalid asset is Error`` () = async {
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
 
     // Act
@@ -150,7 +145,7 @@ let ``Create assets empty is Ok`` () = async {
     // Assert
     test <@ Result.isOk result @>
     test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = POST @>
+    test <@ fetcher.Ctx.Value.Result. Method = POST @>
     test <@ fetcher.Ctx.Value.Resource = "/assets" @>
     test <@ fetcher.Ctx.Value.Query.IsEmpty @>
 }

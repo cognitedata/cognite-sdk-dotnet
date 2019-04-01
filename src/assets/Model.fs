@@ -1,10 +1,19 @@
 namespace Cognite.Sdk.Assets
 
+open Thoth.Json.Net
+open System.Text
+
+type IDecoder =
+    abstract member Decoder: unit -> Decoder
+
+
 /// Asset type for responses.
 type AssetReadDto = {
     /// The Id of the asset.
     Id: int64
+    ///IDs of assets on the path to the asset.
     Path: int64 list
+    /// Asset path depth (number of levels below root node).
     Depth: int
     /// The name of the asset.
     Name: string

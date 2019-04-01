@@ -56,11 +56,11 @@ type Client private (context: Context) =
                     }
                     match result.Code with
                     | Success ->
-                        return Ok httpResponse
-                    | _ -> return Error (ErrorResponse httpResponse)
+                        return { context with Result = Ok httpResponse }
+                    | _ -> return { context with Result = Error (ErrorResponse httpResponse) }
                 with
                 | ex ->
-                    return RequestException ex |> Error
+                    return { context with Result = RequestException ex |> Error }
             }
             return response
         }
