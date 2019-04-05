@@ -20,18 +20,22 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse decoder (context: Context) =
-        context.Result
-        |> Result.map (fun response ->
-            match response.Body with
-            | Text text ->
-                text
-            | Binary _ ->
-                failwith "binary format not supported"
-        )
-        |> Result.bind (fun res ->
-            let ret = Decode.fromString decoder res
-            match ret with
-            | Error error -> DecodeError error |> Error
-            | Ok value -> Ok value
-        )
+    let decodeResponse decoder resultMapper (context: HttpContext) =
+        let result =
+            context.Result
+            |> Result.map (fun response ->
+                match response.Body with
+                | Text text ->
+                    text
+                | Binary _ ->
+                    failwith "binary format not supported"
+            )
+            |> Result.bind (fun res ->
+                let ret = Decode.fromString decoder res
+                match ret with
+                | Error error -> DecodeError error |> Error
+                | Ok value -> Ok value
+            )
+            |> Result.map resultMapper
+
+        { Request = context.Request; Result = result}

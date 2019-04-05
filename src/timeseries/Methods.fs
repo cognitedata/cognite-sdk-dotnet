@@ -26,19 +26,18 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,ResponseError>>`
     ///
-    let insertDataByName (ctx: Context) (name: string) (items: DataPointCreateDto list) = async {
+    let insertDataByName (ctx: HttpContext) (name: string) (items: DataPointCreateDto list) = async {
         let request : PointRequest = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
         let url = Url + sprintf "/data/%s" name
 
-        let! response =
+        let response =
             ctx
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
-        return response.Result
+        return response
     }
 
     /// **Description**
@@ -52,19 +51,18 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let createTimeseries (ctx: Context) (items: TimeseriesCreateDto list) = async {
+    let createTimeseries (ctx: HttpContext) (items: TimeseriesCreateDto list) = async {
         let request : TimeseriesRequest = { Items = items }
 
         let body = Encode.toString 0 request.Encoder
         let url = Url
 
-        let! response =
+        let response =
             ctx
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
-        return response.Result
+        return response
     }
 
     /// **Description**
@@ -80,18 +78,16 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
-    let getTimeseries (ctx: Context) (id: int64) = async {
+    let getTimeseries (ctx: HttpContext) (id: int64) = async {
         let url = Url + sprintf "/%d" id
 
-        let! response =
+        let response =
             ctx
             |> setMethod GET
             |> setResource url
-            |> ctx.Fetch
 
         return response
-            |> decodeResponse TimeseriesResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items.[0])
+            |> decodeResponse TimeseriesResponse.Decoder (fun res -> res.Data.Items.[0])
     }
 
     /// **Description**
@@ -107,20 +103,18 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let gueryTimeseries (ctx: Context) (name: string) (query: QueryParams list) = async {
+    let gueryTimeseries (ctx: HttpContext) (name: string) (query: QueryParams list) = async {
         let url = Url + sprintf "/data/%s" name
         let query = query |> List.map renderQuery
 
-        let! response =
+        let response =
             ctx
             |> setMethod GET
             |> setResource url
             |> addQuery query
-            |> ctx.Fetch
 
         return response
-            |> decodeResponse PointResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items)
+            |> decodeResponse PointResponse.Decoder (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -134,14 +128,13 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,ResponseError>>`
     ///
-    let deleteTimeseries (ctx: Context) (name: string) = async {
+    let deleteTimeseries (ctx: HttpContext) (name: string) = async {
         let url = Url + sprintf "/data/%s" name
 
-        let! response =
+        let response =
             ctx
             |> setMethod DELETE
             |> setResource url
-            |> ctx.Fetch
 
-        return response.Result
+        return response
     }

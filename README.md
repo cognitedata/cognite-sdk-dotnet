@@ -38,6 +38,14 @@ export API_KEY=mysecretkey
 
 ## Dependencies
 
+Dependencies for all projects are handled using [Paket](https://fsprojects.github.io/Paket/). To install dependencies:
+
+```sh
+> mono .paket/paket.exe install
+```
+
+This will install the main dependencies and sub-dependencies. The main dependencies are:
+
 - [FSharp.Data](https://www.nuget.org/packages/FSharp.Data/) - for HTTP Utilities.
 - [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.1) - for JSON (de)serialization.

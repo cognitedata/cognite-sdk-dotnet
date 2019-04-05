@@ -1,7 +1,6 @@
 namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
-open System.Text
 
 
 [<AutoOpen>]

@@ -32,13 +32,18 @@ type HttpRequest = {
     Project: string
 }
 
-and Context = {
+type Context<'a> = {
     Request: HttpRequest
-    Result: Result<HttpResponse, ResponseError>
-    Fetch: Fetch
+    Result: Result<'a, ResponseError>
 }
 
-and Fetch = Context -> Async<Context>
+type HttpContext = Context<HttpResponse>
+
+type Handler<'a, 'b> = Context<'a> -> Async<Context<'b>>
+
+type Handler<'a> = Handler<'a, 'a>
+
+type HttpHandler = Handler<HttpResponse>
 
 module Request =
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
@@ -54,7 +59,7 @@ module Request =
             ServerError
 
     /// A request function for fetching from the Cognite API.
-    let fetch (ctx: Context) =
+    let fetch (ctx: HttpContext) =
         async {
             let res = ctx.Request.Resource
             let url = sprintf "https://api.cognitedata.com/api/0.5/projects/%s%s" ctx.Request.Project res
@@ -92,18 +97,18 @@ module Request =
             Headers = Map.empty
             Cookies = Map.empty
         }
-    let defaultContext : Context = {
+    let defaultContext : Context<HttpResponse> = {
         Request = defaultRequest
         Result = defaultResult
-        Fetch = fetch
+//        Fetch = fetch
     }
 
     /// Add HTTP header to context.
-    let addHeader (header: string*string) (context: Context) =
+    let addHeader (header: string*string) (context: HttpContext) =
         { context with Request = { context.Request with Headers = header :: context.Request.Headers  } }
 
     /// Helper for setting Bearer token as Authorization header.
-    let setToken (token: string) (context: Context) =
+    let setToken (token: string) (context: HttpContext) =
         let header = ("Authorization", sprintf "Bearer: %s" token)
         { context with Request = { context.Request with Headers = header :: context.Request.Headers  } }
 
@@ -116,16 +121,16 @@ module Request =
     ///   * `query` - List of tuples (name, value)
     ///   * `context` - The context to add the query to.
     ///
-    let addQuery (query: QueryStringParams) (context: Context) =
+    let addQuery (query: QueryStringParams) (context: HttpContext) =
         { context with Request = { context.Request with Query = context.Request.Query @ query  } }
 
-    let addQueryItem (query: string*string) (context: Context) =
+    let addQueryItem (query: string*string) (context: HttpContext) =
         { context with Request = { context.Request with Query = query :: context.Request.Query  } }
 
-    let setResource (resource: string) (context: Context) =
+    let setResource (resource: string) (context: HttpContext) =
         { context with Request = { context.Request with Resource = resource  } }
 
-    let setBody (body: string) (context: Context) =
+    let setBody (body: string) (context: HttpContext) =
         { context with Request = { context.Request with Body = Some body } }
 
     /// **Description**
@@ -140,7 +145,7 @@ module Request =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setMethod (method: HttpMethod) (context: Context) =
+    let setMethod (method: HttpMethod) (context: HttpContext) =
         { context with Request = { context.Request with Method = method } }
 
     /// **Description**
@@ -154,7 +159,7 @@ module Request =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setProject (project: string) (context: Context) =
+    let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Project = project } }
 
     /// **Description**
@@ -169,8 +174,8 @@ module Request =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setFetch (fetch: Fetch) (context: Context) =
-        { context with Fetch = fetch }
+    //let setFetch (fetch: Handler) (context: Context) =
+    //    { context with F = fetch }
 
     //let compose ()
 

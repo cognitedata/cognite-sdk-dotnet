@@ -26,19 +26,20 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (ctx: Context) (args: GetParams list) : Async<Result<AssetReadDto list, ResponseError>> = async {
+    let getAssets (fetch: HttpHandler) (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetReadDto list>> = async {
         let query = args |> List.map renderParams
         let url = Url
+
         let! result =
             ctx
             |> setMethod GET
             |> addQuery query
             |> setResource url
-            |> ctx.Fetch
+            |> fetch
 
-        return result
-            |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items)
+        return
+            result
+            |> decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -52,23 +53,22 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (ctx: Context) (assetId: int64) : Async<Result<AssetReadDto, ResponseError>> = async {
+    let getAsset (fetch: HttpHandler) (assetId: int64) (ctx: HttpContext) : Async<Context<AssetReadDto>> = async {
         let url = Url + sprintf "/%d" assetId
 
         let! result =
             ctx
             |> setMethod GET
             |> setResource url
-            |> ctx.Fetch
-
-        return result
-            |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items.Head)
+            |> fetch
+        return
+            result
+            |> decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items.Head)
     }
 
     /// **Description**
     ///
-    /// Creates new assets in the given project.
+    /// Creates new assets in the given project
     ///
     /// **Parameters**
     ///   * `ctx` - parameter of type `Context`
@@ -77,7 +77,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (ctx: Context) (assets: AssetCreateDto list) = async {
+    let createAssets (fetch: HttpHandler) (assets: AssetCreateDto list) (ctx: HttpContext) = async {
         let request : AssetsCreateRequest = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Url
@@ -87,11 +87,10 @@ module Methods =
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
+            |> fetch
 
         return response
-            |> decodeResponse AssetResponse.Decoder
-            |> Result.map (fun res -> res.Data.Items)
+            |> decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
     }
 
     /// **Description**
@@ -105,7 +104,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let deleteAssets (ctx: Context) (assets: int64 list) = async {
+    let deleteAssets (fetch: HttpHandler) (assets: int64 list) (ctx: HttpContext) = async {
         let request : AssetsDeleteRequest = { Items = assets }
         let body = Encode.toString 0 request.Encoder
         let url = Url
@@ -115,8 +114,9 @@ module Methods =
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
-        return response.Result
+            |> fetch
+
+        return response
     }
 
     /// **Description**
@@ -131,7 +131,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAsset (ctx: Context) (assetId: int64) (args: UpdateParams list) = async {
+    let updateAsset (fetch: HttpHandler) (assetId: int64) (args: UpdateParams list) (ctx: HttpContext) = async {
         let request = { Id = assetId; Params = args }
         let body = Encode.toString 0 request.Encoder
         let url = Url + sprintf "/%d/update" assetId
@@ -141,8 +141,8 @@ module Methods =
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
-        return response.Result
+            |> fetch
+        return response
     }
 
     /// **Description**
@@ -157,7 +157,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (ctx: Context) (args: (int64*UpdateParams list) list) = async {
+    let updateAssets (fetch: HttpHandler) (args: (int64*UpdateParams list) list) (ctx: HttpContext) = async {
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -173,6 +173,6 @@ module Methods =
             |> setMethod POST
             |> setBody body
             |> setResource url
-            |> ctx.Fetch
-        return response.Result
+            |> fetch
+        return response
     }

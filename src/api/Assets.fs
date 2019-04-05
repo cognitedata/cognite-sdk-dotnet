@@ -129,8 +129,8 @@ type ClientAssetExtensions =
     [<Extension>]
     static member GetAssetsAsync (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
-            let! result = getAssets this.Ctx args.Args
-            match result with
+            let! context = getAssets this.Fetch args.Args this.Ctx
+            match context.Result with
             | Ok response ->
                 return ResizeArray<AssetReadDto> response
             | Error error ->
@@ -147,8 +147,8 @@ type ClientAssetExtensions =
     [<Extension>]
     static member GetAssetAsync (this: Client) (assetId: int64) : Task<AssetReadDto> =
         let worker () : Async<AssetReadDto> = async {
-            let! result = getAsset this.Ctx assetId
-            match result with
+            let! context = getAsset this.Fetch assetId this.Ctx
+            match context.Result with
             | Ok response ->
                 return response
             | Error error ->
@@ -165,8 +165,8 @@ type ClientAssetExtensions =
     [<Extension>]
     static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
-            let! result = createAssets this.Ctx (Seq.toList assets)
-            match result with
+            let! context = createAssets this.Fetch (Seq.toList assets) this.Ctx
+            match context.Result with
             | Ok response ->
                 return ResizeArray<AssetReadDto> response
             | Error error ->
@@ -183,8 +183,8 @@ type ClientAssetExtensions =
     [<Extension>]
     static member DeleteAssetsAsync (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = deleteAssets this.Ctx (Seq.toList assets)
-            match result with
+            let! ctx = deleteAssets this.Fetch (Seq.toList assets) this.Ctx
+            match ctx.Result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)
             | Error error ->
@@ -201,8 +201,8 @@ type ClientAssetExtensions =
     [<Extension>]
     static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<Tuple<int64, ResizeArray<UpdateParams>>>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = updateAssets this.Ctx (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList)
-            match result with
+            let! ctx = updateAssets this.Fetch (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList) this.Ctx
+            match ctx.Result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)
             | Error error ->
