@@ -15,16 +15,16 @@ namespace Tests
     public class Fetcher
     {
         private readonly HttpResponse _response;
-        private Context _ctx = null;
+        private Context<FSharp.Data.HttpResponse> _ctx = null;
 
         public Fetcher(HttpResponse response)
         {
             this._response = response;
         }
 
-        public Context Ctx => _ctx;
+        public Context<FSharp.Data.HttpResponse> Ctx => _ctx;
 
-        public Task<HttpResponse> Fetch(Context ctx)
+        public Task<HttpResponse> Fetch(Context<FSharp.Data.HttpResponse> ctx)
         {
             _ctx = ctx;
             return Task.FromResult(_response);

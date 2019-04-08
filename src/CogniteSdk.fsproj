@@ -5,6 +5,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Async.fs" />
     <Compile Include="Error.fs" />
     <Compile Include="Request.fs" />
     <Compile Include="Common.fs" />

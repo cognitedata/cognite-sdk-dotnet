@@ -15,12 +15,12 @@ type HttpResponse (code: int, text: string) =
 /// Client for accessing the API.
 /// </summary>
 /// <param name="context">Context to use for this session.</param>
-type Client private (context: HttpContext, fetch: HttpHandler) =
+type Client private (fetch: HttpHandler, context: HttpContext) =
     let context = context
-    let fetch = fetch
+    let fetch : HttpHandler = fetch
 
-    /// Create new client with a default context (e.g will connect to CDP when used.)
-    new () = Client (defaultContext, Request.fetch)
+    /// Create new client with a default context (e.g will connect to CDF when used.)
+    new () = Client (Request.fetch, defaultContext)
 
     member internal __.Ctx =
         context
@@ -61,7 +61,8 @@ type Client private (context: HttpContext, fetch: HttpHandler) =
                     match result.Code with
                     | Success ->
                         return { context with Result = Ok httpResponse }
-                    | _ -> return { context with Result = Error (ErrorResponse httpResponse) }
+                    | _ ->
+                        return { context with Result = Error (ErrorResponse httpResponse) }
                 with
                 | ex ->
                     return { context with Result = RequestException ex |> Error }
@@ -69,7 +70,7 @@ type Client private (context: HttpContext, fetch: HttpHandler) =
             return response
         }
 
-        Client.New fetch context
+        Client.New fetch' context
 
     /// <summary>
     /// Creates a Client for accessing the API.
@@ -77,5 +78,5 @@ type Client private (context: HttpContext, fetch: HttpHandler) =
     static member Create () =
         Client ()
 
-    static member private New(fetch: HttpHandler) (context: HttpContext)  =
-        Client (context, fetch)
+    static member private New (fetch: HttpHandler) (context: HttpContext)  =
+        Client (fetch, context)

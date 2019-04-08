@@ -82,9 +82,9 @@ type TimeseriesReadDto = {
     IsStep: bool option
     /// Security categories required in order to access this time series.
     SecurityCategories: int64 list option
-    /// Time when this asset was created in CDP in milliseconds since Jan 1, 1970.
+    /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
-    /// The last time this asset was updated in CDP, in milliseconds since Jan 1, 1970.
+    /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 }
 
@@ -95,6 +95,11 @@ type TimeseriesResponseData = {
 type TimeseriesResponse = {
     Data: TimeseriesResponseData
 }
+
+[<AutoOpen>]
+module Model =
+    [<Literal>]
+    let Url = "/timeseries"
 
 type Aggregate =
     | ContinuousVariance

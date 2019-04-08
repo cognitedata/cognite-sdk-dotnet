@@ -4,6 +4,7 @@ namespace Cognite.Sdk
 open FSharp.Data
 open Thoth.Json.Net
 
+
 module Common =
 
     /// **Description**
@@ -38,4 +39,6 @@ module Common =
             )
             |> Result.map resultMapper
 
-        { Request = context.Request; Result = result}
+        Async.single { Request = context.Request; Result = result}
+
+

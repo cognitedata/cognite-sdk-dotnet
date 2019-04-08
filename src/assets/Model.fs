@@ -28,14 +28,14 @@ type AssetReadDto = {
     /// Set ID of the asset in the source. Only applicable if source is specified.
     /// The combination of source and sourceId must be unique.
     SourceId: string option
-    /// Time when this asset was created in CDP in milliseconds since Jan 1, 1970.
+    /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
-    /// The last time this asset was updated in CDP, in milliseconds since Jan 1, 1970.
+    /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 }
 
 type ParentRef =
-    /// ID of parent asset in CDP, if any.
+    /// ID of parent asset in CDF, if any.
     | ParentId of string
     /// Name of parent. This parent must exist in the same POST request.
     | ParentName of string

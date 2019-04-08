@@ -39,11 +39,31 @@ type Context<'a> = {
 
 type HttpContext = Context<HttpResponse>
 
-type Handler<'a, 'b> = Context<'a> -> Async<Context<'b>>
+type HttpHandler<'a, 'b> = Context<'a> -> Async<Context<'b>>
 
-type Handler<'a> = Handler<'a, 'a>
+type HttpHandler<'a> = HttpHandler<'a, 'a>
 
-type HttpHandler = Handler<HttpResponse>
+type HttpHandler = HttpHandler<HttpResponse>
+
+[<AutoOpen>]
+module Handler =
+    let bind (f: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
+        let! p = a
+        match p.Result with
+        | Ok _ ->
+            return! f p;
+        | Error err ->
+            return { Request = p.Request; Result = Error err }
+    }
+
+    let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
+        fun x -> bind second (first x)
+
+    let (>>=) a b =
+        bind b a
+
+    let (>=>) a b =
+        compose a b
 
 module Request =
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
@@ -91,7 +111,7 @@ module Request =
         }
     let defaultResult =
         Ok {
-            StatusCode = 200
+            StatusCode = 404
             Body = Text String.Empty
             ResponseUrl = String.Empty
             Headers = Map.empty
@@ -100,7 +120,6 @@ module Request =
     let defaultContext : Context<HttpResponse> = {
         Request = defaultRequest
         Result = defaultResult
-//        Fetch = fetch
     }
 
     /// Add HTTP header to context.
@@ -122,16 +141,16 @@ module Request =
     ///   * `context` - The context to add the query to.
     ///
     let addQuery (query: QueryStringParams) (context: HttpContext) =
-        { context with Request = { context.Request with Query = context.Request.Query @ query  } }
+        Async.single { context with Request = { context.Request with Query = context.Request.Query @ query  } }
 
     let addQueryItem (query: string*string) (context: HttpContext) =
-        { context with Request = { context.Request with Query = query :: context.Request.Query  } }
+        Async.single { context with Request = { context.Request with Query = query :: context.Request.Query  } }
 
     let setResource (resource: string) (context: HttpContext) =
-        { context with Request = { context.Request with Resource = resource  } }
+        Async.single { context with Request = { context.Request with Resource = resource  } }
 
     let setBody (body: string) (context: HttpContext) =
-        { context with Request = { context.Request with Body = Some body } }
+        Async.single { context with Request = { context.Request with Body = Some body } }
 
     /// **Description**
     ///
@@ -146,7 +165,11 @@ module Request =
     ///   * `Context`
     ///
     let setMethod (method: HttpMethod) (context: HttpContext) =
-        { context with Request = { context.Request with Method = method } }
+        Async.single { context with Request = { context.Request with Method = method } }
+
+    let GET = setMethod HttpMethod.GET
+    let POST = setMethod HttpMethod.POST
+    let DELETE = setMethod HttpMethod.DELETE
 
     /// **Description**
     ///
@@ -176,8 +199,3 @@ module Request =
     ///
     //let setFetch (fetch: Handler) (context: Context) =
     //    { context with F = fetch }
-
-    //let compose ()
-
-    //[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-    //module HttpResult =

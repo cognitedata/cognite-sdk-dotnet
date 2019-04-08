@@ -13,23 +13,15 @@ module Result =
 
     let isError res = not (isOk res)
 
-    type Context with
-            //{ Request = Request.defaultRequest; Result = response; Fetch = this.Fetch}
-
-        member this.Fetch (ctx: Context) = async {
-            _request <- ctx.Request
-            return ctx
+    let fromJson (json: string) (ctx: HttpContext) =
+        let response = {
+            StatusCode = 200
+            Body = Text json
+            ResponseUrl = String.Empty
+            Headers = Map.empty
+            Cookies = Map.empty
         }
 
-        static member FromJson (json: string) =
-            let response = {
-                StatusCode = 200
-                Body = Text json
-                ResponseUrl = String.Empty
-                Headers = Map.empty
-                Cookies = Map.empty
-            }
-
-            Ok response |> Fetcher
+        Async.single { Request = ctx.Request; Result = Ok response }
 
 
