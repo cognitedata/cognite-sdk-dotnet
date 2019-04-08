@@ -1,4 +1,4 @@
-# Cognite .NET SDK
+# Cognite Data F#usion.NET SDK
 
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/CogniteSdk.NET/master)](https://jenkins.cognite.ai/job/github-builds/job/CogniteSdk.NET/job/master/)
 [![codecov](https://codecov.io/gh/cognitedata/CogniteSdk.NET/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/CogniteSdk.NET)
@@ -29,7 +29,7 @@ To build the sources on Windows:
 
 ## Examples
 
- There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDP project and API key as environment variables in the shell.
+ There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDF project and API key as environment variables in the shell.
 
 ```sh
 export PROJECT=myprojet
@@ -37,6 +37,14 @@ export API_KEY=mysecretkey
 ```
 
 ## Dependencies
+
+Dependencies for all projects are handled using [Paket](https://fsprojects.github.io/Paket/). To install dependencies:
+
+```sh
+> mono .paket/paket.exe install
+```
+
+This will install the main dependencies and sub-dependencies. The main dependencies are:
 
 - [FSharp.Data](https://www.nuget.org/packages/FSharp.Data/) - for HTTP Utilities.
 - [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.

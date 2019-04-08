@@ -3,6 +3,7 @@
 open System
 open FsConfig
 
+open Cognite.Sdk
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
 
@@ -14,16 +15,16 @@ type Config = {
 }
 
 let getAssetsExample ctx = async {
-    let! result = getAssets ctx [ Limit 2 ]
+    let! result = getAssets [ Limit 2 ] ctx
 
     match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
-let updateAssetExample ctx = async {
+let updateAssetExample (ctx : HttpContext) = async {
 
-    let! result = updateAsset ctx 84025677715833721L [ SetName "string3" ]
+    let! result = updateAsset 84025677715833721L [ SetName "string3" ] ctx
 
     match result with
     | Ok res -> printfn "%A" res
@@ -42,7 +43,7 @@ let createAssetsExample ctx = async {
         ParentRef = None
     }]
 
-    let! result = createAssets ctx assets
+    let! result = createAssets assets ctx
     match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err

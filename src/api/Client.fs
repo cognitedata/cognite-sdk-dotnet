@@ -15,14 +15,18 @@ type HttpResponse (code: int, text: string) =
 /// Client for accessing the API.
 /// </summary>
 /// <param name="context">Context to use for this session.</param>
-type Client private (context: Context) =
+type Client private (fetch: HttpHandler, context: HttpContext) =
     let context = context
+    let fetch : HttpHandler = fetch
 
-    /// Create new client with a default context (e.g will connect to CDP when used.)
-    new () = Client defaultContext
+    /// Create new client with a default context (e.g will connect to CDF when used.)
+    new () = Client (Request.fetch, defaultContext)
 
     member internal __.Ctx =
         context
+
+    member internal __.Fetch =
+        fetch
 
     /// <summary>
     /// Add header for accessing the API.
@@ -31,7 +35,7 @@ type Client private (context: Context) =
     member this.AddHeader (name: string, value: string)  =
         context
         |> addHeader (name, value)
-        |> Client
+        |> Client.New fetch
 
     /// <summary>
     /// Set project for accessing the API.
@@ -40,13 +44,13 @@ type Client private (context: Context) =
     member this.SetProject (project: string) =
         context
         |> setProject project
-        |> Client
+        |> Client.New fetch
 
-    member this.SetFetch (fetch: Func<Context, Task<HttpResponse>>) =
+    member this.SetFetch (handler: Func<HttpContext, Task<HttpResponse>>) =
         let fetch' context = async {
             let! response = async {
                 try
-                    let! result = fetch.Invoke(context) |> Async.AwaitTask
+                    let! result = handler.Invoke(context) |> Async.AwaitTask
                     let httpResponse : FSharp.Data.HttpResponse = {
                         StatusCode = result.Code
                         Body = FSharp.Data.Text result.Text
@@ -56,21 +60,23 @@ type Client private (context: Context) =
                     }
                     match result.Code with
                     | Success ->
-                        return Ok httpResponse
-                    | _ -> return Error (ErrorResponse httpResponse)
+                        return { context with Result = Ok httpResponse }
+                    | _ ->
+                        return { context with Result = Error (ErrorResponse httpResponse) }
                 with
                 | ex ->
-                    return RequestException ex |> Error
+                    return { context with Result = RequestException ex |> Error }
             }
             return response
         }
 
-        context
-        |> setFetch fetch'
-        |> Client
+        Client.New fetch' context
 
     /// <summary>
     /// Creates a Client for accessing the API.
     /// </summary>
     static member Create () =
         Client ()
+
+    static member private New (fetch: HttpHandler) (context: HttpContext)  =
+        Client (fetch, context)

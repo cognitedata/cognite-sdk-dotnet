@@ -78,7 +78,7 @@ type Asset =
     static member SetParentName (this: AssetCreateDto, parentName: string) : AssetCreateDto =
         { this with ParentRef = ParentName parentName |> Some }
 
-    /// Set the ID of parent asset in CDP, if any. If parentName or parentRefId are also specified, this will be ignored.
+    /// Set the ID of parent asset in Fusion, if any. If parentName or parentRefId are also specified, this will be ignored.
     [<Extension>]
     static member SetParentId (this: AssetCreateDto, parentId: string) : AssetCreateDto =
         { this with ParentRef = ParentId parentId |> Some }
@@ -129,11 +129,12 @@ type ClientAssetExtensions =
     [<Extension>]
     static member GetAssetsAsync (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
-            let! result = getAssets this.Ctx args.Args
+            let! result = Internal.getAssetsResult args.Args this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return ResizeArray<AssetReadDto> response
             | Error error ->
+                printf "%A" error
                 return raise (Error.error2Exception error)
         }
 
@@ -147,7 +148,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member GetAssetAsync (this: Client) (assetId: int64) : Task<AssetReadDto> =
         let worker () : Async<AssetReadDto> = async {
-            let! result = getAsset this.Ctx assetId
+            let! result = Internal.getAssetResult assetId this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -165,7 +166,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
         let worker () : Async<AssetReadDto List> = async {
-            let! result = createAssets this.Ctx (Seq.toList assets)
+            let! result = Internal.createAssetsResult (Seq.toList assets) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return ResizeArray<AssetReadDto> response
@@ -183,7 +184,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member DeleteAssetsAsync (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = deleteAssets this.Ctx (Seq.toList assets)
+            let! result = Internal.deleteAssetsResult (Seq.toList assets) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)
@@ -201,7 +202,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<Tuple<int64, ResizeArray<UpdateParams>>>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = updateAssets this.Ctx (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList)
+            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)

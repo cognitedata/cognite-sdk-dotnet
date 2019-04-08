@@ -4,6 +4,7 @@ namespace Cognite.Sdk
 open FSharp.Data
 open Thoth.Json.Net
 
+
 module Common =
 
     /// **Description**
@@ -20,18 +21,24 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse decoder (result: Result<HttpResponse, ResponseError>) =
-        result
-        |> Result.map (fun response ->
-            match response.Body with
-            | Text text ->
-                text
-            | Binary _ ->
-                failwith "binary format not supported"
-        )
-        |> Result.bind (fun res ->
-            let ret = Decode.fromString decoder res
-            match ret with
-            | Error error -> DecodeError error |> Error
-            | Ok value -> Ok value
-        )
+    let decodeResponse decoder resultMapper (context: HttpContext) =
+        let result =
+            context.Result
+            |> Result.map (fun response ->
+                match response.Body with
+                | Text text ->
+                    text
+                | Binary _ ->
+                    failwith "binary format not supported"
+            )
+            |> Result.bind (fun res ->
+                let ret = Decode.fromString decoder res
+                match ret with
+                | Error error -> DecodeError error |> Error
+                | Ok value -> Ok value
+            )
+            |> Result.map resultMapper
+
+        Async.single { Request = context.Request; Result = result}
+
+

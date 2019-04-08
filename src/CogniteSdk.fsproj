@@ -5,9 +5,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Async.fs" />
     <Compile Include="Error.fs" />
-    <Compile Include="Common.fs" />
     <Compile Include="Request.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="timeseries\Model.fs" />
     <Compile Include="timeseries\Json.fs" />
     <Compile Include="timeseries\Methods.fs" />

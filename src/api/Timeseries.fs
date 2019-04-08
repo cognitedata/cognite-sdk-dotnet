@@ -173,7 +173,7 @@ type ClientTimeseriesExtensions =
     [<Extension>]
     static member QueryTimeseriesAsync (this: Client) (name: string) (query: Query) : Task<ResizeArray<PointResponseDataPoints>> =
         let worker () : Async<ResizeArray<PointResponseDataPoints>> = async {
-            let! result = gueryTimeseries this.Ctx name (List.ofSeq query.Query)
+            let! result = Internal.queryTimeseriesResult name (List.ofSeq query.Query) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response |> ResizeArray
@@ -192,7 +192,7 @@ type ClientTimeseriesExtensions =
     [<Extension>]
     static member InsertDataByNameAsync (this: Client) (name: string) (items: ResizeArray<DataPointCreateDto>) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = insertDataByName this.Ctx name (List.ofSeq items)
+            let! result = Internal.insertDataByNameResult name (List.ofSeq items) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode
@@ -210,7 +210,7 @@ type ClientTimeseriesExtensions =
     [<Extension>]
     static member CreateTimeseriesAsync (this: Client) (items: ResizeArray<TimeseriesCreateDto>) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = createTimeseries this.Ctx (List.ofSeq items)
+            let! result = Internal.createTimeseriesResult (List.ofSeq items) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode
@@ -228,7 +228,7 @@ type ClientTimeseriesExtensions =
     [<Extension>]
     static member GetTimeseriesAsync (this: Client) (id: int64) : Task<TimeseriesReadDto> =
         let worker () : Async<TimeseriesReadDto> = async {
-            let! result = getTimeseries this.Ctx id
+            let! result = Internal.getTimeseriesResult id this.Fetch this.Ctx
 
             match result with
             | Ok response ->
@@ -247,7 +247,7 @@ type ClientTimeseriesExtensions =
     [<Extension>]
     static member DeleteTimeseriesAsync (this: Client) (name: string) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = deleteTimeseries this.Ctx name
+            let! result = Internal.deleteTimeseriesResult name this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode

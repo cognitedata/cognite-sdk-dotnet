@@ -9,98 +9,94 @@ open Newtonsoft.Json
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Request
+open System.Net.Http
 
 
 [<Fact>]
 let ``Get asset is Ok``() = async {
     // Arrange
-    let json = File.ReadAllText ("Assets.json")
-    let fetcher = Fetcher.FromJson json
-
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Result.fromJson json
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = getAsset ctx 42L
+    let! response = Internal.getAsset 42L fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = GET @>
-    test <@ fetcher.Ctx.Value.Resource = "/assets/42" @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ Result.isOk response.Result @>
+    test <@ response.Request.Method = HttpMethod.GET @>
+    test <@ response.Request.Resource = "/assets/42" @>
+    test <@ response.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
 let ``Get invalid asset is Error`` () = async {
     // Arrenge
-    let json = File.ReadAllText("InvalidAsset.json")
-    let fetcher = Fetcher.FromJson json
+    let json = File.ReadAllText "InvalidAsset.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
 
     // Act
-    let! result = getAsset ctx 42L
+    let! response = Internal.getAsset 42L fetch ctx
 
     // Assert
-    test <@ Result.isError result @>
+    test <@ Result.isError response.Result @>
 }
 
 [<Fact>]
 let ``Get asset with extra fields is Ok`` () = async {
     // Arrenge
-    let json = File.ReadAllText("AssetExtra.json")
-    let fetcher = Fetcher.FromJson json
+    let json = File.ReadAllText "AssetExtra.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = getAsset ctx 42L
+    let! response = Internal.getAsset 42L fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
+    test <@ Result.isOk response.Result @>
 }
 
 [<Fact>]
 let ``Get asset with missing optional fields is Ok`` () = async {
     // Arrenge
 
-    let fetcher = Fetcher.FromJson (File.ReadAllText("AssetOptional.json"))
+    let json = File.ReadAllText "AssetOptional.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = getAsset ctx 42L
+    let! response = Internal.getAsset 42L fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
+    test <@ Result.isOk response.Result @>
 }
 
 [<Fact>]
 let ``Get assets is Ok`` () = async {
     // Arrenge
-    let json = File.ReadAllText("Assets.json")
-    let fetcher = Fetcher.FromJson json
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = getAssets ctx [
+    let! res =
+        (fetch, ctx) ||> Internal.getAssets [
         Name "string"
         Path "path"
         Description "mydescription"
@@ -113,13 +109,12 @@ let ``Get assets is Ok`` () = async {
     ]
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = GET @>
-    test <@ fetcher.Ctx.Value.Resource = "/assets" @>
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = HttpMethod.GET @>
+    test <@ res.Request.Resource = "/assets" @>
 
     let meta =  JsonConvert.SerializeObject(Map.ofSeq [("key", "value")]);
-    test <@ fetcher.Ctx.Value.Query = [
+    test <@ res.Request.Query = [
         ("name", "string")
         ("path", "path")
         ("desc", "mydescription")
@@ -135,36 +130,32 @@ let ``Get assets is Ok`` () = async {
 [<Fact>]
 let ``Create assets empty is Ok`` () = async {
     // Arrenge
-    let json = File.ReadAllText("Assets.json")
-    let fetcher = Fetcher.FromJson json
-    let fetch = fetcher.Fetch
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetch
 
     // Act
-    let! result = createAssets ctx []
+    let! res = Internal.createAssets [] fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = POST @>
-    test <@ fetcher.Ctx.Value.Resource = "/assets" @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Resource = "/assets" @>
+    test <@ res.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
 let ``Create single asset is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
-    let fetcher = Fetcher.FromJson json
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     let asset: AssetCreateDto = {
         Name = "myAsset"
@@ -177,16 +168,15 @@ let ``Create single asset is Ok`` () = async {
     }
 
     // Act
-    let! result = createAssets ctx [ asset ]
+    let! res = Internal.createAssets [ asset ] fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = POST @>
-    test <@ fetcher.Ctx.Value.Resource = "/assets" @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Resource = "/assets" @>
+    test <@ res.Request.Query.IsEmpty @>
 
-    match result with
+    match res.Result with
     | Ok assets ->
         test <@ assets.Length = 1 @>
     | Error error ->
@@ -196,47 +186,43 @@ let ``Create single asset is Ok`` () = async {
 [<Fact>]
 let ``Update single asset with no updates is Ok`` () = async {
     // Arrenge
-    let json = File.ReadAllText("Assets.json")
-    let fetcher = Fetcher.FromJson json
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = updateAsset ctx 42L [  ]
+    let! res = Internal.updateAsset 42L [] fetch ctx
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = POST @>
-    test <@ fetcher.Ctx.Value.Resource = (sprintf "/assets/%d/update" 42L) @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ res.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
 let ``Update single asset with is Ok`` () = async {
     // Arrenge
-    let json = File.ReadAllText("Assets.json")
-    let fetcher = Fetcher.FromJson json
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Result.fromJson json
 
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
-        |> setFetch fetcher.Fetch
 
     // Act
-    let! result = updateAsset ctx 42L [
+    let! res = (fetch, ctx) ||> Internal.updateAsset  42L [
         SetName "New name"
         SetDescription (Some "New description")
         SetSource None
     ]
 
     // Assert
-    test <@ Result.isOk result @>
-    test <@ Option.isSome fetcher.Ctx @>
-    test <@ fetcher.Ctx.Value.Method = POST @>
-    test <@ fetcher.Ctx.Value.Resource = (sprintf "/assets/%d/update" 42L) @>
-    test <@ fetcher.Ctx.Value.Query.IsEmpty @>
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ res.Request.Query.IsEmpty @>
 }

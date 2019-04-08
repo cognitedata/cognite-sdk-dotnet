@@ -54,9 +54,9 @@ namespace Tests
             var result = await client.GetAssetsAsync(assetArgs);
 
             // Assert
-            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
-            Assert.Equal("/assets", fetcher.Ctx.Resource);
-            var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Query);
+            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Request.Method);
+            Assert.Equal("/assets", fetcher.Ctx.Request.Resource);
+            var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Request.Query);
             Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()).ToList());
             Assert.Single(result);
         }
@@ -131,10 +131,10 @@ namespace Tests
             var result = await client.GetAssetAsync(42L);
 
             // Assert
-            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Method);
-            Assert.Equal("/assets/42", fetcher.Ctx.Resource);
-            Assert.Equal(fetcher.Ctx.Query, new List<Tuple<string, string>>());
-            Console.WriteLine(fetcher.Ctx.Body);
+            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Request.Method);
+            Assert.Equal("/assets/42", fetcher.Ctx.Request.Resource);
+            Assert.Equal(fetcher.Ctx.Request.Query, new List<Tuple<string, string>>());
+            Console.WriteLine(fetcher.Ctx.Request.Body);
         }
 
         [Fact]
