@@ -134,7 +134,6 @@ namespace Tests
             Assert.Equal(HttpMethod.GET, fetcher.Ctx.Request.Method);
             Assert.Equal("/assets/42", fetcher.Ctx.Request.Resource);
             Assert.Equal(fetcher.Ctx.Request.Query, new List<Tuple<string, string>>());
-            Console.WriteLine(fetcher.Ctx.Request.Body);
         }
 
         [Fact]
@@ -193,7 +192,6 @@ namespace Tests
             Assert.Single(result);
         }
 
-        /*
         [Fact]
         public async Task TestUpdateAssets()
         {
@@ -210,15 +208,15 @@ namespace Tests
                 .SetProject(project)
                 .SetFetch(fetcher.Fetch);
 
-            var assets = new List<Tuple<Int64, List<Model.UpdateParams>>> {
-                Tuple.Create(42L, new Model.UpdateParams. ())
+            var assets = new List<AssetUpdate> {
+                new AssetUpdate(42L)
             };
 
             // Act
             var result = await client.UpdateAssetsAsync (assets);
 
             // Assert
-            Assert.Single(result);
-        } */
+            Assert.Equal(200, result.Code);
+        }
     }
 }

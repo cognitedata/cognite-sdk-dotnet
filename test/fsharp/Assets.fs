@@ -16,7 +16,7 @@ open System.Net.Http
 let ``Get asset is Ok``() = async {
     // Arrange
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
@@ -35,7 +35,7 @@ let ``Get asset is Ok``() = async {
 let ``Get invalid asset is Error`` () = async {
     // Arrenge
     let json = File.ReadAllText "InvalidAsset.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -53,7 +53,7 @@ let ``Get invalid asset is Error`` () = async {
 let ``Get asset with extra fields is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "AssetExtra.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -71,7 +71,7 @@ let ``Get asset with missing optional fields is Ok`` () = async {
     // Arrenge
 
     let json = File.ReadAllText "AssetOptional.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -88,7 +88,7 @@ let ``Get asset with missing optional fields is Ok`` () = async {
 let ``Get assets is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -131,7 +131,7 @@ let ``Get assets is Ok`` () = async {
 let ``Create assets empty is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -151,7 +151,7 @@ let ``Create assets empty is Ok`` () = async {
 let ``Create single asset is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -187,7 +187,7 @@ let ``Create single asset is Ok`` () = async {
 let ``Update single asset with no updates is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
@@ -207,7 +207,7 @@ let ``Update single asset with no updates is Ok`` () = async {
 let ``Update single asset with is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext

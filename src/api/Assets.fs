@@ -9,6 +9,7 @@ open System.Threading.Tasks;
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
+open System.Collections.Generic
 
 [<Extension>]
 ///Helper methods for creating Assets.
@@ -114,6 +115,47 @@ type AssetArgs (args: GetParams list) =
     static member Empty () =
         AssetArgs []
 
+type AssetUpdate private (id : int64, updates : UpdateParams list) =
+    let id = id
+    let updates = updates
+
+    let updateParams : UpdateParams list = []
+
+    new (id : int64) =
+        AssetUpdate (id, [])
+
+    member internal this.Id = id
+
+    member internal this.Updates = updates
+
+    /// Set the name of the asset. Often referred to as tag.
+    member this.SetName (name : string) =
+        AssetUpdate (id, SetName name :: updates)
+
+    member this.SetDescription (desc : string) =
+        /// Set or clear the description of asset.
+       Some desc |> SetDescription
+
+    member this.ClearDescription () =
+        SetDescription None
+
+    member this.SetMetaData (metaData : Dictionary<string, string>) =
+        /// Set or clear custom, application specific metadata. String key -> String value
+        metaData
+        |> Seq.map (|KeyValue|)
+        |> Map.ofSeq
+        |> Some
+        |> SetMetaData
+
+    member this.SetSource (source : string) =
+        // Set or clear the source of this asset
+        Some source |> SetSource
+
+    /// Set or clear ID of the asset in the source. Only applicable if source is specified.
+    /// The combination of source and sourceId must be unique.
+    member this.SetSourceId (sourceId : string) =
+        Some sourceId |> SetSourceId
+
 [<Extension>]
 type ClientAssetExtensions =
     /// <summary>
@@ -134,7 +176,6 @@ type ClientAssetExtensions =
             | Ok response ->
                 return ResizeArray<AssetReadDto> response
             | Error error ->
-                printf "%A" error
                 return raise (Error.error2Exception error)
         }
 
@@ -200,9 +241,9 @@ type ClientAssetExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<Tuple<int64, ResizeArray<UpdateParams>>>) : Task<HttpResponse> =
+    static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<AssetUpdate>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun (x, y) -> x, Seq.toList y) |> Seq.toList) this.Fetch this.Ctx
+            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates) |> Seq.toList) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)

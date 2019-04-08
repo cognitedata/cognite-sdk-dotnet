@@ -13,6 +13,7 @@ module Result =
 
     let isError res = not (isOk res)
 
+module Fetch =
     let fromJson (json: string) (ctx: HttpContext) =
         let response = {
             StatusCode = 200

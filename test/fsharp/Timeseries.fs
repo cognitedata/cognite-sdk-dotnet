@@ -15,7 +15,7 @@ open Cognite.Sdk.Request
 let ``Create timeseries is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
-    let fetch = Result.fromJson json
+    let fetch = Fetch.fromJson json
 
     let ctx =
         defaultContext
