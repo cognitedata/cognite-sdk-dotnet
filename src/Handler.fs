@@ -21,19 +21,19 @@ module Handler =
     [<Literal>]
     let DefaultMaxBackoffDelay = 120<UnitSymbols.s>
 
-    let rand = System.Random()
+    let rand = System.Random ()
 
     let bind (f: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
         let! p = a
         match p.Result with
         | Ok _ ->
-            return! f p;
+            return! f p
         | Error err ->
             return { Request = p.Request; Result = Error err }
     }
 
     let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
-        fun x -> bind second (first x)
+        fun ctx -> bind second (first ctx)
 
     let (>>=) a b =
         bind b a
@@ -71,17 +71,17 @@ module Handler =
     /// **Output Type**
     ///   * `Async<Context<'a>>`
     ///
-    let rec retry (initialDelay: int<ms>) (maxRetries : int) (handler: Context<'a> -> Async<Result<'b, ResponseError>>) (ctx: Context<'a>) : Async<Result<'b, ResponseError>> = async {
+    let rec retry (initialDelay: int<ms>) (maxRetries : int) (handler: Context<'a> -> Async<Context<'b>>) (ctx: Context<'a>) : Async<Context<'b>> = async {
         // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L170
 
         let exponentialDelay = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let randomDelayScale = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let nextDelay = rand.Next(int randomDelayScale) * 1<ms> + exponentialDelay
 
-        let! response = handler ctx
+        let! ctx' = handler ctx
 
-        match response with
-        | Ok _ -> return response
+        match ctx'.Result with
+        | Ok _ -> return ctx'
         | Error err ->
             match err with
             | ErrorResponse httpResponse ->
@@ -89,7 +89,7 @@ module Handler =
                     do! int initialDelay |> Async.Sleep
                     return! retry nextDelay (maxRetries - 1) handler ctx
                 else
-                    return response
+                    return ctx'
             | RequestException error ->
                 match error with
                 | :? System.Net.WebException as ex ->
@@ -98,9 +98,9 @@ module Handler =
 
                     return! retry nextDelay (maxRetries - 1) handler ctx
                 | _ ->
-                    return response
+                    return ctx'
             | _ ->
-                return response
+                return ctx'
     }
 
     /// **Description**
@@ -116,11 +116,11 @@ module Handler =
     ///
     /// **Exceptions**
     ///
-    let concurrent (handlers : (Context<'a> -> Async<Result<'b, ResponseError>>) seq) (ctx: Context<'a>) : Async<Result<'b,ResponseError> seq> = async {
+    let concurrent (handlers : (Context<'a> -> Async<Context<'b>>) seq) (ctx: Context<'a>) : Async<Context<'b seq>> = async {
         let! res =
             Seq.map (fun handler -> handler ctx) handlers
             |> Async.Parallel
             |> Async.map Seq.ofArray
 
-        return res
+        return ctx
     }

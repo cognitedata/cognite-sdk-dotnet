@@ -6,7 +6,7 @@ open FsConfig
 open Cognite.Sdk
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
-open Cognite.Sdk.Builder
+//open Cognite.Sdk.Builder
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -44,19 +44,24 @@ let createAssetsExample ctx = async {
         ParentRef = None
     }]
 
-    let req = builder {
-        let! a  = Internal.createAssets assets
-        return a
+    let request = req {
+        let! ga = createAssets assets
+
+        let! gb = Handler.concurrent [
+            createAssets assets
+            |> Handler.retry 500<ms> 5
+        ]
+
+        return ga
     }
 
-
-    let req = createAssets assets |> Handler.retry 500<ms> 5
 
     let request = Handler.concurrent [
         createAssets assets.[0..9] |> Handler.retry 500<ms> 5
         createAssets assets.[10..19] |> Handler.retry 500<ms> 5
         createAssets assets.[20..29] |> Handler.retry 500<ms> 5
     ]
+
     let! result = request ctx
 
     //match result with

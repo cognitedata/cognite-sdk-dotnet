@@ -66,7 +66,7 @@ let ``Delete timeseries is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.DELETE @> // FIXME: Check for v5
-    test <@ res.Request.Resource = "/timeseries/0" @>
+    test <@ res.Request.Method = HttpMethod.DELETE @>
+    test <@ res.Request.Resource = "/timeseries/erase" @>
     test <@ res.Request.Query.IsEmpty @>
 }

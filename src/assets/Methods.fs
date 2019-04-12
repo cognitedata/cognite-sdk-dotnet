@@ -116,8 +116,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Result<AssetReadDto list, ResponseError>> =
-        Internal.getAssetsResult args Request.fetch ctx
+    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetReadDto list>> =
+        Internal.getAssets args Request.fetch ctx
 
     /// **Description**
     ///
@@ -130,8 +130,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (assetId: int64) (ctx: HttpContext) : Async<Result<AssetReadDto, ResponseError>> =
-        Internal.getAssetResult assetId Request.fetch ctx
+    let getAsset (assetId: int64) (ctx: HttpContext) : Async<Context<AssetReadDto>> =
+        Internal.getAsset assetId Request.fetch ctx
 
     /// **Description**
     ///
@@ -145,7 +145,7 @@ module Methods =
     ///   * `Async<Result<Response,exn>>`
     ///
     let createAssets (assets: AssetCreateDto list) (ctx: HttpContext) =
-        Internal.createAssetsResult assets Request.fetch ctx
+        Internal.createAssets assets Request.fetch ctx
 
     /// **Description**
     ///
@@ -159,7 +159,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let deleteAssets (assets: int64 list) (ctx: HttpContext) =
-        Internal.deleteAssetsResult assets Request.fetch ctx
+        Internal.deleteAssets assets Request.fetch ctx
 
     /// **Description**
     ///
@@ -174,7 +174,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let updateAsset (assetId: int64) (args: UpdateParams list) (ctx: HttpContext) =
-        Internal.updateAssetResult assetId args Request.fetch ctx
+        Internal.updateAsset assetId args Request.fetch ctx
 
     /// **Description**
     ///
@@ -189,4 +189,4 @@ module Methods =
     ///   * `Async<Result<string,exn>>`
     ///
     let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
-        Internal.updateAssetsResult args
+        Internal.updateAssets args

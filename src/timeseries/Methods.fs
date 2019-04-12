@@ -62,7 +62,7 @@ module Internal =
         |> Async.map (fun ctx -> ctx.Result)
 
     let deleteTimeseries (name: string) (fetch: HttpHandler) =
-        let url = Url + sprintf "/data/%s" name
+        let url = Url + sprintf "/%s" name
 
         DELETE
         >=> setResource url

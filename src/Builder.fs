@@ -1,24 +1,28 @@
 namespace Cognite.Sdk
 
-module Functional =
-    let bind (f: 'a -> Context<'b>) (a: Context<'a>) : Context<'b> =
-        match a.Result with
-        | Ok res ->
-            f res
-            //let ctx = f res
-            //{ Request = a.Request; Result = ctx.Result }
-        | Error err ->
-            { Request = a.Request; Result = Error err }
+open FSharp.Data
 
-type ContextBuilder() =
-    member this.Zero () : HttpContext = Request.defaultContext
-    member this.Return (res: 'a) : Context<'a> = { Request = Request.defaultRequest; Result = Ok res }
-    //    Combine.concatSeq [xs; ys]
+
+type RequestBuilder () =
+    member this.Zero () : HttpHandler = fun _ -> Async.single Request.defaultContext
+    member this.Return (res: 'a) : (_ -> Async<Context<'a>>) = fun _ -> Async.single { Request = Request.defaultRequest; Result = Ok res }
+
+    member this.Return (req: HttpRequest) : HttpHandler = fun ctx -> Async.single { Request = Request.defaultRequest; Result = Request.defaultResult }
+
     member this.Delay (fn) = fn ()
-    member this.Bind(source: Context<'a>, fn: 'a -> Context<'b>) : Context<'b> =
-        Functional.bind fn source
+
+    member this.Bind(source: HttpHandler<'a, 'b>, fn: 'b -> HttpHandler<'a, 'c>) :  HttpHandler<'a, 'c> =
+        let fn' (acb: Async<Context<'b>>) (ctx: Context<'a>) : Async<Context<'c>> = async {
+            let! cb = acb
+            match cb.Result with
+            | Ok res ->
+                return! (fn res) ctx
+            | Error error ->
+                return { Request = cb.Request; Result = Error error }
+        }
+        (fun ctx -> fn' (source ctx) ctx)
 
 [<AutoOpen>]
 module Builder =
     /// Query builder for an async reactive event source
-    let builder = ContextBuilder ()
+    let req = RequestBuilder ()
