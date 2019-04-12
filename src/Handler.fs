@@ -1,0 +1,126 @@
+namespace Cognite.Sdk
+
+open FSharp.Data
+open Microsoft.FSharp.Data.UnitSystems.SI
+
+[<Measure>] type ms
+
+type HttpHandler<'a, 'b> = Context<'a> -> Async<Context<'b>>
+
+type HttpHandler<'a> = HttpHandler<'a, 'a>
+
+type HttpHandler = HttpHandler<HttpResponse>
+
+
+[<AutoOpen>]
+module Handler =
+    let private secondsInMilliseconds = 1000<ms/UnitSymbols.s>  // relation between seconds and millisecond
+
+    [<Literal>]
+    let DefaultInitialRetryDelay = 150<ms>
+    [<Literal>]
+    let DefaultMaxBackoffDelay = 120<UnitSymbols.s>
+
+    let rand = System.Random()
+
+    let bind (f: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
+        let! p = a
+        match p.Result with
+        | Ok _ ->
+            return! f p;
+        | Error err ->
+            return { Request = p.Request; Result = Error err }
+    }
+
+    let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
+        fun x -> bind second (first x)
+
+    let (>>=) a b =
+        bind b a
+
+    let (>=>) a b =
+        compose a b
+
+    // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L198
+    let shouldRetry = function
+        // @larscognite: Retry on 429,
+        | 429 -> true
+        // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
+        // we lose connection to db, so 401 can be transient
+        | 401 -> true
+        // 500 is hard to say, but we should avoid having those in the api
+        | 500 ->
+          true // we get random and transient 500 responses often enough that it's worth retrying them.
+        // 502 and 503 are usually transient.
+        | 502 -> true
+        | 503 -> true
+
+        // do not retry other responses.
+        | _ -> false
+
+    /// **Description**
+    ///
+    /// Retries the given HTTP handler up to `maxRetries` retries with
+    /// exponential backoff and up to 2 minute with randomness.
+    ///
+    /// **Parameters**
+    ///   * `maxRetries` - max number of retries.
+    ///   * `initialDelay` -
+    ///   * `ctx` - parameter of type `Context<'a>`
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<'a>>`
+    ///
+    let rec retry (initialDelay: int<ms>) (maxRetries : int) (handler: Context<'a> -> Async<Result<'b, ResponseError>>) (ctx: Context<'a>) : Async<Result<'b, ResponseError>> = async {
+        // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L170
+
+        let exponentialDelay = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
+        let randomDelayScale = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
+        let nextDelay = rand.Next(int randomDelayScale) * 1<ms> + exponentialDelay
+
+        let! response = handler ctx
+
+        match response with
+        | Ok _ -> return response
+        | Error err ->
+            match err with
+            | ErrorResponse httpResponse ->
+                if shouldRetry httpResponse.StatusCode && maxRetries > 0 then
+                    do! int initialDelay |> Async.Sleep
+                    return! retry nextDelay (maxRetries - 1) handler ctx
+                else
+                    return response
+            | RequestException error ->
+                match error with
+                | :? System.Net.WebException as ex ->
+                    if maxRetries > 0 then
+                        do! int initialDelay |> Async.Sleep
+
+                    return! retry nextDelay (maxRetries - 1) handler ctx
+                | _ ->
+                    return response
+            | _ ->
+                return response
+    }
+
+    /// **Description**
+    ///
+    /// 10000 concurrently. 500-100 in each.
+    ///
+    /// **Parameters**
+    ///   * `handlers` - parameter of type `HttpHandler list`
+    ///   * `ctx` - parameter of type `Context<'a>`
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<'a>>`
+    ///
+    /// **Exceptions**
+    ///
+    let concurrent (handlers : (Context<'a> -> Async<Result<'b, ResponseError>>) seq) (ctx: Context<'a>) : Async<Result<'b,ResponseError> seq> = async {
+        let! res =
+            Seq.map (fun handler -> handler ctx) handlers
+            |> Async.Parallel
+            |> Async.map Seq.ofArray
+
+        return res
+    }

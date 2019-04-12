@@ -4,7 +4,6 @@ namespace Cognite.Sdk
 open FSharp.Data
 open Thoth.Json.Net
 
-
 module Common =
 
     /// **Description**
@@ -41,4 +40,6 @@ module Common =
 
         Async.single { Request = context.Request; Result = result}
 
+    let encodeToString encoder =
+        Encode.toString 0 encoder
 

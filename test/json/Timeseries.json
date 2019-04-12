@@ -1,0 +1,21 @@
+{
+    "data": {
+        "items": [
+            {
+                "name": "name",
+                "isString": true,
+                "metadata": {},
+                "unit": "m/s",
+                "assetId": 0,
+                "isStep": true,
+                "description": "timeseries description",
+                "securityCategories": [
+                    0
+                ],
+                "id": 0,
+                "createdTime": 0,
+                "lastUpdatedTime": 0
+            }
+        ]
+    }
+}

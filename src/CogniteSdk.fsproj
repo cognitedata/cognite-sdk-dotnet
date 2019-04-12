@@ -8,7 +8,9 @@
     <Compile Include="Async.fs" />
     <Compile Include="Error.fs" />
     <Compile Include="Request.fs" />
+    <Compile Include="Handler.fs" />
     <Compile Include="Common.fs" />
+    <Compile Include="Builder.fs" />
     <Compile Include="timeseries\Model.fs" />
     <Compile Include="timeseries\Json.fs" />
     <Compile Include="timeseries\Methods.fs" />

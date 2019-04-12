@@ -6,6 +6,7 @@ open FsConfig
 open Cognite.Sdk
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
+open Cognite.Sdk.Builder
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -43,10 +44,25 @@ let createAssetsExample ctx = async {
         ParentRef = None
     }]
 
-    let! result = createAssets assets ctx
-    match result with
-    | Ok res -> printfn "%A" res
-    | Error err -> printfn "Error: %A" err
+    let req = builder {
+        let! a  = Internal.createAssets assets
+        return a
+    }
+
+
+    let req = createAssets assets |> Handler.retry 500<ms> 5
+
+    let request = Handler.concurrent [
+        createAssets assets.[0..9] |> Handler.retry 500<ms> 5
+        createAssets assets.[10..19] |> Handler.retry 500<ms> 5
+        createAssets assets.[20..29] |> Handler.retry 500<ms> 5
+    ]
+    let! result = request ctx
+
+    //match result with
+    //| Ok res -> printfn "%A" res
+    //| Error err -> printfn "Error: %A" err
+    ()
 }
 
 [<EntryPoint>]
@@ -68,3 +84,6 @@ let main argv =
     } |> Async.RunSynchronously
 
     0 // return an integer exit code
+
+
+

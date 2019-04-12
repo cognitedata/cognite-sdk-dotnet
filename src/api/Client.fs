@@ -10,9 +10,8 @@ type HttpResponse (code: int, text: string) =
     member this.Code = code
     member this.Text = text
 
-
 /// <summary>
-/// Client for accessing the API.
+/// Client for making requests to the API.
 /// </summary>
 /// <param name="context">Context to use for this session.</param>
 type Client private (fetch: HttpHandler, context: HttpContext) =
@@ -46,6 +45,17 @@ type Client private (fetch: HttpHandler, context: HttpContext) =
         |> setProject project
         |> Client.New fetch
 
+    /// **Description**
+    ///
+    /// Set the fetch method to be used for making requests. Should not
+    /// be needed for most scenarios, but nice for unit-testing.
+    ///
+    /// **Parameters**
+    ///   * `handler` - Fetch handler to use for making requests.
+    ///
+    /// **Output Type**
+    ///   * `Client`
+    ///
     member this.SetFetch (handler: Func<HttpContext, Task<HttpResponse>>) =
         let fetch' context = async {
             let! response = async {
