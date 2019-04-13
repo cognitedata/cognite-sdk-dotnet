@@ -16,18 +16,18 @@ type Config = {
 }
 
 let getAssetsExample ctx = async {
-    let! result = getAssets [ Limit 2 ] ctx
+    let! rsp = getAssets [ Limit 2 ] ctx
 
-    match result with
+    match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let updateAssetExample (ctx : HttpContext) = async {
 
-    let! result = updateAsset 84025677715833721L [ SetName "string3" ] ctx
+    let! rsp = updateAsset 84025677715833721L [ SetName "string3" ] ctx
 
-    match result with
+    match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }

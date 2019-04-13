@@ -41,6 +41,35 @@ module Handler =
     let (>=>) a b =
         compose a b
 
+    let traverseContext f list =
+
+        // define the monadic functions
+        let (>>=) ctx f =
+            match ctx.Result with
+            | Ok res ->
+                f res
+            | Error err ->
+                { Request = ctx.Request; Result = Error err }
+
+        let retn (a : 'a) : Context<'a> =
+            { Request = Request.defaultRequest; Result = Ok a }
+
+        // define a "cons" function
+        let cons head tail = head :: tail
+
+        // right fold over the list
+        let initState = retn []
+        let folder head tail =
+            f head >>= (fun h ->
+                tail >>= (fun t ->
+                    retn ( cons h t)
+                )
+            )
+
+        List.foldBack folder list initState
+
+    let sequenceContext (ctx : Context<'a> list) : Context<'a list> = traverseContext id ctx
+
     // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L198
     let shouldRetry = function
         // @larscognite: Retry on 429,
@@ -116,11 +145,11 @@ module Handler =
     ///
     /// **Exceptions**
     ///
-    let concurrent (handlers : (Context<'a> -> Async<Context<'b>>) seq) (ctx: Context<'a>) : Async<Context<'b seq>> = async {
+    let concurrent (handlers : (Context<'a> -> Async<Context<'b>>) seq) (ctx: Context<'a>) : Async<Context<'b list>> = async {
         let! res =
             Seq.map (fun handler -> handler ctx) handlers
             |> Async.Parallel
-            |> Async.map Seq.ofArray
+            |> Async.map List.ofArray
 
-        return ctx
+        return res |> sequenceContext
     }

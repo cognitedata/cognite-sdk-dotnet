@@ -90,7 +90,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let insertDataByName (name: string) (items: DataPointCreateDto list) (ctx: HttpContext) =
-        Internal.insertDataByNameResult name items Request.fetch ctx
+        Internal.insertDataByName name items Request.fetch ctx
 
     /// **Description**
     ///
@@ -104,7 +104,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let createTimeseries (items: TimeseriesCreateDto list) (ctx: HttpContext) =
-        Internal.createTimeseriesResult items Request.fetch ctx
+        Internal.createTimeseries items Request.fetch ctx
 
     /// **Description**
     ///
@@ -120,7 +120,7 @@ module Methods =
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
     let getTimeseries (id: int64) (ctx: HttpContext) =
-        Internal.getTimeseriesResult id Request.fetch ctx
+        Internal.getTimeseries id Request.fetch ctx
 
     /// **Description**
     ///
@@ -150,4 +150,4 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let deleteTimeseries (name: string) (ctx: HttpContext) =
-        Internal.deleteTimeseriesResult name Request.fetch ctx
+        Internal.deleteTimeseries name Request.fetch ctx

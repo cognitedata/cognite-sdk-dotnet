@@ -1,8 +1,5 @@
 namespace Cognite.Sdk
 
-open FSharp.Data
-
-
 type RequestBuilder () =
     member this.Zero () : HttpHandler = fun _ -> Async.single Request.defaultContext
     member this.Return (res: 'a) : (_ -> Async<Context<'a>>) = fun _ -> Async.single { Request = Request.defaultRequest; Result = Ok res }
@@ -16,13 +13,13 @@ type RequestBuilder () =
             let! cb = acb
             match cb.Result with
             | Ok res ->
-                return! (fn res) ctx
+                return! ctx |> fn res
             | Error error ->
                 return { Request = cb.Request; Result = Error error }
         }
-        (fun ctx -> fn' (source ctx) ctx)
+        fun ctx -> fn' (source ctx) ctx
 
 [<AutoOpen>]
 module Builder =
-    /// Query builder for an async reactive event source
+    /// Request builder for an async context of request/result
     let req = RequestBuilder ()
