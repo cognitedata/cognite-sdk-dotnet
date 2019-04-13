@@ -1,7 +1,5 @@
 namespace Cognite.Sdk.Assets
 
-open Thoth.Json.Net
-
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Common
@@ -37,10 +35,10 @@ module Internal =
         getAsset assetId fetch ctx
         |> Async.map (fun decoded -> decoded.Result)
 
-    let createAssets (assets: AssetCreateDto list) (fetch: HttpHandler)  =
+    let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
-        let request : AssetsCreateRequest = { Items = assets }
-        let body = Encode.toString 0 request.Encoder
+        let request : AssetsCreateRequest = { Items = List.ofSeq assets }
+        let body = encodeToString  request.Encoder
 
         POST
         >=> setBody body
@@ -54,7 +52,7 @@ module Internal =
 
     let deleteAssets (assets: int64 list) (fetch: HttpHandler) =
         let request : AssetsDeleteRequest = { Items = assets }
-        let body = Encode.toString 0 request.Encoder
+        let body = encodeToString  request.Encoder
 
         POST
         >=> setBody body
@@ -67,7 +65,7 @@ module Internal =
 
     let updateAsset (assetId: int64) (args: UpdateParams list) (fetch: HttpHandler) =
         let request = { Id = assetId; Params = args }
-        let body = Encode.toString 0 request.Encoder
+        let body = encodeToString request.Encoder
         let url = Url + sprintf "/%d/update" assetId
 
         POST
@@ -87,7 +85,7 @@ module Internal =
             ]
         }
 
-        let body = Encode.toString 0 request.Encoder
+        let body = encodeToString request.Encoder
         let url = Url + sprintf "/update"
 
         POST
@@ -112,71 +110,71 @@ module Methods =
     /// maximum edit distance when considering matches for the name and description fields.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `args` - parameter of type `Args list`
+    ///   * `args` - list of parameters for getting assets.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Result<AssetReadDto list, ResponseError>> =
-        Internal.getAssetsResult args Request.fetch ctx
+    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetReadDto list>> =
+        Internal.getAssets args Request.fetch ctx
 
     /// **Description**
     ///
     /// Retrieves information about an asset in a certain project given an asset id.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `assetId` - parameter of type `int64`
+    ///   * `assetId` - The id of the attet to retrieve.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (assetId: int64) (ctx: HttpContext) : Async<Result<AssetReadDto, ResponseError>> =
-        Internal.getAssetResult assetId Request.fetch ctx
+    let getAsset (assetId: int64) (ctx: HttpContext) : Async<Context<AssetReadDto>> =
+        Internal.getAsset assetId Request.fetch ctx
 
     /// **Description**
     ///
     /// Creates new assets in the given project
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `assets` - parameter of type `AssetsRequest`
+    ///   * `assets` - The list of assets to create.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (assets: AssetCreateDto list) (ctx: HttpContext) =
-        Internal.createAssetsResult assets Request.fetch ctx
+    let createAssets (assets: AssetCreateDto seq) (ctx: HttpContext) =
+        Internal.createAssets assets Request.fetch ctx
 
     /// **Description**
     ///
     /// Deletes multiple assets in the same project, along with all their descendants in the asset hierarchy.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `assets` - parameter of type `int64 list`
+    ///   * `assets` - The list of asset ids to delete.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let deleteAssets (assets: int64 list) (ctx: HttpContext) =
-        Internal.deleteAssetsResult assets Request.fetch ctx
+        Internal.deleteAssets assets Request.fetch ctx
 
     /// **Description**
     ///
     /// Updates an asset object. Supports partial updates i.e. updating only some fields but leaving the rest unchanged.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `assetId` - parameter of type `int64`
-    ///   * `args` - parameter of type `UpdateArgs list`
+    ///   * `assetId` - The id of the asset to update.
+    ///   * `args` - The list of arguments for updating the asset.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,exn>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let updateAsset (assetId: int64) (args: UpdateParams list) (ctx: HttpContext) =
-        Internal.updateAssetResult assetId args Request.fetch ctx
+        Internal.updateAsset assetId args Request.fetch ctx
 
     /// **Description**
     ///
@@ -184,11 +182,11 @@ module Methods =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
     ///   * `args` - parameter of type `(int64 * UpdateArgs list) list`
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
     let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
-        Internal.updateAssetsResult args
+        Internal.updateAssets args

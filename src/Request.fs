@@ -39,32 +39,6 @@ type Context<'a> = {
 
 type HttpContext = Context<HttpResponse>
 
-type HttpHandler<'a, 'b> = Context<'a> -> Async<Context<'b>>
-
-type HttpHandler<'a> = HttpHandler<'a, 'a>
-
-type HttpHandler = HttpHandler<HttpResponse>
-
-[<AutoOpen>]
-module Handler =
-    let bind (f: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
-        let! p = a
-        match p.Result with
-        | Ok _ ->
-            return! f p;
-        | Error err ->
-            return { Request = p.Request; Result = Error err }
-    }
-
-    let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
-        fun x -> bind second (first x)
-
-    let (>>=) a b =
-        bind b a
-
-    let (>=>) a b =
-        compose a b
-
 module Request =
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
         if x < 200 then
@@ -165,7 +139,7 @@ module Request =
     ///   * `Context`
     ///
     let setMethod (method: HttpMethod) (context: HttpContext) =
-        Async.single { context with Request = { context.Request with Method = method } }
+        Async.single { context with Request = { context.Request with Method = method; Body = None } }
 
     let GET = setMethod HttpMethod.GET
     let POST = setMethod HttpMethod.POST
@@ -184,18 +158,3 @@ module Request =
     ///
     let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Project = project } }
-
-    /// **Description**
-    ///
-    /// Set the fetch method to be used for making requests. Should not
-    /// be needed for most scenarios, but nice for unit-testing.
-    ///
-    /// **Parameters**
-    ///   * `fetch` - parameter of type `Fetch`
-    ///   * `context` - parameter of type `Context`
-    ///
-    /// **Output Type**
-    ///   * `Context`
-    ///
-    //let setFetch (fetch: Handler) (context: Context) =
-    //    { context with F = fetch }

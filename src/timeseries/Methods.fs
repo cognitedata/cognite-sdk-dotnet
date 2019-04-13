@@ -1,7 +1,5 @@
 namespace Cognite.Sdk.Timeseries
 
-open Thoth.Json.Net
-
 open Cognite.Sdk
 open Cognite.Sdk.Common
 open Cognite.Sdk.Request
@@ -11,7 +9,7 @@ module Internal =
     let insertDataByName (name: string) (items: DataPointCreateDto list) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
 
-        let body = Encode.toString 0 request.Encoder
+        let body = encodeToString request.Encoder
         let url = Url + sprintf "/data/%s" name
 
         POST
@@ -25,7 +23,7 @@ module Internal =
     let createTimeseries (items: TimeseriesCreateDto list) (fetch: HttpHandler) =
         let request : TimeseriesRequest = { Items = items }
 
-        let body = Encode.toString 0 request.Encoder
+        let body = encodeToString request.Encoder
 
         POST
         >=> setBody body
@@ -41,6 +39,7 @@ module Internal =
 
         GET
         >=> setResource url
+        >=> fetch
         >=> decoder
 
     let getTimeseriesResult (id: int64) (fetch: HttpHandler) (ctx: HttpContext) =
@@ -63,7 +62,7 @@ module Internal =
         |> Async.map (fun ctx -> ctx.Result)
 
     let deleteTimeseries (name: string) (fetch: HttpHandler) =
-        let url = Url + sprintf "/data/%s" name
+        let url = Url + sprintf "/%s" name
 
         DELETE
         >=> setResource url
@@ -83,29 +82,29 @@ module Methods =
     /// data point for that timestamp will be overwritten.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `name` - parameter of type `string`
-    ///   * `items` - parameter of type `DataPoint list`
+    ///   * `name` - The name of the timeseries to insert data points into.
+    ///   * `items` - The list of data points to insert.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,ResponseError>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let insertDataByName (name: string) (items: DataPointCreateDto list) (ctx: HttpContext) =
-        Internal.insertDataByNameResult name items Request.fetch ctx
+        Internal.insertDataByName name items Request.fetch ctx
 
     /// **Description**
     ///
     /// Create new timeseries
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `items` - parameter of type `Timeseries list`
+    ///   * `items` - The list of timeseries to create.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,exn>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let createTimeseries (items: TimeseriesCreateDto list) (ctx: HttpContext) =
-        Internal.createTimeseriesResult items Request.fetch ctx
+        Internal.createTimeseries items Request.fetch ctx
 
     /// **Description**
     ///
@@ -114,14 +113,14 @@ module Methods =
     /// generated when the time series was created.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
-    ///   * `id` - parameter of type `int64`
+    ///   * `id` - The id of the timeseries to get.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
     let getTimeseries (id: int64) (ctx: HttpContext) =
-        Internal.getTimeseriesResult id Request.fetch ctx
+        Internal.getTimeseries id Request.fetch ctx
 
     /// **Description**
     ///
@@ -129,27 +128,26 @@ module Methods =
     /// This operation supports aggregation but not pagination.
     ///
     /// **Parameters**
-    ///   * `ctx` - parameter of type `Context`
     ///   * `name` - parameter of type `string`
     ///   * `query` - parameter of type `QueryParams list`
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,exn>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let queryTimeseries (name: string) (query: QueryParams list) (ctx: HttpContext) =
         Internal.queryTimeseries name query Request.fetch ctx
-
 
     /// **Description**
     ///
     /// Deletes a time series object given the name of the time series.
     ///
     /// **Parameters**
-    ///   * `ctx` - The client context. Parameter of type `Context`
-    ///   * `name` - The name of timeseries to delete. Parameter of type `string`.
+    ///   * `name` - The name of the timeseries to delete.
+    ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<string,ResponseError>>`
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let deleteTimeseries (name: string) (ctx: HttpContext) =
-        Internal.deleteTimeseriesResult name Request.fetch ctx
+        Internal.deleteTimeseries name Request.fetch ctx

@@ -15,18 +15,17 @@ type Config = {
 }
 
 let getAssetsExample ctx = async {
-    let! result = getAssets [ Limit 2 ] ctx
+    let! rsp = getAssets [ Limit 2 ] ctx
 
-    match result with
+    match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let updateAssetExample (ctx : HttpContext) = async {
 
-    let! result = updateAsset 84025677715833721L [ SetName "string3" ] ctx
-
-    match result with
+    let! rsp = updateAsset 84025677715833721L [ SetName "string3" ] ctx
+    match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
@@ -43,8 +42,24 @@ let createAssetsExample ctx = async {
         ParentRef = None
     }]
 
-    let! result = createAssets assets ctx
-    match result with
+    let request = req {
+        let! ga = createAssets assets
+
+        let! gb = concurrent [
+            createAssets assets |> retry 500<ms> 5
+        ]
+
+        return ga
+    }
+
+    let request = concurrent [
+        let chunks = Seq.chunkBySize 10 assets
+        for chunk in chunks do
+            yield createAssets chunk |> retry 500<ms> 5
+    ]
+
+    let! rsp = request ctx
+    match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
@@ -68,3 +83,6 @@ let main argv =
     } |> Async.RunSynchronously
 
     0 // return an integer exit code
+
+
+
