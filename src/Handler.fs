@@ -23,35 +23,38 @@ module Handler =
 
     let rand = System.Random ()
 
-    let bind (f: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
+
+    let bind fn ctx =
+        match ctx.Result with
+        | Ok res ->
+            fn res
+        | Error err ->
+            { Request = ctx.Request; Result = Error err }
+
+    let bindAsync (fn: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
         let! p = a
         match p.Result with
         | Ok _ ->
-            return! f p
+            return! fn p
         | Error err ->
             return { Request = p.Request; Result = Error err }
     }
 
     let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
-        fun ctx -> bind second (first ctx)
+        fun ctx -> bindAsync second (first ctx)
 
     let (>>=) a b =
-        bind b a
+        bindAsync b a
 
     let (>=>) a b =
         compose a b
 
-    let traverseContext f list =
-
+    // https://fsharpforfunandprofit.com/posts/elevated-world-4/
+    let traverseContext fn (list : Context<'a> list) =
         // define the monadic functions
-        let (>>=) ctx f =
-            match ctx.Result with
-            | Ok res ->
-                f res
-            | Error err ->
-                { Request = ctx.Request; Result = Error err }
+        let (>>=) ctx fn = bind fn ctx
 
-        let retn (a : 'a) : Context<'a> =
+        let retn a =
             { Request = Request.defaultRequest; Result = Ok a }
 
         // define a "cons" function
@@ -60,9 +63,9 @@ module Handler =
         // right fold over the list
         let initState = retn []
         let folder head tail =
-            f head >>= (fun h ->
+            fn head >>= (fun h ->
                 tail >>= (fun t ->
-                    retn ( cons h t)
+                    retn (cons h t)
                 )
             )
 

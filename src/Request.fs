@@ -139,7 +139,7 @@ module Request =
     ///   * `Context`
     ///
     let setMethod (method: HttpMethod) (context: HttpContext) =
-        Async.single { context with Request = { context.Request with Method = method } }
+        Async.single { context with Request = { context.Request with Method = method; Body = None } }
 
     let GET = setMethod HttpMethod.GET
     let POST = setMethod HttpMethod.POST

@@ -35,9 +35,9 @@ module Internal =
         getAsset assetId fetch ctx
         |> Async.map (fun decoded -> decoded.Result)
 
-    let createAssets (assets: AssetCreateDto list) (fetch: HttpHandler)  =
+    let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
-        let request : AssetsCreateRequest = { Items = assets }
+        let request : AssetsCreateRequest = { Items = List.ofSeq assets }
         let body = encodeToString  request.Encoder
 
         POST
@@ -144,7 +144,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (assets: AssetCreateDto list) (ctx: HttpContext) =
+    let createAssets (assets: AssetCreateDto seq) (ctx: HttpContext) =
         Internal.createAssets assets Request.fetch ctx
 
     /// **Description**

@@ -6,7 +6,6 @@ open FsConfig
 open Cognite.Sdk
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
-//open Cognite.Sdk.Builder
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -26,7 +25,6 @@ let getAssetsExample ctx = async {
 let updateAssetExample (ctx : HttpContext) = async {
 
     let! rsp = updateAsset 84025677715833721L [ SetName "string3" ] ctx
-
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -47,27 +45,23 @@ let createAssetsExample ctx = async {
     let request = req {
         let! ga = createAssets assets
 
-        let! gb = Handler.concurrent [
-            createAssets assets
-            |> Handler.retry 500<ms> 5
+        let! gb = concurrent [
+            createAssets assets |> retry 500<ms> 5
         ]
 
         return ga
     }
 
-
-    let request = Handler.concurrent [
-        createAssets assets.[0..9] |> Handler.retry 500<ms> 5
-        createAssets assets.[10..19] |> Handler.retry 500<ms> 5
-        createAssets assets.[20..29] |> Handler.retry 500<ms> 5
+    let request = concurrent [
+        let chunks = Seq.chunkBySize 10 assets
+        for chunk in chunks do
+            yield createAssets chunk |> retry 500<ms> 5
     ]
 
-    let! result = request ctx
-
-    //match result with
-    //| Ok res -> printfn "%A" res
-    //| Error err -> printfn "Error: %A" err
-    ()
+    let! rsp = request ctx
+    match rsp.Result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
 }
 
 [<EntryPoint>]
