@@ -1,17 +1,18 @@
 namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
+open Cognite.Sdk.Common
 
 
 [<AutoOpen>]
 module AssetsExtensions =
     type AssetReadDto with
-        static member Decoder : Decode.Decoder<AssetReadDto> =
+        static member Decoder : Decoder<AssetReadDto> =
             Decode.object (fun get ->
                 {
                     Id = get.Required.Field "id" Decode.int64
                     Name = get.Required.Field "name" Decode.string
-                    Description = get.Required.Field "description" Decode.string
+                    Description = get.Optional.Field "description" Decode.string
                     ParentId = get.Optional.Field "parentId" Decode.int64
                     Path = get.Required.Field "path" (Decode.list Decode.int64)
                     Source = get.Optional.Field "source" Decode.string
@@ -23,15 +24,15 @@ module AssetsExtensions =
                 })
 
     type AssetResponseData with
-        static member Decoder : Decode.Decoder<AssetResponseData> =
+        static member Decoder : Decoder<AssetResponseData> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map ResizeArray)
                 PreviousCursor = get.Optional.Field "previousCursor" Decode.string
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     type AssetResponse with
-            static member Decoder : Decode.Decoder<AssetResponse> =
+            static member Decoder : Decoder<AssetResponse> =
                 Decode.object (fun get -> {
                     Data = get.Required.Field "data" AssetResponseData.Decoder
                 })

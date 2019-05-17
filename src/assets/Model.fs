@@ -18,7 +18,7 @@ type AssetReadDto = {
     /// The name of the asset.
     Name: string
     /// The description of the asset.
-    Description: string
+    Description: string option
     /// The parent ID of the asset.
     ParentId: int64 option
     /// Custom, application specific metadata. String key -> String value
@@ -71,7 +71,7 @@ module Model =
     let Url = "/assets"
 
     type AssetResponseData = {
-        Items: AssetReadDto list
+        Items: ResizeArray<AssetReadDto>
         PreviousCursor: string option
         NextCursor : string option
     }

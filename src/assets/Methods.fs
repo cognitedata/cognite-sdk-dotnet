@@ -9,7 +9,7 @@ open Cognite.Sdk.Request
 module Internal =
 
     let getAssets (args: GetParams list) (fetch: HttpHandler) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
+        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data)
         let query = args |> List.map renderParams
 
         GET
@@ -23,7 +23,7 @@ module Internal =
         |> Async.map (fun decoded -> decoded.Result)
 
     let getAsset (assetId: int64) (fetch: HttpHandler) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items.Head)
+        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items.[0])
         let url = Url + sprintf "/%d" assetId
 
         GET
@@ -116,7 +116,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetReadDto list>> =
+    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetResponseData>> =
         Internal.getAssets args Request.fetch ctx
 
     /// **Description**

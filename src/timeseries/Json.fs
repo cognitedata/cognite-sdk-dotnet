@@ -22,7 +22,7 @@ module TimeseriesExtensions =
             ]
 
     type DataPointReadDto with
-        static member Decoder : Decode.Decoder<DataPointReadDto> =
+        static member Decoder : Decoder<DataPointReadDto> =
             Decode.object (fun get ->
                 {
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
@@ -44,7 +44,7 @@ module TimeseriesExtensions =
                 })
 
     type PointResponseDataPoints with
-        static member Decoder : Decode.Decoder<PointResponseDataPoints> =
+        static member Decoder : Decoder<PointResponseDataPoints> =
             Decode.object (fun get ->
                 {
                     Name = get.Required.Field "name" Decode.string
@@ -52,14 +52,14 @@ module TimeseriesExtensions =
                 })
 
     type PointResponseData with
-        static member Decoder : Decode.Decoder<PointResponseData> =
+        static member Decoder : Decoder<PointResponseData> =
             Decode.object (fun get ->
                 {
                     Items = get.Required.Field "items" (Decode.list PointResponseDataPoints.Decoder)
                 })
 
     type PointResponse with
-        static member Decoder : Decode.Decoder<PointResponse> =
+        static member Decoder : Decoder<PointResponse> =
             Decode.object (fun get -> {
                 Data = get.Required.Field "data" PointResponseData.Decoder
             })
@@ -86,7 +86,7 @@ module TimeseriesExtensions =
             ]
 
     type TimeseriesReadDto with
-        static member Decoder : Decode.Decoder<TimeseriesReadDto> =
+        static member Decoder : Decoder<TimeseriesReadDto> =
             Decode.object (fun get ->
                 {
                     Name = get.Required.Field "name" Decode.string
@@ -108,13 +108,13 @@ module TimeseriesExtensions =
             ]
 
     type TimeseriesResponseData with
-        static member Decoder : Decode.Decoder<TimeseriesResponseData> =
+        static member Decoder : Decoder<TimeseriesResponseData> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
             })
 
     type TimeseriesResponse with
-        static member Decoder : Decode.Decoder<TimeseriesResponse> =
+        static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
                 Data = get.Required.Field "data" TimeseriesResponseData.Decoder
             })
