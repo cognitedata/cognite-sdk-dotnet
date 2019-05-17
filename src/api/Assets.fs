@@ -169,12 +169,12 @@ type ClientAssetExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssetsAsync (this: Client) (args: AssetArgs) : Task<AssetReadDto List> =
-        let worker () : Async<AssetReadDto List> = async {
+    static member GetAssetsAsync (this: Client) (args: AssetArgs) : Task<AssetResponseData> =
+        let worker () : Async<AssetResponseData> = async {
             let! result = Internal.getAssetsResult args.Args this.Fetch this.Ctx
             match result with
             | Ok response ->
-                return ResizeArray<AssetReadDto> response
+                return response
             | Error error ->
                 return raise (Error.error2Exception error)
         }
