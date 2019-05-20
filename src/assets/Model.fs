@@ -1,6 +1,5 @@
 namespace Cognite.Sdk.Assets
 
-open Thoth.Json.Net
 open System.Text
 
 type IDecoder =
@@ -12,7 +11,7 @@ type AssetReadDto = {
     /// The Id of the asset.
     Id: int64
     ///IDs of assets on the path to the asset.
-    Path: int64 list
+    Path: int64 seq
     /// Asset path depth (number of levels below root node).
     Depth: int
     /// The name of the asset.
@@ -71,7 +70,7 @@ module Model =
     let Url = "/assets"
 
     type AssetResponseData = {
-        Items: ResizeArray<AssetReadDto>
+        Items: AssetReadDto seq
         PreviousCursor: string option
         NextCursor : string option
     }
@@ -115,18 +114,18 @@ module Model =
         | SetSourceId of string option
 
     type AssetsCreateRequest = {
-        Items: AssetCreateDto list
+        Items: AssetCreateDto seq
     }
 
     type AssetUpdateRequest = {
         Id: int64
-        Params: UpdateParams list
+        Params: UpdateParams seq
     }
 
     type AssetsUpdateRequest = {
-        Items: AssetUpdateRequest list
+        Items: AssetUpdateRequest seq
     }
 
     type AssetsDeleteRequest = {
-        Items: int64 list
+        Items: int64 seq
     }

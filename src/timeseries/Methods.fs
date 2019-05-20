@@ -6,7 +6,7 @@ open Cognite.Sdk.Request
 
 [<RequireQualifiedAccess>]
 module Internal =
-    let insertDataByName (name: string) (items: DataPointCreateDto list) (fetch: HttpHandler) =
+    let insertDataByName (name: string) (items: seq<DataPointCreateDto>) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
 
         let body = encodeToString request.Encoder
@@ -16,11 +16,11 @@ module Internal =
         >=> setBody body
         >=> setResource url
 
-    let insertDataByNameResult (name: string) (items: DataPointCreateDto list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let insertDataByNameResult (name: string) (items: seq<DataPointCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
         insertDataByName name items fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let createTimeseries (items: TimeseriesCreateDto list) (fetch: HttpHandler) =
+    let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) =
         let request : TimeseriesRequest = { Items = items }
 
         let body = encodeToString request.Encoder
@@ -29,12 +29,12 @@ module Internal =
         >=> setBody body
         >=> setResource Url
 
-    let createTimeseriesResult (items: TimeseriesCreateDto list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
         createTimeseries items fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
     let getTimeseries (id: int64) (fetch: HttpHandler) =
-        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Data.Items.[0])
+        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> Seq.head res.Data.Items)
         let url = Url + sprintf "/%d" id
 
         GET
@@ -46,10 +46,10 @@ module Internal =
         getTimeseries id fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let queryTimeseries (name: string) (query: QueryParams list) (fetch: HttpHandler) =
+    let queryTimeseries (name: string) (query: QueryParams seq) (fetch: HttpHandler) =
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Data.Items)
         let url = Url + sprintf "/data/%s" name
-        let query = query |> List.map renderQuery
+        let query = query |> Seq.map renderQuery |> List.ofSeq
 
         GET
         >=> setResource url
@@ -57,7 +57,7 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let queryTimeseriesResult (name: string) (query: QueryParams list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let queryTimeseriesResult (name: string) (query: QueryParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
         queryTimeseries name query fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 

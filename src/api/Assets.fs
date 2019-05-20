@@ -9,7 +9,7 @@ open System.Threading.Tasks;
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
-open System.Collections.Generic
+
 
 [<Extension>]
 ///Helper methods for creating Assets.
@@ -126,7 +126,7 @@ type AssetUpdate private (id : int64, updates : UpdateParams list) =
 
     member internal this.Id = id
 
-    member internal this.Updates = updates
+    member internal this.Updates = Seq.ofList updates
 
     /// Set the name of the asset. Often referred to as tag.
     member this.SetName (name : string) =
@@ -205,12 +205,12 @@ type ClientAssetExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto List> =
-        let worker () : Async<AssetReadDto List> = async {
-            let! result = Internal.createAssetsResult (Seq.toList assets) this.Fetch this.Ctx
+    static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto seq> =
+        let worker () : Async<AssetReadDto seq> = async {
+            let! result = Internal.createAssetsResult assets this.Fetch this.Ctx
             match result with
             | Ok response ->
-                return ResizeArray<AssetReadDto> response
+                return response
             | Error error ->
                return raise (Error.error2Exception error)
         }
@@ -225,7 +225,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member DeleteAssetsAsync (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = Internal.deleteAssetsResult (Seq.toList assets) this.Fetch this.Ctx
+            let! result = Internal.deleteAssetsResult assets this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)
@@ -241,9 +241,9 @@ type ClientAssetExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client) (assets: ResizeArray<AssetUpdate>) : Task<HttpResponse> =
+    static member UpdateAssetsAsync (this: Client) (assets: seq<AssetUpdate>) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates) |> Seq.toList) this.Fetch this.Ctx
+            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates)) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)

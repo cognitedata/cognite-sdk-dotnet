@@ -151,8 +151,8 @@ type Query (query: QueryParams list) =
     member this.Limit (limit: int) =
         Query (Limit limit :: query)
 
-    member this.Aggregates (aggregate: ResizeArray<Aggregate>) =
-        Query (QueryParams.Aggregates (List.ofSeq aggregate) :: query)
+    member this.Aggregates (aggregate: Aggregate seq) =
+        Query (QueryParams.Aggregates aggregate :: query)
 
     member this.IncludeOutsidePoints (iop: bool) =
         Query (IncludeOutsidePoints iop :: query)
@@ -171,12 +171,12 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member QueryTimeseriesAsync (this: Client) (name: string) (query: Query) : Task<ResizeArray<PointResponseDataPoints>> =
-        let worker () : Async<ResizeArray<PointResponseDataPoints>> = async {
-            let! result = Internal.queryTimeseriesResult name (List.ofSeq query.Query) this.Fetch this.Ctx
+    static member QueryTimeseriesAsync (this: Client) (name: string) (query: Query) : Task<seq<PointResponseDataPoints>> =
+        let worker () : Async<seq<PointResponseDataPoints>> = async {
+            let! result = Internal.queryTimeseriesResult name query.Query this.Fetch this.Ctx
             match result with
             | Ok response ->
-                return response |> ResizeArray
+                return response
             | Error error ->
                return raise (Error.error2Exception error)
         }
@@ -190,9 +190,9 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member InsertDataByNameAsync (this: Client) (name: string) (items: ResizeArray<DataPointCreateDto>) : Task<int> =
+    static member InsertDataByNameAsync (this: Client) (name: string) (items: DataPointCreateDto seq) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = Internal.insertDataByNameResult name (List.ofSeq items) this.Fetch this.Ctx
+            let! result = Internal.insertDataByNameResult name items this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode
@@ -208,9 +208,9 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member CreateTimeseriesAsync (this: Client) (items: ResizeArray<TimeseriesCreateDto>) : Task<int> =
+    static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesCreateDto>) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = Internal.createTimeseriesResult (List.ofSeq items) this.Fetch this.Ctx
+            let! result = Internal.createTimeseriesResult items this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode

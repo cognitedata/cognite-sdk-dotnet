@@ -11,7 +11,7 @@ type DataPointCreateDto = {
 }
 
 type PointRequest = {
-    Items: DataPointCreateDto list
+    Items: DataPointCreateDto seq
 }
 
 type DataPointReadDto = {
@@ -31,11 +31,11 @@ type DataPointReadDto = {
 
 type PointResponseDataPoints = {
     Name: string
-    DataPoints: DataPointReadDto list
+    DataPoints: DataPointReadDto seq
 }
 
 type PointResponseData = {
-    Items: PointResponseDataPoints list
+    Items: PointResponseDataPoints seq
 }
 
 type PointResponse = {
@@ -58,11 +58,11 @@ type TimeseriesCreateDto = {
     /// Whether the time series is a step series or not.
     IsStep: bool option
     /// Security categories required in order to access this time series.
-    SecurityCategories: int64 list
+    SecurityCategories: seq<int64>
 }
 
 type TimeseriesRequest = {
-    Items: TimeseriesCreateDto list
+    Items: seq<TimeseriesCreateDto>
 }
 
 type TimeseriesReadDto = {
@@ -81,7 +81,7 @@ type TimeseriesReadDto = {
     /// Whether the time series is a step series or not.
     IsStep: bool option
     /// Security categories required in order to access this time series.
-    SecurityCategories: int64 list option
+    SecurityCategories: seq<int64> option
     /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
@@ -89,7 +89,7 @@ type TimeseriesReadDto = {
 }
 
 type TimeseriesResponseData = {
-    Items: TimeseriesReadDto list
+    Items: TimeseriesReadDto seq
 }
 
 type TimeseriesResponse = {
@@ -147,7 +147,7 @@ type Granularity =
 type QueryParams =
     | Start of int64
     | End of int64
-    | Aggregates of Aggregate list
+    | Aggregates of Aggregate seq
     | Granularity of Granularity
     | Limit of int32
     | IncludeOutsidePoints of bool

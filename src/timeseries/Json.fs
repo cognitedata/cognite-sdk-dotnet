@@ -18,7 +18,7 @@ module TimeseriesExtensions =
     type PointRequest with
         member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: DataPointCreateDto) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", Seq.map (fun (it: DataPointCreateDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type DataPointReadDto with
@@ -81,8 +81,8 @@ module TimeseriesExtensions =
                     yield "isStep", Encode.bool this.IsStep.Value
                 if this.AssetId.IsSome then
                     yield "assetId", Encode.int64 this.AssetId.Value
-                if not this.SecurityCategories.IsEmpty then
-                    yield "securityCategories", Encode.list (List.map Encode.int64 this.SecurityCategories)
+                if not (Seq.isEmpty this.SecurityCategories) then
+                    yield "securityCategories", Encode.seq (Seq.map Encode.int64 this.SecurityCategories)
             ]
 
     type TimeseriesReadDto with
@@ -96,7 +96,7 @@ module TimeseriesExtensions =
                     Unit = get.Optional.Field "unit" Decode.string
                     AssetId = get.Optional.Field "assetId" Decode.int64
                     IsStep = get.Optional.Field "isStep" Decode.bool
-                    SecurityCategories = get.Optional.Field "securityCategories" (Decode.list Decode.int64)
+                    SecurityCategories = get.Optional.Field "securityCategories" ((Decode.array Decode.int64) |> Decode.map seq)
                     CreatedTime = get.Required.Field "createdTime" Decode.int64
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
@@ -104,7 +104,7 @@ module TimeseriesExtensions =
     type TimeseriesRequest with
         member this.Encoder =
             Encode.object [
-                yield ("items", List.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.list)
+                yield ("items", Seq.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type TimeseriesResponseData with
@@ -124,7 +124,7 @@ module TimeseriesExtensions =
         | Start start -> "start", start.ToString ()
         | End end'  -> "end", end'.ToString ()
         | Aggregates aggr ->
-            let list = aggr |> List.map (fun a -> a.ToString ()) |> ResizeArray<string>
+            let list = aggr |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "aggregates", String.Join(",", list)
         | Granularity gr -> ("granularity", gr.ToString ())
         | Limit limit -> "limit", limit.ToString ()

@@ -8,9 +8,9 @@ open Cognite.Sdk.Request
 [<RequireQualifiedAccess>]
 module Internal =
 
-    let getAssets (args: GetParams list) (fetch: HttpHandler) =
+    let getAssets (args: seq<GetParams>) (fetch: HttpHandler) =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data)
-        let query = args |> List.map renderParams
+        let query = args |> Seq.map renderParams |> List.ofSeq
 
         GET
         >=> addQuery query
@@ -23,7 +23,7 @@ module Internal =
         |> Async.map (fun decoded -> decoded.Result)
 
     let getAsset (assetId: int64) (fetch: HttpHandler) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items.[0])
+        let decoder = decodeResponse AssetResponse.Decoder (fun res -> Seq.head res.Data.Items)
         let url = Url + sprintf "/%d" assetId
 
         GET
@@ -46,11 +46,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let createAssetsResult (assets: AssetCreateDto list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let createAssetsResult (assets: AssetCreateDto seq) (fetch: HttpHandler) (ctx: HttpContext) =
         createAssets assets fetch ctx
         |> Async.map (fun context -> context.Result)
 
-    let deleteAssets (assets: int64 list) (fetch: HttpHandler) =
+    let deleteAssets (assets: int64 seq) (fetch: HttpHandler) =
         let request : AssetsDeleteRequest = { Items = assets }
         let body = encodeToString  request.Encoder
 
@@ -59,11 +59,11 @@ module Internal =
         >=> setResource Url
         >=> fetch
 
-    let deleteAssetsResult (assets: int64 list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let deleteAssetsResult (assets: int64 seq) (fetch: HttpHandler) (ctx: HttpContext) =
         deleteAssets assets fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let updateAsset (assetId: int64) (args: UpdateParams list) (fetch: HttpHandler) =
+    let updateAsset (assetId: int64) (args: UpdateParams seq) (fetch: HttpHandler) =
         let request = { Id = assetId; Params = args }
         let body = encodeToString request.Encoder
         let url = Url + sprintf "/%d/update" assetId
@@ -73,11 +73,11 @@ module Internal =
         >=> setResource url
         >=> fetch
 
-    let updateAssetResult (assetId: int64) (args: UpdateParams list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let updateAssetResult (assetId: int64) (args: UpdateParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
         updateAsset assetId args fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) =
+    let updateAssets (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) =
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -93,7 +93,7 @@ module Internal =
         >=> setResource url
         >=> fetch
 
-    let updateAssetsResult (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let updateAssetsResult (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) (ctx: HttpContext) =
         updateAssets args fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -116,7 +116,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: GetParams list) (ctx: HttpContext) : Async<Context<AssetResponseData>> =
+    let getAssets (args: seq<GetParams>) (ctx: HttpContext) : Async<Context<AssetResponseData>> =
         Internal.getAssets args Request.fetch ctx
 
     /// **Description**
@@ -188,5 +188,5 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let updateAssets (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) (ctx: HttpContext) =
         Internal.updateAssets args

@@ -178,7 +178,7 @@ let ``Create single asset is Ok`` () = async {
 
     match res.Result with
     | Ok assets ->
-        test <@ assets.Count = 1 @>
+        test <@ Seq.length assets = 1 @>
     | Error error ->
         raise (Error.error2Exception error)
 }

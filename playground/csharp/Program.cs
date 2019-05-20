@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
@@ -24,7 +25,7 @@ namespace csharp
 
             var result = await client.GetAssetsAsync(assetArgs);
 
-            Console.WriteLine("{0}", result.Items[0].TryGetParentId(out long parentId));
+            Console.WriteLine("{0}", result.Items.First().TryGetParentId(out long parentId));
             Console.WriteLine("{0}", parentId);
             Console.WriteLine("{0}", result);
         }
@@ -37,7 +38,7 @@ namespace csharp
 
             var result = await client.QueryTimeseriesAsync("myseries", query);
 
-            Console.WriteLine("{0}", result[0].DataPoints[0].TryGetValue(out long value));
+            Console.WriteLine("{0}", result.First().DataPoints.First().TryGetValue(out long value));
             Console.WriteLine("{0}", value);
             Console.WriteLine("{0}", result);
         }

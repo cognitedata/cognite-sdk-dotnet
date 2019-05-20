@@ -2,6 +2,7 @@ namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
 open Cognite.Sdk.Common
+open System
 
 
 [<AutoOpen>]
@@ -26,7 +27,7 @@ module AssetsExtensions =
     type AssetResponseData with
         static member Decoder : Decoder<AssetResponseData> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map ResizeArray)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
                 PreviousCursor = get.Optional.Field "previousCursor" Decode.string
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
@@ -63,7 +64,7 @@ module AssetsExtensions =
     type AssetsCreateRequest with
          member this.Encoder =
             Encode.object [
-                yield "items", List.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.list
+                yield "items", Seq.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
     let renderParams (arg: GetParams) =
@@ -123,12 +124,12 @@ module AssetsExtensions =
     type AssetsUpdateRequest with
         member this.Encoder =
             Encode.object [
-                "items", List.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.list
+                "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
             ]
 
 
     type AssetsDeleteRequest with
         member this.Encoder =
             Encode.object [
-                "items", List.map Encode.int64 this.Items |> Encode.list
+                "items", Seq.map Encode.int64 this.Items |> Encode.seq
             ]
