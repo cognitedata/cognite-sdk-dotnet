@@ -7,3 +7,4 @@ RUN mono .paket/paket.exe install
 RUN dotnet build
 
 RUN ./test.sh
+RUN ./deploy.sh

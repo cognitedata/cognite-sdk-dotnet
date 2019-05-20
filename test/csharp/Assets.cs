@@ -58,7 +58,7 @@ namespace Tests
             Assert.Equal("/assets", fetcher.Ctx.Request.Resource);
             var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Request.Query);
             Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()).ToList());
-            Assert.Single(result);
+            Assert.Single(result.Items);
         }
 
         [Fact]

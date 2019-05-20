@@ -24,7 +24,7 @@ namespace csharp
 
             var result = await client.GetAssetsAsync(assetArgs);
 
-            Console.WriteLine("{0}", result[0].TryGetParentId(out long parentId));
+            Console.WriteLine("{0}", result.Items[0].TryGetParentId(out long parentId));
             Console.WriteLine("{0}", parentId);
             Console.WriteLine("{0}", result);
         }
