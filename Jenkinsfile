@@ -69,6 +69,7 @@ podTemplate(
 
         container('dotnet-mono') {
           stage('Install dependencies') {
+            copy('/nuget-credentials/nuget.config', './nuget.config')
             sh('mono .paket/paket.exe install')
           }
 
@@ -87,7 +88,6 @@ podTemplate(
           }
 
           stage("Deploy package to registry") {
-             sh('apt-get update && apt-get install -y xmllint')
              sh('./deploy.sh')
           }
         }
