@@ -82,6 +82,10 @@ podTemplate(
           stage("Upload report to codecov.io") {
              sh('bash </codecov-script/upload-report.sh')
           }
+
+          stage("Deploy package to registry") {
+             sh('./deploy.sh')
+          }
         }
     }
 }
