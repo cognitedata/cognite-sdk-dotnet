@@ -87,6 +87,7 @@ podTemplate(
           }
 
           stage("Deploy package to registry") {
+             sh('apt-get update && apt-get install -y xmllint')
              sh('./deploy.sh')
           }
         }
