@@ -69,7 +69,7 @@ podTemplate(
 
         container('dotnet-mono') {
           stage('Install dependencies') {
-            copy('/nuget-credentials/nuget.config', './nuget.config')
+            sh('cp /nuget-credentials/nuget.config ./nuget.config')
             sh('mono .paket/paket.exe install')
           }
 
