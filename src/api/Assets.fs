@@ -205,7 +205,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssetsAsync (this: Client) (assets: ResizeArray<AssetCreateDto>) : Task<AssetReadDto seq> =
+    static member CreateAssetsAsync (this: Client) (assets: AssetCreateDto seq) : Task<AssetReadDto seq> =
         let worker () : Async<AssetReadDto seq> = async {
             let! result = Internal.createAssetsResult assets this.Fetch this.Ctx
             match result with
@@ -223,7 +223,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member DeleteAssetsAsync (this: Client) (assets: ResizeArray<int64>) : Task<HttpResponse> =
+    static member DeleteAssetsAsync (this: Client) (assets: int64 seq) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
             let! result = Internal.deleteAssetsResult assets this.Fetch this.Ctx
             match result with
@@ -241,7 +241,7 @@ type ClientAssetExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client) (assets: seq<AssetUpdate>) : Task<HttpResponse> =
+    static member UpdateAssetsAsync (this: Client) (assets: AssetUpdate seq) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
             let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates)) this.Fetch this.Ctx
             match result with

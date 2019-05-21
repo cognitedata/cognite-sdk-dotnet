@@ -69,7 +69,6 @@ podTemplate(
 
         container('dotnet-mono') {
           stage('Install dependencies') {
-            sh('cp /nuget-credentials/nuget.config ./nuget.config')
             sh('mono .paket/paket.exe install')
           }
 
@@ -84,11 +83,12 @@ podTemplate(
           }
 
           stage("Upload report to codecov.io") {
-             sh('bash </codecov-script/upload-report.sh')
+            sh('bash </codecov-script/upload-report.sh')
           }
 
           stage("Deploy package to registry") {
-             sh('./deploy.sh')
+            sh('cp /nuget-credentials/nuget.config ./nuget.config')
+            sh('./deploy.sh')
           }
         }
     }

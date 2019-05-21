@@ -8,7 +8,7 @@ open Cognite.Sdk.Request
 [<RequireQualifiedAccess>]
 module Internal =
 
-    let getAssets (args: seq<GetParams>) (fetch: HttpHandler) =
+    let getAssets (args: GetParams seq) (fetch: HttpHandler) =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data)
         let query = args |> Seq.map renderParams |> List.ofSeq
 
@@ -18,7 +18,7 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getAssetsResult (args: GetParams list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let getAssetsResult (args: GetParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
         getAssets args fetch ctx
         |> Async.map (fun decoded -> decoded.Result)
 
@@ -37,7 +37,7 @@ module Internal =
 
     let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
-        let request : AssetsCreateRequest = { Items = List.ofSeq assets }
+        let request : AssetsCreateRequest = { Items = assets }
         let body = encodeToString  request.Encoder
 
         POST
@@ -158,7 +158,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: int64 list) (ctx: HttpContext) =
+    let deleteAssets (assets: int64 seq) (ctx: HttpContext) =
         Internal.deleteAssets assets Request.fetch ctx
 
     /// **Description**
@@ -173,7 +173,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let updateAsset (assetId: int64) (args: UpdateParams list) (ctx: HttpContext) =
+    let updateAsset (assetId: int64) (args: UpdateParams seq) (ctx: HttpContext) =
         Internal.updateAsset assetId args Request.fetch ctx
 
     /// **Description**
@@ -182,7 +182,7 @@ module Methods =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
     ///
     /// **Parameters**
-    ///   * `args` - parameter of type `(int64 * UpdateArgs list) list`
+    ///   * `args` - parameter of type `(int64 * UpdateArgs seq) seq`
     ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**

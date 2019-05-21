@@ -129,13 +129,13 @@ module Methods =
     ///
     /// **Parameters**
     ///   * `name` - parameter of type `string`
-    ///   * `query` - parameter of type `QueryParams list`
+    ///   * `query` - parameter of type `QueryParams seq`
     ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let queryTimeseries (name: string) (query: QueryParams list) (ctx: HttpContext) =
+    let queryTimeseries (name: string) (query: QueryParams seq) (ctx: HttpContext) =
         Internal.queryTimeseries name query Request.fetch ctx
 
     /// **Description**
