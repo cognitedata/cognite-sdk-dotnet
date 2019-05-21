@@ -3,9 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.1.1</Version>
-    <PackageVersion>0.1.1</PackageVersion>
+    <Version>0.1.2</Version>
+    <PackageVersion>0.1.2</PackageVersion>
     <Company>Cognite AS</Company>
+    <Copyright>Cognite AS</Copyright>
+
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Async.fs" />
