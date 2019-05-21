@@ -87,8 +87,10 @@ podTemplate(
           }
 
           stage("Deploy package to registry") {
-            sh('cp /nuget-credentials/nuget.config ./nuget.config')
-            sh('./deploy.sh')
+            if (env.BRANCH_NAME == 'master') {
+              sh('cp /nuget-credentials/nuget.config ./nuget.config')
+              sh('./deploy.sh')
+            }
           }
         }
     }
