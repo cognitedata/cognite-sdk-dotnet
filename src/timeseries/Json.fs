@@ -88,14 +88,17 @@ module TimeseriesExtensions =
     type TimeseriesReadDto with
         static member Decoder : Decoder<TimeseriesReadDto> =
             Decode.object (fun get ->
+                let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {
-                    Name = get.Required.Field "name" Decode.string
-                    Description = get.Optional.Field "description" Decode.string
-                    IsString = get.Optional.Field "isString" Decode.bool
-                    MetaData = get.Optional.Field "metadata" (Decode.dict Decode.string)
+                    Id = get.Required.Field "id" Decode.int64
+                    ExternalId = get.Optional.Field "externalId" Decode.string
+                    Name = get.Optional.Field "name" Decode.string
+                    IsString = get.Required.Field "isString" Decode.bool
+                    MetaData = if metadata.IsSome then metadata.Value else Map.empty
                     Unit = get.Optional.Field "unit" Decode.string
                     AssetId = get.Optional.Field "assetId" Decode.int64
-                    IsStep = get.Optional.Field "isStep" Decode.bool
+                    IsStep = get.Required.Field "isStep" Decode.bool
+                    Description = get.Optional.Field "description" Decode.string
                     SecurityCategories = get.Optional.Field "securityCategories" ((Decode.array Decode.int64) |> Decode.map seq)
                     CreatedTime = get.Required.Field "createdTime" Decode.int64
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
@@ -107,16 +110,11 @@ module TimeseriesExtensions =
                 yield ("items", Seq.map (fun (it: TimeseriesCreateDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    type TimeseriesResponseData with
-        static member Decoder : Decoder<TimeseriesResponseData> =
-            Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
-            })
-
     type TimeseriesResponse with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Data = get.Required.Field "data" TimeseriesResponseData.Decoder
+                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     let renderQuery (query: QueryParams) =
@@ -129,3 +127,14 @@ module TimeseriesExtensions =
         | Granularity gr -> ("granularity", gr.ToString ())
         | Limit limit -> "limit", limit.ToString ()
         | IncludeOutsidePoints iop -> "includeOutsidePoints", iop.ToString()
+
+    type Item with
+        member this.Encoder =
+            Encode.object [
+                yield "id", Encode.int64 this.Id
+            ]
+    type RetrieveRequest with
+        member this.Encoder =
+            Encode.object [
+                yield ("items", Seq.map (fun (it: Item) -> it.Encoder) this.Items |> Encode.seq)
+            ]

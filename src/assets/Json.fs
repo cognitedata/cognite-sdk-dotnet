@@ -10,33 +10,28 @@ module AssetsExtensions =
     type AssetReadDto with
         static member Decoder : Decoder<AssetReadDto> =
             Decode.object (fun get ->
+                let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {
+                    ExternalId = get.Optional.Field "externalId" Decode.string
                     Id = get.Required.Field "id" Decode.int64
                     Name = get.Required.Field "name" Decode.string
                     Description = get.Optional.Field "description" Decode.string
                     ParentId = get.Optional.Field "parentId" Decode.int64
                     Path = get.Required.Field "path" (Decode.list Decode.int64)
                     Source = get.Optional.Field "source" Decode.string
-                    SourceId = get.Optional.Field "sourceId" Decode.string
                     Depth = get.Required.Field "depth" Decode.int
-                    MetaData = get.Required.Field "metadata" (Decode.dict Decode.string)
+                    MetaData = if metadata.IsSome then metadata.Value else Map.empty
                     CreatedTime = get.Required.Field "createdTime" Decode.int64
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type AssetResponseData with
-        static member Decoder : Decoder<AssetResponseData> =
+    type AssetResponse with
+        static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
-                PreviousCursor = get.Optional.Field "previousCursor" Decode.string
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    type AssetResponse with
-            static member Decoder : Decoder<AssetResponse> =
-                Decode.object (fun get -> {
-                    Data = get.Required.Field "data" AssetResponseData.Decoder
-                })
 
     type AssetCreateDto with
         member this.Encoder =

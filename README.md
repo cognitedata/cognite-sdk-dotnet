@@ -1,4 +1,4 @@
-# #Fusion.NET SDK
+# Fusion.NET SDK
 
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/CogniteSdk.NET/master)](https://jenkins.cognite.ai/job/github-builds/job/CogniteSdk.NET/job/master/)
 [![codecov](https://codecov.io/gh/cognitedata/CogniteSdk.NET/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/CogniteSdk.NET)
@@ -81,8 +81,9 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 
 ## Time Series API
 
+- `getTimeSeries` - Retrieves a list of all time series in a project .
+- `getTimeSeriesByIds` - Get timeseries with the given ids.
 - `insertDataByName` - Insert data into named time series.
 - `createTimeSeries` - Create a new time series.
-- `getTimeSeries` - Get timeseries with given id.
 - `queryTimeSeries` - Retrieves a list of data points from a single time series.
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.

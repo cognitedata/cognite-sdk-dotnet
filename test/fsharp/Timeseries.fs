@@ -32,7 +32,7 @@ let ``Create timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get timeseries is Ok`` () = async {
+let ``Get timeseries by ids is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json"
     let fetch = Fetch.fromJson json
@@ -42,12 +42,12 @@ let ``Get timeseries is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.getTimeseries 0L fetch ctx
+    let! res = Internal.getTimeseriesByIds [ 0L ] fetch ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.GET @>
-    test <@ res.Request.Resource = "/timeseries/0" @>
+    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Resource = "/timeseries/byids" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 

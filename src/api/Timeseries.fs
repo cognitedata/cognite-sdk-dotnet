@@ -226,9 +226,9 @@ type ClientTimeseriesExtensions =
     /// <param name="id">The id of the timeseries to get.</param>
     /// <returns>The timeseries with the given id.</returns>
     [<Extension>]
-    static member GetTimeseriesAsync (this: Client) (id: int64) : Task<TimeseriesReadDto> =
-        let worker () : Async<TimeseriesReadDto> = async {
-            let! result = Internal.getTimeseriesResult id this.Fetch this.Ctx
+    static member GetTimeseriesByIdsAsync (this: Client) (ids: seq<int64>) : Task<seq<TimeseriesReadDto>> =
+        let worker () : Async<seq<TimeseriesReadDto>> = async {
+            let! result = Internal.getTimeseriesByIdsResult ids this.Fetch this.Ctx
 
             match result with
             | Ok response ->

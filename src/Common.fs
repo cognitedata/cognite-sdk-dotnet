@@ -26,6 +26,7 @@ module Common =
             |> Result.map (fun response ->
                 match response.Body with
                 | Text text ->
+                    printfn "%A" text
                     text
                 | Binary _ ->
                     failwith "binary format not supported"

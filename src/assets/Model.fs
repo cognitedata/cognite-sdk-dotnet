@@ -8,25 +8,24 @@ type IDecoder =
 
 /// Asset type for responses.
 type AssetReadDto = {
+    /// External Id provided by client. Should be unique within the project.
+    ExternalId: string option
+    /// The name of the asset.
+    Name: string
+    /// The parent ID of the asset.
+    ParentId: int64 option
+    /// The description of the asset.
+    Description: string option
+    /// Custom, application specific metadata. String key -> String value
+    MetaData: Map<string, string>
+    /// The source of this asset
+    Source: string option
     /// The Id of the asset.
     Id: int64
     ///IDs of assets on the path to the asset.
     Path: int64 seq
     /// Asset path depth (number of levels below root node).
     Depth: int
-    /// The name of the asset.
-    Name: string
-    /// The description of the asset.
-    Description: string option
-    /// The parent ID of the asset.
-    ParentId: int64 option
-    /// Custom, application specific metadata. String key -> String value
-    MetaData: Map<string, string>
-    /// The source of this asset
-    Source: string option
-    /// Set ID of the asset in the source. Only applicable if source is specified.
-    /// The combination of source and sourceId must be unique.
-    SourceId: string option
     /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
@@ -69,14 +68,9 @@ module Model =
     [<Literal>]
     let Url = "/assets"
 
-    type AssetResponseData = {
-        Items: AssetReadDto seq
-        PreviousCursor: string option
-        NextCursor : string option
-    }
-
     type AssetResponse = {
-        Data: AssetResponseData
+        Items: AssetReadDto seq
+        NextCursor : string option
     }
 
     // Get parameters

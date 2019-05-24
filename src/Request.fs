@@ -14,14 +14,16 @@ type HttpMethod =
 
 type QueryStringParams = (string*string) list
 
-// type ResponseData =
-//     | Text of string
-//     | Binary of byte array
+type ApiVersion =
+    | V05
+    | V06
+    | V10
 
-// type Response = {
-//     HttpStatus: int
-//     Data: ResponseData
-// }
+    override this.ToString () =
+        match this with
+        | V05 -> "0.5"
+        | V06 -> "0.6"
+        | V10 -> "v1"
 
 type HttpRequest = {
     Method: HttpMethod
@@ -30,6 +32,7 @@ type HttpRequest = {
     Query: QueryStringParams
     Headers: (string*string) list
     Project: string
+    Version: ApiVersion
 }
 
 type Context<'a> = {
@@ -56,7 +59,7 @@ module Request =
     let fetch (ctx: HttpContext) =
         async {
             let res = ctx.Request.Resource
-            let url = sprintf "https://api.cognitedata.com/api/0.5/projects/%s%s" ctx.Request.Project res
+            let url = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
             let headers = ctx.Request.Headers
             let body = ctx.Request.Body |> Option.map HttpRequestBody.TextRequest
             let method = ctx.Request.Method.ToString().ToUpper()
@@ -82,6 +85,7 @@ module Request =
                 UserAgent "CogniteSdk.NET; Dag Brattli"
             ]
             Project = String.Empty
+            Version = V05
         }
     let defaultResult =
         Ok {
@@ -140,6 +144,9 @@ module Request =
     ///
     let setMethod (method: HttpMethod) (context: HttpContext) =
         Async.single { context with Request = { context.Request with Method = method; Body = None } }
+
+    let setVersion (version: ApiVersion) (context: HttpContext) =
+        Async.single { context with Request = { context.Request with Version = version } }
 
     let GET = setMethod HttpMethod.GET
     let POST = setMethod HttpMethod.POST

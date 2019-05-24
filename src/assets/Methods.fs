@@ -9,10 +9,11 @@ open Cognite.Sdk.Request
 module Internal =
 
     let getAssets (args: GetParams seq) (fetch: HttpHandler) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data)
+        let decoder = decodeResponse AssetResponse.Decoder id
         let query = args |> Seq.map renderParams |> List.ofSeq
 
         GET
+        >=> setVersion V10
         >=> addQuery query
         >=> setResource Url
         >=> fetch
@@ -23,10 +24,11 @@ module Internal =
         |> Async.map (fun decoded -> decoded.Result)
 
     let getAsset (assetId: int64) (fetch: HttpHandler) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> Seq.head res.Data.Items)
+        let decoder = decodeResponse AssetReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
         GET
+        >=> setVersion V10
         >=> setResource url
         >=> fetch
         >=> decoder
@@ -36,7 +38,7 @@ module Internal =
         |> Async.map (fun decoded -> decoded.Result)
 
     let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler)  =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Data.Items)
+        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
         let body = encodeToString  request.Encoder
 
@@ -116,7 +118,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: seq<GetParams>) (ctx: HttpContext) : Async<Context<AssetResponseData>> =
+    let getAssets (args: seq<GetParams>) (ctx: HttpContext) : Async<Context<AssetResponse>> =
         Internal.getAssets args Request.fetch ctx
 
     /// **Description**

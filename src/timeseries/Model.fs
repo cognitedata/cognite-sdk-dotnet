@@ -42,6 +42,17 @@ type PointResponse = {
     Data: PointResponseData
 }
 
+type Item = {
+    /// Id of item to retrieve
+    Id: int64
+}
+
+/// Used for retrieving multiple time series
+type RetrieveRequest = {
+    /// Sequence of items to retrieve
+    Items: seq<Item>
+}
+
 type TimeseriesCreateDto = {
     /// Unique name of time series
     Name: string
@@ -66,20 +77,24 @@ type TimeseriesRequest = {
 }
 
 type TimeseriesReadDto = {
-    /// Unique name of time series
-    Name: string
-    /// Description of the time series.
-    Description: string option
+    /// Javascript friendly internal ID given to the object.
+    Id: int64
+    /// Externally supplied id of the time series
+    ExternalId: string option
+    /// Name of time series
+    Name: string option
     /// Whether the time series is string valued or not.
-    IsString: bool option
+    IsString: bool
     /// Additional metadata. String key -> String value.
-    MetaData: Map<string, string> option
+    MetaData: Map<string, string>
     /// The physical unit of the time series.
     Unit: string option
     /// Asset that this time series belongs to.
     AssetId: int64 option
     /// Whether the time series is a step series or not.
-    IsStep: bool option
+    IsStep: bool
+    /// Description of the time series.
+    Description: string option
     /// Security categories required in order to access this time series.
     SecurityCategories: seq<int64> option
     /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
@@ -88,12 +103,9 @@ type TimeseriesReadDto = {
     LastUpdatedTime: int64
 }
 
-type TimeseriesResponseData = {
-    Items: TimeseriesReadDto seq
-}
-
 type TimeseriesResponse = {
-    Data: TimeseriesResponseData
+    Items: TimeseriesReadDto seq
+    NextCursor: string option
 }
 
 [<AutoOpen>]

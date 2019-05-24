@@ -4,8 +4,25 @@ open Cognite.Sdk
 open Cognite.Sdk.Common
 open Cognite.Sdk.Request
 
+
 [<RequireQualifiedAccess>]
 module Internal =
+    let getTimeseries (query: QueryParams seq) (fetch: HttpHandler) =
+        let decoder = decodeResponse TimeseriesResponse.Decoder id
+        let url = Url
+        let query = query |> Seq.map renderQuery |> List.ofSeq
+
+        GET
+        >=> setVersion V10
+        >=> setResource url
+        >=> addQuery query
+        >=> fetch
+        >=> decoder
+
+    let getTimeseriesResult (name: string) (query: QueryParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
+        getTimeseries query fetch ctx
+        |> Async.map (fun ctx -> ctx.Result)
+
     let insertDataByName (name: string) (items: seq<DataPointCreateDto>) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
 
@@ -33,17 +50,27 @@ module Internal =
         createTimeseries items fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseries (id: int64) (fetch: HttpHandler) =
-        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> Seq.head res.Data.Items)
-        let url = Url + sprintf "/%d" id
+    let getTimeseriesByIds (ids: seq<int64>) (fetch: HttpHandler) =
+        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
+        let url = Url + sprintf "/byids"
 
-        GET
+        let request : RetrieveRequest = {
+            Items = [
+                for id in ids do
+                    yield { Id = id }
+            ]
+        }
+        let body = encodeToString request.Encoder
+
+        POST
+        >=> setVersion V10
         >=> setResource url
+        >=> setBody body
         >=> fetch
         >=> decoder
 
-    let getTimeseriesResult (id: int64) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseries id fetch ctx
+    let getTimeseriesByIdsResult (ids: seq<int64>) (fetch: HttpHandler) (ctx: HttpContext) =
+        getTimeseriesByIds ids fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
     let queryTimeseries (name: string) (query: QueryParams seq) (fetch: HttpHandler) =
@@ -74,6 +101,22 @@ module Internal =
 
 [<AutoOpen>]
 module Methods =
+
+    /// **Description**
+    ///
+    /// Retrieves a list of all time series in a project, sorted by name
+    /// alphabetically. Parameters can be used to select a subset of time
+    /// series. This operation supports pagination.
+    ///
+    /// https://doc.cognitedata.com/api/v1/#operation/getTimeSeries
+    ///
+    /// **Parameters** * `query` - parameter of type `seq<QueryParams>` * `ctx`
+    /// - parameter of type `HttpContext`
+    ///
+    /// **Output Type** * `Async<Context<seq<PointResponseDataPoints>>>`
+    ///
+    let getTimeseries (query: QueryParams seq) (ctx: HttpContext) =
+        Internal.getTimeseries query Request.fetch ctx
 
     /// **Description**
     ///
@@ -119,8 +162,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
-    let getTimeseries (id: int64) (ctx: HttpContext) =
-        Internal.getTimeseries id Request.fetch ctx
+    let getTimeseriesByIds (ids: seq<int64>) (ctx: HttpContext) =
+        Internal.getTimeseriesByIds ids Request.fetch ctx
 
     /// **Description**
     ///
