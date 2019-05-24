@@ -118,7 +118,7 @@ namespace Tests
             var apiKey = "api-key";
             var project = "project";
 
-            var json = File.ReadAllText("Assets.json");
+            var json = File.ReadAllText("Asset.json");
             var fetcher = Fetcher.FromJson(200, json);
 
             var client =

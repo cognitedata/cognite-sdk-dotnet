@@ -15,7 +15,7 @@ open System.Net.Http
 [<Fact>]
 let ``Get asset is Ok``() = async {
     // Arrange
-    let json = File.ReadAllText "Assets.json"
+    let json = File.ReadAllText "Asset.json"
     let fetch = Fetch.fromJson json
     let ctx =
         defaultContext

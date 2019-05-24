@@ -1,18 +1,12 @@
 {
-    "data": {
-        "items": [
-            {
-                "id": 5406108165931348,
-                "path": [
-                    5406108165931348
-                ],
-                "depth": 0,
-                "name": "string",
-                "description": "string",
-                "metadata": {},
-                "createdTime": 1549374256347,
-                "lastUpdatedTime": 1549374256347
-            }
-        ]
-    }
+    "id": 5406108165931348,
+    "path": [
+        5406108165931348
+    ],
+    "depth": 0,
+    "name": "string",
+    "description": "string",
+    "metadata": {},
+    "createdTime": 1549374256347,
+    "lastUpdatedTime": 1549374256347
 }

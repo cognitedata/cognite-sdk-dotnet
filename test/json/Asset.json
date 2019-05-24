@@ -8,9 +8,7 @@
     "description": "string",
     "metadata": {},
     "source": "string",
-    "extra1": true,
     "sourceId": "string",
     "createdTime": 1549374256347,
-    "lastUpdatedTime": 1549374256347,
-    "extra2": 10
+    "lastUpdatedTime": 1549374256347
 }

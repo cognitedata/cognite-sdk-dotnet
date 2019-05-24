@@ -1,20 +1,18 @@
 {
-    "data": {
-        "items": [
-            {
-                "id": 5406108165931348,
-                "path": [
-                    5406108165931348
-                ],
-                "depth": 0,
-                "name": "string",
-                "description": "string",
-                "metadata": {},
-                "source": "string",
-                "sourceId": "string",
-                "createdTime": 1549374256347,
-                "lastUpdatedTime": 1549374256347
-            }
-        ]
-    }
+    "items": [
+        {
+            "id": 5406108165931348,
+            "path": [
+                5406108165931348
+            ],
+            "depth": 0,
+            "name": "string",
+            "description": "string",
+            "metadata": {},
+            "source": "string",
+            "sourceId": "string",
+            "createdTime": 1549374256347,
+            "lastUpdatedTime": 1549374256347
+        }
+    ]
 }
