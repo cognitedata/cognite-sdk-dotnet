@@ -36,11 +36,11 @@ namespace csharp
                 Query.Create()
                 .Aggregates(new List<Aggregate> { Aggregate.Average });
 
-            var result = await client.QueryTimeseriesAsync("myseries", query);
+            //var result = await client.GetTimeseriesDataAsync("myseries", query);
 
-            Console.WriteLine("{0}", result.First().DataPoints.First().TryGetValue(out long value));
-            Console.WriteLine("{0}", value);
-            Console.WriteLine("{0}", result);
+            //Console.WriteLine("{0}", result.First().DataPoints.First().TryGetValue(out long value));
+            //Console.WriteLine("{0}", value);
+            //Console.WriteLine("{0}", result);
         }
 
         static async Task Main(string[] args)

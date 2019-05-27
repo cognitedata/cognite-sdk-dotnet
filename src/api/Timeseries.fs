@@ -60,7 +60,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetAverage (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetAverage (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.Average with
         | Some value' ->
             value <- value'
@@ -68,7 +68,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetMax (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetMax (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.Max with
         | Some value' ->
             value <- value'
@@ -76,7 +76,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetMin (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetMin (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.Min with
         | Some value' ->
             value <- value'
@@ -84,7 +84,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetCount (this: DataPointReadDto, [<Out>] value: byref<int>) =
+    static member TryGetCount (this: AggregateDataPointReadDto, [<Out>] value: byref<int>) =
         match this.Count with
         | Some value' ->
             value <- value'
@@ -92,7 +92,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetSum (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetSum (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.Sum with
         | Some value' ->
             value <- value'
@@ -100,7 +100,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetInterpolation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetInterpolation (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.Interpolation with
         | Some value' ->
             value <- value'
@@ -108,7 +108,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetStepInterpolation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetStepInterpolation (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.StepInterpolation with
         | Some value' ->
             value <- value'
@@ -116,7 +116,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetContinousVariance (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetContinousVariance (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.ContinousVariance with
         | Some value' ->
             value <- value'
@@ -124,7 +124,7 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetDiscreteVariance (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetDiscreteVariance (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.DiscreteVariance with
         | Some value' ->
             value <- value'
@@ -132,27 +132,27 @@ type TimeseriesExtension =
         | _ -> false
 
     [<Extension>]
-    static member TryGetTotalVariation (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetTotalVariation (this: AggregateDataPointReadDto, [<Out>] value: byref<float>) =
         match this.TotalVariation with
         | Some value' ->
             value <- value'
             true
         | _ -> false
 
-type Query (query: QueryParams list) =
+type Query (query: QueryDataParams list) =
     let query = query
 
-    member this.Start (start: int64) =
+    member this.Start (start: string) =
         Query (Start start :: query)
 
-    member this.End (endTime: int64) =
+    member this.End (endTime: string) =
         Query (End endTime :: query)
 
     member this.Limit (limit: int) =
-        Query (Limit limit :: query)
+        Query (QueryDataParams.Limit limit :: query)
 
     member this.Aggregates (aggregate: Aggregate seq) =
-        Query (QueryParams.Aggregates aggregate :: query)
+        Query (QueryDataParams.Aggregates aggregate :: query)
 
     member this.IncludeOutsidePoints (iop: bool) =
         Query (IncludeOutsidePoints iop :: query)
@@ -170,8 +170,9 @@ type ClientTimeseriesExtensions =
     /// <param name="name">The name of the timeseries to insert data into.</param>
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
+    (*
     [<Extension>]
-    static member QueryTimeseriesAsync (this: Client) (name: string) (query: Query) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesDataAsync (this: Client) (name: string) (query: Query) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
             let! result = Internal.queryTimeseriesResult name query.Query this.Fetch this.Ctx
             match result with
@@ -182,7 +183,7 @@ type ClientTimeseriesExtensions =
         }
 
         worker () |> Async.StartAsTask
-
+    *)
     /// <summary>
     /// Insert data into named time series.
     /// </summary>

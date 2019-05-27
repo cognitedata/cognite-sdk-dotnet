@@ -10,7 +10,7 @@ module Internal =
     let getTimeseries (query: QueryParams seq) (fetch: HttpHandler) =
         let decoder = decodeResponse TimeseriesResponse.Decoder id
         let url = Url
-        let query = query |> Seq.map renderQuery |> List.ofSeq
+        let query = query |> Seq.map renderParams |> List.ofSeq
 
         GET
         >=> setVersion V10
@@ -73,21 +73,6 @@ module Internal =
         getTimeseriesByIds ids fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let queryTimeseries (name: string) (query: QueryParams seq) (fetch: HttpHandler) =
-        let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Data.Items)
-        let url = Url + sprintf "/data/%s" name
-        let query = query |> Seq.map renderQuery |> List.ofSeq
-
-        GET
-        >=> setResource url
-        >=> addQuery query
-        >=> fetch
-        >=> decoder
-
-    let queryTimeseriesResult (name: string) (query: QueryParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        queryTimeseries name query fetch ctx
-        |> Async.map (fun ctx -> ctx.Result)
-
     let deleteTimeseries (name: string) (fetch: HttpHandler) =
         let url = Url + sprintf "/%s" name
 
@@ -98,6 +83,25 @@ module Internal =
     let deleteTimeseriesResult (name: string) (fetch: HttpHandler) (ctx: HttpContext) =
         deleteTimeseries name fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
+
+    let getTimeseriesData (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) (fetch: HttpHandler) =
+        let url = Url + "/data/list"
+        let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
+        let request = renderDataQuery defaultArgs args
+        let body = encodeToString request
+        printfn "Body: %s" body
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setBody body
+        >=> fetch
+        >=> decoder
+
+    let getTimeseriesDataResult (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) (fetch: HttpHandler) (ctx: HttpContext) =
+        getTimeseriesData defaultArgs args fetch ctx
+        |> Async.map (fun ctx -> ctx.Result)
+
 
 [<AutoOpen>]
 module Methods =
@@ -113,7 +117,7 @@ module Methods =
     /// **Parameters** * `query` - parameter of type `seq<QueryParams>` * `ctx`
     /// - parameter of type `HttpContext`
     ///
-    /// **Output Type** * `Async<Context<seq<PointResponseDataPoints>>>`
+    /// **Output Type** * `HttpHandler<FSharp.Data.HttpResponse,TimeseriesResponse>`
     ///
     let getTimeseries (query: QueryParams seq) (ctx: HttpContext) =
         Internal.getTimeseries query Request.fetch ctx
@@ -178,8 +182,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let queryTimeseries (name: string) (query: QueryParams seq) (ctx: HttpContext) =
-        Internal.queryTimeseries name query Request.fetch ctx
+    let getTimeseriesData (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq)  (ctx: HttpContext) =
+        Internal.getTimeseriesData defaultArgs args Request.fetch ctx
 
     /// **Description**
     ///

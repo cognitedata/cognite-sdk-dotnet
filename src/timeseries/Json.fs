@@ -2,6 +2,7 @@ namespace Cognite.Sdk.Timeseries
 
 open System
 open Thoth.Json.Net
+open FSharp.Data
 
 [<AutoOpen>]
 module TimeseriesExtensions =
@@ -31,6 +32,13 @@ module TimeseriesExtensions =
                             Decode.float |> Decode.map Float
                             Decode.string |> Decode.map Numeric.String
                         ])
+                })
+
+    type AggregateDataPointReadDto with
+        static member Decoder : Decoder<AggregateDataPointReadDto> =
+            Decode.object (fun get ->
+                {
+                    TimeStamp = get.Required.Field "timestamp" Decode.int64
                     Average = get.Optional.Field "average" Decode.float
                     Max = get.Optional.Field "max" Decode.float
                     Min = get.Optional.Field "min" Decode.float
@@ -47,22 +55,32 @@ module TimeseriesExtensions =
         static member Decoder : Decoder<PointResponseDataPoints> =
             Decode.object (fun get ->
                 {
-                    Name = get.Required.Field "name" Decode.string
-                    DataPoints = get.Required.Field "items" (Decode.list DataPointReadDto.Decoder)
+                    Id = get.Required.Field "id" Decode.int64
+                    ExternalId = get.Optional.Field "exteralId" Decode.string
+                    IsString = get.Required.Field "isString" Decode.bool
+                    DataPoints = get.Required.Field "datapoints" (Decode.list DataPointReadDto.Decoder)
                 })
-
-    type PointResponseData with
-        static member Decoder : Decoder<PointResponseData> =
+    type PointResponseAggregateDataPoints with
+        static member Decoder : Decoder<PointResponseAggregateDataPoints> =
             Decode.object (fun get ->
                 {
-                    Items = get.Required.Field "items" (Decode.list PointResponseDataPoints.Decoder)
+                    Id = get.Required.Field "id" Decode.int64
+                    ExternalId = get.Optional.Field "exteralId" Decode.string
+                    DataPoints = get.Required.Field "datapoints" (Decode.list AggregateDataPointReadDto.Decoder)
                 })
 
     type PointResponse with
         static member Decoder : Decoder<PointResponse> =
-            Decode.object (fun get -> {
-                Data = get.Required.Field "data" PointResponseData.Decoder
-            })
+            Decode.object (fun get ->
+                {
+                    Items = get.Required.Field "items" (Decode.list PointResponseDataPoints.Decoder)
+                })
+    type AggregatePointResponse with
+        static member Decoder : Decoder<AggregatePointResponse> =
+            Decode.object (fun get ->
+                {
+                    Items = get.Required.Field "items" (Decode.list PointResponseAggregateDataPoints.Decoder)
+                })
 
     type TimeseriesCreateDto with
         member this.Encoder =
@@ -117,16 +135,40 @@ module TimeseriesExtensions =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    let renderQuery (query: QueryParams) =
-        match query with
-        | Start start -> "start", start.ToString ()
-        | End end'  -> "end", end'.ToString ()
-        | Aggregates aggr ->
-            let list = aggr |> Seq.map (fun a -> a.ToString ()) |> seq<string>
-            "aggregates", String.Join(",", list)
-        | Granularity gr -> ("granularity", gr.ToString ())
+    let renderParams (arg: QueryParams) =
+        match arg with
         | Limit limit -> "limit", limit.ToString ()
-        | IncludeOutsidePoints iop -> "includeOutsidePoints", iop.ToString()
+        | IncludeMetaData imd -> "includeMetadata", imd.ToString().ToLower()
+        | Cursor cursor -> "cursor", cursor
+        | AssetIds ids ->
+            let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
+            "assetIds", sprintf "[%s]" (String.Join (",", list))
+
+    let renderQuery (param: QueryDataParams) : string*Thoth.Json.Net.JsonValue =
+        match param with
+        | Start start -> "start", Encode.string start
+        | End end'  -> "end", Encode.string end'
+        | Aggregates aggr ->
+            let aggregates = aggr |> Seq.map (fun a -> Encode.string (a.ToString ())) |> Array.ofSeq
+            "aggregates", Encode.array aggregates
+        | Granularity gr -> "granularity", Encode.string (gr.ToString ())
+        | QueryDataParams.Limit limit -> "limit", Encode.int limit
+        | IncludeOutsidePoints iop -> "includeOutsidePoints", Encode.bool iop
+
+    let renderDataQuery (defaultQuery: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) =
+        Encode.object [
+            yield "items", Encode.list [
+                for (id, arg) in args do
+                    yield Encode.object [
+                        for param in arg do
+                            yield renderQuery param
+                        yield "id", Encode.int64 id
+                    ]
+            ]
+
+            for param in defaultQuery do
+                yield renderQuery param
+        ]
 
     type Item with
         member this.Encoder =

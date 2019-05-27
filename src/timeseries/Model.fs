@@ -17,6 +17,10 @@ type PointRequest = {
 type DataPointReadDto = {
     TimeStamp: int64
     Value: Numeric
+}
+
+type AggregateDataPointReadDto = {
+    TimeStamp: int64
     Average: float option
     Max: float option
     Min: float option
@@ -30,17 +34,26 @@ type DataPointReadDto = {
 }
 
 type PointResponseDataPoints = {
-    Name: string
+    Id: int64
+    ExternalId: string option
+    IsString: bool
     DataPoints: DataPointReadDto seq
 }
 
-type PointResponseData = {
-    Items: PointResponseDataPoints seq
+type PointResponseAggregateDataPoints = {
+    Id: int64
+    ExternalId: string option
+    DataPoints: AggregateDataPointReadDto seq
 }
 
 type PointResponse = {
-    Data: PointResponseData
+    Items: PointResponseDataPoints seq
 }
+
+type AggregatePointResponse = {
+    Items: PointResponseAggregateDataPoints seq
+}
+
 
 type Item = {
     /// Id of item to retrieve
@@ -156,10 +169,16 @@ type Granularity =
         | Second sec -> sprintf "s%d" sec
 
 /// Query parameters
-type QueryParams =
-    | Start of int64
-    | End of int64
+type QueryDataParams =
+    | Start of string
+    | End of string
     | Aggregates of Aggregate seq
     | Granularity of Granularity
     | Limit of int32
     | IncludeOutsidePoints of bool
+
+type QueryParams =
+    | Limit of int32
+    | IncludeMetaData of bool
+    | Cursor of string
+    | AssetIds of int64 seq
