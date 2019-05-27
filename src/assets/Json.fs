@@ -1,8 +1,6 @@
 namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
-open Cognite.Sdk.Common
-open System
 
 
 [<AutoOpen>]
@@ -121,7 +119,6 @@ module AssetsExtensions =
             Encode.object [
                 "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
             ]
-
 
     type AssetsDeleteRequest with
         member this.Encoder =
