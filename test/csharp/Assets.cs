@@ -173,15 +173,16 @@ namespace Tests
                 .SetFetch(fetcher.Fetch);
 
             var assets = new List<AssetCreateDto> {
-                Asset.Create("name1", "description1"),
-                Asset.Create("name2", "description2"),
-                Asset.Create("name3", "description3")
-                    .SetParentId("parentId")
-                    .SetParentName("parent")
+                Asset.Create("name1")
+                    .SetDescription("description1"),
+                Asset.Create("name2")
+                    .SetDescription("description2"),
+                Asset.Create("name3")
+                    .SetDescription("description3")
                     .SetSource("source")
-                    .SetSourceId("sourceId")
-                    .SetParentRefId("parentRefId")
-                    .SetRefId("refId")
+                    .SetParentId(42L)
+                    .SetParentExternalId("parentExtenralId")
+                    .SetExternalId("uuid")
                     .SetMetaData(new Dictionary<string, string> {{ "data1", "value" }})
             };
 

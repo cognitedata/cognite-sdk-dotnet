@@ -159,12 +159,12 @@ let ``Create single asset is Ok`` () = async {
 
     let asset: AssetCreateDto = {
         Name = "myAsset"
-        Description = "Some description"
+        Description = Some "Description"
         MetaData = Map.empty
         Source = None
-        SourceId = None
-        RefId = None
-        ParentRef = None
+        ParentId = None
+        ExternalId = None
+        ParentExternalId = None
     }
 
     // Act

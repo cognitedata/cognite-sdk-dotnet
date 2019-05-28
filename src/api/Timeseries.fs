@@ -157,7 +157,7 @@ type Query (query: QueryDataParams list) =
     member this.IncludeOutsidePoints (iop: bool) =
         Query (IncludeOutsidePoints iop :: query)
 
-    member internal this.Query = query
+    member internal this.Query = Seq.ofList query
 
     static member Create () =
         Query []
@@ -170,11 +170,13 @@ type ClientTimeseriesExtensions =
     /// <param name="name">The name of the timeseries to insert data into.</param>
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
-    (*
+
     [<Extension>]
-    static member GetTimeseriesDataAsync (this: Client) (name: string) (query: Query) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesDataAsync (this: Client) (defaultQuery: Query) (query: Tuple<int64, Query> seq) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
-            let! result = Internal.queryTimeseriesResult name query.Query this.Fetch this.Ctx
+            let defaultQuery' = defaultQuery.Query
+            let query' = query |> Seq.map (fun (id, query) -> (id, query.Query))
+            let! result = Internal.getTimeseriesDataResult defaultQuery' query'  this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -183,7 +185,7 @@ type ClientTimeseriesExtensions =
         }
 
         worker () |> Async.StartAsTask
-    *)
+
     /// <summary>
     /// Insert data into named time series.
     /// </summary>

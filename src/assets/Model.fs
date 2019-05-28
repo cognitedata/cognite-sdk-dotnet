@@ -32,32 +32,21 @@ type AssetReadDto = {
     LastUpdatedTime: int64
 }
 
-type ParentRef =
-    /// ID of parent asset in CDF, if any.
-    | ParentId of string
-    /// Name of parent. This parent must exist in the same POST request.
-    | ParentName of string
-    /// Reference ID of parent, to disambiguate if multiple nodes have the same name.
-    | ParentRefId of string
-
-
 /// Asset type for create requests.
 type AssetCreateDto = {
+    ExternalId: string option
     /// Name of asset. Often referred to as tag.
     Name: string
+    /// Javascript friendly internal ID given to the object.
+    ParentId: int64 option
     /// Description of asset.
-    Description: string
+    Description: string option
     /// Custom, application specific metadata. String key -> String value
     MetaData: Map<string, string>
     /// The source of this asset (NOTE: will be replaced with external Id)
     Source: string option
-    /// ID of the asset in the source. Only applicable if source is specified.
-    /// The combination of source and sourceId must be unique (NOTE: will be replaced with external Id)
-    SourceId: string option
-    /// Reference ID used only in post request to disambiguate references to duplicate names.
-    RefId: string option
-    /// Reference to parent (Id, Name or RefId).
-    ParentRef: ParentRef option
+    /// External Id provided by client. Should be unique within the project.
+    ParentExternalId: string option
 }
 
 [<AutoOpen>]

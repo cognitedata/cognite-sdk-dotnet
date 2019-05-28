@@ -34,12 +34,12 @@ let createAssetsExample ctx = async {
 
     let assets = [{
         Name = "My new asset"
-        Description = "My description"
+        Description = Some "My description"
         MetaData = Map.empty
         Source = None
-        SourceId = None
-        RefId = None
-        ParentRef = None
+        ParentId = None
+        ExternalId = None
+        ParentExternalId = None
     }]
 
     let request = req {

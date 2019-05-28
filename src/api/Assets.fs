@@ -33,17 +33,22 @@ type Asset =
     /// Create a new Asset with name and description (non optional).
     /// Optional properties can then be added using Set* methods such as e.g {SetMetaData}.
     [<Extension>]
-    static member Create (name: string) (description: string) : AssetCreateDto =
+    static member Create (name: string) : AssetCreateDto =
         {
+            ExternalId = None
             Name = name
-            Description = description
+            Description = None
             MetaData = Map.empty
             Source = None
-            SourceId = None
+            ParentId = None
 
-            RefId = None
-            ParentRef = None
+            ParentExternalId = None
         }
+
+    /// Description of asset.
+    [<Extension>]
+    static member SetDescription (this: AssetCreateDto, description: string) : AssetCreateDto =
+        { this with Description = Some description }
 
     /// Set custom, application specific metadata. String key -> String value.
     [<Extension>]
@@ -59,30 +64,21 @@ type Asset =
     static member SetSource (this: AssetCreateDto, source: string) : AssetCreateDto =
         { this with Source = Some source }
 
-    /// The the source ID of the asset. Only applicable if source is specified.
-    /// The combination of source and sourceId must be unique.
+    /// External Id provided by client. Should be unique within the project.
     [<Extension>]
-    static member SetSourceId (this: AssetCreateDto, sourceId: string) : AssetCreateDto =
-        { this with SourceId = Some sourceId }
+    static member SetExternalId (this: AssetCreateDto, externalId: string) : AssetCreateDto =
+        { this with ExternalId = Some externalId }
 
-    /// Set the reference ID used only in post request to disambiguate references to duplicate names.
+    /// Javascript friendly internal ID given to the object.
     [<Extension>]
-    static member SetRefId (this: AssetCreateDto, refId: string) : AssetCreateDto =
-        { this with RefId = Some refId }
+    static member SetParentId (this: AssetCreateDto, parentId: int64) : AssetCreateDto =
+        { this with ParentId =  Some parentId  }
 
-    /// Set the reference ID of parent, to disambiguate if multiple nodes have the same name.
+    /// External Id provided by client. Should be unique within the project.
     [<Extension>]
-    static member SetParentRefId (this: AssetCreateDto, parentRefId: string) : AssetCreateDto =
-        { this with ParentRef = ParentRefId parentRefId |> Some }
+    static member SetParentExternalId (this: AssetCreateDto, parentExternalId: string) : AssetCreateDto =
+        { this with ParentExternalId =  Some parentExternalId  }
 
-    [<Extension>]
-    static member SetParentName (this: AssetCreateDto, parentName: string) : AssetCreateDto =
-        { this with ParentRef = ParentName parentName |> Some }
-
-    /// Set the ID of parent asset in Fusion, if any. If parentName or parentRefId are also specified, this will be ignored.
-    [<Extension>]
-    static member SetParentId (this: AssetCreateDto, parentId: string) : AssetCreateDto =
-        { this with ParentRef = ParentId parentId |> Some }
 
 type AssetArgs (args: GetParams list) =
     let args  = args

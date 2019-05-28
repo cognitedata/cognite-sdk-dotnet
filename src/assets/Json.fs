@@ -34,25 +34,20 @@ module AssetsExtensions =
     type AssetCreateDto with
         member this.Encoder =
             Encode.object [
+                if this.ExternalId.IsSome then
+                    yield "externalId", Encode.string this.ExternalId.Value
                 yield "name", Encode.string this.Name
-                yield "description", Encode.string this.Description
+                if this.ParentId.IsSome then
+                    yield "parentId", Encode.int64 this.ParentId.Value
+                if this.Description.IsSome then
+                    yield "description", Encode.string this.Description.Value
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
                     yield "metadata", metaString
                 if this.Source.IsSome then
                     yield "source", Encode.string this.Source.Value
-                if this.SourceId.IsSome then
-                    yield "sourceId", Encode.string this.SourceId.Value
-                if this.RefId.IsSome then
-                    yield "refId", Encode.string this.RefId.Value
-                match this.ParentRef with
-                | Some (ParentId parentId) ->
-                    yield "parentId", Encode.string parentId
-                | Some (ParentName parentName) ->
-                    yield "parentId", Encode.string parentName
-                | Some (ParentRefId parentRefId) ->
-                    yield "parentId", Encode.string parentRefId
-                | None -> ()
+                if this.ParentExternalId.IsSome then
+                    yield "parentExternalId", Encode.string this.ParentExternalId.Value
             ]
     type AssetsCreateRequest with
          member this.Encoder =
