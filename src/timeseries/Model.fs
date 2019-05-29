@@ -1,9 +1,6 @@
 namespace Cognite.Sdk.Timeseries
 
-type Numeric =
-    | String of string
-    | Integer of int64
-    | Float of double
+open Cognite.Sdk
 
 type DataPointCreateDto = {
     TimeStamp: int64

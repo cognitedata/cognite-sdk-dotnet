@@ -194,12 +194,12 @@ let ``Update single asset with no updates is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.updateAsset 42L [] fetch ctx
+    let! res = Internal.updateAssets [ 42L, [] ] fetch ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.POST @>
-    test <@ res.Request.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ res.Request.Resource = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -214,15 +214,15 @@ let ``Update single asset with is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, ctx) ||> Internal.updateAsset  42L [
+    let! res = (fetch, ctx) ||> Internal.updateAssets  [ (42L, [
         SetName "New name"
         SetDescription (Some "New description")
         SetSource None
-    ]
+    ])]
 
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.POST @>
-    test <@ res.Request.Resource = (sprintf "/assets/%d/update" 42L) @>
+    test <@ res.Request.Resource = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }

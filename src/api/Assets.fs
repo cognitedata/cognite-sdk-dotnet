@@ -122,7 +122,7 @@ type AssetUpdate private (id : int64, updates : UpdateParams list) =
 
     member internal this.Id = id
 
-    member internal this.Updates = Seq.ofList updates
+    member internal this.Updates = updates
 
     /// Set the name of the asset. Often referred to as tag.
     member this.SetName (name : string) =
@@ -147,10 +147,23 @@ type AssetUpdate private (id : int64, updates : UpdateParams list) =
         // Set or clear the source of this asset
         Some source |> SetSource
 
-    /// Set or clear ID of the asset in the source. Only applicable if source is specified.
-    /// The combination of source and sourceId must be unique.
-    member this.SetSourceId (sourceId : string) =
-        Some sourceId |> SetSourceId
+    member this.SetParentId (parentId : int64) =
+        Some parentId |> SetParentId
+
+    member this.ClearParentId () =
+        SetParentId None
+
+    member this.SetParentExternalId (parentExternalId : string) =
+        Some parentExternalId |> SetParentExternalId
+
+    member this.ClearParentExternalId () =
+        SetParentExternalId None
+
+    member this.SetExternalId (externalId : string) =
+        Some externalId |> SetExternalId
+
+    member this.ClearExternalId () =
+        SetExternalId None
 
 [<Extension>]
 type ClientAssetExtensions =
@@ -239,7 +252,7 @@ type ClientAssetExtensions =
     [<Extension>]
     static member UpdateAssetsAsync (this: Client) (assets: AssetUpdate seq) : Task<HttpResponse> =
         let worker () : Async<HttpResponse> = async {
-            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates)) this.Fetch this.Ctx
+            let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates) |> List.ofSeq ) this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return HttpResponse(response.StatusCode, String.Empty)

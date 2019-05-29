@@ -22,9 +22,9 @@ let getAssetsExample ctx = async {
     | Error err -> printfn "Error: %A" err
 }
 
-let updateAssetExample (ctx : HttpContext) = async {
+let updateAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = updateAsset 84025677715833721L [ SetName "string3" ] ctx
+    let! rsp = updateAssets [(84025677715833721L, [ SetName "string3" ] )] ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err

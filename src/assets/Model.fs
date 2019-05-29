@@ -94,7 +94,9 @@ module Model =
         | SetSource of string option
         /// Set or clear ID of the asset in the source. Only applicable if source is specified.
         /// The combination of source and sourceId must be unique.
-        | SetSourceId of string option
+        | SetExternalId of string option
+        | SetParentId of int64 option
+        | SetParentExternalId of string option
 
     type AssetsCreateRequest = {
         Items: AssetCreateDto seq

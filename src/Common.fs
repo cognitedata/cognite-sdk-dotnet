@@ -4,6 +4,11 @@ namespace Cognite.Sdk
 open FSharp.Data
 open Thoth.Json.Net
 
+type Numeric =
+    | NumString of string
+    | NumInteger of int64
+    | NumFloat of double
+
 module Common =
 
     /// **Description**

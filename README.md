@@ -76,8 +76,8 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `getAsset` - Get single asset.
 - `getAssets` - Get multiple assets.
 - `deleteAssets` - Delete one or more assets.
-- `updateAsset` - Update single asset.
 - `updateAssets` - Update one or more assets.
+- `createAssets`- Create one or more assets.
 
 ## Time Series API
 
@@ -87,3 +87,7 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `createTimeSeries` - Create a new time series.
 - `queryTimeSeries` - Retrieves a list of data points from a single time series.
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.
+
+## Sequences API
+
+In development ...

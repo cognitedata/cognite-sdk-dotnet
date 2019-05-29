@@ -94,10 +94,22 @@ module AssetsExtensions =
                 | Some source -> yield "set", Encode.string source
                 | None -> yield "setNull", Encode.bool true
             ]
-        | SetSourceId optSourceId ->
-            "sourceId", Encode.object [
-                match optSourceId with
-                | Some sourceId -> yield "set", Encode.string sourceId
+        | SetExternalId optExternalId ->
+            "externalId", Encode.object [
+                match optExternalId with
+                | Some externalId -> yield "set", Encode.string externalId
+                | None -> yield "setNull", Encode.bool true
+            ]
+        | SetParentExternalId optParentExternalId ->
+            "externalId", Encode.object [
+                match optParentExternalId with
+                | Some parentExternalId -> yield "set", Encode.string parentExternalId
+                | None -> yield "setNull", Encode.bool true
+            ]
+        | SetParentId optParentId ->
+            "parentId", Encode.object [
+                match optParentId with
+                | Some parentId -> yield "set", Encode.int64 parentId
                 | None -> yield "setNull", Encode.bool true
             ]
 

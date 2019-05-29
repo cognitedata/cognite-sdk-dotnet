@@ -66,21 +66,7 @@ module Internal =
         deleteAssets assets fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let updateAsset (assetId: int64) (args: UpdateParams seq) (fetch: HttpHandler) =
-        let request = { Id = assetId; Params = args }
-        let body = encodeToString request.Encoder
-        let url = Url + sprintf "/%d/update" assetId
-
-        POST
-        >=> setBody body
-        >=> setResource url
-        >=> fetch
-
-    let updateAssetResult (assetId: int64) (args: UpdateParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        updateAsset assetId args fetch ctx
-        |> Async.map (fun ctx -> ctx.Result)
-
-    let updateAssets (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) =
+    let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) =
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -92,11 +78,12 @@ module Internal =
         let url = Url + sprintf "/update"
 
         POST
+        >=> setVersion V10
         >=> setBody body
         >=> setResource url
         >=> fetch
 
-    let updateAssetsResult (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) (ctx: HttpContext) =
+    let updateAssetsResult (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
         updateAssets args fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -166,21 +153,6 @@ module Methods =
 
     /// **Description**
     ///
-    /// Updates an asset object. Supports partial updates i.e. updating only some fields but leaving the rest unchanged.
-    ///
-    /// **Parameters**
-    ///   * `assetId` - The id of the asset to update.
-    ///   * `args` - The list of arguments for updating the asset.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
-    ///
-    let updateAsset (assetId: int64) (args: UpdateParams seq) (ctx: HttpContext) =
-        Internal.updateAsset assetId args Request.fetch ctx
-
-    /// **Description**
-    ///
     /// Updates multiple assets within the same project. Updating assets does not replace the existing asset hierarchy.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
     ///
@@ -191,5 +163,5 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*UpdateParams seq) seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        Internal.updateAssets args
+    let updateAssets (args: (int64*(UpdateParams list)) list) (ctx: HttpContext) =
+        Internal.updateAssets args Request.fetch ctx

@@ -2,7 +2,7 @@ namespace Cognite.Sdk.Timeseries
 
 open System
 open Thoth.Json.Net
-open FSharp.Data
+open Cognite.Sdk
 
 [<AutoOpen>]
 module TimeseriesExtensions =
@@ -11,9 +11,9 @@ module TimeseriesExtensions =
             Encode.object [
                 yield "timestamp", Encode.int64 this.TimeStamp
                 match this.Value with
-                | String value -> yield "value", Encode.string value
-                | Integer value -> yield "value", Encode.int64 value
-                | Float value -> yield "value", Encode.float value
+                | NumString value -> yield "value", Encode.string value
+                | NumInteger value -> yield "value", Encode.int64 value
+                | NumFloat value -> yield "value", Encode.float value
             ]
 
     type PointRequest with
@@ -28,9 +28,9 @@ module TimeseriesExtensions =
                 {
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
                     Value = get.Required.Field "value" (Decode.oneOf [
-                            Decode.int64 |> Decode.map Integer
-                            Decode.float |> Decode.map Float
-                            Decode.string |> Decode.map Numeric.String
+                            Decode.int64 |> Decode.map NumInteger
+                            Decode.float |> Decode.map NumFloat
+                            Decode.string |> Decode.map NumString
                         ])
                 })
 

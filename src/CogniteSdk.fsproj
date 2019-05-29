@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.1.6</Version>
-    <PackageVersion>0.1.6</PackageVersion>
+    <Version>0.1.7</Version>
+    <PackageVersion>0.1.7</PackageVersion>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
 
@@ -22,6 +22,7 @@
     <Compile Include="assets\Model.fs" />
     <Compile Include="assets\Json.fs" />
     <Compile Include="assets\Methods.fs" />
+    <Compile Include="sequences\Model.fs" />
     <Compile Include="api\Client.fs" />
     <Compile Include="api\Assets.fs" />
     <Compile Include="api\Timeseries.fs" />

@@ -14,7 +14,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<Int64>) =
         match this.Value with
-        | Integer value' ->
+        | NumInteger value' ->
             value <- value'
             true
         | _ -> false
@@ -22,7 +22,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<string>) =
         match this.Value with
-        | String value' ->
+        | NumString value' ->
             value <- value'
             true
         | _ -> false
@@ -30,7 +30,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<float>) =
         match this.Value with
-        | Float value' ->
+        | NumFloat value' ->
             value <- value'
             true
         | _ -> false
@@ -38,7 +38,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<Int64>) =
         match this.Value with
-        | Integer value' ->
+        | NumInteger value' ->
             value <- value'
             true
         | _ -> false
@@ -46,7 +46,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<string>) =
         match this.Value with
-        | String value' ->
+        | NumString value' ->
             value <- value'
             true
         | _ -> false
@@ -54,7 +54,7 @@ type TimeseriesExtension =
     [<Extension>]
     static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<float>) =
         match this.Value with
-        | Float value' ->
+        | NumFloat value' ->
             value <- value'
             true
         | _ -> false
