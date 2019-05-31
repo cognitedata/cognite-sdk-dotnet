@@ -16,10 +16,19 @@ module TimeseriesExtensions =
                 | NumFloat value -> yield "value", Encode.float value
             ]
 
+    type DataPointsCreateDto with
+        member this.Encoder =
+            Encode.object [
+                yield ("datapoints", Seq.map (fun (it: DataPointCreateDto) -> it.Encoder) this.DataPoints |> Encode.seq)
+                match this.Identity with
+                | Id id -> yield "value", Encode.int64 id
+                | ExternalId externalId -> yield "externalId", Encode.string externalId
+            ]
+
     type PointRequest with
         member this.Encoder =
             Encode.object [
-                yield ("items", Seq.map (fun (it: DataPointCreateDto) -> it.Encoder) this.Items |> Encode.seq)
+                yield ("items", Seq.map (fun (it: DataPointsCreateDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type DataPointReadDto with
@@ -85,7 +94,10 @@ module TimeseriesExtensions =
     type TimeseriesCreateDto with
         member this.Encoder =
             Encode.object [
-                yield "name", Encode.string this.Name
+                if this.ExternalId.IsSome then
+                    yield "name", Encode.string this.ExternalId.Value
+                if this.Name.IsSome then
+                    yield "name", Encode.string this.Name.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
                 if this.IsString.IsSome then

@@ -193,9 +193,9 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member InsertDataByNameAsync (this: Client) (name: string) (items: DataPointCreateDto seq) : Task<int> =
+    static member InsertDataAsync (this: Client) (items: DataPointsCreateDto seq) : Task<int> =
         let worker () : Async<int> = async {
-            let! result = Internal.insertDataByNameResult name items this.Fetch this.Ctx
+            let! result = Internal.insertDataResult items this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode

@@ -7,8 +7,18 @@ type DataPointCreateDto = {
     Value: Numeric
 }
 
+/// Id or ExternalId
+type Identity =
+    | Id of int64
+    | ExternalId of string
+
+type DataPointsCreateDto = {
+    DataPoints: DataPointCreateDto seq
+    Identity: Identity
+}
+
 type PointRequest = {
-    Items: DataPointCreateDto seq
+    Items: DataPointsCreateDto seq
 }
 
 type DataPointReadDto = {
@@ -64,8 +74,9 @@ type RetrieveRequest = {
 }
 
 type TimeseriesCreateDto = {
+    ExternalId: string option
     /// Unique name of time series
-    Name: string
+    Name: string option
     /// Description of the time series.
     Description: string option
     /// Whether the time series is string valued or not.

@@ -58,6 +58,7 @@ module Internal =
         let body = encodeToString  request.Encoder
 
         POST
+        >=> setVersion V05
         >=> setBody body
         >=> setResource Url
         >=> fetch

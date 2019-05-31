@@ -23,18 +23,19 @@ module Internal =
         getTimeseries query fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let insertDataByName (name: string) (items: seq<DataPointCreateDto>) (fetch: HttpHandler) =
+    let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
 
         let body = encodeToString request.Encoder
-        let url = Url + sprintf "/data/%s" name
+        let url = Url + "/data"
 
         POST
+        >=> setVersion V10
         >=> setBody body
         >=> setResource url
 
-    let insertDataByNameResult (name: string) (items: seq<DataPointCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
-        insertDataByName name items fetch ctx
+    let insertDataResult (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
+        insertData items fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
     let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) =
@@ -43,6 +44,7 @@ module Internal =
         let body = encodeToString request.Encoder
 
         POST
+        >=> setVersion V10
         >=> setBody body
         >=> setResource Url
 
@@ -77,6 +79,7 @@ module Internal =
         let url = Url + sprintf "/%s" name
 
         DELETE
+        >=> setVersion V05
         >=> setResource url
         >=> fetch
 
@@ -136,8 +139,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataByName (name: string) (items: DataPointCreateDto list) (ctx: HttpContext) =
-        Internal.insertDataByName name items Request.fetch ctx
+    let insertDataByName (items: DataPointsCreateDto list) (ctx: HttpContext) =
+        Internal.insertData items Request.fetch ctx
 
     /// **Description**
     ///
