@@ -26,7 +26,7 @@ module Internal =
     let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
 
-        let body = encodeToString request.Encoder
+        let body = Encode.stringify request.Encoder
         let url = Url + "/data"
 
         POST
@@ -41,7 +41,7 @@ module Internal =
     let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) =
         let request : TimeseriesRequest = { Items = items }
 
-        let body = encodeToString request.Encoder
+        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
@@ -62,7 +62,7 @@ module Internal =
                     yield { Id = id }
             ]
         }
-        let body = encodeToString request.Encoder
+        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
@@ -91,8 +91,7 @@ module Internal =
         let url = Url + "/data/list"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultArgs args
-        let body = encodeToString request
-        printfn "Body: %s" body
+        let body = Encode.stringify request
 
         POST
         >=> setVersion V10

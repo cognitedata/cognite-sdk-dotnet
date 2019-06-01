@@ -2,6 +2,7 @@ namespace Cognite.Sdk.Assets
 
 open Thoth.Json.Net
 
+open Cognite.Sdk
 
 [<AutoOpen>]
 module AssetsExtensions =
@@ -38,7 +39,7 @@ module AssetsExtensions =
                     yield "externalId", Encode.string this.ExternalId.Value
                 yield "name", Encode.string this.Name
                 if this.ParentId.IsSome then
-                    yield "parentId", Encode.int64 this.ParentId.Value
+                    yield "parentId", Encode.int64' this.ParentId.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
                 if not this.MetaData.IsEmpty then
@@ -57,19 +58,29 @@ module AssetsExtensions =
 
     let renderParams (arg: GetParams) =
         match arg with
-        | Id id -> "id", id.ToString ()
+        | NotLimit limit -> "limit", limit.ToString ()
+        | Cursor cursor -> "cursor", cursor
         | Name name -> "name", name
-        | Description desc -> "desc", desc
-        | Path path -> "path", path
+        | ParentIds ids ->
+            let ids' = List.ofSeq ids
+            "parentIds", Encode.list (List.map Encode.int64' ids') |> Encode.toString 0
+        | Source source -> "source", source
+        | Root root -> "root", root.ToString().ToLower()
+        | MinCreatedTime value -> "minCreatedTime", value.ToString ()
+        | MaxCreatedTime value -> "maxCreatedTime", value.ToString ()
+        | MinLastUpdatedTime value -> "minLastUpdatedTime", value.ToString ()
+        | MaxLastUpdatedTime value -> "maxLastUpdatedTime", value.ToString ()
+        | ExternalIdPrefix externalId -> "externalIdPrefix", externalId
+
+        (*
         | MetaData meta ->
             let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) meta) |> Encode.toString 0
             "metadata", metaString
+
         | Depth depth -> "depth", depth.ToString ()
         | Fuzziness fuzz -> "fuzziness", fuzz.ToString ()
         | AutoPaging value -> "autopaging", value.ToString().ToLower()
-        | NotLimit limit -> "limit", limit.ToString ()
-        | Cursor cursor -> "cursor", cursor
-
+        *)
     let renderUpdateFields (arg: UpdateParams) =
         match arg with
         | SetName name ->
@@ -109,14 +120,14 @@ module AssetsExtensions =
         | SetParentId optParentId ->
             "parentId", Encode.object [
                 match optParentId with
-                | Some parentId -> yield "set", Encode.int64 parentId
+                | Some parentId -> yield "set", Encode.int64' parentId
                 | None -> yield "setNull", Encode.bool true
             ]
 
     type AssetUpdateRequest with
         member this.Encoder =
             Encode.object [
-                yield ("id", Encode.int64 this.Id)
+                yield ("id", Encode.int64' this.Id)
                 for arg in this.Params do
                     yield renderUpdateFields arg
             ]

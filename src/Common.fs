@@ -3,6 +3,8 @@ namespace Cognite.Sdk
 
 open FSharp.Data
 open Thoth.Json.Net
+open Newtonsoft.Json
+open Newtonsoft.Json.Linq
 
 type Numeric =
     | NumString of string
@@ -46,6 +48,13 @@ module Common =
 
         Async.single { Request = context.Request; Result = result}
 
-    let encodeToString encoder =
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Encode =
+    let stringify encoder =
         Encode.toString 0 encoder
+
+    /// Encode int64 to number (not to string as Thoth.Json.Net)
+    let int64' (value : int64) : JsonValue =
+        JValue(value) :> JsonValue
+
 

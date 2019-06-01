@@ -25,13 +25,11 @@ namespace Tests
 
             var json = File.ReadAllText("Assets.json");
             var fetcher = Fetcher.FromJson(200, json);
-            var metadata = ("metadata", JsonConvert.SerializeObject(new Dictionary<string, string> { { "option1", "value1" } }));
             var query = new List<(string, string)> {
-                    metadata,
-                    ("id", "42"),
-                    ("depth", "5"),
-                    ("path", "test"),
-                    ("desc", "my description"),
+                    ("parentIds", "[42,43]"),
+                    ("source", "source"),
+                    ("root", "false"),
+                    ("externalIdPrefix", "prefix"),
                     ("name", "string3")
                 };
 
@@ -44,11 +42,11 @@ namespace Tests
             var assetArgs =
                 AssetArgs.Empty()
                 .Name("string3")
-                .Description("my description")
-                .Path("test")
-                .Depth(5)
-                .Id(42L)
-                .MetaData(new Dictionary<string, string> {{ "option1", "value1"}});
+                .ExternalIdPrefix("prefix")
+                .Root(false)
+                .Source("source")
+                .ParentIds(new List<long> {42L, 43L });
+                //.MetaData(new Dictionary<string, string> {{ "option1", "value1"}});
 
             // Act
             var result = await client.GetAssetsAsync(assetArgs);
@@ -104,8 +102,8 @@ namespace Tests
             var assetArgs =
                 AssetArgs.Empty()
                 .Name("string3")
-                .Description("my description")
-                .Depth(3);
+                .Source("source")
+                .Root(true);
 
             // Act/Assert
             await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetsAsync(assetArgs));

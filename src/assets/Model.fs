@@ -64,16 +64,17 @@ module Model =
 
     // Get parameters
     type GetParams =
-        | Id of int64
-        | Name of string
-        | Description of string
-        | Path of string
-        | MetaData of Map<string, string>
-        | Depth of int
-        | Fuzziness of int
-        | AutoPaging of bool
         | NotLimit of int
         | Cursor of string
+        | Name of string
+        | ParentIds of int64 seq
+        | Source of string
+        | Root of bool
+        | MinCreatedTime of int64
+        | MaxCreatedTime of int64
+        | MinLastUpdatedTime of int64
+        | MaxLastUpdatedTime of int64
+        | ExternalIdPrefix of string
 
         static member Limit limit =
             if limit > MaxLimitSize || limit < 1 then

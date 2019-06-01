@@ -9,10 +9,10 @@ module TimeseriesExtensions =
     type DataPointCreateDto with
         member this.Encoder =
             Encode.object [
-                yield "timestamp", Encode.int64 this.TimeStamp
+                yield "timestamp", Encode.int64' this.TimeStamp
                 match this.Value with
                 | NumString value -> yield "value", Encode.string value
-                | NumInteger value -> yield "value", Encode.int64 value
+                | NumInteger value -> yield "value", Encode.int64' value
                 | NumFloat value -> yield "value", Encode.float value
             ]
 
@@ -110,9 +110,9 @@ module TimeseriesExtensions =
                 if this.IsStep.IsSome then
                     yield "isStep", Encode.bool this.IsStep.Value
                 if this.AssetId.IsSome then
-                    yield "assetId", Encode.int64 this.AssetId.Value
+                    yield "assetId", Encode.int64' this.AssetId.Value
                 if not (Seq.isEmpty this.SecurityCategories) then
-                    yield "securityCategories", Encode.seq (Seq.map Encode.int64 this.SecurityCategories)
+                    yield "securityCategories", Encode.seq (Seq.map Encode.int64' this.SecurityCategories)
             ]
 
     type TimeseriesReadDto with
@@ -185,7 +185,7 @@ module TimeseriesExtensions =
     type Item with
         member this.Encoder =
             Encode.object [
-                yield "id", Encode.int64 this.Id
+                yield "id", Encode.int64' this.Id
             ]
     type RetrieveRequest with
         member this.Encoder =

@@ -40,7 +40,7 @@ module Internal =
     let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
-        let body = encodeToString  request.Encoder
+        let body = Encode.stringify  request.Encoder
 
         POST
         >=> setVersion V10
@@ -55,7 +55,7 @@ module Internal =
 
     let deleteAssets (assets: int64 seq) (fetch: HttpHandler) =
         let request : AssetsDeleteRequest = { Items = assets }
-        let body = encodeToString  request.Encoder
+        let body = Encode.stringify  request.Encoder
 
         POST
         >=> setVersion V05
@@ -75,7 +75,7 @@ module Internal =
             ]
         }
 
-        let body = encodeToString request.Encoder
+        let body = Encode.stringify request.Encoder
         let url = Url + sprintf "/update"
 
         POST

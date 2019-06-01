@@ -93,38 +93,32 @@ let ``Get assets is Ok`` () = async {
     let ctx =
         defaultContext
         |> addHeader ("api-key", "test-key")
+    let args = [
+            Name "string"
+            Source "source"
+            Root false
+            ParentIds [42L; 43L]
+            Limit 10
+            Cursor "mycursor"
+        ]
 
     // Act
     let! res =
-        (fetch, ctx) ||> Internal.getAssets [
-        Name "string"
-        Path "path"
-        Description "mydescription"
-        MetaData (Map.ofSeq [ ("key", "value") ])
-        Depth 3
-        Fuzziness 2
-        AutoPaging true
-        NotLimit 10
-        Cursor "mycursor"
-    ]
+        (fetch, ctx) ||> Internal.getAssets args
 
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.GET @>
     test <@ res.Request.Resource = "/assets" @>
 
-    let meta =  JsonConvert.SerializeObject(Map.ofSeq [("key", "value")]);
     test <@ res.Request.Query = [
         ("name", "string")
-        ("path", "path")
-        ("desc", "mydescription")
-        ("metadata", meta)
-        ("depth", "3")
-        ("fuzziness", "2")
-        ("autopaging", "true")
+        ("source", "source")
+        ("root", "false")
+        ("parentIds", "[42,43]")
         ("limit", "10")
         ("cursor", "mycursor")
-        ]@>
+    ] @>
 }
 
 [<Fact>]
@@ -162,7 +156,7 @@ let ``Create single asset is Ok`` () = async {
         Description = Some "Description"
         MetaData = Map.empty
         Source = None
-        ParentId = None
+        ParentId = Some 42L
         ExternalId = None
         ParentExternalId = None
     }

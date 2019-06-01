@@ -83,18 +83,19 @@ type Asset =
 type AssetArgs (args: GetParams list) =
     let args  = args
 
-    member this.Id (id: int64) =
-        AssetArgs (Id id :: args)
+    member this.ExternalIdPrefix (prefix: string) =
+        AssetArgs (ExternalIdPrefix prefix :: args)
 
     member this.Name (name: string) =
         AssetArgs (Name name :: args)
 
-    member this.Description (description: string) =
-        AssetArgs (Description description :: args)
+    member this.Source (source: string) =
+        AssetArgs (Source source :: args)
 
-    member this.Path (path: string) =
-        AssetArgs (Path path :: args)
+    member this.Root (root: bool) =
+        AssetArgs (Root root :: args)
 
+    (*
     member this.MetaData (metaData: Dictionary<string, string>) =
         let map =
             metaData
@@ -102,9 +103,19 @@ type AssetArgs (args: GetParams list) =
             |> Map.ofSeq
             |> MetaData
         AssetArgs (map :: args)
+    *)
 
-    member this.Depth (depth: int) =
-        AssetArgs (Depth depth :: args)
+    member this.ParentIds (ids: seq<int64>) =
+        AssetArgs (ParentIds ids :: args)
+
+    member this.MinCreatedTime (value: int64) =
+        AssetArgs (MinCreatedTime value :: args)
+    member this.MaxCreatedTime (value: int64) =
+        AssetArgs (MaxCreatedTime value :: args)
+    member this.MinLastUpdatedTime (value: int64) =
+        AssetArgs (MinLastUpdatedTime value :: args)
+    member this.MaxLastUpdatedTime (value: int64) =
+        AssetArgs (MaxLastUpdatedTime value :: args)
 
     member internal this.Args = args
 
