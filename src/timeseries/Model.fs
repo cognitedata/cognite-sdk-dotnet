@@ -68,7 +68,7 @@ type Item = {
 }
 
 /// Used for retrieving multiple time series
-type RetrieveRequest = {
+type TimeseriesReadRequest = {
     /// Sequence of items to retrieve
     Items: seq<Item>
 }
@@ -165,19 +165,8 @@ type Granularity =
     | Minute of int
     | Second of int
 
-    override this.ToString () =
-        match this with
-        | Day day when day = 1 -> "d"
-        | Day day -> sprintf "d%d" day
-        | Hour hour when hour = 1 -> "h"
-        | Hour hour -> sprintf "h%d" hour
-        | Minute min when min = 1 -> "m"
-        | Minute min -> sprintf "m%d" min
-        | Second sec when sec = 1 -> "s"
-        | Second sec -> sprintf "s%d" sec
-
 /// Query parameters
-type QueryDataParams =
+type QueryDataParam =
     | Start of string
     | End of string
     | Aggregates of Aggregate seq
@@ -185,8 +174,13 @@ type QueryDataParams =
     | Limit of int32
     | IncludeOutsidePoints of bool
 
-type QueryParams =
+type QueryParam =
     | Limit of int32
     | IncludeMetaData of bool
     | Cursor of string
     | AssetIds of int64 seq
+
+type QueryLatestParam =
+    | Before of string
+    | Id of int64
+    | ExternalId of string

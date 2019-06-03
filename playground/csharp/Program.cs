@@ -30,13 +30,13 @@ namespace csharp
             Console.WriteLine("{0}", result);
         }
 
-        static async Task QueryTimeseriesExample(Client client)
+        static async Task QueryTimeseriesDataExample(Client client)
         {
             var defaultQuery =
-                Query.Create()
+                QueryData.Create()
                 .Aggregates(new List<Aggregate> { Aggregate.Average });
 
-            var query = new List<Tuple<long, Query>> ();
+            var query = new List<Tuple<long, QueryData>> ();
 
             var result = await client.GetTimeseriesDataAsync(defaultQuery, query);
 

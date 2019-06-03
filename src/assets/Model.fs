@@ -52,7 +52,7 @@ type AssetCreateDto = {
 [<AutoOpen>]
 module Model =
     [<Literal>]
-    let MaxLimitSize = 10000
+    let MaxLimitSize = 1000
 
     [<Literal>]
     let Url = "/assets"

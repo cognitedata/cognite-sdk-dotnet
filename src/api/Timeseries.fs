@@ -139,44 +139,95 @@ type TimeseriesExtension =
             true
         | _ -> false
 
-type Query (query: QueryDataParams list) =
+type Query (parameters : QueryParam list) =
+    let _params = parameters
+
+    member this.Limit (limit: int) =
+        Query (QueryParam.Limit limit :: _params)
+
+    member this.Cursor (cursor: string) =
+        Query (Cursor cursor :: _params)
+
+    member this.IncludeMetaData (flag: bool) =
+        Query (IncludeMetaData flag :: _params)
+
+    member this.AssetIds (assetIds: int64 seq) =
+        Query (AssetIds assetIds :: _params)
+
+    member internal this.Params = Seq.ofList _params
+
+type QueryData (query: QueryDataParam list) =
     let query = query
 
     member this.Start (start: string) =
-        Query (Start start :: query)
+        QueryData (Start start :: query)
 
     member this.End (endTime: string) =
-        Query (End endTime :: query)
+        QueryData (End endTime :: query)
 
     member this.Limit (limit: int) =
-        Query (QueryDataParams.Limit limit :: query)
+        QueryData (QueryDataParam.Limit limit :: query)
 
     member this.Aggregates (aggregate: Aggregate seq) =
-        Query (QueryDataParams.Aggregates aggregate :: query)
+        QueryData (QueryDataParam.Aggregates aggregate :: query)
 
     member this.IncludeOutsidePoints (iop: bool) =
-        Query (IncludeOutsidePoints iop :: query)
+        QueryData (IncludeOutsidePoints iop :: query)
 
     member internal this.Query = Seq.ofList query
 
     static member Create () =
-        Query []
+        QueryData []
+
+type QueryDataLatest (options: QueryLatestParam list) =
+    let options = options
+
+    member this.Before (before: string) =
+        QueryDataLatest (Before before :: options)
+
+    member this.Id (id: int64) =
+        QueryDataLatest (QueryLatestParam.Id id :: options)
+
+    member this.ExternalId (externalId: string) =
+        QueryDataLatest (QueryLatestParam.ExternalId externalId :: options)
+
+    member internal this.Options = Seq.ofList options
 
 [<Extension>]
 type ClientTimeseriesExtensions =
     /// <summary>
-    /// Retrieves a list of data points from a single time series.
+    /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
-    /// <param name="name">The name of the timeseries to insert data into.</param>
+    /// <param name="defaultQuery">Parameters describing a query for multiple datapoints. If fields in individual
+    /// datapoint query items are omitted, top-level values are used instead.</param>
+    /// <param name="query">Parameters describing a query for multiple datapoints.</param>
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
-
     [<Extension>]
-    static member GetTimeseriesDataAsync (this: Client) (defaultQuery: Query) (query: Tuple<int64, Query> seq) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesDataAsync (this: Client) (defaultQuery: QueryData) (query: Tuple<int64, QueryData> seq) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
             let defaultQuery' = defaultQuery.Query
             let query' = query |> Seq.map (fun (id, query) -> (id, query.Query))
             let! result = Internal.getTimeseriesDataResult defaultQuery' query'  this.Fetch this.Ctx
+            match result with
+            | Ok response ->
+                return response
+            | Error error ->
+               return raise (Error.error2Exception error)
+        }
+
+        worker () |> Async.StartAsTask
+
+    /// <summary>
+    /// Retrieves the single latest data point in a time series.
+    /// </summary>
+    /// <param name="queryParams">Instance of QueryDataLatest object with query parameters.</param>
+    /// <param name="client">The list of data points to insert.</param>
+    /// <returns>Http status code.</returns>
+    [<Extension>]
+    static member GetTimeseriesLatestDataAsync (this: Client) (queryParams: QueryDataLatest) : Task<seq<PointResponseDataPoints>> =
+        let worker () : Async<seq<PointResponseDataPoints>> = async {
+            let! result = Internal.getTimeseriesLatestDataResult queryParams.Options  this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -217,6 +268,25 @@ type ClientTimeseriesExtensions =
             match result with
             | Ok response ->
                 return response.StatusCode
+            | Error error ->
+               return raise (Error.error2Exception error)
+        }
+
+        worker () |> Async.StartAsTask
+
+    /// <summary>
+    /// Get timeseries
+    /// </summary>
+    /// <param name="id">The id of the timeseries to get.</param>
+    /// <returns>The timeseries with the given id.</returns>
+    [<Extension>]
+    static member GetTimeseriesAsync (this: Client) (queryParams: Query) : Task<TimeseriesResponse> =
+        let worker () : Async<TimeseriesResponse> = async {
+            let! result = Internal.getTimeseriesResult queryParams.Params this.Fetch this.Ctx
+
+            match result with
+            | Ok response ->
+                return response
             | Error error ->
                return raise (Error.error2Exception error)
         }

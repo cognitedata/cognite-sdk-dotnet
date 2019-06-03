@@ -88,6 +88,9 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `queryTimeSeries` - Retrieves a list of data points from a single time series.
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.
 
+- `getTimeseriesData` -
+- `getTimeseriesLatestData` - Retrieves the single latest data point in a time series.
+
 ## Sequences API
 
 In development ...

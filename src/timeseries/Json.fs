@@ -21,8 +21,8 @@ module TimeseriesExtensions =
             Encode.object [
                 yield ("datapoints", Seq.map (fun (it: DataPointCreateDto) -> it.Encoder) this.DataPoints |> Encode.seq)
                 match this.Identity with
-                | Id id -> yield "value", Encode.int64 id
-                | ExternalId externalId -> yield "externalId", Encode.string externalId
+                | Identity.Id id -> yield "value", Encode.int64 id
+                | Identity.ExternalId externalId -> yield "externalId", Encode.string externalId
             ]
 
     type PointRequest with
@@ -147,7 +147,7 @@ module TimeseriesExtensions =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    let renderParams (arg: QueryParams) =
+    let renderParams (arg: QueryParam) =
         match arg with
         | Limit limit -> "limit", limit.ToString ()
         | IncludeMetaData imd -> "includeMetadata", imd.ToString().ToLower()
@@ -156,7 +156,7 @@ module TimeseriesExtensions =
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "assetIds", sprintf "[%s]" (String.Join (",", list))
 
-    let renderQuery (param: QueryDataParams) : string*Thoth.Json.Net.JsonValue =
+    let renderQuery (param: QueryDataParam) : string*Thoth.Json.Net.JsonValue =
         match param with
         | Start start -> "start", Encode.string start
         | End end'  -> "end", Encode.string end'
@@ -164,10 +164,10 @@ module TimeseriesExtensions =
             let aggregates = aggr |> Seq.map (fun a -> Encode.string (a.ToString ())) |> Array.ofSeq
             "aggregates", Encode.array aggregates
         | Granularity gr -> "granularity", Encode.string (gr.ToString ())
-        | QueryDataParams.Limit limit -> "limit", Encode.int limit
+        | QueryDataParam.Limit limit -> "limit", Encode.int limit
         | IncludeOutsidePoints iop -> "includeOutsidePoints", Encode.bool iop
 
-    let renderDataQuery (defaultQuery: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) =
+    let renderDataQuery (defaultQuery: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) =
         Encode.object [
             yield "items", Encode.list [
                 for (id, arg) in args do
@@ -182,13 +182,38 @@ module TimeseriesExtensions =
                 yield renderQuery param
         ]
 
+    let renderLatestOption (option: QueryLatestParam) : string*Thoth.Json.Net.JsonValue =
+        match option with
+        | Before before -> "before", Encode.string before
+        | Id id -> "Id", Encode.int64' id
+        | ExternalId externalId -> "externalId", Encode.string externalId
+
+    let renderDataLatestQuery (options: QueryLatestParam seq) =
+        Encode.object [
+            for option in options do
+                yield renderLatestOption option
+        ]
+
     type Item with
         member this.Encoder =
             Encode.object [
                 yield "id", Encode.int64' this.Id
             ]
-    type RetrieveRequest with
+    type TimeseriesReadRequest with
         member this.Encoder =
             Encode.object [
                 yield ("items", Seq.map (fun (it: Item) -> it.Encoder) this.Items |> Encode.seq)
             ]
+
+
+    type Granularity with
+        member this.ToString () =
+            match this with
+            | Day day when day = 1 -> "d"
+            | Day day -> sprintf "d%d" day
+            | Hour hour when hour = 1 -> "h"
+            | Hour hour -> sprintf "h%d" hour
+            | Minute min when min = 1 -> "m"
+            | Minute min -> sprintf "m%d" min
+            | Second sec when sec = 1 -> "s"
+            | Second sec -> sprintf "s%d" sec

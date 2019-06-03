@@ -7,7 +7,7 @@ open Cognite.Sdk.Request
 
 [<RequireQualifiedAccess>]
 module Internal =
-    let getTimeseries (query: QueryParams seq) (fetch: HttpHandler) =
+    let getTimeseries (query: QueryParam seq) (fetch: HttpHandler) =
         let decoder = decodeResponse TimeseriesResponse.Decoder id
         let url = Url
         let query = query |> Seq.map renderParams |> List.ofSeq
@@ -19,7 +19,7 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesResult (name: string) (query: QueryParams seq) (fetch: HttpHandler) (ctx: HttpContext) =
+    let getTimeseriesResult (query: QueryParam seq) (fetch: HttpHandler) (ctx: HttpContext) =
         getTimeseries query fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -56,7 +56,7 @@ module Internal =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let url = Url + sprintf "/byids"
 
-        let request : RetrieveRequest = {
+        let request : TimeseriesReadRequest = {
             Items = [
                 for id in ids do
                     yield { Id = id }
@@ -87,7 +87,7 @@ module Internal =
         deleteTimeseries name fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesData (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) (fetch: HttpHandler) =
+    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler) =
         let url = Url + "/data/list"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultArgs args
@@ -100,10 +100,25 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesDataResult (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseriesData defaultArgs args fetch ctx
+    let getTimeseriesDataResult (defaultQueryParams: QueryDataParam seq) (queryParams: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler) (ctx: HttpContext) =
+        getTimeseriesData defaultQueryParams queryParams fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
+    let getTimeseriesLatestData (queryParams: QueryLatestParam seq) (fetch: HttpHandler) =
+        let url = Url + "/data/latest"
+        let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
+        let body = renderDataLatestQuery queryParams |> Encode.stringify
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setBody body
+        >=> fetch
+        >=> decoder
+
+    let getTimeseriesLatestDataResult (queryParams: QueryLatestParam seq) (fetch: HttpHandler) (ctx: HttpContext) =
+        getTimeseriesLatestData queryParams fetch ctx
+        |> Async.map (fun ctx -> ctx.Result)
 
 [<AutoOpen>]
 module Methods =
@@ -121,7 +136,7 @@ module Methods =
     ///
     /// **Output Type** * `HttpHandler<FSharp.Data.HttpResponse,TimeseriesResponse>`
     ///
-    let getTimeseries (query: QueryParams seq) (ctx: HttpContext) =
+    let getTimeseries (query: QueryParam seq) (ctx: HttpContext) =
         Internal.getTimeseries query Request.fetch ctx
 
     /// **Description**
@@ -173,8 +188,7 @@ module Methods =
 
     /// **Description**
     ///
-    /// Query time series. Retrieves a list of data points from a single time series.
-    /// This operation supports aggregation but not pagination.
+    /// Retrieves a list of data points from multiple time series in the same project
     ///
     /// **Parameters**
     ///   * `name` - parameter of type `string`
@@ -184,8 +198,23 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getTimeseriesData (defaultArgs: QueryDataParams seq) (args: (int64*(QueryDataParams seq)) seq)  (ctx: HttpContext) =
+    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq)  (ctx: HttpContext) =
         Internal.getTimeseriesData defaultArgs args Request.fetch ctx
+
+
+    /// **Description**
+    ///
+    /// Retrieves the single latest data point in a time series.
+    ///
+    /// **Parameters**
+    ///   * `queryParams` - parameter of type `seq<QueryLatestParam>`
+    ///   * `ctx` - parameter of type `HttpContext`
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<seq<PointResponseDataPoints>>>`
+    ///
+    let getTimeseriesLatestData (queryParams: QueryLatestParam seq)  (ctx: HttpContext) =
+        Internal.getTimeseriesLatestData queryParams Request.fetch ctx
 
     /// **Description**
     ///
