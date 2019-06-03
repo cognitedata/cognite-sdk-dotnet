@@ -179,19 +179,23 @@ type QueryData (query: QueryDataParam list) =
     static member Create () =
         QueryData []
 
-type QueryDataLatest (options: QueryLatestParam list) =
-    let options = options
+type QueryDataLatest (latest: LatestDataRequest) =
+    let latest : LatestDataRequest = latest
 
     member this.Before (before: string) =
-        QueryDataLatest (Before before :: options)
+        QueryDataLatest { latest with Before = Some before}
 
     member this.Id (id: int64) =
-        QueryDataLatest (QueryLatestParam.Id id :: options)
+        QueryDataLatest { latest with Identity = Identity.Id id }
 
     member this.ExternalId (externalId: string) =
-        QueryDataLatest (QueryLatestParam.ExternalId externalId :: options)
+        QueryDataLatest { latest with Identity = Identity.ExternalId externalId }
 
-    member internal this.Options = Seq.ofList options
+    member internal this.Latest = latest
+
+    static member Create () =
+        QueryDataLatest { Identity = Identity.Id 0L; Before = None }
+
 
 [<Extension>]
 type ClientTimeseriesExtensions =
@@ -225,9 +229,10 @@ type ClientTimeseriesExtensions =
     /// <param name="client">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetTimeseriesLatestDataAsync (this: Client) (queryParams: QueryDataLatest) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesLatestDataAsync (this: Client) (queryParams: QueryDataLatest seq) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
-            let! result = Internal.getTimeseriesLatestDataResult queryParams.Options  this.Fetch this.Ctx
+            let query = queryParams |> Seq.map (fun p -> p.Latest)
+            let! result = Internal.getTimeseriesLatestDataResult query this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response

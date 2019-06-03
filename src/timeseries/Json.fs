@@ -188,11 +188,29 @@ module TimeseriesExtensions =
         | Id id -> "Id", Encode.int64' id
         | ExternalId externalId -> "externalId", Encode.string externalId
 
+(*
     let renderDataLatestQuery (options: QueryLatestParam seq) =
         Encode.object [
             for option in options do
                 yield renderLatestOption option
         ]
+*)
+    type LatestDataRequest with
+        member this.Encoder =
+            Encode.object [
+                if this.Before.IsSome then
+                    yield "before", Encode.string this.Before.Value
+                match this.Identity with
+                | Identity.Id id -> yield "id", Encode.int64' id
+                | Identity.ExternalId id -> yield "externalId", Encode.string id
+            ]
+
+    type TimeseriesLatestRequest with
+        member this.Encoder =
+            Encode.object [
+                yield ("items", Seq.map (fun (it: LatestDataRequest) -> it.Encoder) this.Items |> Encode.seq)
+            ]
+
 
     type Item with
         member this.Encoder =

@@ -97,6 +97,15 @@ type TimeseriesRequest = {
     Items: seq<TimeseriesCreateDto>
 }
 
+type LatestDataRequest = {
+    Before: string option
+    Identity: Identity
+}
+
+type TimeseriesLatestRequest = {
+    Items: seq<LatestDataRequest>
+}
+
 type TimeseriesReadDto = {
     /// Javascript friendly internal ID given to the object.
     Id: int64

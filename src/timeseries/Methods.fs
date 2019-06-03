@@ -104,10 +104,11 @@ module Internal =
         getTimeseriesData defaultQueryParams queryParams fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesLatestData (queryParams: QueryLatestParam seq) (fetch: HttpHandler) =
+    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (fetch: HttpHandler) =
         let url = Url + "/data/latest"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
-        let body = renderDataLatestQuery queryParams |> Encode.stringify
+        let request = { Items = queryParams }
+        let body = request.Encoder |> Encode.stringify
 
         POST
         >=> setVersion V10
@@ -116,7 +117,7 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesLatestDataResult (queryParams: QueryLatestParam seq) (fetch: HttpHandler) (ctx: HttpContext) =
+    let getTimeseriesLatestDataResult (queryParams: LatestDataRequest seq) (fetch: HttpHandler) (ctx: HttpContext) =
         getTimeseriesLatestData queryParams fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -213,7 +214,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Context<seq<PointResponseDataPoints>>>`
     ///
-    let getTimeseriesLatestData (queryParams: QueryLatestParam seq)  (ctx: HttpContext) =
+    let getTimeseriesLatestData (queryParams: LatestDataRequest seq)  (ctx: HttpContext) =
         Internal.getTimeseriesLatestData queryParams Request.fetch ctx
 
     /// **Description**
