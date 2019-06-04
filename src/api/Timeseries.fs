@@ -38,6 +38,21 @@ type Timeseries =
     static member SetExternalId (this: TimeseriesCreateDto, externalId: string) : TimeseriesCreateDto =
         { this with ExternalId = Some externalId }
 
+    /// Set Unit of timeseries.
+    [<Extension>]
+    static member SetUnit (this: TimeseriesCreateDto, unit: string) : TimeseriesCreateDto =
+        { this with Unit = Some unit }
+
+    /// Set IsString of timeseries.
+    [<Extension>]
+    static member SetIsString (this: TimeseriesCreateDto, isString: bool) : TimeseriesCreateDto =
+        { this with IsString = isString }
+
+    // Set IsStep of timeseries.
+    [<Extension>]
+    static member SetIsStep (this: TimeseriesCreateDto, isStep: bool) : TimeseriesCreateDto =
+        { this with IsStep = isStep }
+
     /// Set custom, application specific metadata. String key -> String value.
     [<Extension>]
     static member SetMetaData (this: TimeseriesCreateDto, metaData: Dictionary<string, string>) : TimeseriesCreateDto =
