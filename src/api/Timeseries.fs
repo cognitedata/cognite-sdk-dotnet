@@ -8,9 +8,61 @@ open System.Runtime.CompilerServices
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Timeseries
+open System.Collections.Generic
 
 [<Extension>]
 type TimeseriesExtension =
+    /// Create a new Asset with name and description (non optional).
+    /// Optional properties can then be added using Set* methods such as e.g {SetMetaData}.
+    [<Extension>]
+    static member Create () : TimeseriesCreateDto =
+        {
+            ExternalId = None
+            Name = None
+            IsString = false
+            MetaData = Map.empty
+            Unit = None
+            AssetId = None
+            IsStep = false
+            Description = None
+            SecurityCategories = []
+        }
+
+    /// Set Name of timeseries.
+    [<Extension>]
+    static member SetName (this: TimeseriesCreateDto, name: string) : TimeseriesCreateDto =
+        { this with Name = Some name }
+
+    /// Set ExternalId of timeseries.
+    [<Extension>]
+    static member SetExternalId (this: TimeseriesCreateDto, externalId: string) : TimeseriesCreateDto =
+        { this with ExternalId = Some externalId }
+
+    /// Set custom, application specific metadata. String key -> String value.
+    [<Extension>]
+    static member SetMetaData (this: TimeseriesCreateDto, metaData: Dictionary<string, string>) : TimeseriesCreateDto =
+        let map =
+            metaData
+            |> Seq.map (|KeyValue|)
+            |> Map.ofSeq
+        { this with MetaData = map }
+
+    /// Set AssetId of timeseries.
+    [<Extension>]
+    static member SetAssetId (this: TimeseriesCreateDto, assetId: int64) : TimeseriesCreateDto =
+        { this with AssetId = Some assetId }
+
+    /// Set Description of timeseries.
+    [<Extension>]
+    static member SetDescription (this: TimeseriesCreateDto, description: string) : TimeseriesCreateDto =
+        { this with Description = Some description }
+
+
+    /// Set Security Categories of timeseries.
+    [<Extension>]
+    static member SetSequrityCategories (this: TimeseriesCreateDto, sc: seq<int64>) : TimeseriesCreateDto =
+        { this with SecurityCategories = sc }
+
     [<Extension>]
     static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<Int64>) =
         match this.Value with
@@ -157,6 +209,7 @@ type Query (parameters : QueryParam list) =
     member internal this.Params = Seq.ofList _params
 
 type QueryData (query: QueryDataParam list) =
+
     let query = query
 
     member this.Start (start: string) =

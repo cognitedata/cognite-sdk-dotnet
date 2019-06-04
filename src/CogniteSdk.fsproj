@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.1.12</Version>
-    <PackageVersion>0.1.12</PackageVersion>
+    <Version>0.1.13</Version>
+    <PackageVersion>0.1.13</PackageVersion>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
 

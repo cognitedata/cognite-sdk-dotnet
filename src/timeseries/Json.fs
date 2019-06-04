@@ -100,15 +100,15 @@ module TimeseriesExtensions =
                     yield "name", Encode.string this.Name.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
-                if this.IsString.IsSome then
-                    yield ("isString", Encode.bool this.IsString.Value)
+                if this.IsString then
+                    yield ("isString", Encode.bool this.IsString)
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
                     yield "metadata", metaString
                 if this.Unit.IsSome then
                     yield "unit", Encode.string this.Unit.Value
-                if this.IsStep.IsSome then
-                    yield "isStep", Encode.bool this.IsStep.Value
+                if this.IsStep then
+                    yield "isStep", Encode.bool this.IsStep
                 if this.AssetId.IsSome then
                     yield "assetId", Encode.int64' this.AssetId.Value
                 if not (Seq.isEmpty this.SecurityCategories) then

@@ -80,7 +80,7 @@ type TimeseriesCreateDto = {
     /// Description of the time series.
     Description: string option
     /// Whether the time series is string valued or not.
-    IsString: bool option
+    IsString: bool
     /// Additional metadata. String key -> String value.
     MetaData: Map<string, string>
     /// The physical unit of the time series.
@@ -88,7 +88,7 @@ type TimeseriesCreateDto = {
     /// Asset that this time series belongs to.
     AssetId: int64 option
     /// Whether the time series is a step series or not.
-    IsStep: bool option
+    IsStep: bool
     /// Security categories required in order to access this time series.
     SecurityCategories: seq<int64>
 }
