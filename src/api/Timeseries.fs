@@ -11,7 +11,7 @@ open Cognite.Sdk.Timeseries
 open System.Collections.Generic
 
 [<Extension>]
-type TimeseriesExtension =
+type Timeseries =
     /// Create a new Asset with name and description (non optional).
     /// Optional properties can then be added using Set* methods such as e.g {SetMetaData}.
     [<Extension>]

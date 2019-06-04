@@ -45,6 +45,16 @@ namespace csharp
             Console.WriteLine("{0}", result);
         }
 
+        static async Task CreateTimeseriesDataExample(Client client)
+        {
+            var timeseries =
+                Timeseries.Create();
+
+            var result = await client.CreateTimeseriesAsync(new List<TimeseriesCreateDto> { timeseries });
+
+            Console.WriteLine("{0}", result);
+        }
+
         static async Task Main(string[] args)
         {
             Console.WriteLine("C# Client");
