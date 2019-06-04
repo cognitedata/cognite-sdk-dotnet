@@ -95,7 +95,7 @@ module TimeseriesExtensions =
         member this.Encoder =
             Encode.object [
                 if this.ExternalId.IsSome then
-                    yield "name", Encode.string this.ExternalId.Value
+                    yield "externalId", Encode.string this.ExternalId.Value
                 if this.Name.IsSome then
                     yield "name", Encode.string this.Name.Value
                 if this.Description.IsSome then
