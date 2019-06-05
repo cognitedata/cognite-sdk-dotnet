@@ -185,8 +185,8 @@ module TimeseriesExtensions =
     let renderLatestOption (option: QueryLatestParam) : string*Thoth.Json.Net.JsonValue =
         match option with
         | Before before -> "before", Encode.string before
-        | Id id -> "Id", Encode.int64' id
-        | ExternalId externalId -> "externalId", Encode.string externalId
+        | QueryLatestParam.Id id -> "Id", Encode.int64' id
+        | QueryLatestParam.ExternalId externalId -> "externalId", Encode.string externalId
 
 (*
     let renderDataLatestQuery (options: QueryLatestParam seq) =

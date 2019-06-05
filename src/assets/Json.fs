@@ -141,5 +141,9 @@ module AssetsExtensions =
     type AssetsDeleteRequest with
         member this.Encoder =
             Encode.object [
-                "items", Seq.map Encode.int64 this.Items |> Encode.seq
+                "items", Seq.map (fun id ->
+                    match id with
+                    | Id id -> Encode.int64' id
+                    | ExternalId id -> Encode.string id
+                ) this.Items |> Encode.seq
             ]

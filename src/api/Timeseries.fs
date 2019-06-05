@@ -280,7 +280,7 @@ type ClientTimeseriesExtensions =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
             let defaultQuery' = defaultQuery.Query
             let query' = query |> Seq.map (fun (id, query) -> (id, query.Query))
-            let! result = Internal.getTimeseriesDataResult defaultQuery' query'  this.Fetch this.Ctx
+            let! result = Internal.getTimeseriesDataResult defaultQuery' query' this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -335,12 +335,12 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesCreateDto>) : Task<int> =
-        let worker () : Async<int> = async {
+    static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesCreateDto>) : Task<TimeseriesResponse> =
+        let worker () : Async<TimeseriesResponse> = async {
             let! result = Internal.createTimeseriesResult items this.Fetch this.Ctx
             match result with
             | Ok response ->
-                return response.StatusCode
+                return response
             | Error error ->
                return raise (Error.error2Exception error)
         }

@@ -25,7 +25,6 @@ module Internal =
 
     let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) =
         let request : PointRequest = { Items = items }
-
         let body = Encode.stringify request.Encoder
         let url = Url + "/data"
 
@@ -33,6 +32,7 @@ module Internal =
         >=> setVersion V10
         >=> setBody body
         >=> setResource url
+        >=> fetch
 
     let insertDataResult (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
         insertData items fetch ctx
@@ -40,13 +40,15 @@ module Internal =
 
     let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) =
         let request : TimeseriesRequest = { Items = items }
-
+        let decoder = decodeResponse TimeseriesResponse.Decoder id
         let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
         >=> setBody body
         >=> setResource Url
+        >=> fetch
+        >=> decoder
 
     let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
         createTimeseries items fetch ctx

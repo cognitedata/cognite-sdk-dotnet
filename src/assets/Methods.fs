@@ -23,6 +23,22 @@ module Internal =
         getAssets args fetch ctx
         |> Async.map (fun decoded -> decoded.Result)
 
+    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler) =
+        let decoder = decodeResponse AssetResponse.Decoder id
+        let body = "" // FIXME:
+        let url = Url + "byids"
+
+        POST
+        >=> setVersion V10
+        >=> setBody body
+        >=> setResource Url
+        >=> fetch
+        >=> decoder
+
+    let getAssetsByIdsResult (ids: Identity seq)  (fetch: HttpHandler) (ctx: HttpContext) =
+        getAssetsByIds ids fetch ctx
+        |> Async.map (fun decoded -> decoded.Result)
+
     let getAsset (assetId: int64) (fetch: HttpHandler) =
         let decoder = decodeResponse AssetReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
@@ -53,17 +69,17 @@ module Internal =
         createAssets assets fetch ctx
         |> Async.map (fun context -> context.Result)
 
-    let deleteAssets (assets: int64 seq) (fetch: HttpHandler) =
+    let deleteAssets (assets: Identity seq) (fetch: HttpHandler) =
         let request : AssetsDeleteRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
 
         POST
-        >=> setVersion V05
+        >=> setVersion V10
         >=> setBody body
         >=> setResource Url
         >=> fetch
 
-    let deleteAssetsResult (assets: int64 seq) (fetch: HttpHandler) (ctx: HttpContext) =
+    let deleteAssetsResult (assets: Identity seq) (fetch: HttpHandler) (ctx: HttpContext) =
         deleteAssets assets fetch ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -149,7 +165,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: int64 seq) (ctx: HttpContext) =
+    let deleteAssets (assets: Identity seq) (ctx: HttpContext) =
         Internal.deleteAssets assets Request.fetch ctx
 
     /// **Description**

@@ -48,7 +48,8 @@ namespace csharp
         static async Task CreateTimeseriesDataExample(Client client)
         {
             var timeseries =
-                Timeseries.Create();
+                Timeseries.Create()
+                    .SetName("Testing");
 
             var result = await client.CreateTimeseriesAsync(new List<TimeseriesCreateDto> { timeseries });
 
@@ -67,7 +68,7 @@ namespace csharp
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            await GetAssetsExample(client);
+            await CreateTimeseriesDataExample(client);
         }
     }
 }

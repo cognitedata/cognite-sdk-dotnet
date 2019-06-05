@@ -1,6 +1,7 @@
 namespace Cognite.Sdk.Assets
 
 open System.Text
+open Cognite.Sdk
 
 type IDecoder =
     abstract member Decoder: unit -> Decoder
@@ -113,5 +114,5 @@ module Model =
     }
 
     type AssetsDeleteRequest = {
-        Items: int64 seq
+        Items: Identity seq
     }

@@ -7,11 +7,6 @@ type DataPointCreateDto = {
     Value: Numeric
 }
 
-/// Id or ExternalId
-type Identity =
-    | Id of int64
-    | ExternalId of string
-
 type DataPointsCreateDto = {
     DataPoints: DataPointCreateDto seq
     Identity: Identity
