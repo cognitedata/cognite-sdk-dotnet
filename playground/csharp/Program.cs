@@ -54,6 +54,16 @@ namespace csharp
             var result = await client.CreateTimeseriesAsync(new List<TimeseriesCreateDto> { timeseries });
 
             Console.WriteLine("{0}", result);
+
+            var points = new List<DataPoints> {
+                new DataPoints {
+                    Identity = Identity.ExternalId("test"),
+                    DataPoints = new List<DataPoint> {
+                        DataPoint.Float(0L, 1.0)
+                    }
+                }
+            };
+            var result2 = await client.InsertDataAsync(points);
         }
 
         static async Task Main(string[] args)

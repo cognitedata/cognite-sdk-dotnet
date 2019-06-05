@@ -1,6 +1,7 @@
 namespace Cognite.Sdk.Api
 
 open System
+open System.Collections.Generic
 open System.Threading.Tasks;
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
@@ -8,7 +9,9 @@ open System.Runtime.CompilerServices
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Timeseries
-open System.Collections.Generic
+open Cognite.Sdk.Common
+
+
 
 [<Extension>]
 type Timeseries =
@@ -79,7 +82,7 @@ type Timeseries =
         { this with SecurityCategories = sc }
 
     [<Extension>]
-    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<Int64>) =
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<Int64>) =
         match this.Value with
         | NumInteger value' ->
             value <- value'
@@ -87,7 +90,7 @@ type Timeseries =
         | _ -> false
 
     [<Extension>]
-    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<string>) =
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<string>) =
         match this.Value with
         | NumString value' ->
             value <- value'
@@ -95,31 +98,7 @@ type Timeseries =
         | _ -> false
 
     [<Extension>]
-    static member TryGetValue (this: DataPointCreateDto, [<Out>] value: byref<float>) =
-        match this.Value with
-        | NumFloat value' ->
-            value <- value'
-            true
-        | _ -> false
-
-    [<Extension>]
-    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<Int64>) =
-        match this.Value with
-        | NumInteger value' ->
-            value <- value'
-            true
-        | _ -> false
-
-    [<Extension>]
-    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<string>) =
-        match this.Value with
-        | NumString value' ->
-            value <- value'
-            true
-        | _ -> false
-
-    [<Extension>]
-    static member TryGetValue (this: DataPointReadDto, [<Out>] value: byref<float>) =
+    static member TryGetValue (this: DataPointDto, [<Out>] value: byref<float>) =
         match this.Value with
         | NumFloat value' ->
             value <- value'
@@ -254,15 +233,15 @@ type QueryDataLatest (latest: LatestDataRequest) =
         QueryDataLatest { latest with Before = Some before}
 
     member this.Id (id: int64) =
-        QueryDataLatest { latest with Identity = Identity.Id id }
+        QueryDataLatest { latest with Identity = Common.Identity.Id id }
 
     member this.ExternalId (externalId: string) =
-        QueryDataLatest { latest with Identity = Identity.ExternalId externalId }
+        QueryDataLatest { latest with Identity = Common.Identity.ExternalId externalId }
 
     member internal this.Latest = latest
 
     static member Create () =
-        QueryDataLatest { Identity = Identity.Id 0L; Before = None }
+        QueryDataLatest { Identity = Common.Identity.Id 0L; Before = None }
 
 
 [<Extension>]
@@ -317,9 +296,27 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member InsertDataAsync (this: Client) (items: DataPointsCreateDto seq) : Task<int> =
+    static member InsertDataAsync (this: Client) (items: DataPoints seq) : Task<int> =
+        let items' =
+            Seq.map  (fun (it :  DataPoints) ->
+                {
+                    DataPoints = Seq.map (fun point ->
+                        match box point with
+                        | :? DataPointInteger as number ->
+                            { Value = NumInteger number.Value; TimeStamp = number.TimeStamp }
+                        | :? DataPointFloat as real ->
+                            { Value = NumFloat real.Value; TimeStamp = real.TimeStamp }
+                        | :? DataPointString as string ->
+                            { Value = NumString string.Value; TimeStamp = string.TimeStamp }
+                        | _ -> failwith "Unknown point type"
+                    ) it.DataPoints
+                    Identity =
+                        Common.Identity.Id 0L
+                }
+            ) items
+
         let worker () : Async<int> = async {
-            let! result = Internal.insertDataResult items this.Fetch this.Ctx
+            let! result = Internal.insertDataResult items' this.Fetch this.Ctx
             match result with
             | Ok response ->
                 return response.StatusCode

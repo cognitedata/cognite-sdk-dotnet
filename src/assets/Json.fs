@@ -3,6 +3,8 @@ namespace Cognite.Sdk.Assets
 open Thoth.Json.Net
 
 open Cognite.Sdk
+open Cognite.Sdk.Common
+
 
 [<AutoOpen>]
 module AssetsExtensions =

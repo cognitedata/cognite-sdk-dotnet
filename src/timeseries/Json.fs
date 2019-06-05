@@ -3,10 +3,12 @@ namespace Cognite.Sdk.Timeseries
 open System
 open Thoth.Json.Net
 open Cognite.Sdk
+open Cognite.Sdk.Common
+
 
 [<AutoOpen>]
 module TimeseriesExtensions =
-    type DataPointCreateDto with
+    type DataPointDto with
         member this.Encoder =
             Encode.object [
                 yield "timestamp", Encode.int64' this.TimeStamp
@@ -16,10 +18,21 @@ module TimeseriesExtensions =
                 | NumFloat value -> yield "value", Encode.float value
             ]
 
+        static member Decoder : Decoder<DataPointDto> =
+            Decode.object (fun get ->
+                {
+                    TimeStamp = get.Required.Field "timestamp" Decode.int64
+                    Value = get.Required.Field "value" (Decode.oneOf [
+                            Decode.int64 |> Decode.map NumInteger
+                            Decode.float |> Decode.map NumFloat
+                            Decode.string |> Decode.map NumString
+                        ])
+                })
+
     type DataPointsCreateDto with
         member this.Encoder =
             Encode.object [
-                yield ("datapoints", Seq.map (fun (it: DataPointCreateDto) -> it.Encoder) this.DataPoints |> Encode.seq)
+                yield ("datapoints", Seq.map (fun (it: DataPointDto) -> it.Encoder) this.DataPoints |> Encode.seq)
                 match this.Identity with
                 | Identity.Id id -> yield "value", Encode.int64 id
                 | Identity.ExternalId externalId -> yield "externalId", Encode.string externalId
@@ -30,18 +43,6 @@ module TimeseriesExtensions =
             Encode.object [
                 yield ("items", Seq.map (fun (it: DataPointsCreateDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
-
-    type DataPointReadDto with
-        static member Decoder : Decoder<DataPointReadDto> =
-            Decode.object (fun get ->
-                {
-                    TimeStamp = get.Required.Field "timestamp" Decode.int64
-                    Value = get.Required.Field "value" (Decode.oneOf [
-                            Decode.int64 |> Decode.map NumInteger
-                            Decode.float |> Decode.map NumFloat
-                            Decode.string |> Decode.map NumString
-                        ])
-                })
 
     type AggregateDataPointReadDto with
         static member Decoder : Decoder<AggregateDataPointReadDto> =
@@ -67,7 +68,7 @@ module TimeseriesExtensions =
                     Id = get.Required.Field "id" Decode.int64
                     ExternalId = get.Optional.Field "exteralId" Decode.string
                     IsString = get.Required.Field "isString" Decode.bool
-                    DataPoints = get.Required.Field "datapoints" (Decode.list DataPointReadDto.Decoder)
+                    DataPoints = get.Required.Field "datapoints" (Decode.list DataPointDto.Decoder)
                 })
     type PointResponseAggregateDataPoints with
         static member Decoder : Decoder<PointResponseAggregateDataPoints> =

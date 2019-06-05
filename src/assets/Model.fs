@@ -1,7 +1,7 @@
 namespace Cognite.Sdk.Assets
 
 open System.Text
-open Cognite.Sdk
+open Cognite.Sdk.Common
 
 type IDecoder =
     abstract member Decoder: unit -> Decoder

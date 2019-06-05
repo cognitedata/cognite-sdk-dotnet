@@ -16,16 +16,17 @@
     <Compile Include="Handler.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Builder.fs" />
-    <Compile Include="timeseries\Model.fs" />
-    <Compile Include="timeseries\Json.fs" />
-    <Compile Include="timeseries\Methods.fs" />
-    <Compile Include="assets\Model.fs" />
-    <Compile Include="assets\Json.fs" />
-    <Compile Include="assets\Methods.fs" />
+    <Compile Include="timeseries/Model.fs" />
+    <Compile Include="timeseries/Json.fs" />
+    <Compile Include="timeseries/Methods.fs" />
+    <Compile Include="assets/Model.fs" />
+    <Compile Include="assets/Json.fs" />
+    <Compile Include="assets/Methods.fs" />
     <Compile Include="sequences\Model.fs" />
-    <Compile Include="api\Client.fs" />
-    <Compile Include="api\Assets.fs" />
-    <Compile Include="api\Timeseries.fs" />
+    <Compile Include="api/Client.fs" />
+    <Compile Include="api/Assets.fs" />
+    <Compile Include="api/timeseries/Model.fs" />
+    <Compile Include="api/timeseries/Extensions.fs" />
   </ItemGroup>
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <Import Project="../.paket/Paket.Restore.targets" />
 </Project>

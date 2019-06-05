@@ -9,7 +9,7 @@ open System.Threading.Tasks;
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
-
+open Cognite.Sdk.Common
 
 [<Extension>]
 ///Helper methods for creating Assets.

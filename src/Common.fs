@@ -6,17 +6,16 @@ open Thoth.Json.Net
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
-type Numeric =
-    | NumString of string
-    | NumInteger of int64
-    | NumFloat of double
-
-/// Id or ExternalId
-type Identity =
-    | Id of int64
-    | ExternalId of string
-
 module Common =
+    type Numeric =
+        | NumString of string
+        | NumInteger of int64
+        | NumFloat of double
+
+    /// Id or ExternalId
+    type Identity =
+        | Id of int64
+        | ExternalId of string
 
     /// **Description**
     ///

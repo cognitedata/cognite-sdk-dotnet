@@ -1,24 +1,19 @@
 namespace Cognite.Sdk.Timeseries
 
-open Cognite.Sdk
+open Cognite.Sdk.Common
 
-type DataPointCreateDto = {
+type DataPointDto = {
     TimeStamp: int64
     Value: Numeric
 }
 
 type DataPointsCreateDto = {
-    DataPoints: DataPointCreateDto seq
+    DataPoints: DataPointDto seq
     Identity: Identity
 }
 
 type PointRequest = {
     Items: DataPointsCreateDto seq
-}
-
-type DataPointReadDto = {
-    TimeStamp: int64
-    Value: Numeric
 }
 
 type AggregateDataPointReadDto = {
@@ -39,7 +34,7 @@ type PointResponseDataPoints = {
     Id: int64
     ExternalId: string option
     IsString: bool
-    DataPoints: DataPointReadDto seq
+    DataPoints: DataPointDto seq
 }
 
 type PointResponseAggregateDataPoints = {
