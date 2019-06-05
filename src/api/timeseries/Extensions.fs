@@ -311,7 +311,12 @@ type ClientTimeseriesExtensions =
                         | _ -> failwith "Unknown point type"
                     ) it.DataPoints
                     Identity =
-                        Common.Identity.Id 0L
+                        match it.Identity with
+                        | :? IdentityId as id ->
+                            Common.Identity.Id id.Value
+                        | :? IdentityExternalId as ex ->
+                            Common.Identity.ExternalId ex.Value
+                        | _ -> failwith "unknow identity"
                 }
             ) items
 

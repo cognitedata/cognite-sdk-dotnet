@@ -1,8 +1,5 @@
 namespace Cognite.Sdk.Api
 
-open System
-open Cognite.Sdk.Common
-
 type DataPoint (timestamp: int64) =
     member val TimeStamp = timestamp with get,set
 

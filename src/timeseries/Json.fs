@@ -34,7 +34,7 @@ module TimeseriesExtensions =
             Encode.object [
                 yield ("datapoints", Seq.map (fun (it: DataPointDto) -> it.Encoder) this.DataPoints |> Encode.seq)
                 match this.Identity with
-                | Identity.Id id -> yield "value", Encode.int64 id
+                | Identity.Id id -> yield "id", Encode.int64 id
                 | Identity.ExternalId externalId -> yield "externalId", Encode.string externalId
             ]
 

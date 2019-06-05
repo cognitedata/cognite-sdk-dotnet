@@ -65,18 +65,36 @@ module Model =
 
     // Get parameters
     type GetParams =
+        /// Do not use. Use Limit instead.
         | NotLimit of int
+        /// Cursor for paging through results
         | Cursor of string
+        /// Name of asset. Often referred to as tag.
         | Name of string
+        /// Filter out assets that have one of the ids listed as parent. The parentId is set to null if the asset is a
+        /// root asset.
         | ParentIds of int64 seq
+        /// The source of this asset.
         | Source of string
+        /// Filtered assets are root assets or not
         | Root of bool
+        /// It is the number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970, Coordinated Universal
+        /// Time (UTC), minus leap seconds.
         | MinCreatedTime of int64
+        /// It is the number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970, Coordinated Universal
+        /// Time (UTC), minus leap seconds.
         | MaxCreatedTime of int64
+        /// It is the number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970, Coordinated Universal
+        /// Time (UTC), minus leap seconds.
         | MinLastUpdatedTime of int64
+        /// It is the number of seconds that have elapsed since 00:00:00 Thursday, 1 January 1970, Coordinated Universal
+        /// Time (UTC), minus leap seconds.
         | MaxLastUpdatedTime of int64
+        /// External Id provided by client. Should be unique within the project.
         | ExternalIdPrefix of string
 
+        /// Limits the number of results to be returned. The maximum results returned by the server is 1000 even if the
+        /// limit specified is larger.
         static member Limit limit =
             if limit > MaxLimitSize || limit < 1 then
                 failwith "Limit must be set to 1000 or less"
