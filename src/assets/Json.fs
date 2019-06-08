@@ -41,7 +41,7 @@ module AssetsExtensions =
                     yield "externalId", Encode.string this.ExternalId.Value
                 yield "name", Encode.string this.Name
                 if this.ParentId.IsSome then
-                    yield "parentId", Encode.int64' this.ParentId.Value
+                    yield "parentId", Encode.int53 this.ParentId.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
                 if not this.MetaData.IsEmpty then
@@ -65,7 +65,7 @@ module AssetsExtensions =
         | Name name -> "name", name
         | ParentIds ids ->
             let ids' = List.ofSeq ids
-            "parentIds", Encode.list (List.map Encode.int64' ids') |> Encode.toString 0
+            "parentIds", Encode.list (List.map Encode.int53 ids') |> Encode.toString 0
         | Source source -> "source", source
         | Root root -> "root", root.ToString().ToLower()
         | MinCreatedTime value -> "minCreatedTime", value.ToString ()
@@ -122,14 +122,14 @@ module AssetsExtensions =
         | SetParentId optParentId ->
             "parentId", Encode.object [
                 match optParentId with
-                | Some parentId -> yield "set", Encode.int64' parentId
+                | Some parentId -> yield "set", Encode.int53 parentId
                 | None -> yield "setNull", Encode.bool true
             ]
 
     type AssetUpdateRequest with
         member this.Encoder =
             Encode.object [
-                yield ("id", Encode.int64' this.Id)
+                yield ("id", Encode.int53 this.Id)
                 for arg in this.Params do
                     yield renderUpdateFields arg
             ]
@@ -145,7 +145,7 @@ module AssetsExtensions =
             Encode.object [
                 "items", Seq.map (fun id ->
                     match id with
-                    | Id id -> Encode.int64' id
+                    | Id id -> Encode.int53 id
                     | ExternalId id -> Encode.string id
                 ) this.Items |> Encode.seq
             ]

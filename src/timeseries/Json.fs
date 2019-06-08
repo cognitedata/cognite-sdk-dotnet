@@ -11,10 +11,10 @@ module TimeseriesExtensions =
     type DataPointDto with
         member this.Encoder =
             Encode.object [
-                yield "timestamp", Encode.int64' this.TimeStamp
+                yield "timestamp", Encode.int53 this.TimeStamp
                 match this.Value with
                 | NumString value -> yield "value", Encode.string value
-                | NumInteger value -> yield "value", Encode.int64' value
+                | NumInteger value -> yield "value", Encode.int53 value
                 | NumFloat value -> yield "value", Encode.float value
             ]
 
@@ -111,9 +111,9 @@ module TimeseriesExtensions =
                 if this.IsStep then
                     yield "isStep", Encode.bool this.IsStep
                 if this.AssetId.IsSome then
-                    yield "assetId", Encode.int64' this.AssetId.Value
+                    yield "assetId", Encode.int53 this.AssetId.Value
                 if not (Seq.isEmpty this.SecurityCategories) then
-                    yield "securityCategories", Encode.seq (Seq.map Encode.int64' this.SecurityCategories)
+                    yield "securityCategories", Encode.seq (Seq.map Encode.int53 this.SecurityCategories)
             ]
 
     type TimeseriesReadDto with
@@ -186,7 +186,7 @@ module TimeseriesExtensions =
     let renderLatestOption (option: QueryLatestParam) : string*Thoth.Json.Net.JsonValue =
         match option with
         | Before before -> "before", Encode.string before
-        | QueryLatestParam.Id id -> "Id", Encode.int64' id
+        | QueryLatestParam.Id id -> "Id", Encode.int53 id
         | QueryLatestParam.ExternalId externalId -> "externalId", Encode.string externalId
 
 (*
@@ -202,7 +202,7 @@ module TimeseriesExtensions =
                 if this.Before.IsSome then
                     yield "before", Encode.string this.Before.Value
                 match this.Identity with
-                | Identity.Id id -> yield "id", Encode.int64' id
+                | Identity.Id id -> yield "id", Encode.int53 id
                 | Identity.ExternalId id -> yield "externalId", Encode.string id
             ]
 
@@ -216,7 +216,7 @@ module TimeseriesExtensions =
     type Item with
         member this.Encoder =
             Encode.object [
-                yield "id", Encode.int64' this.Id
+                yield "id", Encode.int53 this.Id
             ]
     type TimeseriesReadRequest with
         member this.Encoder =

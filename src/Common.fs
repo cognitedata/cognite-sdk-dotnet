@@ -54,11 +54,13 @@ module Common =
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Encode =
-    let stringify encoder =
+    let inline stringify encoder =
         Encode.toString 0 encoder
 
     /// Encode int64 to number (not to string as Thoth.Json.Net)
-    let int64' (value : int64) : JsonValue =
+    let inline int53 (value : int64) : JsonValue =
         JValue(value) :> JsonValue
 
+    let inline metaData (values: Map<string, string>) =  values |> Map.map (fun _ value -> Encode.string value) |> Encode.dict
 
+    let inline int64seq (items: int64 seq) = Seq.map int53 items |> Encode.seq
