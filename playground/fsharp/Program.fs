@@ -42,7 +42,7 @@ let createAssetsExample ctx = async {
         ParentExternalId = None
     }]
 
-    let request = req {
+    let request = fusion {
         let! ga = createAssets assets
 
         let! gb = concurrent [

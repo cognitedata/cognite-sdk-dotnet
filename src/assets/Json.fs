@@ -37,15 +37,14 @@ module AssetsExtensions =
     type AssetCreateDto with
         member this.Encoder =
             Encode.object [
-                if this.ExternalId.IsSome then
-                    yield "externalId", Encode.string this.ExternalId.Value
+                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
                 yield "name", Encode.string this.Name
                 if this.ParentId.IsSome then
                     yield "parentId", Encode.int53 this.ParentId.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
                 if not this.MetaData.IsEmpty then
-                    let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
+                    let metaString = Encode.propertyBag this.MetaData
                     yield "metadata", metaString
                 if this.Source.IsSome then
                     yield "source", Encode.string this.Source.Value
@@ -63,9 +62,7 @@ module AssetsExtensions =
         | NotLimit limit -> "limit", limit.ToString ()
         | Cursor cursor -> "cursor", cursor
         | Name name -> "name", name
-        | ParentIds ids ->
-            let ids' = List.ofSeq ids
-            "parentIds", Encode.list (List.map Encode.int53 ids') |> Encode.toString 0
+        | ParentIds ids -> "parentIds", Encode.int53seq ids |> Encode.stringify
         | Source source -> "source", source
         | Root root -> "root", root.ToString().ToLower()
         | MinCreatedTime value -> "minCreatedTime", value.ToString ()
@@ -74,15 +71,6 @@ module AssetsExtensions =
         | MaxLastUpdatedTime value -> "maxLastUpdatedTime", value.ToString ()
         | ExternalIdPrefix externalId -> "externalIdPrefix", externalId
 
-        (*
-        | MetaData meta ->
-            let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) meta) |> Encode.toString 0
-            "metadata", metaString
-
-        | Depth depth -> "depth", depth.ToString ()
-        | Fuzziness fuzz -> "fuzziness", fuzz.ToString ()
-        | AutoPaging value -> "autopaging", value.ToString().ToLower()
-        *)
     let renderUpdateFields (arg: UpdateParams) =
         match arg with
         | SetName name ->

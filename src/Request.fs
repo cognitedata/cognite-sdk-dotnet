@@ -62,6 +62,7 @@ module Request =
             let url = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
             let headers = ctx.Request.Headers
             let body = ctx.Request.Body |> Option.map HttpRequestBody.TextRequest
+            printfn "%A" body
             let method = ctx.Request.Method.ToString().ToUpper()
             try
                 let! response = Http.AsyncRequest (url, ctx.Request.Query, headers, method, ?body=body, silentHttpErrors=true)

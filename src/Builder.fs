@@ -22,4 +22,4 @@ type RequestBuilder () =
 [<AutoOpen>]
 module Builder =
     /// Request builder for an async context of request/result
-    let req = RequestBuilder ()
+    let fusion = RequestBuilder ()

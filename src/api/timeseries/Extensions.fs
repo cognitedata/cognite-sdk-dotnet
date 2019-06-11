@@ -316,7 +316,7 @@ type ClientTimeseriesExtensions =
                             Common.Identity.Id id.Value
                         | :? IdentityExternalId as ex ->
                             Common.Identity.ExternalId ex.Value
-                        | _ -> failwith "unknow identity"
+                        | _ -> failwith "Unknown identity"
                 }
             ) items
 
