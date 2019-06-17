@@ -33,7 +33,7 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse decoder resultMapper (context: HttpContext) =
+    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: HttpContext) =
         let result =
             context.Result
             |> Result.map (fun response ->
@@ -52,7 +52,7 @@ module Common =
             )
             |> Result.map resultMapper
 
-        Async.single { Request = context.Request; Result = result}
+        next { Request = context.Request; Result = result}
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Encode =
@@ -79,4 +79,3 @@ module Encode =
             if value.IsSome then
                 yield name, encoder value.Value
         ]
-

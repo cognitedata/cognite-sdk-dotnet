@@ -1,5 +1,7 @@
 namespace Cognite.Sdk.Timeseries
 
+open FSharp.Data
+
 open Cognite.Sdk
 open Cognite.Sdk.Common
 open Cognite.Sdk.Request
@@ -7,8 +9,8 @@ open Cognite.Sdk.Request
 
 [<RequireQualifiedAccess>]
 module Internal =
-    let getTimeseries (query: QueryParam seq) (fetch: HttpHandler) =
-        let decoder = decodeResponse TimeseriesResponse.Decoder id
+    let getTimeseries (query: QueryParam seq) (fetch: HttpHandler<'a>) =
+        let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let url = Url
         let query = query |> Seq.map renderParams |> List.ofSeq
 
@@ -19,11 +21,13 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesResult (query: QueryParam seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseries query fetch ctx
+    let getTimeseriesResult (query: QueryParam seq) (fetch: HttpHandler<TimeseriesResponse>) (ctx: HttpContext) =
+        let request = getTimeseries query fetch Async.single
+
+        request ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) =
+    let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler<'a>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
         let url = Url + "/data"

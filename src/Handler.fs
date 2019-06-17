@@ -5,11 +5,13 @@ open Microsoft.FSharp.Data.UnitSystems.SI
 
 [<Measure>] type ms
 
-type HttpHandler<'a, 'b> = Context<'a> -> Async<Context<'b>>
+type NextHandler<'a, 'b> = Context<'a> -> Async<Context<'b>>
 
-type HttpHandler<'a> = HttpHandler<'a, 'a>
+type HttpHandler<'a, 'b, 'c> = NextHandler<'b, 'c> -> Context<'a> -> Async<Context<'c>>
 
-type HttpHandler = HttpHandler<HttpResponse>
+type HttpHandler<'a, 'b> = HttpHandler<'a, 'a, 'b>
+
+type HttpHandler<'a> = HttpHandler<HttpResponse, 'a>
 
 
 [<AutoOpen>]
@@ -22,7 +24,6 @@ module Handler =
     let DefaultMaxBackoffDelay = 120<UnitSymbols.s>
 
     let rand = System.Random ()
-
 
     let bind fn ctx =
         match ctx.Result with
@@ -40,8 +41,17 @@ module Handler =
             return { Request = p.Request; Result = Error err }
     }
 
-    let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
-        fun ctx -> bindAsync second (first ctx)
+
+    let compose (first : HttpHandler<'a, 'b, 'd>) (second : HttpHandler<'b, 'c, 'd>) : HttpHandler<'a,'c,'d> =
+        fun (next: NextHandler<_, _>) (ctx : Context<'a>) ->
+            let next'  = second next
+            let next'' = first next'
+
+            next'' ctx
+
+    //let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
+    //    fun ctx ->
+    //        first ctx |> bindAsync second
 
     let (>>=) a b =
         bindAsync b a
@@ -156,3 +166,81 @@ module Handler =
 
         return res |> sequenceContext
     }
+
+    /// **Description**
+    ///
+    /// Add query parameters to context. These parameters will be added
+    /// to the query string of requests that uses this context.
+    ///
+    /// **Parameters**
+    ///   * `query` - List of tuples (name, value)
+    ///   * `context` - The context to add the query to.
+    ///
+    let addQuery (query: QueryStringParams) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Query = context.Request.Query @ query  } }
+
+    let addQueryItem (query: string*string) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Query = query :: context.Request.Query  } }
+
+    let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Resource = resource  } }
+
+    let setBody (body: string) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Body = Some body } }
+
+    /// **Description**
+    ///
+    /// Set the method to be used for requests using this context.
+    ///
+    /// **Parameters**
+    ///   * `method` - Method is a parameter of type `Method` and can be
+    ///     `Put`, `Get`, `Post` or `Delete`.
+    ///   * `context` - parameter of type `Context`
+    ///
+    /// **Output Type**
+    ///   * `Context`
+    ///
+    let setMethod<'a> (method: HttpMethod) (next: NextHandler<HttpResponse,'a>) (context: HttpContext) =
+        next { context with Request = { context.Request with Method = method; Body = None } }
+
+    let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Version = version } }
+
+    let GET<'a> = setMethod<'a> HttpMethod.GET
+    let POST<'a> = setMethod<'a> HttpMethod.POST
+    let DELETE<'a> = setMethod<'a> HttpMethod.DELETE
+
+
+    let (|Informal|Success|Redirection|ClientError|ServerError|) x =
+        if x < 200 then
+            Informal
+        else if x < 300 then
+            Success
+        else if x < 400 then
+            Redirection
+        else if x < 500 then
+            ClientError
+        else
+            ServerError
+
+
+    /// A request function for fetching from the Cognite API.
+    let fetch<'a> (next: NextHandler<HttpResponse,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+        async {
+            let res = ctx.Request.Resource
+            let url = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
+            let headers = ctx.Request.Headers
+            let body = ctx.Request.Body |> Option.map HttpRequestBody.TextRequest
+            printfn "%A" body
+            let method = ctx.Request.Method.ToString().ToUpper()
+            try
+                let! response = Http.AsyncRequest (url, ctx.Request.Query, headers, method, ?body=body, silentHttpErrors=true)
+                match response.StatusCode with
+                | Success ->
+                    return! next { ctx with Result = Ok response }
+                | _ ->
+                    return! next { ctx with Result = ErrorResponse response |> Error }
+            with
+            | ex ->
+                return! next { ctx with Result = RequestException ex |> Error }
+        }

@@ -1,23 +1,31 @@
 namespace Cognite.Sdk
 
-type RequestBuilder () =
-    member this.Zero () : HttpHandler = fun _ -> Async.single Request.defaultContext
-    member this.Return (res: 'a) : (_ -> Async<Context<'a>>) = fun _ -> Async.single { Request = Request.defaultRequest; Result = Ok res }
+open FSharp.Data
 
-    member this.Return (req: HttpRequest) : HttpHandler = fun ctx -> Async.single { Request = Request.defaultRequest; Result = Request.defaultResult }
+type RequestBuilder () =
+    member this.Zero () : HttpHandler<HttpResponse, HttpResponse, _> = fun next _ -> next Request.defaultContext
+    member this.Return (res: 'a) : HttpHandler<HttpResponse, 'a, _> = fun next _ ->  next { Request = Request.defaultRequest; Result = Ok res }
+
+    member this.Return (req: HttpRequest) : HttpHandler<HttpResponse, HttpResponse, _> = fun next ctx -> next { Request = req; Result = Request.defaultResult }
 
     member this.Delay (fn) = fn ()
 
-    member this.Bind(source: HttpHandler<'a, 'b>, fn: 'b -> HttpHandler<'a, 'c>) :  HttpHandler<'a, 'c> =
-        let fn' (acb: Async<Context<'b>>) (ctx: Context<'a>) : Async<Context<'c>> = async {
-            let! cb = acb
-            match cb.Result with
-            | Ok res ->
-                return! ctx |> fn res
-            | Error error ->
-                return { Request = cb.Request; Result = Error error }
-        }
-        fun ctx -> fn' (source ctx) ctx
+    member this.Bind(source: HttpHandler<'a, 'b, 'd>, fn: 'b -> HttpHandler<'a, 'c, 'd>) :  HttpHandler<'a, 'c, 'd> =
+        let handler1 (next1 : NextHandler<'c, 'd>) (ctx : Context<'a>)   =
+            let handler2 (next2 : NextHandler<'b, 'd>) (ctx : Context<'b>)   =
+                //failwith "error"
+                match ctx.Result with
+                | Ok res ->
+                    let a = fn res
+                    let b = a next2
+                    //let c = b ctx
+                    c
+                | Error error ->
+                    next2 { Request = ctx.Request; Result = Error error }
+
+            source
+        handler1
+
 
 [<AutoOpen>]
 module Builder =
