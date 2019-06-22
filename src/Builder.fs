@@ -11,21 +11,18 @@ type RequestBuilder () =
     member this.Delay (fn) = fn ()
 
     member this.Bind(source: HttpHandler<'a, 'b, 'd>, fn: 'b -> HttpHandler<'a, 'c, 'd>) :  HttpHandler<'a, 'c, 'd> =
-        let handler1 (next1 : NextHandler<'c, 'd>) (ctx : Context<'a>)   =
-            let handler2 (next2 : NextHandler<'b, 'd>) (ctx : Context<'b>)   =
-                //failwith "error"
-                match ctx.Result with
-                | Ok res ->
-                    let a = fn res
-                    let b = a next2
-                    //let c = b ctx
-                    c
+
+        fun (next : NextHandler<'c, 'd>) (ctx : Context<'a>) ->
+            let next' (cb : Context<'b>)  = async {
+                match cb.Result with
+                | Ok b ->
+                    let inner = fn b
+                    return! inner next ctx
                 | Error error ->
-                    next2 { Request = ctx.Request; Result = Error error }
-
-            source
-        handler1
-
+                    return! next { Request = cb.Request; Result = Error error }
+            }
+            // Run source
+            source next' ctx
 
 [<AutoOpen>]
 module Builder =

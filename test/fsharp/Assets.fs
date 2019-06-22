@@ -22,7 +22,7 @@ let ``Get asset is Ok``() = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Internal.getAsset 42L fetch ctx
+    let! response = Internal.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -43,7 +43,7 @@ let ``Get invalid asset is Error`` () = async {
 
 
     // Act
-    let! response = Internal.getAsset 42L fetch ctx
+    let! response = Internal.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isError response.Result @>

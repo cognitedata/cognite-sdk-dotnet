@@ -14,7 +14,7 @@ module Result =
     let isError res = not (isOk res)
 
 module Fetch =
-    let fromJson (json: string) (ctx: HttpContext) =
+    let fromJson (json: string) (next: NextHandler<HttpResponse,_>) (ctx: HttpContext) =
         let response = {
             StatusCode = 200
             Body = Text json
@@ -23,6 +23,6 @@ module Fetch =
             Cookies = Map.empty
         }
 
-        Async.single { Request = ctx.Request; Result = Ok response }
+        next { Request = ctx.Request; Result = Ok response }
 
 

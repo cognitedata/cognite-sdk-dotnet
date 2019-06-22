@@ -39,10 +39,11 @@ module Internal =
         >=> fetch
 
     let insertDataResult (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
-        insertData items fetch ctx
+        let request = insertData items fetch Async.single
+        request ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) =
+    let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<'a>) =
         let request : TimeseriesRequest = { Items = items }
         let decoder = decodeResponse TimeseriesResponse.Decoder id
         let body = Encode.stringify request.Encoder
@@ -54,11 +55,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
-        createTimeseries items fetch ctx
+    let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<TimeseriesResponse>) (ctx: HttpContext) =
+        createTimeseries items fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesByIds (ids: seq<int64>) (fetch: HttpHandler) =
+    let getTimeseriesByIds (ids: seq<int64>) (fetch: HttpHandler<'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let url = Url + sprintf "/byids"
 
@@ -77,11 +78,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesByIdsResult (ids: seq<int64>) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseriesByIds ids fetch ctx
+    let getTimeseriesByIdsResult (ids: seq<int64>) (fetch: HttpHandler<_>) (ctx: HttpContext) =
+        getTimeseriesByIds ids fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let deleteTimeseries (name: string) (fetch: HttpHandler) =
+    let deleteTimeseries (name: string) (fetch: HttpHandler<'a>) =
         let url = Url + sprintf "/%s" name
 
         DELETE
@@ -90,10 +91,10 @@ module Internal =
         >=> fetch
 
     let deleteTimeseriesResult (name: string) (fetch: HttpHandler) (ctx: HttpContext) =
-        deleteTimeseries name fetch ctx
+        deleteTimeseries name fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler) =
+    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<'a>) =
         let url = Url + "/data/list"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultArgs args
@@ -106,11 +107,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesDataResult (defaultQueryParams: QueryDataParam seq) (queryParams: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseriesData defaultQueryParams queryParams fetch ctx
+    let getTimeseriesDataResult (defaultQueryParams: QueryDataParam seq) (queryParams: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<seq<PointResponseDataPoints>>) (ctx: HttpContext) =
+        getTimeseriesData defaultQueryParams queryParams fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (fetch: HttpHandler) =
+    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (fetch: HttpHandler<'a>) =
         let url = Url + "/data/latest"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = { Items = queryParams }
@@ -123,8 +124,8 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesLatestDataResult (queryParams: LatestDataRequest seq) (fetch: HttpHandler) (ctx: HttpContext) =
-        getTimeseriesLatestData queryParams fetch ctx
+    let getTimeseriesLatestDataResult (queryParams: LatestDataRequest seq) (fetch: HttpHandler<seq<PointResponseDataPoints>>) (ctx: HttpContext) =
+        getTimeseriesLatestData queryParams fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
 [<AutoOpen>]
@@ -144,7 +145,7 @@ module Methods =
     /// **Output Type** * `HttpHandler<FSharp.Data.HttpResponse,TimeseriesResponse>`
     ///
     let getTimeseries (query: QueryParam seq) (ctx: HttpContext) =
-        Internal.getTimeseries query Request.fetch ctx
+        Internal.getTimeseries query fetch Async.single ctx
 
     /// **Description**
     ///
@@ -161,7 +162,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let insertDataByName (items: DataPointsCreateDto list) (ctx: HttpContext) =
-        Internal.insertData items Request.fetch ctx
+        Internal.insertData items fetch Async.single ctx
 
     /// **Description**
     ///
@@ -175,7 +176,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let createTimeseries (items: TimeseriesCreateDto list) (ctx: HttpContext) =
-        Internal.createTimeseries items Request.fetch ctx
+        Internal.createTimeseries items fetch Async.single ctx
 
     /// **Description**
     ///
@@ -191,7 +192,7 @@ module Methods =
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
     let getTimeseriesByIds (ids: seq<int64>) (ctx: HttpContext) =
-        Internal.getTimeseriesByIds ids Request.fetch ctx
+        Internal.getTimeseriesByIds ids fetch Async.single ctx
 
     /// **Description**
     ///
@@ -206,7 +207,7 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq)  (ctx: HttpContext) =
-        Internal.getTimeseriesData defaultArgs args Request.fetch ctx
+        Internal.getTimeseriesData defaultArgs args fetch Async.single ctx
 
 
     /// **Description**
@@ -221,7 +222,7 @@ module Methods =
     ///   * `Async<Context<seq<PointResponseDataPoints>>>`
     ///
     let getTimeseriesLatestData (queryParams: LatestDataRequest seq)  (ctx: HttpContext) =
-        Internal.getTimeseriesLatestData queryParams Request.fetch ctx
+        Internal.getTimeseriesLatestData queryParams fetch Async.single ctx
 
     /// **Description**
     ///
@@ -235,4 +236,4 @@ module Methods =
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
     let deleteTimeseries (name: string) (ctx: HttpContext) =
-        Internal.deleteTimeseries name Request.fetch ctx
+        Internal.deleteTimeseries name fetch Async.single ctx

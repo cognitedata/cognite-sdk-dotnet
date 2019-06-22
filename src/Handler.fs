@@ -13,6 +13,7 @@ type HttpHandler<'a, 'b> = HttpHandler<'a, 'a, 'b>
 
 type HttpHandler<'a> = HttpHandler<HttpResponse, 'a>
 
+type HttpHandler = HttpHandler<HttpResponse, HttpResponse>
 
 [<AutoOpen>]
 module Handler =
@@ -32,15 +33,15 @@ module Handler =
         | Error err ->
             { Request = ctx.Request; Result = Error err }
 
-    let bindAsync (fn: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> = async {
-        let! p = a
-        match p.Result with
-        | Ok _ ->
-            return! fn p
-        | Error err ->
-            return { Request = p.Request; Result = Error err }
-    }
-
+    let bindAsync (fn: Context<'a> -> Async<Context<'b>>) (a: Async<Context<'a>>) : Async<Context<'b>> =
+        async {
+            let! p = a
+            match p.Result with
+            | Ok _ ->
+                return! fn p
+            | Error err ->
+                return { Request = p.Request; Result = Error err }
+        }
 
     let compose (first : HttpHandler<'a, 'b, 'd>) (second : HttpHandler<'b, 'c, 'd>) : HttpHandler<'a,'c,'d> =
         fun (next: NextHandler<_, _>) (ctx : Context<'a>) ->
