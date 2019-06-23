@@ -40,6 +40,7 @@ type Context<'a> = {
 
 type HttpContext = Context<HttpResponseMessage>
 
+[<AutoOpen>]
 module Request =
     let version =
         let version = Assembly.GetExecutingAssembly().GetName().Version

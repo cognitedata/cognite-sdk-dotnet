@@ -4,7 +4,6 @@ open System.Net.Http
 
 open Cognite.Sdk
 open Cognite.Sdk.Common
-open Cognite.Sdk.Request
 
 
 [<RequireQualifiedAccess>]
@@ -144,8 +143,8 @@ module Methods =
     ///
     /// **Output Type** * `HttpHandler<FSharp.Data.HttpResponse,TimeseriesResponse>`
     ///
-    let getTimeseries (query: QueryParam seq) (ctx: HttpContext) =
-        Internal.getTimeseries query fetch Async.single ctx
+    let getTimeseries (query: QueryParam seq) (next: NextHandler<TimeseriesResponse,'a>) (ctx: HttpContext) =
+        Internal.getTimeseries query fetch next ctx
 
     /// **Description**
     ///
@@ -161,8 +160,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataByName (items: DataPointsCreateDto list) (ctx: HttpContext) =
-        Internal.insertData items fetch Async.single ctx
+    let insertDataByName (items: DataPointsCreateDto list) (next: NextHandler<string,string>) (ctx: HttpContext) =
+        Internal.insertData items fetch next ctx
 
     /// **Description**
     ///
@@ -175,8 +174,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let createTimeseries (items: TimeseriesCreateDto list) (ctx: HttpContext) =
-        Internal.createTimeseries items fetch Async.single ctx
+    let createTimeseries (items: TimeseriesCreateDto list) (next: NextHandler<TimeseriesResponse,'a>) (ctx: HttpContext) =
+        Internal.createTimeseries items fetch next ctx
 
     /// **Description**
     ///
@@ -191,8 +190,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<TimeseriesReadDto list,exn>>`
     ///
-    let getTimeseriesByIds (ids: seq<int64>) (ctx: HttpContext) =
-        Internal.getTimeseriesByIds ids fetch Async.single ctx
+    let getTimeseriesByIds (ids: seq<int64>) (next: NextHandler<TimeseriesReadDto seq,'a>) (ctx: HttpContext) =
+        Internal.getTimeseriesByIds ids fetch next ctx
 
     /// **Description**
     ///
@@ -206,8 +205,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq)  (ctx: HttpContext) =
-        Internal.getTimeseriesData defaultArgs args fetch Async.single ctx
+    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (next: NextHandler<PointResponseDataPoints seq,'a>) (ctx: HttpContext) =
+        Internal.getTimeseriesData defaultArgs args fetch next ctx
 
 
     /// **Description**
@@ -221,8 +220,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Context<seq<PointResponseDataPoints>>>`
     ///
-    let getTimeseriesLatestData (queryParams: LatestDataRequest seq)  (ctx: HttpContext) =
-        Internal.getTimeseriesLatestData queryParams fetch Async.single ctx
+    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (next: NextHandler<PointResponseDataPoints seq,'a>) (ctx: HttpContext) =
+        Internal.getTimeseriesLatestData queryParams fetch next ctx
 
     /// **Description**
     ///
@@ -235,5 +234,5 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteTimeseries (name: string) (ctx: HttpContext) =
-        Internal.deleteTimeseries name fetch Async.single ctx
+    let deleteTimeseries (name: string) (next: NextHandler<string,string>) (ctx: HttpContext) =
+        Internal.deleteTimeseries name fetch next ctx

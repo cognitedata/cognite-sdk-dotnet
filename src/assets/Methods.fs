@@ -11,7 +11,7 @@ open Cognite.Sdk.Common
 [<RequireQualifiedAccess>]
 module Internal =
 
-    let getAssets (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage,string,AssetResponse>) =
+    let getAssets (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage,string, 'a>) =
         let decoder = decodeResponse AssetResponse.Decoder id
         let query = args |> Seq.map renderParams |> List.ofSeq
 
@@ -126,8 +126,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: seq<GetParams>) (next: NextHandler<AssetReadDto seq,'a>) (ctx: HttpContext) : Async<Context<AssetResponse>> =
-        Internal.getAssets args fetch Async.single ctx
+    let getAssets (args: seq<GetParams>) (next: NextHandler<AssetResponse,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+        Internal.getAssets args fetch next ctx
 
     //let searchAssets (args: )
 
