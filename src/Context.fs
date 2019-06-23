@@ -4,6 +4,7 @@ open System
 open System.Net
 open System.Net.Http
 open System.Reflection
+open System.Web
 
 open System.Collections.Specialized
 
@@ -31,12 +32,12 @@ type ApiVersion =
         | V10 -> "v1"
 
 type HttpRequest = {
-    ClientFactory: IHttpClientFactory
-    Method: HttpMethod
+    HttpClient: HttpClient
+    Method: RequestMethod
     Body: string option
     Resource: string
-    Query:NameValueCollection
-    Headers: (string*string) list
+    Query: (string * string) list
+    Headers: (string * string) list
     Project: string
     Version: ApiVersion
 }
@@ -51,20 +52,20 @@ type HttpContext = Context<HttpResponseMessage>
 module Request =
     let version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
-        {| Major=version.Major; Minor=version.Minor; Revision=version.Revision |}
+        {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
     let defaultRequest =
         {
-            ClientFactory = null
-            Method = HttpMethod.Get
+            HttpClient = null
+            Method = RequestMethod.GET
             Body = None
             Resource = String.Empty
-            Query = NameValueCollection ()
+            Query = List.empty
             Headers = [
                 Accept "application/json"
-                ContentType "application/json"
-                UserAgent (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Revision)
+                //ContentType "application/json"
+                UserAgent (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Build)
             ]
             Project = String.Empty
             Version = V05
@@ -100,5 +101,5 @@ module Request =
     let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Project = project } }
 
-    let setClientFactory (factory: IHttpClientFactory) (context: HttpContext) =
-        { context with Request = { context.Request with ClientFactory = factory } }
+    let setHttpClient (client: HttpClient) (context: HttpContext) =
+        { context with Request = { context.Request with HttpClient = client } }

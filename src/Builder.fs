@@ -1,12 +1,14 @@
 namespace Cognite.Sdk
 
-open FSharp.Data
+//open FSharp.Data
+open System.Net
+open System.Net.Http
 
 type RequestBuilder () =
-    member this.Zero () : HttpHandler<HttpResponse, HttpResponse, _> = fun next _ -> next Request.defaultContext
-    member this.Return (res: 'a) : HttpHandler<HttpResponse, 'a, _> = fun next _ ->  next { Request = Request.defaultRequest; Result = Ok res }
+    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next Request.defaultContext
+    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = Request.defaultRequest; Result = Ok res }
 
-    member this.Return (req: HttpRequest) : HttpHandler<HttpResponse, HttpResponse, _> = fun next ctx -> next { Request = req; Result = Request.defaultResult }
+    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = Request.defaultResult }
 
     member this.Delay (fn) = fn ()
 

@@ -1,11 +1,11 @@
 namespace Cognite.Sdk
 
+open System
 open System.Net
 open System.Net.Http
-//open System.Net.Http
-//open FSharp.Data
 open Microsoft.FSharp.Data.UnitSystems.SI
-open System.Collections.Specialized
+open System.Text
+open System.Web
 
 [<Measure>] type ms
 
@@ -118,23 +118,25 @@ module Handler =
     /// **Output Type**
     ///   * `Async<Context<'a>>`
     ///
-    let rec retry (initialDelay: int<ms>) (maxRetries : int) (handler: Context<'a> -> Async<Context<'b>>) (ctx: Context<'a>) : Async<Context<'b>> = async {
+    let rec retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextHandler<'b,'c>) (ctx: Context<'a>) : Async<Context<'c>> = async {
         // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L170
 
         let exponentialDelay = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let randomDelayScale = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let nextDelay = rand.Next(int randomDelayScale) * 1<ms> + exponentialDelay
 
-        let! ctx' = handler ctx
+
+
+        let! ctx' = handler next ctx
 
         match ctx'.Result with
         | Ok _ -> return ctx'
         | Error err ->
             match err with
             | ErrorResponse httpResponse ->
-                if shouldRetry httpResponse.StatusCode && maxRetries > 0 then
+                if shouldRetry (int httpResponse.StatusCode) && maxRetries > 0 then
                     do! int initialDelay |> Async.Sleep
-                    return! retry nextDelay (maxRetries - 1) handler ctx
+                    return! retry nextDelay (maxRetries - 1) handler next ctx
                 else
                     return ctx'
             | RequestException error ->
@@ -143,7 +145,7 @@ module Handler =
                     if maxRetries > 0 then
                         do! int initialDelay |> Async.Sleep
 
-                    return! retry nextDelay (maxRetries - 1) handler ctx
+                    return! retry nextDelay (maxRetries - 1) handler next ctx
                 | _ ->
                     return ctx'
             | _ ->
@@ -163,13 +165,13 @@ module Handler =
     ///
     /// **Exceptions**
     ///
-    let concurrent (handlers : (Context<'a> -> Async<Context<'b>>) seq) (ctx: Context<'a>) : Async<Context<'b list>> = async {
+    let concurrent (handlers : HttpHandler<'a, 'b, 'b> seq) (next: NextHandler<'b list, 'c>) (ctx: Context<'a>) : Async<Context<'c>> = async {
         let! res =
-            Seq.map (fun handler -> handler ctx) handlers
+            Seq.map (fun handler -> handler Async.single ctx) handlers
             |> Async.Parallel
             |> Async.map List.ofArray
 
-        return res |> sequenceContext
+        return! next (res |> sequenceContext)
     }
 
     /// **Description**
@@ -181,11 +183,8 @@ module Handler =
     ///   * `query` - List of tuples (name, value)
     ///   * `context` - The context to add the query to.
     ///
-    let addQuery (query: (string * string) seq) (next: NextHandler<_,_>) (context: HttpContext) =
-        let newQuery = NameValueCollection ()
-        for (key, value) in query do
-            newQuery.Add (key, value)
-        next { context with Request = { context.Request with Query = newQuery  } }
+    let addQuery (query: (string * string) list) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Query = query } }
 
     let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Resource = resource  } }
@@ -205,16 +204,15 @@ module Handler =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setMethod<'a> (method: HttpMethod) (next: NextHandler<HttpResponseMessage,'a>) (context: HttpContext) =
+    let setMethod<'a> (method: RequestMethod) (next: NextHandler<HttpResponseMessage,'a>) (context: HttpContext) =
         next { context with Request = { context.Request with Method = method; Body = None } }
 
     let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Version = version } }
 
-    let GET<'a> = setMethod<'a> HttpMethod.Get
-    let POST<'a> = setMethod<'a> HttpMethod.Post
-    let DELETE<'a> = setMethod<'a> HttpMethod.Delete
-
+    let GET<'a> = setMethod<'a> RequestMethod.GET
+    let POST<'a> = setMethod<'a> RequestMethod.POST
+    let DELETE<'a> = setMethod<'a> RequestMethod.DELETE
 
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
         if x < 200 then
@@ -230,24 +228,57 @@ module Handler =
 
 
     /// A request function for fetching from the Cognite API.
-    let fetch<'a> (next: NextHandler<HttpResponseMessage,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+    let fetch<'a> (next: NextHandler<string,'a>) (ctx: HttpContext) : Async<Context<'a>> =
         async {
             let res = ctx.Request.Resource
-            let url = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
-            let headers = ctx.Request.Headers
-            let body = ctx.Request.Body |> Option.map HttpRequestBody.TextRequest
+            let query = ctx.Request.Query
 
-            let client = ctx.Request.ClientFactory.getClient ()
-            printfn "%A" body
-            let method = ctx.Request.Method.ToString().ToUpper()
-            try
-                let! response = Http.AsyncRequest (url, ctx.Request.Query, headers, method, ?body=body, silentHttpErrors=true)
-                match response.StatusCode with
-                | Success ->
-                    return! next { ctx with Result = Ok response }
-                | _ ->
-                    return! next { ctx with Result = ErrorResponse response |> Error }
-            with
-            | ex ->
-                return! next { ctx with Result = RequestException ex |> Error }
+            let url =
+                let result = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
+                if Seq.isEmpty query then
+                    result
+                else
+                    let queryString = HttpUtility.ParseQueryString(String.Empty)
+                    for (key, value) in query do
+                        queryString.Add (key, value)
+                    sprintf "%s?%s" result (queryString.ToString ())
+            let client = ctx.Request.HttpClient
+
+            for header, value in ctx.Request.Headers do
+                //printfn "%s: %s" header value
+                client.DefaultRequestHeaders.Add (header, value)
+
+
+            //printfn "Url: %s" url
+            let! result = async {
+                try
+                    let! response = async {
+                        match ctx.Request.Method with
+                        | GET ->
+                            let! response = client.GetAsync(url) |> Async.AwaitTask
+                            return response
+                        | POST ->
+                            let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
+                            let! response = client.PostAsync(url, content) |> Async.AwaitTask
+                            return response
+                        | PUT ->
+                            let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
+                            let! response = client.PutAsync(url, content) |> Async.AwaitTask
+                            return response
+                        | DELETE ->
+                            let! response = client.DeleteAsync(url) |> Async.AwaitTask
+                            return response
+                    }
+
+                    if response.IsSuccessStatusCode then
+                        let! content = response.Content.ReadAsStringAsync () |> Async.AwaitTask
+                        return Ok content
+                    else
+                        return response |> ErrorResponse |> Error
+                with
+                | ex ->
+                    return RequestException ex |> Error
+            }
+
+            return! next { Request = ctx.Request; Result = result }
         }

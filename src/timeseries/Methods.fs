@@ -1,6 +1,6 @@
 namespace Cognite.Sdk.Timeseries
 
-open FSharp.Data
+open System.Net.Http
 
 open Cognite.Sdk
 open Cognite.Sdk.Common
@@ -9,7 +9,7 @@ open Cognite.Sdk.Request
 
 [<RequireQualifiedAccess>]
 module Internal =
-    let getTimeseries (query: QueryParam seq) (fetch: HttpHandler<'a>) =
+    let getTimeseries (query: QueryParam seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let url = Url
         let query = query |> Seq.map renderParams |> List.ofSeq
@@ -21,13 +21,13 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesResult (query: QueryParam seq) (fetch: HttpHandler<TimeseriesResponse>) (ctx: HttpContext) =
+    let getTimeseriesResult (query: QueryParam seq) (fetch: HttpHandler<HttpResponseMessage, string, TimeseriesResponse>) (ctx: HttpContext) =
         let request = getTimeseries query fetch Async.single
 
         request ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler<'a>) =
+    let insertData (items: seq<DataPointsCreateDto>) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
         let url = Url + "/data"
@@ -38,12 +38,12 @@ module Internal =
         >=> setResource url
         >=> fetch
 
-    let insertDataResult (items: seq<DataPointsCreateDto>) (fetch: HttpHandler) (ctx: HttpContext) =
+    let insertDataResult (items: seq<DataPointsCreateDto>) (fetch: HttpHandler<HttpResponseMessage, string, string>) (ctx: HttpContext) =
         let request = insertData items fetch Async.single
         request ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<'a>) =
+    let createTimeseries (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let request : TimeseriesRequest = { Items = items }
         let decoder = decodeResponse TimeseriesResponse.Decoder id
         let body = Encode.stringify request.Encoder
@@ -55,11 +55,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<TimeseriesResponse>) (ctx: HttpContext) =
+    let createTimeseriesResult (items: seq<TimeseriesCreateDto>) (fetch: HttpHandler<HttpResponseMessage, string, TimeseriesResponse>) (ctx: HttpContext) =
         createTimeseries items fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesByIds (ids: seq<int64>) (fetch: HttpHandler<'a>) =
+    let getTimeseriesByIds (ids: seq<int64>) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let url = Url + sprintf "/byids"
 
@@ -78,11 +78,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesByIdsResult (ids: seq<int64>) (fetch: HttpHandler<_>) (ctx: HttpContext) =
+    let getTimeseriesByIdsResult (ids: seq<int64>) (fetch: HttpHandler<HttpResponseMessage, string, TimeseriesReadDto seq>) (ctx: HttpContext) =
         getTimeseriesByIds ids fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let deleteTimeseries (name: string) (fetch: HttpHandler<'a>) =
+    let deleteTimeseries (name: string) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
         let url = Url + sprintf "/%s" name
 
         DELETE
@@ -90,11 +90,11 @@ module Internal =
         >=> setResource url
         >=> fetch
 
-    let deleteTimeseriesResult (name: string) (fetch: HttpHandler) (ctx: HttpContext) =
+    let deleteTimeseriesResult (name: string) (fetch: HttpHandler<HttpResponseMessage, string, string>) (ctx: HttpContext) =
         deleteTimeseries name fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<'a>) =
+    let getTimeseriesData (defaultArgs: QueryDataParam seq) (args: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let url = Url + "/data/list"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultArgs args
@@ -107,11 +107,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesDataResult (defaultQueryParams: QueryDataParam seq) (queryParams: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<seq<PointResponseDataPoints>>) (ctx: HttpContext) =
+    let getTimeseriesDataResult (defaultQueryParams: QueryDataParam seq) (queryParams: (int64*(QueryDataParam seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, seq<PointResponseDataPoints>>) (ctx: HttpContext) =
         getTimeseriesData defaultQueryParams queryParams fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (fetch: HttpHandler<'a>) =
+    let getTimeseriesLatestData (queryParams: LatestDataRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let url = Url + "/data/latest"
         let decoder = decodeResponse PointResponse.Decoder (fun res -> res.Items)
         let request = { Items = queryParams }
@@ -124,7 +124,7 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getTimeseriesLatestDataResult (queryParams: LatestDataRequest seq) (fetch: HttpHandler<seq<PointResponseDataPoints>>) (ctx: HttpContext) =
+    let getTimeseriesLatestDataResult (queryParams: LatestDataRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, seq<PointResponseDataPoints>>) (ctx: HttpContext) =
         getTimeseriesLatestData queryParams fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 

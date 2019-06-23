@@ -6,6 +6,7 @@ open FsConfig
 open Cognite.Sdk
 open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
+open System.Net.Http
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -15,7 +16,7 @@ type Config = {
 }
 
 let getAssetsExample ctx = async {
-    let! rsp = getAssets [ Limit 2 ] ctx
+    let! rsp = getAssets [ Limit 2 ] Async.single ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res
@@ -24,7 +25,7 @@ let getAssetsExample ctx = async {
 
 let updateAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = updateAssets [(84025677715833721L, [ SetName "string3" ] )] ctx
+    let! rsp = updateAssets [(84025677715833721L, [ SetName "string3" ] )] Async.single ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -49,7 +50,7 @@ let createAssetsExample ctx = async {
             createAssets assets |> retry 500<ms> 5
         ]
 
-        return ga
+        return gb
     }
 
     let request = concurrent [
@@ -58,7 +59,7 @@ let createAssetsExample ctx = async {
             yield createAssets chunk |> retry 500<ms> 5
     ]
 
-    let! rsp = request ctx
+    let! rsp = request Async.single ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -75,6 +76,7 @@ let main argv =
 
     let ctx =
         defaultContext
+        |> setHttpClient (new HttpClient ())
         |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> setProject (Uri.EscapeDataString config.Project)
 

@@ -256,11 +256,11 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetTimeseriesDataAsync (this: Client<_>) (defaultQuery: QueryData) (query: Tuple<int64, QueryData> seq) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesDataAsync (this: Client) (defaultQuery: QueryData) (query: Tuple<int64, QueryData> seq) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
             let defaultQuery' = defaultQuery.Query
             let query' = query |> Seq.map (fun (id, query) -> (id, query.Query))
-            let! result = Internal.getTimeseriesDataResult defaultQuery' query' this.Fetch this.Ctx
+            let! result = Internal.getTimeseriesDataResult defaultQuery' query' fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -277,10 +277,10 @@ type ClientTimeseriesExtensions =
     /// <param name="client">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetTimeseriesLatestDataAsync (this: Client<_>) (queryParams: QueryDataLatest seq) : Task<seq<PointResponseDataPoints>> =
+    static member GetTimeseriesLatestDataAsync (this: Client) (queryParams: QueryDataLatest seq) : Task<seq<PointResponseDataPoints>> =
         let worker () : Async<seq<PointResponseDataPoints>> = async {
             let query = queryParams |> Seq.map (fun p -> p.Latest)
-            let! result = Internal.getTimeseriesLatestDataResult query this.Fetch this.Ctx
+            let! result = Internal.getTimeseriesLatestDataResult query fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -295,9 +295,9 @@ type ClientTimeseriesExtensions =
     /// </summary>
     /// <param name="name">The name of the timeseries to insert data into.</param>
     /// <param name="items">The list of data points to insert.</param>
-    /// <returns>Http status code.</returns>
+    /// <returns>True if successful.</returns>
     [<Extension>]
-    static member InsertDataAsync (this: Client<HttpResponse>) (items: DataPoints seq) : Task<int> =
+    static member InsertDataAsync (this: Client) (items: DataPoints seq) : Task<bool> =
         let items' =
             Seq.map  (fun (it :  DataPoints) ->
                 {
@@ -321,11 +321,11 @@ type ClientTimeseriesExtensions =
                 }
             ) items
 
-        let worker () : Async<int> = async {
-            let! result = Internal.insertDataResult items' this.Fetch this.Ctx
+        let worker () : Async<bool> = async {
+            let! result = Internal.insertDataResult items' fetch this.Ctx
             match result with
             | Ok response ->
-                return response.StatusCode
+                return true
             | Error error ->
                return raise (Error.error2Exception error)
         }
@@ -338,9 +338,9 @@ type ClientTimeseriesExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member CreateTimeseriesAsync (this: Client<_>) (items: seq<TimeseriesCreateDto>) : Task<TimeseriesResponse> =
+    static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesCreateDto>) : Task<TimeseriesResponse> =
         let worker () : Async<TimeseriesResponse> = async {
-            let! result = Internal.createTimeseriesResult items this.Fetch this.Ctx
+            let! result = Internal.createTimeseriesResult items fetch this.Ctx
             match result with
             | Ok response ->
                 return response
@@ -356,9 +356,9 @@ type ClientTimeseriesExtensions =
     /// <param name="id">The id of the timeseries to get.</param>
     /// <returns>The timeseries with the given id.</returns>
     [<Extension>]
-    static member GetTimeseriesAsync (this: Client<TimeseriesResponse>) (queryParams: Query) : Task<TimeseriesResponse> =
+    static member GetTimeseriesAsync (this: Client) (queryParams: Query) : Task<TimeseriesResponse> =
         let worker () : Async<TimeseriesResponse> = async {
-            let! result = Internal.getTimeseriesResult queryParams.Params this.Fetch this.Ctx
+            let! result = Internal.getTimeseriesResult queryParams.Params fetch this.Ctx
 
             match result with
             | Ok response ->
@@ -375,9 +375,9 @@ type ClientTimeseriesExtensions =
     /// <param name="id">The id of the timeseries to get.</param>
     /// <returns>The timeseries with the given id.</returns>
     [<Extension>]
-    static member GetTimeseriesByIdsAsync (this: Client<TimeseriesReadDto seq>) (ids: seq<int64>) : Task<seq<TimeseriesReadDto>> =
+    static member GetTimeseriesByIdsAsync (this: Client) (ids: seq<int64>) : Task<seq<TimeseriesReadDto>> =
         let worker () : Async<seq<TimeseriesReadDto>> = async {
-            let! result = Internal.getTimeseriesByIdsResult ids this.Fetch this.Ctx
+            let! result = Internal.getTimeseriesByIdsResult ids fetch this.Ctx
 
             match result with
             | Ok response ->
@@ -394,12 +394,12 @@ type ClientTimeseriesExtensions =
     /// <param name="name">The name of the timeseries to delete.</param>
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
-    static member DeleteTimeseriesAsync (this: Client<_>) (name: string) : Task<int> =
-        let worker () : Async<int> = async {
-            let! result = Internal.deleteTimeseriesResult name this.Fetch this.Ctx
+    static member DeleteTimeseriesAsync (this: Client) (name: string) : Task<bool> =
+        let worker () : Async<bool> = async {
+            let! result = Internal.deleteTimeseriesResult name fetch this.Ctx
             match result with
             | Ok response ->
-                return response.StatusCode
+                return true
             | Error error ->
                return raise (Error.error2Exception error)
         }

@@ -6,12 +6,12 @@ open System.Net.Http
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Common
-open Cognite.Sdk.Request
+
 
 [<RequireQualifiedAccess>]
 module Internal =
 
-    let getAssets (args: GetParams seq) (fetch: HttpHandler<'a>) =
+    let getAssets (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage,string,AssetResponse>) =
         let decoder = decodeResponse AssetResponse.Decoder id
         let query = args |> Seq.map renderParams |> List.ofSeq
 
@@ -22,11 +22,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getAssetsResult (args: GetParams seq) (fetch: HttpHandler<AssetResponse>) (ctx: HttpContext) =
+    let getAssetsResult (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage, string, AssetResponse>) (ctx: HttpContext) =
         getAssets args fetch Async.single ctx
         |> Async.map (fun decoded -> decoded.Result)
 
-    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<AssetResponse>) =
+    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, AssetResponse>) =
         let decoder = decodeResponse AssetResponse.Decoder id
         let body = "" // FIXME:
         let url = Url + "byids"
@@ -38,11 +38,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getAssetsByIdsResult (ids: Identity seq)  (fetch: HttpHandler<AssetResponse>) (ctx: HttpContext) =
+    let getAssetsByIdsResult (ids: Identity seq)  (fetch: HttpHandler<HttpResponseMessage, string, AssetResponse>) (ctx: HttpContext) =
         getAssetsByIds ids fetch Async.single ctx
         |> Async.map (fun decoded -> decoded.Result)
 
-    let getAsset (assetId: int64) (fetch: HttpHandler<_>) =
+    let getAsset (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse AssetReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
@@ -52,11 +52,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let getAssetResult (assetId: int64) (fetch: HttpHandler<AssetReadDto>) (ctx: HttpContext) =
+    let getAssetResult (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, string, AssetReadDto>) (ctx: HttpContext) =
         getAsset assetId fetch Async.single ctx
         |> Async.map (fun decoded -> decoded.Result)
 
-    let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler<_>)  =
+    let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,string,'a>)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
@@ -68,11 +68,11 @@ module Internal =
         >=> fetch
         >=> decoder
 
-    let createAssetsResult (assets: AssetCreateDto seq) (fetch: HttpHandler<seq<AssetReadDto>>) (ctx: HttpContext) =
+    let createAssetsResult (assets: AssetCreateDto seq) (fetch: HttpHandler<HttpResponseMessage, string, seq<AssetReadDto>>) (ctx: HttpContext) =
         createAssets assets fetch Async.single ctx
         |> Async.map (fun context -> context.Result)
 
-    let deleteAssets (assets: Identity seq) (fetch: HttpHandler<_>) =
+    let deleteAssets (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let request : AssetsDeleteRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
 
@@ -82,11 +82,11 @@ module Internal =
         >=> setResource Url
         >=> fetch
 
-    let deleteAssetsResult (assets: Identity seq) (fetch: HttpHandler) (ctx: HttpContext) =
+    let deleteAssetsResult<'a> (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, string>) (ctx: HttpContext) =
         deleteAssets assets fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
-    let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler) =
+    let updateAssets (args: (int64*UpdateParams list) list) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -103,7 +103,7 @@ module Internal =
         >=> setResource url
         >=> fetch
 
-    let updateAssetsResult (args: (int64*UpdateParams list) list) (fetch: HttpHandler) (ctx: HttpContext) =
+    let updateAssetsResult (args: (int64*UpdateParams list) list) (fetch: HttpHandler<HttpResponseMessage, string, string>) (ctx: HttpContext) =
         updateAssets args fetch Async.single ctx
         |> Async.map (fun ctx -> ctx.Result)
 
@@ -126,7 +126,7 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (args: seq<GetParams>) (ctx: HttpContext) : Async<Context<AssetResponse>> =
+    let getAssets (args: seq<GetParams>) (next: NextHandler<AssetReadDto seq,'a>) (ctx: HttpContext) : Async<Context<AssetResponse>> =
         Internal.getAssets args fetch Async.single ctx
 
     //let searchAssets (args: )
@@ -142,8 +142,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAsset (assetId: int64) (ctx: HttpContext) : Async<Context<AssetReadDto>> =
-        Internal.getAsset assetId fetch Async.single ctx
+    let getAsset (assetId: int64) (next: NextHandler<AssetReadDto,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+        Internal.getAsset assetId fetch next ctx
 
     /// **Description**
     ///
@@ -156,8 +156,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (assets: AssetCreateDto seq) (ctx: HttpContext) =
-        Internal.createAssets assets fetch Async.single ctx
+    let createAssets (assets: AssetCreateDto seq) (next: NextHandler<seq<AssetReadDto>,'a>) (ctx: HttpContext) =
+        Internal.createAssets assets fetch next ctx
 
     /// **Description**
     ///
@@ -170,8 +170,8 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: Identity seq) (ctx: HttpContext) =
-        Internal.deleteAssets assets fetch Async.single ctx
+    let deleteAssets (assets: Identity seq) (next: NextHandler<string,'a>) (ctx: HttpContext) =
+        Internal.deleteAssets assets fetch next ctx
 
     /// **Description**
     ///
@@ -185,5 +185,5 @@ module Methods =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*(UpdateParams list)) list) (ctx: HttpContext) =
-        Internal.updateAssets args fetch Async.single ctx
+    let updateAssets (args: (int64*(UpdateParams list)) list) (next: NextHandler<string,'a>) (ctx: HttpContext) =
+        Internal.updateAssets args fetch next ctx

@@ -3,7 +3,6 @@ namespace Cognite.Sdk
 
 open System
 
-open FSharp.Data
 open Thoth.Json.Net
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
@@ -33,17 +32,9 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: HttpContext) =
+    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: Context<string>) =
         let result =
             context.Result
-            |> Result.map (fun response ->
-                match response.Body with
-                | Text text ->
-                    //printfn "Got: %A" text
-                    text
-                | Binary _ ->
-                    failwith "binary format not supported"
-            )
             |> Result.bind (fun res ->
                 let ret = Decode.fromString decoder res
                 match ret with
@@ -52,7 +43,7 @@ module Common =
             )
             |> Result.map resultMapper
 
-        next { Request = context.Request; Result = result}
+        next { Request = context.Request; Result = result }
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Encode =

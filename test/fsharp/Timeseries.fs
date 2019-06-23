@@ -22,11 +22,11 @@ let ``Create timeseries is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.createTimeseries [] fetch ctx
+    let! res = Internal.createTimeseries [] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -42,11 +42,11 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.getTimeseriesByIds [ 0L ] fetch ctx
+    let! res = Internal.getTimeseriesByIds [ 0L ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.POST @>
+    test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries/byids" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -62,11 +62,11 @@ let ``Delete timeseries is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.deleteTimeseries "erase" fetch ctx
+    let! res = Internal.deleteTimeseries "erase" fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.DELETE @>
+    test <@ res.Request.Method = RequestMethod.DELETE @>
     test <@ res.Request.Resource = "/timeseries/erase" @>
     test <@ res.Request.Query.IsEmpty @>
 }
