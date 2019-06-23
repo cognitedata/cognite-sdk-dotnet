@@ -1,5 +1,8 @@
 namespace Cognite.Sdk.Assets
 
+open System.Net
+open System.Net.Http
+
 open Cognite.Sdk
 open Cognite.Sdk.Assets
 open Cognite.Sdk.Common

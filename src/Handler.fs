@@ -1,7 +1,11 @@
 namespace Cognite.Sdk
 
-open FSharp.Data
+open System.Net
+open System.Net.Http
+//open System.Net.Http
+//open FSharp.Data
 open Microsoft.FSharp.Data.UnitSystems.SI
+open System.Collections.Specialized
 
 [<Measure>] type ms
 
@@ -11,9 +15,9 @@ type HttpHandler<'a, 'b, 'c> = NextHandler<'b, 'c> -> Context<'a> -> Async<Conte
 
 type HttpHandler<'a, 'b> = HttpHandler<'a, 'a, 'b>
 
-type HttpHandler<'a> = HttpHandler<HttpResponse, 'a>
+type HttpHandler<'a> = HttpHandler<HttpResponseMessage, 'a>
 
-type HttpHandler = HttpHandler<HttpResponse, HttpResponse>
+type HttpHandler = HttpHandler<HttpResponseMessage, HttpResponseMessage>
 
 [<AutoOpen>]
 module Handler =
@@ -177,11 +181,11 @@ module Handler =
     ///   * `query` - List of tuples (name, value)
     ///   * `context` - The context to add the query to.
     ///
-    let addQuery (query: QueryStringParams) (next: NextHandler<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Query = context.Request.Query @ query  } }
-
-    let addQueryItem (query: string*string) (next: NextHandler<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Query = query :: context.Request.Query  } }
+    let addQuery (query: (string * string) seq) (next: NextHandler<_,_>) (context: HttpContext) =
+        let newQuery = NameValueCollection ()
+        for (key, value) in query do
+            newQuery.Add (key, value)
+        next { context with Request = { context.Request with Query = newQuery  } }
 
     let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Resource = resource  } }
@@ -201,15 +205,15 @@ module Handler =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setMethod<'a> (method: HttpMethod) (next: NextHandler<HttpResponse,'a>) (context: HttpContext) =
+    let setMethod<'a> (method: HttpMethod) (next: NextHandler<HttpResponseMessage,'a>) (context: HttpContext) =
         next { context with Request = { context.Request with Method = method; Body = None } }
 
     let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Version = version } }
 
-    let GET<'a> = setMethod<'a> HttpMethod.GET
-    let POST<'a> = setMethod<'a> HttpMethod.POST
-    let DELETE<'a> = setMethod<'a> HttpMethod.DELETE
+    let GET<'a> = setMethod<'a> HttpMethod.Get
+    let POST<'a> = setMethod<'a> HttpMethod.Post
+    let DELETE<'a> = setMethod<'a> HttpMethod.Delete
 
 
     let (|Informal|Success|Redirection|ClientError|ServerError|) x =
@@ -226,12 +230,14 @@ module Handler =
 
 
     /// A request function for fetching from the Cognite API.
-    let fetch<'a> (next: NextHandler<HttpResponse,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+    let fetch<'a> (next: NextHandler<HttpResponseMessage,'a>) (ctx: HttpContext) : Async<Context<'a>> =
         async {
             let res = ctx.Request.Resource
             let url = sprintf "https://api.cognitedata.com/api/%s/projects/%s%s" (ctx.Request.Version.ToString ()) ctx.Request.Project res
             let headers = ctx.Request.Headers
             let body = ctx.Request.Body |> Option.map HttpRequestBody.TextRequest
+
+            let client = ctx.Request.ClientFactory.getClient ()
             printfn "%A" body
             let method = ctx.Request.Method.ToString().ToUpper()
             try

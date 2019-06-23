@@ -2,18 +2,22 @@ namespace Cognite.Sdk
 
 open System
 open System.Net
+open System.Net.Http
 open System.Reflection
 
-open FSharp.Data
-open FSharp.Data.HttpRequestHeaders
+open System.Collections.Specialized
 
-type HttpMethod =
+//open FSharp.Data
+open FSharp.Data.HttpRequestHeaders
+open System.Net.Http.Headers
+
+type RequestMethod =
     | POST
     | PUT
     | GET
     | DELETE
 
-type QueryStringParams = (string*string) list
+//type QueryStringParams = (string*string) list
 
 type ApiVersion =
     | V05
@@ -27,10 +31,11 @@ type ApiVersion =
         | V10 -> "v1"
 
 type HttpRequest = {
+    ClientFactory: IHttpClientFactory
     Method: HttpMethod
     Body: string option
     Resource: string
-    Query: QueryStringParams
+    Query:NameValueCollection
     Headers: (string*string) list
     Project: string
     Version: ApiVersion
@@ -41,37 +46,33 @@ type Context<'a> = {
     Result: Result<'a, ResponseError>
 }
 
-type HttpContext = Context<HttpResponse>
+type HttpContext = Context<HttpResponseMessage>
 
 module Request =
     let version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
-        {| Major=version.Major; Minor=version.Minor; Revision=version.Revision|}
+        {| Major=version.Major; Minor=version.Minor; Revision=version.Revision |}
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
     let defaultRequest =
         {
-            Method = GET
+            ClientFactory = null
+            Method = HttpMethod.Get
             Body = None
             Resource = String.Empty
-            Query = []
+            Query = NameValueCollection ()
             Headers = [
-                Accept HttpContentTypes.Json
-                ContentType HttpContentTypes.Json
+                Accept "application/json"
+                ContentType "application/json"
                 UserAgent (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Revision)
             ]
             Project = String.Empty
             Version = V05
         }
     let defaultResult =
-        Ok {
-            StatusCode = 404
-            Body = Text String.Empty
-            ResponseUrl = String.Empty
-            Headers = Map.empty
-            Cookies = Map.empty
-        }
-    let defaultContext : Context<HttpResponse> = {
+        Ok (new HttpResponseMessage (HttpStatusCode.NotFound))
+
+    let defaultContext : Context<HttpResponseMessage> = {
         Request = defaultRequest
         Result = defaultResult
     }
@@ -98,3 +99,6 @@ module Request =
     ///
     let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Project = project } }
+
+    let setClientFactory (factory: IHttpClientFactory) (context: HttpContext) =
+        { context with Request = { context.Request with ClientFactory = factory } }
