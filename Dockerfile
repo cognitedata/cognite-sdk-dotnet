@@ -1,4 +1,4 @@
-FROM eu.gcr.io/cognitedata/dotnet-mono:2.1-sdk
+FROM eu.gcr.io/cognitedata/dotnet-mono:2.2-sdk
 
 WORKDIR /build
 COPY . .

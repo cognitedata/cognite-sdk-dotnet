@@ -4,21 +4,12 @@ open System
 open System.Net
 open System.Net.Http
 open System.Reflection
-open System.Web
-
-open System.Collections.Specialized
-
-//open FSharp.Data
-open FSharp.Data.HttpRequestHeaders
-open System.Net.Http.Headers
 
 type RequestMethod =
     | POST
     | PUT
     | GET
     | DELETE
-
-//type QueryStringParams = (string*string) list
 
 type ApiVersion =
     | V05
@@ -63,9 +54,8 @@ module Request =
             Resource = String.Empty
             Query = List.empty
             Headers = [
-                Accept "application/json"
-                //ContentType "application/json"
-                UserAgent (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Build)
+                ("Accept", "application/json")
+                ("User-Agent", (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Build))
             ]
             Project = String.Empty
             Version = V05
