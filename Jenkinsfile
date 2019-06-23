@@ -17,7 +17,7 @@ podTemplate(
                                    resourceLimitMemory: '500Mi',
                                    ttyEnabled: true),
                  containerTemplate(name: 'dotnet-mono',
-                                   image: 'eu.gcr.io/cognitedata/dotnet-mono:2.1-sdk',
+                                   image: 'eu.gcr.io/cognitedata/dotnet-mono:2.2-sdk',
                                    envVars: [
                                              secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-cognite-sdk-net', secretKey: 'token.txt'),
                                              // /codecov-script/upload-report.sh relies on the following

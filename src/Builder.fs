@@ -1,23 +1,30 @@
 namespace Cognite.Sdk
 
-type RequestBuilder () =
-    member this.Zero () : HttpHandler = fun _ -> Async.single Request.defaultContext
-    member this.Return (res: 'a) : (_ -> Async<Context<'a>>) = fun _ -> Async.single { Request = Request.defaultRequest; Result = Ok res }
+//open FSharp.Data
+open System.Net
+open System.Net.Http
 
-    member this.Return (req: HttpRequest) : HttpHandler = fun ctx -> Async.single { Request = Request.defaultRequest; Result = Request.defaultResult }
+type RequestBuilder () =
+    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next Request.defaultContext
+    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = Request.defaultRequest; Result = Ok res }
+
+    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = Request.defaultResult }
 
     member this.Delay (fn) = fn ()
 
-    member this.Bind(source: HttpHandler<'a, 'b>, fn: 'b -> HttpHandler<'a, 'c>) :  HttpHandler<'a, 'c> =
-        let fn' (acb: Async<Context<'b>>) (ctx: Context<'a>) : Async<Context<'c>> = async {
-            let! cb = acb
-            match cb.Result with
-            | Ok res ->
-                return! ctx |> fn res
-            | Error error ->
-                return { Request = cb.Request; Result = Error error }
-        }
-        fun ctx -> fn' (source ctx) ctx
+    member this.Bind(source: HttpHandler<'a, 'b, 'd>, fn: 'b -> HttpHandler<'a, 'c, 'd>) :  HttpHandler<'a, 'c, 'd> =
+
+        fun (next : NextHandler<'c, 'd>) (ctx : Context<'a>) ->
+            let next' (cb : Context<'b>)  = async {
+                match cb.Result with
+                | Ok b ->
+                    let inner = fn b
+                    return! inner next ctx
+                | Error error ->
+                    return! next { Request = cb.Request; Result = Error error }
+            }
+            // Run source
+            source next' ctx
 
 [<AutoOpen>]
 module Builder =

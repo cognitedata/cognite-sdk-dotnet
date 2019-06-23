@@ -1,7 +1,7 @@
 namespace Cognite.Sdk
 
 open System
-open FSharp.Data
+open System.Net.Http
 
 /// Will be raised if decoding a response fails.
 exception DecodeException of string
@@ -13,7 +13,7 @@ type ResponseError =
     /// JSON decode error (unable to decode the response)
     | DecodeError of string
     /// Error response from server.
-    | ErrorResponse of HttpResponse
+    | ErrorResponse of HttpResponseMessage
 
 type RequestError = {
     Code: int

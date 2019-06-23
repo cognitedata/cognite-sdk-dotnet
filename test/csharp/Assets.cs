@@ -11,6 +11,8 @@ using Cognite.Sdk.Assets;
 using Cognite.Sdk.Api;
 
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net;
 
 namespace Tests
 {
@@ -20,11 +22,23 @@ namespace Tests
         public async Task TestGetAssets()
         {
             // Arrenge
+            HttpRequestMessage request = null;
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(200, json);
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
             var query = new List<(string, string)> {
                     ("parentIds", "[42,43]"),
                     ("source", "source"),
@@ -34,10 +48,9 @@ namespace Tests
                 };
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             var assetArgs =
                 AssetArgs.Empty()
@@ -52,28 +65,38 @@ namespace Tests
             var result = await client.GetAssetsAsync(assetArgs);
 
             // Assert
-            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Request.Method);
-            Assert.Equal("/assets", fetcher.Ctx.Request.Resource);
-            var expectedQuery = new List<Tuple<string, string>>(fetcher.Ctx.Request.Query);
-            Assert.Equal(expectedQuery, query.Select(x => x.ToTuple ()).ToList());
             Assert.Single(result.Items);
+            Assert.Equal(HttpMethod.Get, request.Method);
+            Assert.Equal("api.cognitedata.com", request.RequestUri.Host);
+            Assert.Equal("?parentIds=%5b42%2c43%5d&source=source&root=false&externalIdPrefix=prefix&name=string3", request.RequestUri.Query);
+            Assert.Equal("/api/v1/projects/project/assets", request.RequestUri.AbsolutePath);
         }
 
         [Fact]
         public async Task TestGetAssetsServerUnavailable()
         {
-            // Arrange
+            // Arrenge
+            HttpRequestMessage request;
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(503, json);
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             var assetArgs =
                 AssetArgs.Empty()
@@ -87,17 +110,27 @@ namespace Tests
         public async Task TestGetInvalidAssetsThrowsException()
         {
             // Arrange
+            HttpRequestMessage request;
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("InvalidAsset.json");
-            var fetcher = Fetcher.FromJson(200, json);
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             var assetArgs =
                 AssetArgs.Empty()
@@ -113,42 +146,65 @@ namespace Tests
         public async Task TestGetAsset()
         {
             // Arrange
+            HttpRequestMessage request = null;
             var apiKey = "api-key";
             var project = "project";
 
             var json = File.ReadAllText("Asset.json");
-            var fetcher = Fetcher.FromJson(200, json);
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             // Act
             var result = await client.GetAssetAsync(42L);
 
             // Assert
-            Assert.Equal(HttpMethod.GET, fetcher.Ctx.Request.Method);
-            Assert.Equal("/assets/42", fetcher.Ctx.Request.Resource);
-            Assert.Equal(fetcher.Ctx.Request.Query, new List<Tuple<string, string>>());
+            Assert.Equal(HttpMethod.Get, request.Method);
+            Assert.Equal("api.cognitedata.com", request.RequestUri.Host);
+            Assert.Equal("", request.RequestUri.Query);
+            Assert.Equal("/api/v1/projects/project/assets/42", request.RequestUri.AbsolutePath);
+
         }
 
         [Fact]
         public async Task TestGetInvaldAssetThrowsException()
         {
             // Arrange
+            HttpRequestMessage request = null;
             var apiKey = "api-key";
             var project = "project";
-
             var json = File.ReadAllText("InvalidAsset.json");
-            var fetcher = Fetcher.FromJson(200, json);
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             // Act/Assert
             await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetAsync(42L));
@@ -158,17 +214,27 @@ namespace Tests
         public async Task TestCreateAssets()
         {
             // Arrange
+            HttpRequestMessage request = null;
             var apiKey = "api-key";
             var project = "project";
-
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(200, json);
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             var assets = new List<AssetCreateDto> {
                 Asset.Create("name1")
@@ -195,17 +261,27 @@ namespace Tests
         public async Task TestUpdateAssets()
         {
             // Arrange
+            HttpRequestMessage request = null;
             var apiKey = "api-key";
             var project = "project";
-
             var json = File.ReadAllText("Assets.json");
-            var fetcher = Fetcher.FromJson(200, json);
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
 
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetFetch(fetcher.Fetch);
+                .SetProject(project);
 
             var assets = new List<AssetUpdate> {
                 new AssetUpdate(42L)
@@ -215,7 +291,7 @@ namespace Tests
             var result = await client.UpdateAssetsAsync (assets);
 
             // Assert
-            Assert.Equal(200, result.Code);
+            Assert.True(result);
         }
     }
 }

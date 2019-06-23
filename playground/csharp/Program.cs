@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
 using Cognite.Sdk.Timeseries;
-
+using System.Net.Http;
 
 namespace csharp
 {
@@ -73,12 +75,13 @@ namespace csharp
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
             var project = Environment.GetEnvironmentVariable("PROJECT");
 
+            var httpClient = new HttpClient ();
             var client =
-                Client.Create()
+                Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            await CreateTimeseriesDataExample(client);
+            await GetAssetsExample(client);
         }
     }
 }

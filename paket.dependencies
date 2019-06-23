@@ -6,6 +6,7 @@ nuget FsConfig 2.0.2
 nuget FSharp.Core 4.6.2
 nuget FSharp.Data ~> 3
 nuget Microsoft.Extensions.Configuration 2.2.0
+nuget Microsoft.Extensions.Http
 nuget Microsoft.NET.Test.Sdk ~> 16
 nuget Thoth.Json.Net ~> 3.2.0
 nuget TypeShape ~> 5
