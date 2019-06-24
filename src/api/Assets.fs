@@ -6,6 +6,8 @@ open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Threading.Tasks;
 
+open FSharp.Control.Tasks.V2
+
 open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
@@ -190,7 +192,7 @@ type ClientAssetExtensions =
     /// <returns>List of assets.</returns>
     [<Extension>]
     static member GetAssetsAsync (this: Client, args: AssetArgs) : Task<AssetResponse> =
-        let worker () : Async<AssetResponse> = async {
+        task {
             let! result = Internal.getAssetsResult args.Args fetch this.Ctx
             match result with
             | Ok response ->
@@ -200,8 +202,6 @@ type ClientAssetExtensions =
                 return raise (Error.error2Exception error)
         }
 
-        worker () |> Async.StartAsTask
-
     /// <summary>
     /// Retrieves information about an asset in a certain project given an asset id.
     /// </summary>
@@ -209,7 +209,7 @@ type ClientAssetExtensions =
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
     static member GetAssetAsync (this: Client, assetId: int64) : Task<AssetReadDto> =
-        let worker () : Async<AssetReadDto> = async {
+        task {
             let! result = Internal.getAssetResult assetId fetch this.Ctx
             match result with
             | Ok response ->
@@ -217,8 +217,6 @@ type ClientAssetExtensions =
             | Error error ->
                 return raise (Error.error2Exception error)
         }
-
-        worker () |> Async.StartAsTask
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -229,7 +227,7 @@ type ClientAssetExtensions =
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
     static member GetAssetsByIdsAsync(this: Client, assetIds: seq<int64>) : Task<AssetResponse> =
-        let worker () : Async<AssetResponse> = async {
+        task {
             let ids = Seq.map Identity.Id assetIds
             let! result = Internal.getAssetsByIdsResult ids fetch this.Ctx
             match result with
@@ -238,9 +236,6 @@ type ClientAssetExtensions =
             | Error error ->
                 return raise (Error.error2Exception error)
         }
-
-        worker () |> Async.StartAsTask
-
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -251,7 +246,7 @@ type ClientAssetExtensions =
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
     static member GetAssetsByIdsAsync (this: Client, assetExternalIds: seq<string>) : Task<AssetResponse> =
-        let worker () : Async<AssetResponse> = async {
+        task {
             let ids = Seq.map Identity.ExternalId assetExternalIds
             let! result = Internal.getAssetsByIdsResult ids fetch this.Ctx
             match result with
@@ -261,8 +256,6 @@ type ClientAssetExtensions =
                 return raise (Error.error2Exception error)
         }
 
-        worker () |> Async.StartAsTask
-
     /// <summary>
     /// Create assets.
     /// </summary>
@@ -270,7 +263,7 @@ type ClientAssetExtensions =
     /// <returns>List of created assets.</returns>
     [<Extension>]
     static member CreateAssetsAsync (this: Client, assets: AssetCreateDto seq) : Task<AssetReadDto seq> =
-        let worker () : Async<AssetReadDto seq> = async {
+        task {
             let! result = Internal.createAssetsResult assets fetch this.Ctx
             match result with
             | Ok response ->
@@ -279,8 +272,6 @@ type ClientAssetExtensions =
                return raise (Error.error2Exception error)
         }
 
-        worker () |> Async.StartAsTask
-
     /// <summary>
     /// Delete assets.
     /// </summary>
@@ -288,7 +279,7 @@ type ClientAssetExtensions =
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
     static member DeleteAssetsAsync(this: Client, assetIds: int64 seq) : Task<bool> =
-        let worker () : Async<bool> = async {
+        task {
             let ids = Seq.map Identity.Id assetIds
             let! result = Internal.deleteAssetsResult ids fetch this.Ctx
             match result with
@@ -298,8 +289,6 @@ type ClientAssetExtensions =
                return raise (Error.error2Exception error)
         }
 
-        worker () |> Async.StartAsTask
-
     /// <summary>
     /// Delete assets.
     /// </summary>
@@ -307,7 +296,7 @@ type ClientAssetExtensions =
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
     static member DeleteAssetsAsync(this: Client, assetExternalIds: string seq) : Task<bool> =
-        let worker () : Async<bool> = async {
+        task {
             let ids = Seq.map Identity.ExternalId assetExternalIds
             let! result = Internal.deleteAssetsResult ids fetch this.Ctx
             match result with
@@ -317,8 +306,6 @@ type ClientAssetExtensions =
                return raise (Error.error2Exception error)
         }
 
-        worker () |> Async.StartAsTask
-
     /// <summary>
     /// Update assets.
     /// </summary>
@@ -326,7 +313,7 @@ type ClientAssetExtensions =
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
     static member UpdateAssetsAsync (this: Client, assets: AssetUpdate seq) : Task<bool> =
-        let worker () : Async<bool> = async {
+        task {
             let! result = Internal.updateAssetsResult (assets |> Seq.map (fun asset -> asset.Id, asset.Updates) |> List.ofSeq ) fetch this.Ctx
             match result with
             | Ok response ->
@@ -334,5 +321,3 @@ type ClientAssetExtensions =
             | Error error ->
                return raise (Error.error2Exception error)
         }
-
-        worker () |> Async.StartAsTask

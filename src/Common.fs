@@ -4,7 +4,6 @@ namespace Cognite.Sdk
 open System
 
 open Thoth.Json.Net
-open Newtonsoft.Json
 open Newtonsoft.Json.Linq
 
 module Common =

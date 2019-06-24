@@ -1,4 +1,4 @@
 Microsoft.Extensions.Http
-FSharp.Data
 FSharp.Core
+Taskbuilder.fs
 Thoth.Json.Net

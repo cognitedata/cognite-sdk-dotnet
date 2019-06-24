@@ -1,11 +1,13 @@
 namespace Cognite.Sdk
 
 open System
-open System.Net
 open System.Net.Http
-open Microsoft.FSharp.Data.UnitSystems.SI
 open System.Text
 open System.Web
+
+open Microsoft.FSharp.Data.UnitSystems.SI
+
+open FSharp.Control.Tasks.V2
 
 [<Measure>] type ms
 
@@ -21,6 +23,23 @@ type HttpHandler = HttpHandler<HttpResponseMessage, HttpResponseMessage>
 
 [<AutoOpen>]
 module Handler =
+
+    /// **Description**
+    ///
+    /// Run the handler in the given context.
+    ///
+    /// **Parameters**
+    ///   * `handler` - parameter of type `HttpHandler<'a,'b,'b>`
+    ///   * `ctx` - parameter of type `Context<'a>`
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<'b,ResponseError>>`
+    ///
+    let runHandler (handler: HttpHandler<_,_,_>) (ctx : Context<_>) = async {
+        let! a = handler Async.single ctx
+        return a.Result
+    }
+
     let private secondsInMilliseconds = 1000<ms/UnitSymbols.s>  // relation between seconds and millisecond
 
     [<Literal>]
@@ -53,10 +72,6 @@ module Handler =
             let next'' = first next'
 
             next'' ctx
-
-    //let compose (first : HttpHandler<'a, 'b>) (second : HttpHandler<'b, 'c>) : HttpHandler<'a,'c> =
-    //    fun ctx ->
-    //        first ctx |> bindAsync second
 
     let (>>=) a b =
         bindAsync b a
@@ -124,8 +139,6 @@ module Handler =
         let exponentialDelay = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let randomDelayScale = min (secondsInMilliseconds * DefaultMaxBackoffDelay / 2) (initialDelay * 2)
         let nextDelay = rand.Next(int randomDelayScale) * 1<ms> + exponentialDelay
-
-
 
         let! ctx' = handler next ctx
 
@@ -245,33 +258,27 @@ module Handler =
             let client = ctx.Request.HttpClient
 
             for header, value in ctx.Request.Headers do
-                //printfn "%s: %s" header value
-                client.DefaultRequestHeaders.Add (header, value)
+                if not (client.DefaultRequestHeaders.Contains header) then
+                    client.DefaultRequestHeaders.Add (header, value)
 
-
-            //printfn "Url: %s" url
-            let! result = async {
+            let resultTask = task {
                 try
-                    let! response = async {
+                    let! response = task {
                         match ctx.Request.Method with
                         | GET ->
-                            let! response = client.GetAsync(url) |> Async.AwaitTask
-                            return response
+                            return! client.GetAsync(url)
                         | POST ->
                             let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
-                            let! response = client.PostAsync(url, content) |> Async.AwaitTask
-                            return response
+                            return! client.PostAsync(url, content)
                         | PUT ->
                             let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
-                            let! response = client.PutAsync(url, content) |> Async.AwaitTask
-                            return response
+                            return! client.PutAsync(url, content)
                         | DELETE ->
-                            let! response = client.DeleteAsync(url) |> Async.AwaitTask
-                            return response
+                            return! client.DeleteAsync(url)
                     }
 
                     if response.IsSuccessStatusCode then
-                        let! content = response.Content.ReadAsStringAsync () |> Async.AwaitTask
+                        let! content = response.Content.ReadAsStringAsync ()
                         return Ok content
                     else
                         return response |> ErrorResponse |> Error
@@ -280,5 +287,6 @@ module Handler =
                     return RequestException ex |> Error
             }
 
+            let! result = resultTask |> Async.AwaitTask
             return! next { Request = ctx.Request; Result = result }
         }

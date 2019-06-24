@@ -10,6 +10,6 @@ module Async =
     }
 
     /// Create async value from synchronous value.
-    let single x = async {
+    let inline single x = async {
         return x
     }
