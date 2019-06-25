@@ -1,18 +1,14 @@
 using Xunit;
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Net;
 using System.Threading.Tasks;
-using System.Linq;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Assets;
 using Cognite.Sdk.Api;
-
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Net;
 
 namespace Tests
 {
@@ -52,23 +48,23 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assetArgs =
-                AssetArgs.Empty()
-                .Name("string3")
-                .ExternalIdPrefix("prefix")
-                .Root(false)
-                .Source("source")
-                .ParentIds(new List<long> {42L, 43L });
+            var options = new List<GetAssets.Option> {
+                GetAssets.Option.Name("string3"),
+                GetAssets.Option.ExternalIdPrefix("prefix"),
+                GetAssets.Option.Root(false),
+                GetAssets.Option.Source("source"),
+                GetAssets.Option.ParentIds(new List<long> {42L, 43L })
                 //.MetaData(new Dictionary<string, string> {{ "option1", "value1"}});
+            };
 
             // Act
-            var result = await client.GetAssetsAsync(assetArgs);
+            var result = await client.GetAssetsAsync(options);
 
             // Assert
             Assert.Single(result.Items);
             Assert.Equal(HttpMethod.Get, request.Method);
             Assert.Equal("api.cognitedata.com", request.RequestUri.Host);
-            Assert.Equal("?parentIds=%5b42%2c43%5d&source=source&root=false&externalIdPrefix=prefix&name=string3", request.RequestUri.Query);
+            Assert.Equal("?name=string3&externalIdPrefix=prefix&root=false&source=source&parentIds=%5b42%2c43%5d", request.RequestUri.Query);
             Assert.Equal("/api/v1/projects/project/assets", request.RequestUri.AbsolutePath);
         }
 
@@ -98,12 +94,12 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assetArgs =
-                AssetArgs.Empty()
-                .Name("string3");
+            var options = new List<GetAssets.Option> {
+                GetAssets.Option.Name("string3")
+            };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(assetArgs));
+            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(options));
         }
 
         [Fact]
@@ -132,11 +128,11 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assetArgs =
-                AssetArgs.Empty()
-                .Name("string3")
-                .Source("source")
-                .Root(true);
+            var assetArgs = new List<GetAssets.Option> {
+                GetAssets.Option.Name("string3"),
+                GetAssets.Option.Source("source"),
+                GetAssets.Option.Root(true)
+            };
 
             // Act/Assert
             await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetsAsync(assetArgs));

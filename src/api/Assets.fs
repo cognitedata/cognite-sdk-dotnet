@@ -82,47 +82,6 @@ type Asset =
         { this with ParentExternalId =  Some parentExternalId  }
 
 
-type AssetArgs (args: GetParams list) =
-    let args  = args
-
-    member this.ExternalIdPrefix (prefix: string) =
-        AssetArgs (ExternalIdPrefix prefix :: args)
-
-    member this.Name (name: string) =
-        AssetArgs (Name name :: args)
-
-    member this.Source (source: string) =
-        AssetArgs (Source source :: args)
-
-    member this.Root (root: bool) =
-        AssetArgs (Root root :: args)
-
-    (*
-    member this.MetaData (metaData: Dictionary<string, string>) =
-        let map =
-            metaData
-            |> Seq.map (|KeyValue|)
-            |> Map.ofSeq
-            |> MetaData
-        AssetArgs (map :: args)
-    *)
-
-    member this.ParentIds (ids: seq<int64>) =
-        AssetArgs (ParentIds ids :: args)
-
-    member this.MinCreatedTime (value: int64) =
-        AssetArgs (MinCreatedTime value :: args)
-    member this.MaxCreatedTime (value: int64) =
-        AssetArgs (MaxCreatedTime value :: args)
-    member this.MinLastUpdatedTime (value: int64) =
-        AssetArgs (MinLastUpdatedTime value :: args)
-    member this.MaxLastUpdatedTime (value: int64) =
-        AssetArgs (MaxLastUpdatedTime value :: args)
-
-    member internal this.Args = args
-
-    static member Empty () =
-        AssetArgs []
 
 type AssetUpdate private (id : int64, updates : UpdateParams list) =
     let id = id
@@ -180,27 +139,6 @@ type AssetUpdate private (id : int64, updates : UpdateParams list) =
 
 [<Extension>]
 type ClientAssetExtensions =
-    /// <summary>
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
-    /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
-    /// </summary>
-    /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
-    /// <returns>List of assets.</returns>
-    [<Extension>]
-    static member GetAssetsAsync (this: Client, args: AssetArgs) : Task<AssetResponse> =
-        task {
-            let! result = Internal.getAssetsResult args.Args fetch this.Ctx
-            match result with
-            | Ok response ->
-                return response
-            | Error error ->
-                //printf "Error: %A" error
-                return raise (Error.error2Exception error)
-        }
 
     /// <summary>
     /// Retrieves information about an asset in a certain project given an asset id.

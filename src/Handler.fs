@@ -35,10 +35,11 @@ module Handler =
     /// **Output Type**
     ///   * `Async<Result<'b,ResponseError>>`
     ///
-    let runHandler (handler: HttpHandler<_,_,_>) (ctx : Context<_>) = async {
-        let! a = handler Async.single ctx
-        return a.Result
-    }
+    let runHandler (handler: HttpHandler<'a,'b,'b>) (ctx : Context<'a>) : Async<Result<'b,ResponseError>> =
+        async {
+            let! a = handler Async.single ctx
+            return a.Result
+        }
 
     let private secondsInMilliseconds = 1000<ms/UnitSymbols.s>  // relation between seconds and millisecond
 

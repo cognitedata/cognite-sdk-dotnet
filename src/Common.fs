@@ -7,6 +7,9 @@ open Thoth.Json.Net
 open Newtonsoft.Json.Linq
 
 module Common =
+    [<Literal>]
+    let MaxLimitSize = 1000
+
     type Numeric =
         | NumString of string
         | NumInteger of int64
@@ -43,6 +46,18 @@ module Common =
             |> Result.map resultMapper
 
         next { Request = context.Request; Result = result }
+
+
+    type Decode.IGetters with
+        member this.NullableField name decoder =
+            match this.Optional.Field name decoder with
+                | Some value -> Nullable(value)
+                | None -> Nullable()
+
+        member this.NullableReferenceField name decoder =
+            match this.Optional.Field name decoder with
+                | Some value -> value
+                | None -> null
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Encode =

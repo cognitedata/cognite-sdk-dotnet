@@ -4,12 +4,9 @@ open System.IO
 
 open Xunit
 open Swensen.Unquote
-open Newtonsoft.Json
 
 open Cognite.Sdk
 open Cognite.Sdk.Assets
-open Cognite.Sdk.Request
-open System.Net.Http
 
 
 [<Fact>]
@@ -94,17 +91,16 @@ let ``Get assets is Ok`` () = async {
         defaultContext
         |> addHeader ("api-key", "test-key")
     let args = [
-            Name "string"
-            Source "source"
-            Root false
-            ParentIds [42L; 43L]
-            Limit 10
-            Cursor "mycursor"
+            GetAssets.Option.Name "string"
+            GetAssets.Option.Source "source"
+            GetAssets.Option.Root false
+            GetAssets.Option.ParentIds [42L; 43L]
+            GetAssets.Option.Limit 10
+            GetAssets.Option.Cursor "mycursor"
         ]
 
     // Act
-    let! res =
-        (fetch, Async.single, ctx) |||> Internal.getAssets args
+    let! res = (fetch, Async.single, ctx) |||>  GetAssets.getAssets args
 
     // Assert
     test <@ Result.isOk res.Result @>

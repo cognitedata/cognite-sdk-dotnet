@@ -9,6 +9,7 @@ using Cognite.Sdk;
 using Cognite.Sdk.Api;
 using Cognite.Sdk.Timeseries;
 using System.Net.Http;
+using Cognite.Sdk.Assets;
 
 namespace csharp
 {
@@ -21,14 +22,12 @@ namespace csharp
         /// <returns>Task</returns>
         static async Task GetAssetsExample(Client client)
         {
-            var assetArgs =
-                AssetArgs.Empty()
-                .Name("string3");
-
+            var assetArgs = new List<GetAssets.Option> {
+                GetAssets.Option.Name("string3")
+            };
             var result = await client.GetAssetsAsync(assetArgs);
 
-            Console.WriteLine("{0}", result.Items.First().TryGetParentId(out long parentId));
-            Console.WriteLine("{0}", parentId);
+            Console.WriteLine("{0}", result.Items.First().Poco().ParentId);
             Console.WriteLine("{0}", result);
         }
 

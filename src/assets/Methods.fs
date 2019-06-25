@@ -11,21 +11,6 @@ open Cognite.Sdk.Common
 [<RequireQualifiedAccess>]
 module Internal =
 
-    let getAssets (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage,string, 'a>) =
-        let decoder = decodeResponse AssetResponse.Decoder id
-        let query = args |> Seq.map renderParams |> List.ofSeq
-
-        GET
-        >=> setVersion V10
-        >=> addQuery query
-        >=> setResource Url
-        >=> fetch
-        >=> decoder
-
-    let getAssetsResult (args: GetParams seq) (fetch: HttpHandler<HttpResponseMessage, string, AssetResponse>) (ctx: HttpContext) =
-        getAssets args fetch Async.single ctx
-        |> Async.map (fun decoded -> decoded.Result)
-
     let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, AssetResponse>) =
         let decoder = decodeResponse AssetResponse.Decoder id
         let body = "" // FIXME:
@@ -109,25 +94,6 @@ module Internal =
 
 [<AutoOpen>]
 module Methods =
-
-    /// **Description**
-    ///
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
-    /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
-    ///
-    /// **Parameters**
-    ///   * `args` - list of parameters for getting assets.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
-    let getAssets (args: seq<GetParams>) (next: NextHandler<AssetResponse,'a>) (ctx: HttpContext) : Async<Context<'a>> =
-        Internal.getAssets args fetch next ctx
 
     //let searchAssets (args: )
 

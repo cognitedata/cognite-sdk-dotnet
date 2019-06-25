@@ -6,3 +6,4 @@
 *.user
 .vscode
 coverage.lcov
+.ionide

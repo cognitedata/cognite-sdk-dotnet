@@ -1,12 +1,12 @@
 ﻿// Learn more about F# at http://fsharp.org
 
 open System
+open System.Net.Http
+
 open FsConfig
 
 open Cognite.Sdk
-open Cognite.Sdk.Request
 open Cognite.Sdk.Assets
-open System.Net.Http
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -15,8 +15,8 @@ type Config = {
     Project: string
 }
 
-let getAssetsExample ctx = async {
-    let! rsp = getAssets [ Limit 2 ] Async.single ctx
+let getAssetsExample (ctx : HttpContext) = async {
+    let! rsp = getAssetsAsync [ GetAssets.Option.Limit 2 ] ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res

@@ -57,20 +57,6 @@ module AssetsExtensions =
                 yield "items", Seq.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
-    let renderParams (arg: GetParams) =
-        match arg with
-        | NotLimit limit -> "limit", limit.ToString ()
-        | Cursor cursor -> "cursor", cursor
-        | Name name -> "name", name
-        | ParentIds ids -> "parentIds", Encode.int53seq ids |> Encode.stringify
-        | Source source -> "source", source
-        | Root root -> "root", root.ToString().ToLower()
-        | MinCreatedTime value -> "minCreatedTime", value.ToString ()
-        | MaxCreatedTime value -> "maxCreatedTime", value.ToString ()
-        | MinLastUpdatedTime value -> "minLastUpdatedTime", value.ToString ()
-        | MaxLastUpdatedTime value -> "maxLastUpdatedTime", value.ToString ()
-        | ExternalIdPrefix externalId -> "externalIdPrefix", externalId
-
     let renderUpdateFields (arg: UpdateParams) =
         match arg with
         | SetName name ->
