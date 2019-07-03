@@ -48,6 +48,7 @@ module Request =
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
     let defaultRequest =
+        let ua = sprintf "Fusion.NET / v%d.%d.%d (Cognite)" version.Major version.Minor version.Build
         {
             HttpClient = null
             Method = RequestMethod.GET
@@ -56,7 +57,8 @@ module Request =
             Query = List.empty
             Headers = [
                 ("Accept", "application/json")
-                ("User-Agent", (sprintf "Fusion.NET / v%d.%d.%d (Dag Brattli)" version.Major version.Minor version.Build))
+                ("User-Agent", ua)
+                ("x-cdp-sdk", ua)
             ]
             Project = String.Empty
             Version = V05

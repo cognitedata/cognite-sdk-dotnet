@@ -1,9 +1,10 @@
 using Xunit;
 
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Cognite.Sdk;
@@ -232,18 +233,18 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assets = new List<AssetCreateDto> {
-                Asset.Create("name1")
-                    .SetDescription("description1"),
-                Asset.Create("name2")
-                    .SetDescription("description2"),
-                Asset.Create("name3")
-                    .SetDescription("description3")
-                    .SetSource("source")
-                    .SetParentId(42L)
-                    .SetParentExternalId("parentExtenralId")
-                    .SetExternalId("uuid")
-                    .SetMetaData(new Dictionary<string, string> {{ "data1", "value" }})
+            var assets = new List<Asset> {
+                new Asset () { Name = "name1", Description = "description1" },
+                new Asset () { Name = "name2", Description = "description2" },
+                new Asset () {
+                    Name = "name3",
+                    Description = "description3",
+                    Source = "source",
+                    ParentId = 42L,
+                    ParentExternalId = "parentExtenralId",
+                    ExternalId = "uuid",
+                    MetaData = new Dictionary<string, string> { {"data1", "value"} }
+                }
             };
 
             // Act
@@ -279,12 +280,15 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assets = new List<AssetUpdate> {
-                new AssetUpdate(42L)
+            var options = new List<UpdateAssets.Option> {
+                UpdateAssets.Option.SetName("test")
+            };
+            var assets = new List<ValueTuple<long, IEnumerable<UpdateAssets.Option>>> {
+                (42L, options)
             };
 
             // Act
-            var result = await client.UpdateAssetsAsync (assets);
+            var result = await client.UpdateAssetsAsync(assets);
 
             // Assert
             Assert.True(result);

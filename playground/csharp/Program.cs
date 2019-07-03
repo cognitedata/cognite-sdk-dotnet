@@ -27,7 +27,7 @@ namespace csharp
             };
             var result = await client.GetAssetsAsync(assetArgs);
 
-            Console.WriteLine("{0}", result.Items.First().Poco().ParentId);
+            Console.WriteLine("{0}", result.Items.First().ParentId);
             Console.WriteLine("{0}", result);
         }
 

@@ -19,7 +19,7 @@ let ``Get asset is Ok``() = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Internal.getAsset 42L fetch Async.single ctx
+    let! response = GetAsset.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -40,7 +40,7 @@ let ``Get invalid asset is Error`` () = async {
 
 
     // Act
-    let! response = Internal.getAsset 42L fetch Async.single ctx
+    let! response = GetAsset.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isError response.Result @>
@@ -57,7 +57,7 @@ let ``Get asset with extra fields is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Internal.getAsset 42L fetch Async.single ctx
+    let! response = GetAsset.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -75,7 +75,7 @@ let ``Get asset with missing optional fields is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Internal.getAsset 42L fetch Async.single ctx
+    let! response = GetAsset.getAsset 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -128,7 +128,7 @@ let ``Create assets empty is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.createAssets [] fetch Async.single ctx
+    let! res = CreateAssets.createAssets [] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -158,7 +158,7 @@ let ``Create single asset is Ok`` () = async {
     }
 
     // Act
-    let! res = Internal.createAssets [ asset ] fetch Async.single ctx
+    let! res = CreateAssets.createAssets [ asset ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -184,7 +184,7 @@ let ``Update single asset with no updates is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.updateAssets [ 42L, [] ] fetch Async.single ctx
+    let! res = UpdateAssets.updateAssets [ 42L, [] ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -204,10 +204,10 @@ let ``Update single asset with is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||> Internal.updateAssets  [ (42L, [
-        SetName "New name"
-        SetDescription (Some "New description")
-        SetSource None
+    let! res = (fetch, Async.single, ctx) |||> UpdateAssets.updateAssets  [ (42L, [
+        UpdateAssets.Option.SetName "New name"
+        UpdateAssets.Option.SetDescription (Some "New description")
+        UpdateAssets.Option.ClearSource
     ])]
 
     // Assert

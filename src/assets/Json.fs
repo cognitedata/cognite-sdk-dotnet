@@ -26,14 +26,6 @@ module AssetsExtensions =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type AssetResponse with
-        static member Decoder : Decoder<AssetResponse> =
-            Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
-                NextCursor = get.Optional.Field "nextCursor" Decode.string
-            })
-
-
     type AssetCreateDto with
         member this.Encoder =
             Encode.object [
@@ -51,75 +43,4 @@ module AssetsExtensions =
                 if this.ParentExternalId.IsSome then
                     yield "parentExternalId", Encode.string this.ParentExternalId.Value
             ]
-    type AssetsCreateRequest with
-         member this.Encoder =
-            Encode.object [
-                yield "items", Seq.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.seq
-            ]
 
-    let renderUpdateFields (arg: UpdateParams) =
-        match arg with
-        | SetName name ->
-            "name", Encode.object [
-                "set", Encode.string name
-            ]
-        | SetDescription optDesc ->
-            "description", Encode.object [
-                match optDesc with
-                | Some desc -> yield "set", Encode.string desc
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | SetMetaData optMeta ->
-            "metadata", Encode.object [
-                match optMeta with
-                | Some meta -> yield "set", Encode.dict (Map.map (fun key value -> Encode.string value) meta)
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | SetSource optSource ->
-            "source", Encode.object [
-                match optSource with
-                | Some source -> yield "set", Encode.string source
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | SetExternalId optExternalId ->
-            "externalId", Encode.object [
-                match optExternalId with
-                | Some externalId -> yield "set", Encode.string externalId
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | SetParentExternalId optParentExternalId ->
-            "externalId", Encode.object [
-                match optParentExternalId with
-                | Some parentExternalId -> yield "set", Encode.string parentExternalId
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | SetParentId optParentId ->
-            "parentId", Encode.object [
-                match optParentId with
-                | Some parentId -> yield "set", Encode.int53 parentId
-                | None -> yield "setNull", Encode.bool true
-            ]
-
-    type AssetUpdateRequest with
-        member this.Encoder =
-            Encode.object [
-                yield ("id", Encode.int53 this.Id)
-                for arg in this.Params do
-                    yield renderUpdateFields arg
-            ]
-
-    type AssetsUpdateRequest with
-        member this.Encoder =
-            Encode.object [
-                "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
-            ]
-
-    type AssetsDeleteRequest with
-        member this.Encoder =
-            Encode.object [
-                "items", Seq.map (fun id ->
-                    match id with
-                    | Id id -> Encode.int53 id
-                    | ExternalId id -> Encode.string id
-                ) this.Items |> Encode.seq
-            ]

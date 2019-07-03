@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -10,74 +11,20 @@ open Thoth.Json.Net
 open Cognite.Sdk
 open Cognite.Sdk.Common
 open Cognite.Sdk.Api
+open Cognite.Sdk.Assets
 
 [<RequireQualifiedAccess>]
 module GetAssets =
     [<Literal>]
     let Url = "/assets"
 
-    /// Asset type for responses.
-    type Asset = {
-        /// External Id provided by client. Should be unique within the project.
-        ExternalId: string option
-        /// The name of the asset.
-        Name: string
-        /// The parent ID of the asset.
-        ParentId: int64 option
-        /// The description of the asset.
-        Description: string option
-        /// Custom, application specific metadata. String key -> String value
-        MetaData: Map<string, string>
-        /// The source of this asset
-        Source: string option
-        /// The Id of the asset.
-        Id: int64
-        ///IDs of assets on the path to the asset.
-        Path: int64 seq
-        /// Asset path depth (number of levels below root node).
-        Depth: int
-        /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
-        CreatedTime: int64
-        /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
-        LastUpdatedTime: int64 } with
-
-        member this.Poco () = {|
-            ExternalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
-            Name = this.Name
-            ParentId = if this.ParentId.IsSome then this.ParentId.Value else Unchecked.defaultof<int64>
-            Description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
-            MetaData = this.MetaData |> Map.toSeq |> dict
-            Source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
-            Id = this.Id
-            Path = this.Path
-            CreatedTime = this.CreatedTime
-            LastUpdatedTime = this.LastUpdatedTime
-        |}
-
-        static member Decoder : Decoder<Asset> =
-            Decode.object (fun get ->
-                let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
-                {
-                    ExternalId = get.Optional.Field "externalId" Decode.string
-                    Id = get.Required.Field "id" Decode.int64
-                    Name = get.Required.Field "name" Decode.string
-                    Description = get.Optional.Field "description" Decode.string
-                    ParentId = get.Optional.Field "parentId" Decode.int64
-                    Path = get.Required.Field "path" (Decode.list Decode.int64)
-                    Source = get.Optional.Field "source" Decode.string
-                    Depth = get.Required.Field "depth" Decode.int
-                    MetaData = if metadata.IsSome then metadata.Value else Map.empty
-                    CreatedTime = get.Required.Field "createdTime" Decode.int64
-                    LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
-                })
-
     type Assets = {
-        Items: Asset seq
+        Items: AssetReadDto seq
         NextCursor : string option } with
 
         static member Decoder : Decoder<Assets> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list Asset.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
@@ -197,7 +144,7 @@ module GetAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let getAssets (options: GetAssets.Option seq) (next: NextHandler<GetAssets.Assets,'a>): HttpContext -> Async<Context<'a>> =
+    let getAssets (options: GetAssets.Option seq) (next: NextHandler<GetAssets.Assets,'a>) : HttpContext -> Async<Context<'a>> =
         GetAssets.getAssets options fetch next
 
     /// **Description**
@@ -232,12 +179,15 @@ type GetAssetsExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets.</returns>
     [<Extension>]
-    static member GetAssetsAsync (this: Client, args: GetAssets.Option seq) : Task<GetAssets.Assets> =
+    static member GetAssetsAsync (this: Client, args: GetAssets.Option seq) =
         task {
             let! ctx = getAssetsAsync args this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets
+                return {|
+                        NextCursor = if assets.NextCursor.IsSome then assets.NextCursor.Value else String.Empty
+                        Items = assets.Items |> Seq.map (fun asset -> asset.Asset ())
+                    |}
             | Error error ->
                 return raise (Error.error2Exception error)
         }

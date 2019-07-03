@@ -25,12 +25,19 @@ let getAssetsExample (ctx : HttpContext) = async {
 
 let updateAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = updateAssets [(84025677715833721L, [ SetName "string3" ] )] Async.single ctx
+    let! rsp = updateAssets [(84025677715833721L, [ UpdateAssets.Option.SetName "string3" ] )] Async.single ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
+let searchAssetsExample (ctx : HttpContext) = async {
+
+    let! rsp = searchAssets 10 [SearchAssets.Option.Name "VAL"] [] Async.single ctx
+    match rsp.Result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
 let createAssetsExample ctx = async {
 
     let assets = [{
@@ -74,17 +81,15 @@ let main argv =
         | Ok config -> config
         | Error error -> failwith "Failed to read config"
 
+    use client = new HttpClient ()
     let ctx =
         defaultContext
-        |> setHttpClient (new HttpClient ())
+        |> setHttpClient client
         |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        do! getAssetsExample ctx
+        do! searchAssetsExample ctx
     } |> Async.RunSynchronously
 
     0 // return an integer exit code
-
-
-
