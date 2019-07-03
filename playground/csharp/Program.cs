@@ -74,13 +74,14 @@ namespace csharp
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
             var project = Environment.GetEnvironmentVariable("PROJECT");
 
-            var httpClient = new HttpClient ();
-            var client =
-                Client.Create(httpClient)
-                .AddHeader("api-key", apiKey)
-                .SetProject(project);
+            using (var httpClient = new HttpClient ()) {
+                var client =
+                    Client.Create(httpClient)
+                    .AddHeader("api-key", apiKey)
+                    .SetProject(project);
 
-            await GetAssetsExample(client);
+                await GetAssetsExample(client);
+            }
         }
     }
 }
