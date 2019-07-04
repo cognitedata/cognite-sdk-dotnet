@@ -13,7 +13,6 @@ type Asset () =
     member val MetaData = dict [] with get, set
     member val Source = String.Empty with get, set
     member val Id = 0L with get, set
-    member val Path = Seq.empty with get, set
     member val CreatedTime = 0L with get, set
     member val LastUpdatedTime = 0L with get, set
     member val ParentExternalId = String.Empty with get, set
@@ -34,11 +33,7 @@ type AssetReadDto = {
     Source: string option
     /// The Id of the asset.
     Id: int64
-    ///IDs of assets on the path to the asset.
-    Path: int64 seq
     /// Asset path depth (number of levels below root node).
-    Depth: int
-    /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
@@ -58,7 +53,6 @@ type AssetReadDto = {
             MetaData = metaData,
             Source = source,
             Id = this.Id,
-            Path = this.Path,
             CreatedTime = this.CreatedTime,
             LastUpdatedTime = this.LastUpdatedTime
         )
