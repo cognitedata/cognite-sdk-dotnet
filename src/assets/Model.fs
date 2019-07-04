@@ -33,7 +33,7 @@ type AssetReadDto = {
     Source: string option
     /// The Id of the asset.
     Id: int64
-    /// Asset path depth (number of levels below root node).
+    /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
     CreatedTime: int64
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
