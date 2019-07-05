@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.4.1</Version>
-    <PackageVersion>0.4.1</PackageVersion>
+    <Version>0.5.0</Version>
+    <PackageVersion>0.5.0</PackageVersion>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>
@@ -13,14 +13,13 @@
     <Compile Include="Error.fs" />
     <Compile Include="Context.fs" />
     <Compile Include="Handler.fs" />
+    <Compile Include="Encode.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Builder.fs" />
-    <Compile Include="timeseries/Model.fs" />
-    <Compile Include="timeseries/Json.fs" />
-    <Compile Include="timeseries/Methods.fs" />
+    <Compile Include="Client.fs" />
+
     <Compile Include="assets/Model.fs" />
     <Compile Include="assets/Json.fs" />
-    <Compile Include="api/Client.fs" />
     <Compile Include="assets/GetAsset.fs" />
     <Compile Include="assets/GetAssets.fs" />
     <Compile Include="assets/SearchAssets.fs" />
@@ -28,8 +27,18 @@
     <Compile Include="assets/CreateAssets.fs" />
     <Compile Include="assets/DeleteAssets.fs" />
     <Compile Include="assets/GetAssetsByIds.fs" />
-    <Compile Include="api/timeseries/Model.fs" />
-    <Compile Include="api/timeseries/Extensions.fs" />
+
+    <Compile Include="timeseries/Model.fs" />
+    <Compile Include="timeseries/Json.fs" />
+    <Compile Include="timeseries/GetTimeseries.fs" />
+    <Compile Include="timeseries/CreateTimeseries.fs" />
+    <Compile Include="timeseries/GetTimeseriesByIds.fs" />
+    <Compile Include="timeseries/InsertData.fs" />
+    <Compile Include="timeseries/GetLatestData.fs" />
+    <Compile Include="timeseries/GetData.fs" />
+    <Compile Include="timeseries/GetAggregatedData.fs" />
+    <Compile Include="timeseries/DeleteTimeseries.fs" />
   </ItemGroup>
+
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

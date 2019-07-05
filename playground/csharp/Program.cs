@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
-
-using Microsoft.Extensions.DependencyInjection;
 
 using Cognite.Sdk;
 using Cognite.Sdk.Api;
 using Cognite.Sdk.Timeseries;
-using System.Net.Http;
 using Cognite.Sdk.Assets;
 
 namespace csharp
@@ -27,40 +25,42 @@ namespace csharp
             };
             var result = await client.GetAssetsAsync(assetArgs);
 
-            Console.WriteLine("{0}", result.Items.First().ParentId);
+            var asset = result.Items.First();
+            Console.WriteLine("{0}", asset.ParentId);
             Console.WriteLine("{0}", result);
         }
 
         static async Task QueryTimeseriesDataExample(Client client)
         {
-            var defaultQuery =
-                QueryData.Create()
-                .Aggregates(new List<Aggregate> { Aggregate.Average });
+            var aggregates = new List<GetAggregatedData.Aggregate> { GetAggregatedData.Aggregate.Average };
+            var defaultOptions = new List<GetAggregatedData.Option> {
+                GetAggregatedData.Option.Aggregates(aggregates)
+            };
+            var options = new List<(long, IEnumerable<GetAggregatedData.Option>)> ();
 
-            var query = new List<Tuple<long, QueryData>> ();
-
-            var result = await client.GetTimeseriesDataAsync(defaultQuery, query);
-
-            Console.WriteLine("{0}", result.First().DataPoints.First().TryGetValue(out long value));
-            Console.WriteLine("{0}", value);
+            var result = await client.GetAggregatedDataAsync(defaultOptions, options);
+            Console.WriteLine("{0}", result.First().DataPoints.First().Average);
             Console.WriteLine("{0}", result);
         }
 
         static async Task CreateTimeseriesDataExample(Client client)
         {
-            var timeseries =
-                Timeseries.Create()
-                    .SetName("Testing");
+            var timeseries = new TimeseriesWritePoco {
+                    Name = "Testing"
+            };
 
-            var result = await client.CreateTimeseriesAsync(new List<TimeseriesCreateDto> { timeseries });
+            var result = await client.CreateTimeseriesAsync(new List<TimeseriesWritePoco> { timeseries });
 
             Console.WriteLine("{0}", result);
 
-            var points = new List<DataPoints> {
-                new DataPoints {
+            var points = new List<DataPointsWritePoco> {
+                new DataPointsWritePoco {
                     Identity = Identity.ExternalId("test"),
-                    DataPoints = new List<DataPoint> {
-                        DataPoint.Float(0L, 1.0)
+                    DataPoints = new List<DataPointPoco> {
+                        new DataPointPoco {
+                            TimeStamp = 0L,
+                            Value = Numeric.Float(1.0)
+                        }
                     }
                 }
             };

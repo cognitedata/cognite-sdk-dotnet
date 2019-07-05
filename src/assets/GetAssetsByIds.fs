@@ -25,8 +25,8 @@ module GetAssetsByIds =
                     for id in this.Items do
                         yield Encode.object [
                             match id with
-                            | Id id -> yield "id", Encode.int53 id
-                            | ExternalId id -> yield "externalId", Encode.string id
+                            | CaseId id -> yield "id", Encode.int53 id
+                            | CaseExternalId id -> yield "externalId", Encode.string id
                         ]
                 ]
             ]
@@ -89,13 +89,13 @@ type GetAssetsByIdsExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAssetsByIdsAsync (this: Client, assetExternalIds: seq<string>) : Task<Asset seq> =
+    static member GetAssetsByIdsAsync (this: Client, assetExternalIds: seq<string>) : Task<_ seq> =
         task {
             let ids = Seq.map Identity.ExternalId assetExternalIds
             let! ctx = getAssetsByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.Asset ())
+                return assets |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
                 return raise (Error.error2Exception error)
         }

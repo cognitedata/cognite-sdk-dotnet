@@ -22,7 +22,7 @@ let ``Create timeseries is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.createTimeseries [] fetch Async.single ctx
+    let! res = CreateTimeseries.createTimeseries [] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -42,7 +42,7 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.getTimeseriesByIds [ 0L ] fetch Async.single ctx
+    let! res = GetTimeseriesByIds.getTimeseriesByIds [ Identity.Id 0L ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -62,11 +62,11 @@ let ``Delete timeseries is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Internal.deleteTimeseries "erase" fetch Async.single ctx
+    let! res = DeleteTimeseries.deleteTimeseries [ Identity.Id 42L] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.DELETE @>
-    test <@ res.Request.Resource = "/timeseries/erase" @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/timeseries/delete" @>
     test <@ res.Request.Query.IsEmpty @>
 }

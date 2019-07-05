@@ -138,12 +138,12 @@ type SearchAssetsExtensions =
     ///
     /// <returns>Assets.</returns>
     [<Extension>]
-    static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: SearchAssets.Filter seq) : Task<Asset seq> =
+    static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: SearchAssets.Filter seq) : Task<_ seq> =
         task {
             let! ctx = searchAssetsAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.Asset ())
+                return assets |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
                 return raise (Error.error2Exception error)
         }

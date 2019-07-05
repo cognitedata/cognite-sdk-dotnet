@@ -25,8 +25,8 @@ module DeleteAssets =
             Encode.object [
                 "items", Seq.map (fun id ->
                     match id with
-                    | Id id -> Encode.int53 id
-                    | ExternalId id -> Encode.string id
+                    | CaseId id -> Encode.int53 id
+                    | CaseExternalId id -> Encode.string id
                 ) this.Items |> Encode.seq
             ]
 

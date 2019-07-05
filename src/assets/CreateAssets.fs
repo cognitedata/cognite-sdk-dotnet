@@ -20,11 +20,11 @@ module CreateAssets =
     let Url = "/assets"
 
     type AssetsCreateRequest = {
-        Items: AssetCreateDto seq
+        Items: AssetWriteDto seq
     } with
          member this.Encoder =
             Encode.object [
-                yield "items", Seq.map (fun (it: AssetCreateDto) -> it.Encoder) this.Items |> Encode.seq
+                yield "items", Seq.map (fun (it: AssetWriteDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
     type AssetResponse = {
@@ -37,7 +37,7 @@ module CreateAssets =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    let createAssets (assets: AssetCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,string,'a>)  =
+    let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,string,'a>)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
@@ -62,10 +62,10 @@ module CreateAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<Response,exn>>`
     ///
-    let createAssets (assets: AssetCreateDto seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let createAssets (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         CreateAssets.createAssets assets fetch next
 
-    let createAssetsAsync (assets: AssetCreateDto seq) : HttpContext -> Async<Context<AssetReadDto seq>> =
+    let createAssetsAsync (assets: AssetWriteDto seq) : HttpContext -> Async<Context<AssetReadDto seq>> =
         CreateAssets.createAssets assets fetch Async.single
 
 [<Extension>]
@@ -76,13 +76,13 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssetsAsync (this: Client, assets: Asset seq) : Task<AssetReadDto seq> =
+    static member CreateAssetsAsync (this: Client, assets: AssetWritePoco seq) : Task<AssetReadPoco seq> =
         task {
-            let assets' = assets |> Seq.map AssetCreateDto.Create
+            let assets' = assets |> Seq.map AssetWriteDto.FromPoco
             let! ctx = createAssetsAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response
+                return response |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
                return raise (Error.error2Exception error)
         }

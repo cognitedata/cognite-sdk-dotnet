@@ -186,7 +186,7 @@ type GetAssetsExtensions =
             | Ok assets ->
                 return {|
                         NextCursor = if assets.NextCursor.IsSome then assets.NextCursor.Value else String.Empty
-                        Items = assets.Items |> Seq.map (fun asset -> asset.Asset ())
+                        Items = assets.Items |> Seq.map (fun asset -> asset.ToPoco ())
                     |}
             | Error error ->
                 return raise (Error.error2Exception error)

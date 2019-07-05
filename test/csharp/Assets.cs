@@ -233,10 +233,10 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assets = new List<Asset> {
-                new Asset () { Name = "name1", Description = "description1" },
-                new Asset () { Name = "name2", Description = "description2" },
-                new Asset () {
+            var assets = new List<AssetWritePoco> {
+                new AssetWritePoco () { Name = "name1", Description = "description1" },
+                new AssetWritePoco () { Name = "name2", Description = "description2" },
+                new AssetWritePoco () {
                     Name = "name3",
                     Description = "description3",
                     Source = "source",

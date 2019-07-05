@@ -147,7 +147,7 @@ let ``Create single asset is Ok`` () = async {
         defaultContext
         |> addHeader ("api-key", "test-key")
 
-    let asset: AssetCreateDto = {
+    let asset: AssetWriteDto = {
         Name = "myAsset"
         Description = Some "Description"
         MetaData = Map.empty

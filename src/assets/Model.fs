@@ -1,21 +1,20 @@
 namespace Cognite.Sdk.Assets
 
 open System
-open System.Text
-open Cognite.Sdk.Common
+open System.Collections.Generic
 
-/// C# compatible Asset POCO
-type Asset () =
-    member val ExternalId = String.Empty with get, set
-    member val Name = String.Empty with get, set
-    member val ParentId = 0L with get, set
-    member val Description = String.Empty with get, set
-    member val MetaData = dict [] with get, set
-    member val Source = String.Empty with get, set
-    member val Id = 0L with get, set
-    member val CreatedTime = 0L with get, set
-    member val LastUpdatedTime = 0L with get, set
-    member val ParentExternalId = String.Empty with get, set
+[<CLIMutable>]
+type AssetReadPoco = {
+    ExternalId : string
+    Name : string
+    ParentId : int64
+    Description : string
+    MetaData : IDictionary<string, string>
+    Source : string
+    Id : int64
+    CreatedTime : int64
+    LastUpdatedTime : int64
+}
 
 /// Asset type for responses.
 type AssetReadDto = {
@@ -38,28 +37,40 @@ type AssetReadDto = {
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 } with
-    member this.Asset () =
+    /// Translates the domain type to a plain old crl object
+    member this.ToPoco () : AssetReadPoco =
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
-        let parentId = if this.ParentId.IsSome then this.ParentId.Value else Unchecked.defaultof<int64>
+        let parentId = if this.ParentId.IsSome then this.ParentId.Value else 0L
 
-        Asset (
-            ExternalId = externalId,
-            Name = this.Name,
-            ParentId = parentId,
-            Description = description,
-            MetaData = metaData,
-            Source = source,
-            Id = this.Id,
-            CreatedTime = this.CreatedTime,
+        {
+            ExternalId = externalId
+            Name = this.Name
+            ParentId = parentId
+            Description = description
+            MetaData = metaData
+            Source = source
+            Id = this.Id
+            CreatedTime = this.CreatedTime
             LastUpdatedTime = this.LastUpdatedTime
-        )
+        }
 
+/// C# compatible Asset POCO
+[<CLIMutable>]
+type AssetWritePoco = {
+    ExternalId : string
+    Name : string
+    ParentId : int64
+    Description : string
+    MetaData : IDictionary<string, string>
+    Source : string
+    ParentExternalId : string
+}
 
 /// Asset type for create requests.
-type AssetCreateDto = {
+type AssetWriteDto = {
     /// External Id provided by client. Should be unique within the project.
     ExternalId: string option
     /// Name of asset. Often referred to as tag.
@@ -75,13 +86,18 @@ type AssetCreateDto = {
     /// External Id provided by client. Should be unique within the project.
     ParentExternalId: string option
 } with
-    static member Create (asset: Asset) : AssetCreateDto =
+    static member FromPoco (asset: AssetWritePoco) : AssetWriteDto =
+        let metaData =
+            if not (isNull asset.MetaData) then
+                asset.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
+            else
+                Map.empty
         {
             ExternalId = if asset.ExternalId = null then None else Some asset.ExternalId
             Name = asset.Name
             ParentId = if asset.ParentId = 0L then None else Some asset.ParentId
             Description = if asset.Description = null then None else Some asset.Description
-            MetaData = asset.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
+            MetaData = metaData
             Source = if asset.Source = null then None else Some asset.Source
             ParentExternalId = if asset.ParentExternalId = null then None else Some asset.ParentExternalId
         }

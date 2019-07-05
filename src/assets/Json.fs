@@ -24,7 +24,7 @@ module AssetsExtensions =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type AssetCreateDto with
+    type AssetWriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
