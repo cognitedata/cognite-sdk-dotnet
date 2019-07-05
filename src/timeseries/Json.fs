@@ -53,6 +53,8 @@ module TimeseriesExtensions =
                     yield "externalId", Encode.string this.ExternalId.Value
                 if this.Name.IsSome then
                     yield "name", Encode.string this.Name.Value
+                if this.LegacyName.IsSome then
+                    yield "legacyName", Encode.string this.LegacyName.Value
                 if this.Description.IsSome then
                     yield "description", Encode.string this.Description.Value
                 if this.IsString then
