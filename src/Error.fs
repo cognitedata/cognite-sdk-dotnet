@@ -34,8 +34,8 @@ type ResponseException (message : string) =
     inherit Exception(message)
 
     member val Code = 400 with get, set
-    member val Missing : IDictionary<string, ErrorValue> = dict [] with get, set
-    member val Duplicated : IDictionary<string, ErrorValue> = dict [] with get, set
+    member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
 
     with
         static member Decoder () : Decoder<ResponseException> =
@@ -46,16 +46,16 @@ type ResponseException (message : string) =
                 error.Code <- get.Required.Field "code" Decode.int
 
 
-                let missing = get.Optional.Field "missing" (Decode.dict ErrorValue.Decoder)
+                let missing = get.Optional.Field "missing" (Decode.array (Decode.dict ErrorValue.Decoder))
                 match missing with
                 | Some missing ->
-                    error.Missing <- missing |> Map.toSeq |> dict
+                    error.Missing <- missing |> Seq.map (Map.toSeq >> dict)
                 | None -> ()
 
-                let duplicated = get.Optional.Field "duplicated" (Decode.dict ErrorValue.Decoder)
+                let duplicated = get.Optional.Field "duplicated" (Decode.array (Decode.dict ErrorValue.Decoder))
                 match duplicated with
                 | Some duplicated ->
-                    error.Duplicated <- duplicated |> Map.toSeq |> dict
+                    error.Duplicated <- duplicated |> Seq.map (Map.toSeq >> dict)
                 | None -> ()
 
                 error
