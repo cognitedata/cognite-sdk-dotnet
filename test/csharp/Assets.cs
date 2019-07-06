@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Cognite.Sdk;
 using Cognite.Sdk.Assets;
 using Cognite.Sdk.Api;
+using System.Linq;
 
 namespace Tests
 {
@@ -292,6 +293,51 @@ namespace Tests
 
             // Assert
             Assert.True(result);
+        }
+
+        [Fact]
+        public async Task TestGetByIdsMissingAssets()
+        {
+            // Arrange
+            HttpRequestMessage request = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var json = File.ReadAllText("MissingAsset.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+
+            var assets = new List<Identity> {
+                Identity.Id(42L)
+            };
+
+            // Act
+            try {
+                var result = await client.GetAssetsByIdsAsync(assets);
+            } catch (ResponseException ex) {
+                Assert.True(ex.Code == 400);
+
+                var error = ex.Missing.First()["id"];
+
+                Assert.True(error is IntegerValue);
+                var value = error as IntegerValue;
+
+                Assert.True(value.Integer == 4234);
+            }
         }
     }
 }

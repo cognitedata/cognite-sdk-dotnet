@@ -147,13 +147,13 @@ module Handler =
         | Ok _ -> return ctx'
         | Error err ->
             match err with
-            | ErrorResponse httpResponse ->
+            | HttpResponse (httpResponse, _) ->
                 if shouldRetry (int httpResponse.StatusCode) && maxRetries > 0 then
                     do! int initialDelay |> Async.Sleep
                     return! retry nextDelay (maxRetries - 1) handler next ctx
                 else
                     return ctx'
-            | RequestException error ->
+            | Exception error ->
                 match error with
                 | :? System.Net.WebException as ex ->
                     if maxRetries > 0 then
@@ -278,14 +278,14 @@ module Handler =
                             return! client.DeleteAsync(url)
                     }
 
+                    let! content = response.Content.ReadAsStringAsync ()
                     if response.IsSuccessStatusCode then
-                        let! content = response.Content.ReadAsStringAsync ()
                         return Ok content
                     else
-                        return response |> ErrorResponse |> Error
+                        return (response, content) |> HttpResponse |> Error
                 with
                 | ex ->
-                    return RequestException ex |> Error
+                    return ResponseError.Exception ex |> Error
             }
 
             let! result = resultTask |> Async.AwaitTask
