@@ -89,9 +89,8 @@ type GetAssetsByIdsExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAssetsByIdsAsync (this: Client, assetExternalIds: seq<string>) : Task<_ seq> =
+    static member GetAssetsByIdsAsync (this: Client, ids: seq<Identity>) : Task<_ seq> =
         task {
-            let ids = Seq.map Identity.ExternalId assetExternalIds
             let! ctx = getAssetsByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->

@@ -21,14 +21,21 @@ and IntegerValue (value: int) =
     inherit ErrorValue ()
     member val Integer = value with get, set
 
+    override this.ToString () =
+        sprintf "%d" this.Integer
+
 and FloatValue (value) =
     inherit ErrorValue ()
 
     member val Float = value with get, set
+    override this.ToString () =
+        sprintf "%f" this.Float
 
 and StringValue (value) =
     inherit ErrorValue ()
     member val String = value with get, set
+    override this.ToString () =
+        sprintf "%s" this.String
 
 type ResponseException (message : string) =
     inherit Exception(message)
@@ -38,7 +45,7 @@ type ResponseException (message : string) =
     member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
 
     with
-        static member Decoder () : Decoder<ResponseException> =
+        static member Decoder : Decoder<ResponseException> =
             Decode.object (fun get ->
                 let message = get.Required.Field "message" Decode.string
 
@@ -69,7 +76,15 @@ type ResponseError =
     /// Error response from server.
     | HttpResponse of HttpResponseMessage*string
 
-
+type ErrorResponse = {
+    Error : ResponseException
+} with
+    static member Decoder =
+        Decode.object (fun get ->
+            {
+                Error = get.Required.Field "error" ResponseException.Decoder
+            }
+        )
 module Error =
     /// **Description**
     ///
@@ -85,12 +100,13 @@ module Error =
         match error with
         | Exception ex -> ex
         | DecodeError err ->
+            //printf "%A" err
             DecodeException err
         | HttpResponse (response, content) ->
-            let result = Decode.fromString (ResponseException.Decoder ()) content
+            let result = Decode.fromString ErrorResponse.Decoder content
             let error =
                 match result with
-                | Ok error -> error
+                | Ok error -> error.Error
                 | Error message ->
                     let error = ResponseException message
                     error.Code <-  int response.StatusCode
