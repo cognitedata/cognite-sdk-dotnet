@@ -1,0 +1,11 @@
+{
+    "error": {
+        "missing": [
+            {
+                "id": 4234
+            }
+        ],
+        "code": 400,
+        "message": "Asset id not found"
+    }
+}
