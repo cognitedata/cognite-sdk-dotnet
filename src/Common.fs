@@ -19,8 +19,8 @@ type Identity =
     member this.Encoder =
         Encode.object [
             match this with
-            | Identity.CaseId id -> yield "id", Encode.int53 id
-            | Identity.CaseExternalId id -> yield "externalId", Encode.string id
+            | CaseId id -> yield "id", Encode.int53 id
+            | CaseExternalId id -> yield "externalId", Encode.string id
         ]
 
 type Numeric =
@@ -38,6 +38,14 @@ type Numeric =
     static member Float value =
         CaseFloat value
 
+[<AutoOpen>]
+module Patterns =
+    /// Active pattern to permit pattern matching over numeric values.
+    let (|Integer|Float|String|) (value : Numeric) : Choice<int64, float, string>  =
+        match value with
+        | CaseInteger value -> Integer value
+        | CaseFloat value -> Float value
+        | CaseString value -> String value
 
 module Common =
     [<Literal>]
