@@ -1,7 +1,6 @@
 namespace Cognite.Sdk
 
 open System
-open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks

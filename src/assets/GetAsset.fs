@@ -4,7 +4,7 @@ open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 
-open FSharp.Control.Tasks.V2
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Cognite.Sdk
 open Cognite.Sdk.Common

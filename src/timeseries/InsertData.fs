@@ -40,12 +40,11 @@ module InsertData =
     let insertData (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
-        let url = Url
 
         POST
         >=> setVersion V10
         >=> setBody body
-        >=> setResource url
+        >=> setResource Url
         >=> fetch
 
 [<AutoOpen>]

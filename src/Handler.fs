@@ -7,7 +7,7 @@ open System.Web
 
 open Microsoft.FSharp.Data.UnitSystems.SI
 
-open FSharp.Control.Tasks.V2
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Measure>] type ms
 

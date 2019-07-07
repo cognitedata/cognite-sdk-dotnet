@@ -57,12 +57,11 @@ module GetTimeseries =
 
     let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
-        let url = Url
         let query = query |> Seq.map renderOption |> List.ofSeq
 
         GET
         >=> setVersion V10
-        >=> setResource url
+        >=> setResource Url
         >=> addQuery query
         >=> fetch
         >=> decoder

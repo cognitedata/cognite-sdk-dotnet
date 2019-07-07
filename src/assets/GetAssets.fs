@@ -5,7 +5,7 @@ open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 
-open FSharp.Control.Tasks.V2
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Thoth.Json.Net
 
 open Cognite.Sdk

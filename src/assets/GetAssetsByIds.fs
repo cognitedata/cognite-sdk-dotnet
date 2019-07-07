@@ -15,7 +15,7 @@ open Cognite.Sdk.Assets
 [<RequireQualifiedAccess>]
 module GetAssetsByIds =
     [<Literal>]
-    let Url = "/assets"
+    let Url = "/assets/byids"
     type AssetRequest = {
         Items: Identity seq
     } with
@@ -44,7 +44,6 @@ module GetAssetsByIds =
         let decoder = decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
         let body = Encode.stringify request.Encoder
-        let url = Url + "byids"
 
         POST
         >=> setVersion V10

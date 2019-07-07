@@ -128,12 +128,11 @@ module UpdateAssets =
         }
 
         let body = Encode.stringify request.Encoder
-        let url = Url
 
         POST
         >=> setVersion V10
         >=> setBody body
-        >=> setResource url
+        >=> setResource Url
         >=> fetch
 
 

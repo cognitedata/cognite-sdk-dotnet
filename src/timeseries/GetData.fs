@@ -97,14 +97,13 @@ module GetData =
         ]
 
     let getTimeseriesData (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
-        let url = Url + "/data/list"
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultOptions options
         let body = Encode.stringify request
 
         POST
         >=> setVersion V10
-        >=> setResource url
+        >=> setResource Url
         >=> setBody body
         >=> fetch
         >=> decoder

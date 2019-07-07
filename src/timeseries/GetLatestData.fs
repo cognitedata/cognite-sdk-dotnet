@@ -91,14 +91,13 @@ module GetLatestData =
 
 
     let getTimeseriesLatestData (options: LatestDataRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
-        let url = Url + "/data/latest"
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesLatestRequest = { Items = options }
         let body = request.Encoder |> Encode.stringify
 
         POST
         >=> setVersion V10
-        >=> setResource url
+        >=> setResource Url
         >=> setBody body
         >=> fetch
         >=> decoder
