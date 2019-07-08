@@ -1,4 +1,4 @@
-namespace Cognite.Sdk.Timeseries
+﻿namespace Cognite.Sdk.Timeseries
 
 open System
 open Thoth.Json.Net

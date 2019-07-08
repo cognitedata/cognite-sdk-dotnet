@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+﻿namespace Cognite.Sdk
 
 open System
 open System.Net.Http
@@ -16,7 +16,7 @@ open Cognite.Sdk.Timeseries
 [<RequireQualifiedAccess>]
 module GetLatestData =
     [<Literal>]
-    let Url = "/timeseries/latest"
+    let Url = "/timeseries/data/latest"
 
     type LatestDataRequest = {
         Before: string option
@@ -49,7 +49,7 @@ module GetLatestData =
             Decode.object (fun get ->
                 {
                     Id = get.Required.Field "id" Decode.int64
-                    ExternalId = get.Optional.Field "exteralId" Decode.string
+                    ExternalId = get.Optional.Field "externalId" Decode.string
                     IsString = get.Required.Field "isString" Decode.bool
                     DataPoints = get.Required.Field "datapoints" (Decode.list DataPointDto.Decoder)
                 })

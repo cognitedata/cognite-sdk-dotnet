@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+﻿namespace Cognite.Sdk
 
 open System
 open System.Net.Http
@@ -23,13 +23,15 @@ module DeleteAssets =
     } with
         member this.Encoder =
             Encode.object [
-                "items", Seq.map (fun id ->
-                    match id with
-                    | CaseId id -> Encode.int53 id
-                    | CaseExternalId id -> Encode.string id
-                ) this.Items |> Encode.seq
-            ]
-
+                yield "items", Encode.list [
+                    for id in this.Items do
+                        yield Encode.object [
+                            match id with
+                            | CaseId id -> yield "id", Encode.int53 id
+                            | CaseExternalId id -> yield "externalId", Encode.string id
+                        ]
+                    ]
+                ]
 
     let deleteAssets (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let request : AssetsDeleteRequest = { Items = assets }
