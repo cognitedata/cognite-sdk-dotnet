@@ -1,4 +1,4 @@
-namespace Cognite.Sdk.Timeseries
+﻿namespace Cognite.Sdk.Timeseries
 
 open System
 open Cognite.Sdk
@@ -129,16 +129,16 @@ type TimeseriesWriteDto = {
             else
                 Map.empty
         {
-            ExternalId = if ts.ExternalId = null then None else Some ts.ExternalId
-            Name = if ts.Name = null then None else Some ts.Name
-            LegacyName = if ts.LegacyName = null then None else Some ts.LegacyName
-            Description = if ts.Description = null then None else Some ts.Description
+            ExternalId = if isNull(ts.ExternalId) then None else Some ts.ExternalId
+            Name = if isNull(ts.Name) then None else Some ts.Name
+            LegacyName = if isNull(ts.LegacyName) then None else Some ts.LegacyName
+            Description = if isNull(ts.Description) then None else Some ts.Description
             IsString = ts.IsString
             MetaData = metaData
-            Unit = if ts.Unit = null then None else Some ts.Unit
+            Unit = if isNull(ts.Unit) then None else Some ts.Unit
             AssetId = if ts.AssetId = 0L then None else Some ts.AssetId
             IsStep = ts.IsStep
-            SecurityCategories = ts.SecurityCategories
+            SecurityCategories = if isNull(ts.SecurityCategories) then Seq.empty else ts.SecurityCategories
         }
 
 [<CLIMutable>]

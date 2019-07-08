@@ -68,7 +68,7 @@ module TimeseriesExtensions =
                     yield "isStep", Encode.bool this.IsStep
                 if this.AssetId.IsSome then
                     yield "assetId", Encode.int53 this.AssetId.Value
-                if not (Object.ReferenceEquals(this.SecurityCategories, null)) && not (Seq.isEmpty this.SecurityCategories) then
+                if not (Seq.isEmpty this.SecurityCategories) then
                     yield "securityCategories", Encode.seq (Seq.map Encode.int53 this.SecurityCategories)
             ]
 
