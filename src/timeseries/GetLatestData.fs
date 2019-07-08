@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+﻿namespace Cognite.Sdk
 
 open System
 open System.Net.Http
@@ -16,7 +16,7 @@ open Cognite.Sdk.Timeseries
 [<RequireQualifiedAccess>]
 module GetLatestData =
     [<Literal>]
-    let Url = "/timeseries/latest"
+    let Url = "/timeseries/data/latest"
 
     type LatestDataRequest = {
         Before: string option
