@@ -49,7 +49,7 @@ module GetLatestData =
             Decode.object (fun get ->
                 {
                     Id = get.Required.Field "id" Decode.int64
-                    ExternalId = get.Optional.Field "exteralId" Decode.string
+                    ExternalId = get.Optional.Field "externalId" Decode.string
                     IsString = get.Required.Field "isString" Decode.bool
                     DataPoints = get.Required.Field "datapoints" (Decode.list DataPointDto.Decoder)
                 })
