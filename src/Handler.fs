@@ -155,6 +155,7 @@ module Handler =
                     return ctx'
             | Exception error ->
                 match error with
+                | :? Net.Http.HttpRequestException
                 | :? System.Net.WebException as ex ->
                     if maxRetries > 0 then
                         do! int initialDelay |> Async.Sleep
