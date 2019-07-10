@@ -1,6 +1,5 @@
 namespace Cognite.Sdk
 
-open System
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -12,6 +11,7 @@ open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
+open System
 
 [<RequireQualifiedAccess>]
 module GetData =
@@ -55,7 +55,6 @@ module GetData =
                 {
                     Items = get.Required.Field "items" (Decode.list DataPoints.Decoder)
                 })
-
 
     /// Query parameters
     type Option =
@@ -140,9 +139,12 @@ type GetDataExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetDataAsync (this: Client) (defaultOptions: GetData.Option seq) (options: Tuple<int64, GetData.Option seq> seq) : Task<seq<GetData.DataPointsPoco>> =
+    static member GetDataAsync (this: Client) (defaultOptions: GetData.Option seq) (options: ValueTuple<int64, GetData.Option seq> seq) : Task<seq<GetData.DataPointsPoco>> =
+
+        let options' = options |> Seq.map (fun struct (key, value) -> key, value)
+
         task {
-            let! ctx = getTimeseriesDataAsync defaultOptions options this.Ctx
+            let! ctx = getTimeseriesDataAsync defaultOptions options' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
