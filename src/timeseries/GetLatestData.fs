@@ -136,7 +136,7 @@ type GetLatestDataExtensions =
         task {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
-                  Before = if before = null then None else Some before
+                  Before = if (isNull before) then None else Some before
                   } : GetLatestData.LatestDataRequest)
             let! ctx = getTimeseriesLatestDataAsync query this.Ctx
             match ctx.Result with

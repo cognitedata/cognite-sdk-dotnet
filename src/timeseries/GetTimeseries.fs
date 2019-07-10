@@ -54,7 +54,6 @@ module GetTimeseries =
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "assetIds", sprintf "[%s]" (String.Join (",", list))
 
-
     let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
@@ -83,7 +82,6 @@ module GetTimeseriesApi =
     ///
     let getTimeseries (options: GetTimeseries.Option seq) (next: NextHandler<GetTimeseries.TimeseriesResponse,'a>) : HttpContext -> Async<Context<'a>> =
         GetTimeseries.getTimeseries options fetch next
-
 
     let getTimeseriesAsync (options: GetTimeseries.Option seq) =
         GetTimeseries.getTimeseries options fetch Async.single

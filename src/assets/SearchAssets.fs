@@ -9,8 +9,8 @@ open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Cognite.Sdk
-open Cognite.Sdk.Api
 open Cognite.Sdk.Assets
+open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 
 [<RequireQualifiedAccess>]

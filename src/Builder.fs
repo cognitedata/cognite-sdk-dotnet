@@ -5,15 +5,14 @@ open System.Net
 open System.Net.Http
 
 type RequestBuilder () =
-    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next Request.defaultContext
-    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = Request.defaultRequest; Result = Ok res }
+    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next defaultContext
+    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = defaultRequest; Result = Ok res }
 
-    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = Request.defaultResult }
+    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = defaultResult }
 
     member this.Delay (fn) = fn ()
 
     member this.Bind(source: HttpHandler<'a, 'b, 'd>, fn: 'b -> HttpHandler<'a, 'c, 'd>) :  HttpHandler<'a, 'c, 'd> =
-
         fun (next : NextHandler<'c, 'd>) (ctx : Context<'a>) ->
             let next' (cb : Context<'b>)  = async {
                 match cb.Result with

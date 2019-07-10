@@ -129,16 +129,16 @@ type TimeseriesWriteDto = {
             else
                 Map.empty
         {
-            ExternalId = if isNull(ts.ExternalId) then None else Some ts.ExternalId
-            Name = if isNull(ts.Name) then None else Some ts.Name
-            LegacyName = if isNull(ts.LegacyName) then None else Some ts.LegacyName
-            Description = if isNull(ts.Description) then None else Some ts.Description
+            ExternalId = if isNull ts.ExternalId then None else Some ts.ExternalId
+            Name = if isNull ts.Name  then None else Some ts.Name
+            LegacyName = if isNull ts.LegacyName then None else Some ts.LegacyName
+            Description = if isNull ts.Description then None else Some ts.Description
             IsString = ts.IsString
             MetaData = metaData
-            Unit = if isNull(ts.Unit) then None else Some ts.Unit
+            Unit = if isNull ts.Unit  then None else Some ts.Unit
             AssetId = if ts.AssetId = 0L then None else Some ts.AssetId
             IsStep = ts.IsStep
-            SecurityCategories = if isNull(ts.SecurityCategories) then Seq.empty else ts.SecurityCategories
+            SecurityCategories = if isNull ts.SecurityCategories then Seq.empty else ts.SecurityCategories
         }
 
 [<CLIMutable>]

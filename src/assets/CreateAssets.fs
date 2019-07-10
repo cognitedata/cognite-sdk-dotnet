@@ -1,6 +1,5 @@
 namespace Cognite.Sdk
 
-open System
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -12,6 +11,7 @@ open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 open Cognite.Sdk.Assets
+
 
 [<RequireQualifiedAccess>]
 module CreateAssets =

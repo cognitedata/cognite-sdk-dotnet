@@ -8,9 +8,8 @@ open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Cognite.Sdk
-open Cognite.Sdk.Common
 open Cognite.Sdk.Api
-open Cognite.Sdk.Timeseries
+
 
 [<RequireQualifiedAccess>]
 module DeleteTimeseries =
@@ -37,7 +36,6 @@ module DeleteTimeseries =
         >=> setResource Url
         >=> fetch
 
-
 [<AutoOpen>]
 module DeleteTimeseriesApi =
      /// **Description**
@@ -56,7 +54,6 @@ module DeleteTimeseriesApi =
 
     let deleteTimeseriesAsync (items: Identity seq) =
         DeleteTimeseries.deleteTimeseries items fetch Async.single
-
 
 [<Extension>]
 type DeleteTimeseriesExtensions =

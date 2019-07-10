@@ -9,7 +9,6 @@ open Thoth.Json.Net
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
-open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
 
 [<RequireQualifiedAccess>]

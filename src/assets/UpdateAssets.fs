@@ -1,6 +1,5 @@
 namespace Cognite.Sdk
 
-open System
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -53,7 +52,6 @@ module UpdateAssets =
 
         static member ClearSource =
             CaseSource None
-
 
     let renderUpdateFields (arg: Option) =
         match arg with
@@ -135,7 +133,6 @@ module UpdateAssets =
         >=> setResource Url
         >=> fetch
 
-
 [<AutoOpen>]
 module UpdateAssetsApi =
     /// **Description**
@@ -155,7 +152,6 @@ module UpdateAssetsApi =
 
     let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<string>> =
         UpdateAssets.updateAssets args fetch Async.single
-
 
 [<Extension>]
 type UpdateAssetsExtensions =

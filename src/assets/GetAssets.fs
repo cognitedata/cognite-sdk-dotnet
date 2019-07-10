@@ -3,7 +3,6 @@ namespace Cognite.Sdk
 open System
 open System.Net.Http
 open System.Runtime.CompilerServices
-open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Thoth.Json.Net

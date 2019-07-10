@@ -93,12 +93,12 @@ type AssetWriteDto = {
             else
                 Map.empty
         {
-            ExternalId = if asset.ExternalId = null then None else Some asset.ExternalId
+            ExternalId = if isNull asset.ExternalId then None else Some asset.ExternalId
             Name = asset.Name
             ParentId = if asset.ParentId = 0L then None else Some asset.ParentId
-            Description = if asset.Description = null then None else Some asset.Description
+            Description = if isNull asset.Description then None else Some asset.Description
             MetaData = metaData
-            Source = if asset.Source = null then None else Some asset.Source
-            ParentExternalId = if asset.ParentExternalId = null then None else Some asset.ParentExternalId
+            Source = if isNull asset.Source then None else Some asset.Source
+            ParentExternalId = if isNull asset.ParentExternalId then None else Some asset.ParentExternalId
         }
 
