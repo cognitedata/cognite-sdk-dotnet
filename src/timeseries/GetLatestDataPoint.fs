@@ -14,11 +14,11 @@ open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
 
 [<RequireQualifiedAccess>]
-module GetLatestData =
+module GetLatestDataPoint =
     [<Literal>]
     let Url = "/timeseries/data/latest"
 
-    type LatestDataRequest = {
+    type LatestDataPointRequest = {
         Before: string option
         Identity: Identity
     } with
@@ -31,12 +31,12 @@ module GetLatestData =
                 | CaseExternalId id -> yield "externalId", Encode.string id
             ]
 
-    type TimeseriesLatestRequest = {
-        Items: seq<LatestDataRequest>
+    type LatestDataPointsRequest = {
+        Items: seq<LatestDataPointRequest>
     } with
         member this.Encoder =
             Encode.object [
-                yield ("items", Seq.map (fun (it: LatestDataRequest) -> it.Encoder) this.Items |> Encode.seq)
+                yield ("items", Seq.map (fun (it: LatestDataPointRequest) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type DataPoints = {
@@ -90,9 +90,9 @@ module GetLatestData =
             "assetIds", sprintf "[%s]" (String.Join (",", list))
 
 
-    let getTimeseriesLatestData (options: LatestDataRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
-        let request : TimeseriesLatestRequest = { Items = options }
+        let request : LatestDataPointsRequest = { Items = options }
         let body = request.Encoder |> Encode.stringify
 
         POST
@@ -103,7 +103,7 @@ module GetLatestData =
         >=> decoder
 
 [<AutoOpen>]
-module GetLatestDataApi =
+module GetLatestDataPointApi =
         /// **Description**
     ///
     /// Retrieves the single latest data point in a time series.
@@ -115,16 +115,16 @@ module GetLatestDataApi =
     /// **Output Type**
     ///   * `Async<Context<seq<PointResponseDataPoints>>>`
     ///
-    let getTimeseriesLatestData (queryParams: GetLatestData.LatestDataRequest seq) (next: NextHandler<GetLatestData.DataPoints seq,'a>) =
-        GetLatestData.getTimeseriesLatestData queryParams fetch next
+    let getLatestDataPoint (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) (next: NextHandler<GetLatestDataPoint.DataPoints seq,'a>) =
+        GetLatestDataPoint.getLatestDataPoint queryParams fetch next
 
 
-    let getTimeseriesLatestDataAsync (queryParams: GetLatestData.LatestDataRequest seq) =
-        GetLatestData.getTimeseriesLatestData queryParams fetch Async.single
+    let getLatestDataPointAsync (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) =
+        GetLatestDataPoint.getLatestDataPoint queryParams fetch Async.single
 
 
 [<Extension>]
-type GetLatestDataExtensions =
+type GetLatestDataPointExtensions =
     /// <summary>
     /// Retrieves the single latest data point in a time series.
     /// </summary>
@@ -132,13 +132,13 @@ type GetLatestDataExtensions =
     /// <param name="client">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetTimeseriesLatestDataAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestData.DataPoints>> =
+    static member GetLatestDataPointAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestDataPoint.DataPoints>> =
         task {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
                   Before = if (isNull before) then None else Some before
-                  } : GetLatestData.LatestDataRequest)
-            let! ctx = getTimeseriesLatestDataAsync query this.Ctx
+                  } : GetLatestDataPoint.LatestDataPointRequest)
+            let! ctx = getLatestDataPointAsync query this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response

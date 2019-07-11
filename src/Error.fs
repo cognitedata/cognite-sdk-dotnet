@@ -99,9 +99,7 @@ module Error =
     let error2Exception error =
         match error with
         | Exception ex -> ex
-        | DecodeError err ->
-            //printf "%A" err
-            DecodeException err
+        | DecodeError err -> DecodeException err
         | HttpResponse (response, content) ->
             let result = Decode.fromString ErrorResponse.Decoder content
             let error =

@@ -75,21 +75,25 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 
 - `getAsset` - Get single asset.
 - `getAssets` - Get multiple assets.
+- `getAssetsByIds` - Receive assets by its id. Supports both externalId and id.
 - `deleteAssets` - Delete one or more assets.
 - `updateAssets` - Update one or more assets.
-- `createAssets`- Create one or more assets.
+- `createAssets` - Create one or more assets.
+- `searchAssets` - Search for assets based on relevance.
 
 ## Time Series API
 
 - `getTimeSeries` - Retrieves a list of all time series in a project .
 - `getTimeSeriesByIds` - Get timeseries with the given ids.
-- `insertDataByName` - Insert data into named time series.
 - `createTimeSeries` - Create a new time series.
 - `queryTimeSeries` - Retrieves a list of data points from a single time series.
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.
+- `searchTimeseries` - Retrieves a list of time series matching the specified criteria.
 
-- `getTimeseriesData` -
-- `getTimeseriesLatestData` - Retrieves the single latest data point in a time series.
+- `getDataPoints` - Retrieves a list of data points from time series in a project
+- `getAggregatedDataPoints` - Retrieves a list of aggregated data points from time series in a project
+- `getLatestDataPoint` - Retrieves the single latest data point in a time series.
+- `insertDataPoints` - Insert datapoints into a time series.
 
 ## Sequences API
 
