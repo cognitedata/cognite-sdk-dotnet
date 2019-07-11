@@ -20,25 +20,26 @@
 
     <Compile Include="assets/Model.fs" />
     <Compile Include="assets/Json.fs" />
+    <Compile Include="assets/CreateAssets.fs" />
     <Compile Include="assets/GetAsset.fs" />
     <Compile Include="assets/GetAssets.fs" />
+    <Compile Include="assets/GetAssetsByIds.fs" />
+    <Compile Include="assets/DeleteAssets.fs" />
     <Compile Include="assets/SearchAssets.fs" />
     <Compile Include="assets/UpdateAssets.fs" />
-    <Compile Include="assets/CreateAssets.fs" />
-    <Compile Include="assets/DeleteAssets.fs" />
-    <Compile Include="assets/GetAssetsByIds.fs" />
 
     <Compile Include="timeseries/Model.fs" />
     <Compile Include="timeseries/Json.fs" />
-    <Compile Include="timeseries/GetTimeseries.fs" />
     <Compile Include="timeseries/CreateTimeseries.fs" />
+    <Compile Include="timeseries/GetTimeseries.fs" />
     <Compile Include="timeseries/GetTimeseriesByIds.fs" />
-    <Compile Include="timeseries/InsertDataPoints.fs" />
-    <Compile Include="timeseries/GetLatestDataPoint.fs" />
-    <Compile Include="timeseries/GetDataPoints.fs" />
-    <Compile Include="timeseries/GetAggregatedDataPoints.fs" />
     <Compile Include="timeseries/DeleteTimeseries.fs" />
     <Compile Include="timeseries/SearchTimeseries.fs" />
+
+    <Compile Include="timeseries/GetAggregatedDataPoints.fs" />
+    <Compile Include="timeseries/GetDataPoints.fs" />
+    <Compile Include="timeseries/GetLatestDataPoint.fs" />
+    <Compile Include="timeseries/InsertDataPoints.fs" />
   </ItemGroup>
 
   <Import Project="..\.paket\Paket.Restore.targets" />
