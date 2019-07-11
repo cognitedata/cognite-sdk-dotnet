@@ -14,7 +14,7 @@ open Cognite.Sdk.Timeseries
 open System
 
 [<RequireQualifiedAccess>]
-module GetData =
+module GetDataPoints =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -95,7 +95,7 @@ module GetData =
                 yield renderQuery param
         ]
 
-    let getTimeseriesData (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultOptions options
         let body = Encode.stringify request
@@ -108,7 +108,7 @@ module GetData =
         >=> decoder
 
 [<AutoOpen>]
-module GetDataApi =
+module GetDataPointsApi =
 
     /// **Description**
     ///
@@ -122,14 +122,14 @@ module GetDataApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getTimeseriesData (defaultArgs: GetData.Option seq) (args: (int64*(GetData.Option seq)) seq) (next: NextHandler<GetData.DataPoints seq,'a>) =
-        GetData.getTimeseriesData defaultArgs args fetch next
+    let getDataPoints (defaultArgs: GetDataPoints.Option seq) (args: (int64*(GetDataPoints.Option seq)) seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+        GetDataPoints.getDataPoints defaultArgs args fetch next
 
-    let getTimeseriesDataAsync (defaultQueryParams: GetData.Option seq) (queryParams: (int64*(GetData.Option seq)) seq) =
-        GetData.getTimeseriesData defaultQueryParams queryParams fetch Async.single
+    let getDataPointsAsync (defaultQueryParams: GetDataPoints.Option seq) (queryParams: (int64*(GetDataPoints.Option seq)) seq) =
+        GetDataPoints.getDataPoints defaultQueryParams queryParams fetch Async.single
 
 [<Extension>]
-type GetDataExtensions =
+type GetDataPointsExtensions =
     // <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
@@ -139,12 +139,12 @@ type GetDataExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetDataAsync (this: Client) (defaultOptions: GetData.Option seq) (options: ValueTuple<int64, GetData.Option seq> seq) : Task<seq<GetData.DataPointsPoco>> =
+    static member GetDataPointsAsync (this: Client) (defaultOptions: GetDataPoints.Option seq) (options: ValueTuple<int64, GetDataPoints.Option seq> seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
 
         let options' = options |> Seq.map (fun struct (key, value) -> key, value)
 
         task {
-            let! ctx = getTimeseriesDataAsync defaultOptions options' this.Ctx
+            let! ctx = getDataPointsAsync defaultOptions options' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())

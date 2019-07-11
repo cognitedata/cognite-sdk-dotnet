@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.5.7</Version>
-    <PackageVersion>0.5.7</PackageVersion>
+    <Version>0.6.0</Version>
+    <PackageVersion>0.6.0</PackageVersion>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>
@@ -33,10 +33,10 @@
     <Compile Include="timeseries/GetTimeseries.fs" />
     <Compile Include="timeseries/CreateTimeseries.fs" />
     <Compile Include="timeseries/GetTimeseriesByIds.fs" />
-    <Compile Include="timeseries/InsertData.fs" />
-    <Compile Include="timeseries/GetLatestData.fs" />
-    <Compile Include="timeseries/GetData.fs" />
-    <Compile Include="timeseries/GetAggregatedData.fs" />
+    <Compile Include="timeseries/InsertDataPoints.fs" />
+    <Compile Include="timeseries/GetLatestDataPoint.fs" />
+    <Compile Include="timeseries/GetDataPoints.fs" />
+    <Compile Include="timeseries/GetAggregatedDataPoints.fs" />
     <Compile Include="timeseries/DeleteTimeseries.fs" />
     <Compile Include="timeseries/SearchTimeseries.fs" />
   </ItemGroup>

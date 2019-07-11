@@ -32,13 +32,13 @@ namespace csharp
 
         static async Task QueryTimeseriesDataExample(Client client)
         {
-            var aggregates = new List<GetAggregatedData.Aggregate> { GetAggregatedData.Aggregate.Average };
-            var defaultOptions = new List<GetAggregatedData.Option> {
-                GetAggregatedData.Option.Aggregates(aggregates)
+            var aggregates = new List<GetAggregatedDataPoints.Aggregate> { GetAggregatedDataPoints.Aggregate.Average };
+            var defaultOptions = new List<GetAggregatedDataPoints.Option> {
+                GetAggregatedDataPoints.Option.Aggregates(aggregates)
             };
-            var options = new List<(long, IEnumerable<GetAggregatedData.Option>)> ();
+            var options = new List<(long, IEnumerable<GetAggregatedDataPoints.Option>)> ();
 
-            var result = await client.GetAggregatedDataAsync(defaultOptions, options);
+            var result = await client.GetAggregatedDataPointsAsync(defaultOptions, options);
             Console.WriteLine("{0}", result.First().DataPoints.First().Average);
             Console.WriteLine("{0}", result);
         }

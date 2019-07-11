@@ -12,7 +12,7 @@ open Cognite.Sdk.Api
 open Cognite.Sdk.Timeseries
 
 [<RequireQualifiedAccess>]
-module InsertData =
+module InsertDataPoints =
     [<Literal>]
     let Url = "/timeseries/data"
 
@@ -36,7 +36,7 @@ module InsertData =
                 yield ("items", Seq.map (fun (it: DataPoints) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let insertData (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
+    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
 
@@ -47,7 +47,7 @@ module InsertData =
         >=> fetch
 
 [<AutoOpen>]
-module InsertDataApi =
+module InsertDataPointsApi =
     /// **Description**
     ///
     /// Inserts a list of data points to a time series. If a data point is
@@ -62,11 +62,11 @@ module InsertDataApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataBy (items: InsertData.DataPoints list) (next: NextHandler<string,string>) =
-        InsertData.insertData items fetch next
+    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<string,string>) =
+        InsertDataPoints.insertDataPoints items fetch next
 
-    let insertDataAsync (items: seq<InsertData.DataPoints>) =
-        InsertData.insertData items fetch Async.single
+    let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
+        InsertDataPoints.insertDataPoints items fetch Async.single
 
 [<Extension>]
 type InsertDataExtensions =
@@ -83,11 +83,11 @@ type InsertDataExtensions =
                 {
                     DataPoints = Seq.map DataPointDto.FromPoco item.DataPoints
                     Identity = item.Identity
-                }: InsertData.DataPoints
+                }: InsertDataPoints.DataPoints
             ) items
 
         task {
-            let! ctx = insertDataAsync items' this.Ctx
+            let! ctx = insertDataPointsAsync items' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return true

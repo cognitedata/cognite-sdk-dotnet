@@ -14,7 +14,7 @@ open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
 
 [<RequireQualifiedAccess>]
-module GetAggregatedData =
+module GetAggregatedDataPoints =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -161,7 +161,7 @@ module GetAggregatedData =
                 yield renderQuery param
         ]
 
-    let getTimeseriesData (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultOptions options
         let body = Encode.stringify request
@@ -174,7 +174,7 @@ module GetAggregatedData =
         >=> decoder
 
 [<AutoOpen>]
-module GetAggregatedDataApi =
+module GetAggregatedDataPointsApi =
 
     /// **Description**
     ///
@@ -188,14 +188,14 @@ module GetAggregatedDataApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getTimeseriesData (defaultOptions: GetAggregatedData.Option seq) (options: (int64*(GetAggregatedData.Option seq)) seq) (next: NextHandler<GetAggregatedData.DataPoints seq,'a>) =
-        GetAggregatedData.getTimeseriesData defaultOptions options fetch next
+    let getDataPoints (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
+        GetAggregatedDataPoints.getDataPoints defaultOptions options fetch next
 
-    let getTimeseriesDataAsync (defaultOptions: GetAggregatedData.Option seq) (options: (int64*(GetAggregatedData.Option seq)) seq) =
-        GetAggregatedData.getTimeseriesData defaultOptions options fetch Async.single
+    let getDataPointsAsync (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) =
+        GetAggregatedDataPoints.getDataPoints defaultOptions options fetch Async.single
 
 [<Extension>]
-type GetAggregatedDataExtensions =
+type GetAggregatedDataPointsExtensions =
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
@@ -205,10 +205,10 @@ type GetAggregatedDataExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetAggregatedDataAsync (this: Client) (defaultOptions: GetAggregatedData.Option seq) (options: ValueTuple<int64, GetAggregatedData.Option seq> seq) : Task<GetAggregatedData.DataPointsPoco seq> =
+    static member GetAggregatedDataPointsAsync (this: Client) (defaultOptions: GetAggregatedDataPoints.Option seq) (options: ValueTuple<int64, GetAggregatedDataPoints.Option seq> seq) : Task<GetAggregatedDataPoints.DataPointsPoco seq> =
         task {
             let options' = options |> Seq.map (fun struct (id, options) -> id, options)
-            let! ctx = getTimeseriesDataAsync defaultOptions options' this.Ctx
+            let! ctx = getDataPointsAsync defaultOptions options' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
