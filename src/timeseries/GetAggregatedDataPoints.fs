@@ -161,7 +161,7 @@ module GetAggregatedDataPoints =
                 yield renderQuery param
         ]
 
-    let getDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getAggregatedDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultOptions options
         let body = Encode.stringify request
@@ -188,11 +188,11 @@ module GetAggregatedDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getDataPoints (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
-        GetAggregatedDataPoints.getDataPoints defaultOptions options fetch next
+    let getAggregatedDataPoints (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
+        GetAggregatedDataPoints.getAggregatedDataPoints defaultOptions options fetch next
 
-    let getDataPointsAsync (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) =
-        GetAggregatedDataPoints.getDataPoints defaultOptions options fetch Async.single
+    let getAggregatedDataPointsAsync (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) =
+        GetAggregatedDataPoints.getAggregatedDataPoints defaultOptions options fetch Async.single
 
 [<Extension>]
 type GetAggregatedDataPointsExtensions =
@@ -208,7 +208,7 @@ type GetAggregatedDataPointsExtensions =
     static member GetAggregatedDataPointsAsync (this: Client) (defaultOptions: GetAggregatedDataPoints.Option seq) (options: ValueTuple<int64, GetAggregatedDataPoints.Option seq> seq) : Task<GetAggregatedDataPoints.DataPointsPoco seq> =
         task {
             let options' = options |> Seq.map (fun struct (id, options) -> id, options)
-            let! ctx = getDataPointsAsync defaultOptions options' this.Ctx
+            let! ctx = getAggregatedDataPointsAsync defaultOptions options' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
