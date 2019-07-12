@@ -4,6 +4,7 @@ namespace Cognite.Sdk
 open System
 
 open Thoth.Json.Net
+open System.Text.RegularExpressions
 
 /// Id or ExternalId
 type Identity =
@@ -46,6 +47,17 @@ module Patterns =
         | CaseInteger value -> Integer value
         | CaseFloat value -> Float value
         | CaseString value -> String value
+
+    let (|ParseInteger|_|) (str: string) =
+       let mutable intvalue = 0
+       if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
+       else None
+
+    let (|ParseRegex|_|) regex str =
+       let m = Regex(regex).Match(str)
+       if m.Success
+       then Some (List.tail [ for x in m.Groups -> x.Value ])
+       else None
 
 module Common =
     [<Literal>]

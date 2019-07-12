@@ -80,10 +80,10 @@ module GetAggregatedDataPoints =
         override this.ToString () =
             match this with
             | CaseStepInterpolation -> "step"
-            | CaseContinuousVariance -> "cv"
-            | CaseDiscreteVariance -> "dv"
+            | CaseContinuousVariance -> "continuousVariance"
+            | CaseDiscreteVariance -> "discreteVariance"
             | CaseInterpolation -> "int"
-            | CaseTotalVariation -> "tv"
+            | CaseTotalVariation -> "totalVariation"
             | CaseCount -> "count"
             | CaseAverage -> "average"
             | CaseMax -> "max"
@@ -93,11 +93,17 @@ module GetAggregatedDataPoints =
         static member FromString str =
             match str with
             | "step" -> Some CaseStepInterpolation
+            | "stepInterpolation" -> Some CaseStepInterpolation
             | "cv" -> Some CaseContinuousVariance
+            | "continuousVariance" -> Some CaseContinuousVariance
             | "dv" -> Some CaseDiscreteVariance
+            | "discreteVariance" -> Some CaseDiscreteVariance
             | "int" -> Some CaseInterpolation
+            | "interpolation" -> Some CaseInterpolation
             | "tv" -> Some CaseTotalVariation
+            | "totalVariation" -> Some CaseTotalVariation
             | "count" -> Some CaseCount
+            | "avg" -> Some CaseAverage
             | "average" -> Some CaseAverage
             | "max" -> Some CaseMax
             | "min" -> Some CaseMin
@@ -110,6 +116,7 @@ module GetAggregatedDataPoints =
         | CaseHour of int
         | CaseMinute of int
         | CaseSecond of int
+        | None
 
         static member Day day =
             CaseDay day
@@ -129,6 +136,19 @@ module GetAggregatedDataPoints =
             | CaseMinute min -> sprintf "m%d" min
             | CaseSecond sec when sec = 1 -> "s"
             | CaseSecond sec -> sprintf "s%d" sec
+            | None -> ""
+
+        static member FromString str =
+            match str with
+            | ParseRegex "(\d{1,3}d)" [ ParseInteger day ] -> CaseDay day
+            | ParseRegex "^d$" [] -> CaseDay 1
+            | ParseRegex "(\d{1,3}h)" [ ParseInteger hour ] -> CaseHour hour
+            | ParseRegex "^h$" [] -> CaseHour 1
+            | ParseRegex "(\d{1,3}m)" [ ParseInteger min ] -> CaseMinute min
+            | ParseRegex "^m$" [] -> CaseMinute 1
+            | ParseRegex "(\d{1,3}m)" [ ParseInteger sec ] -> CaseSecond sec
+            | ParseRegex "^m$" [] -> CaseSecond 1
+            | _ -> None
 
     /// Query parameters
     type Option =
