@@ -90,6 +90,20 @@ module GetAggregatedDataPoints =
             | CaseMin -> "min"
             | CaseSum -> "sum"
 
+        static member FromString str =
+            match str with
+            | "step" -> Some CaseStepInterpolation
+            | "cv" -> Some CaseContinuousVariance
+            | "dv" -> Some CaseDiscreteVariance
+            | "int" -> Some CaseInterpolation
+            | "tv" -> Some CaseTotalVariation
+            | "count" -> Some CaseCount
+            | "avg" -> Some CaseAverage
+            | "max" -> Some CaseMax
+            | "min" -> Some CaseMin
+            | "sum" -> Some CaseSum
+            | _ -> None
+
     type Granularity =
         private
         | CaseDay of int
