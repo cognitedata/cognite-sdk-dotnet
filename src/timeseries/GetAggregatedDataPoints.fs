@@ -129,13 +129,13 @@ module GetAggregatedDataPoints =
         override this.ToString () =
             match this with
             | CaseDay day when day = 1 -> "d"
-            | CaseDay day -> sprintf "d%d" day
+            | CaseDay day -> sprintf "%dd" day
             | CaseHour hour when hour = 1 -> "h"
-            | CaseHour hour -> sprintf "h%d" hour
+            | CaseHour hour -> sprintf "%dh" hour
             | CaseMinute min when min = 1 -> "m"
-            | CaseMinute min -> sprintf "m%d" min
+            | CaseMinute min -> sprintf "%dm" min
             | CaseSecond sec when sec = 1 -> "s"
-            | CaseSecond sec -> sprintf "s%d" sec
+            | CaseSecond sec -> sprintf "%dm" sec
             | None -> ""
 
         static member FromString str =
