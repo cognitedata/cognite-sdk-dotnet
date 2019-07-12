@@ -85,7 +85,7 @@ module GetAggregatedDataPoints =
             | CaseInterpolation -> "int"
             | CaseTotalVariation -> "tv"
             | CaseCount -> "count"
-            | CaseAverage -> "avg"
+            | CaseAverage -> "average"
             | CaseMax -> "max"
             | CaseMin -> "min"
             | CaseSum -> "sum"
@@ -98,7 +98,7 @@ module GetAggregatedDataPoints =
             | "int" -> Some CaseInterpolation
             | "tv" -> Some CaseTotalVariation
             | "count" -> Some CaseCount
-            | "avg" -> Some CaseAverage
+            | "average" -> Some CaseAverage
             | "max" -> Some CaseMax
             | "min" -> Some CaseMin
             | "sum" -> Some CaseSum
