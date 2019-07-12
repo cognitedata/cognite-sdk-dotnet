@@ -112,12 +112,15 @@ module GetAggregatedDataPoints =
 
     type Granularity =
         private
+        | CaseWeek of int
         | CaseDay of int
         | CaseHour of int
         | CaseMinute of int
         | CaseSecond of int
         | None
 
+        static member Week week =
+            CaseWeek week
         static member Day day =
             CaseDay day
         static member Hour hour =
@@ -128,6 +131,8 @@ module GetAggregatedDataPoints =
             CaseSecond sec
         override this.ToString () =
             match this with
+            | CaseWeek week when week = 1 -> "w"
+            | CaseWeek week -> sprintf "%dw" week
             | CaseDay day when day = 1 -> "d"
             | CaseDay day -> sprintf "%dd" day
             | CaseHour hour when hour = 1 -> "h"
@@ -140,6 +145,8 @@ module GetAggregatedDataPoints =
 
         static member FromString str =
             match str with
+            | ParseRegex "(\d{1,2})w" [ ParseInteger week ] -> CaseWeek week
+            | ParseRegex "^w$" [] -> CaseWeek 1
             | ParseRegex "(\d{1,3})d" [ ParseInteger day ] -> CaseDay day
             | ParseRegex "^d$" [] -> CaseDay 1
             | ParseRegex "(\d{1,3})h" [ ParseInteger hour ] -> CaseHour hour

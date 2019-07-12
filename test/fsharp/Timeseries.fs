@@ -75,9 +75,11 @@ let ``Delete timeseries is Ok`` () = async {
 let ``Parse granularity works`` () =
     // Arrenge
     let input = [
-        "3d"; "d"; "5h"; "h"; "42m"; "m"; "300s"; "s"
+        "1w"; "w"; "3d"; "d"; "5h"; "h"; "42m"; "m"; "300s"; "s"
     ]
     let expected = [
+        GetAggregatedDataPoints.Granularity.Week 1
+        GetAggregatedDataPoints.Granularity.Week 1
         GetAggregatedDataPoints.Granularity.Day 3
         GetAggregatedDataPoints.Granularity.Day 1
         GetAggregatedDataPoints.Granularity.Hour 5
