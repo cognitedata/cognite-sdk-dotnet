@@ -140,14 +140,14 @@ module GetAggregatedDataPoints =
 
         static member FromString str =
             match str with
-            | ParseRegex "(\d{1,3}d)" [ ParseInteger day ] -> CaseDay day
+            | ParseRegex "(\d{1,3})d" [ ParseInteger day ] -> CaseDay day
             | ParseRegex "^d$" [] -> CaseDay 1
-            | ParseRegex "(\d{1,3}h)" [ ParseInteger hour ] -> CaseHour hour
+            | ParseRegex "(\d{1,3})h" [ ParseInteger hour ] -> CaseHour hour
             | ParseRegex "^h$" [] -> CaseHour 1
-            | ParseRegex "(\d{1,3}m)" [ ParseInteger min ] -> CaseMinute min
+            | ParseRegex "(\d{1,3})m" [ ParseInteger min ] -> CaseMinute min
             | ParseRegex "^m$" [] -> CaseMinute 1
-            | ParseRegex "(\d{1,3}m)" [ ParseInteger sec ] -> CaseSecond sec
-            | ParseRegex "^m$" [] -> CaseSecond 1
+            | ParseRegex "(\d{1,3})s" [ ParseInteger sec ] -> CaseSecond sec
+            | ParseRegex "^s$" [] -> CaseSecond 1
             | _ -> None
 
     /// Query parameters

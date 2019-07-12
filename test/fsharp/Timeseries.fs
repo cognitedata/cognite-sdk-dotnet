@@ -70,3 +70,27 @@ let ``Delete timeseries is Ok`` () = async {
     test <@ res.Request.Resource = "/timeseries/delete" @>
     test <@ res.Request.Query.IsEmpty @>
 }
+
+[<Fact>]
+let ``Parse granularity works`` () =
+    // Arrenge
+    let input = [
+        "3d"; "d"; "5h"; "h"; "42m"; "m"; "300s"; "s"
+    ]
+    let expected = [
+        GetAggregatedDataPoints.Granularity.Day 3
+        GetAggregatedDataPoints.Granularity.Day 1
+        GetAggregatedDataPoints.Granularity.Hour 5
+        GetAggregatedDataPoints.Granularity.Hour 1
+        GetAggregatedDataPoints.Granularity.Minute 42
+        GetAggregatedDataPoints.Granularity.Minute 1
+        GetAggregatedDataPoints.Granularity.Second 300
+        GetAggregatedDataPoints.Granularity.Second 1
+    ]
+
+    // Act
+    let granularity = input |> List.map GetAggregatedDataPoints.Granularity.FromString
+
+    // Assert
+    test <@ granularity = expected @>
+
