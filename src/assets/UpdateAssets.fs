@@ -135,6 +135,7 @@ module UpdateAssets =
         >=> setBody body
         >=> setResource Url
         >=> fetch
+        >=> dispose
 
 [<AutoOpen>]
 module UpdateAssetsApi =
@@ -150,10 +151,10 @@ module UpdateAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*(UpdateAssets.Option list)) list) (next: NextHandler<Stream,'a>)  : HttpContext -> Async<Context<'a>> =
+    let updateAssets (args: (int64*(UpdateAssets.Option list)) list) (next: NextHandler<bool,'a>)  : HttpContext -> Async<Context<'a>> =
         UpdateAssets.updateAssets args fetch next
 
-    let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<Stream>> =
+    let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<bool>> =
         UpdateAssets.updateAssets args fetch Async.single
 
 [<Extension>]

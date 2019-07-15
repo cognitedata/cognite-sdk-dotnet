@@ -69,14 +69,11 @@ module Common =
 
     let decodeStreamAsync (decoder : Decoder<'a>) (stream : IO.Stream) =
         task {
-            use tr = new StreamReader(stream)
+            use tr = new StreamReader(stream) // StreamReader will dispose the stream
             use jtr = new JsonTextReader(tr)
             let! json = JValue.ReadFromAsync jtr
 
-            let result = Decode.fromValue "$" decoder json
-
-            stream.Dispose ()
-            return result
+            return Decode.fromValue "$" decoder json
         }
 
     /// **Description**
@@ -107,6 +104,13 @@ module Common =
                 | Error err -> return Error err
             }
 
+            return! next { Request = context.Request; Result = nextResult }
+        }
+
+    /// Handler for disposing the stream when it's not needed anymore.
+    let dispose<'a> (next: NextHandler<bool,'a>) (context: Context<Stream>) =
+        async {
+            let nextResult = context.Result |> Result.map (fun stream -> stream.Dispose (); true)
             return! next { Request = context.Request; Result = nextResult }
         }
 

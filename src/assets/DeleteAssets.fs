@@ -41,6 +41,7 @@ module DeleteAssets =
         >=> setBody body
         >=> setResource Url
         >=> fetch
+        >=> dispose
 
 [<AutoOpen>]
 module DeleteAssetsApi =
@@ -55,10 +56,10 @@ module DeleteAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: Identity seq) (next: NextHandler<Stream,'a>) =
+    let deleteAssets (assets: Identity seq) (next: NextHandler<bool,'a>) =
         DeleteAssets.deleteAssets assets fetch next
 
-    let deleteAssetsAsync<'a> (assets: Identity seq) : HttpContext -> Async<Context<Stream>> =
+    let deleteAssetsAsync<'a> (assets: Identity seq) : HttpContext -> Async<Context<bool>> =
         DeleteAssets.deleteAssets assets fetch Async.single
 
 [<Extension>]

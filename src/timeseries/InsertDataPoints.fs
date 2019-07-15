@@ -38,7 +38,7 @@ module InsertDataPoints =
                 yield ("items", Seq.map (fun (it: DataPoints) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, Stream>) =
+    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, bool>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
 
@@ -47,6 +47,7 @@ module InsertDataPoints =
         >=> setBody body
         >=> setResource Url
         >=> fetch
+        >=> dispose
 
 [<AutoOpen>]
 module InsertDataPointsApi =
@@ -64,7 +65,7 @@ module InsertDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<Stream,Stream>) =
+    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<bool,bool>) =
         InsertDataPoints.insertDataPoints items fetch next
 
     let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
