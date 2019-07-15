@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -16,7 +17,7 @@ module GetAsset =
     [<Literal>]
     let Url = "/assets"
 
-    let getAsset (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getAsset (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse AssetReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
@@ -60,5 +61,6 @@ type GetAssetExtensions =
             | Ok asset ->
                 return asset
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

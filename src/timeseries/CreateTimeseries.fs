@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -34,7 +35,7 @@ module CreateTimeseries =
                 Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
             })
 
-    let createTimeseries (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let createTimeseries (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : TimeseriesRequest = { Items = items }
         let decoder = decodeResponse TimeseriesResponse.Decoder id
         let body = Encode.stringify request.Encoder
@@ -62,7 +63,7 @@ module CreateTimeseriesApi =
     let createTimeseries (items: TimeseriesWriteDto list) (next: NextHandler<CreateTimeseries.TimeseriesResponse,'a>) =
         CreateTimeseries.createTimeseries items fetch next
 
-    let createTimeseriesAsync (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, string, CreateTimeseries.TimeseriesResponse>) =
+    let createTimeseriesAsync (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, CreateTimeseries.TimeseriesResponse>) =
         CreateTimeseries.createTimeseries items fetch Async.single
 
 [<Extension>]
@@ -81,5 +82,6 @@ type CreateTimeseriesExtensions =
             | Ok response ->
                 return response.Items |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

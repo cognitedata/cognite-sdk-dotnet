@@ -4,7 +4,11 @@ namespace Cognite.Sdk
 open System
 
 open Thoth.Json.Net
+open Newtonsoft.Json
 open System.Text.RegularExpressions
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.IO
+open Newtonsoft.Json.Linq
 
 /// Id or ExternalId
 type Identity =
@@ -63,6 +67,15 @@ module Common =
     [<Literal>]
     let MaxLimitSize = 1000
 
+    let decodeStreamAsync (decoder : Decoder<'a>) (stream : IO.Stream) =
+        task {
+            use tr = new StreamReader(stream)
+            use jtr = new JsonTextReader(tr)
+            let! json = JValue.ReadFromAsync jtr
+
+            return Decode.fromValue "$" decoder json
+        }
+
     /// **Description**
     ///
     /// JSON decode response and map decode error string to exception so we
@@ -77,19 +90,48 @@ module Common =
     ///
     /// **Exceptions**
     ///
-    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: Context<string>) =
-        let result =
-            context.Result
-            |> Result.bind (fun res ->
-                let ret = Decode.fromString decoder res
-                match ret with
-                | Error error -> DecodeError error |> Error
-                | Ok value -> Ok value
-            )
-            |> Result.map resultMapper
+    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: Context<Stream>) =
+        async {
+            let result = context.Result
 
-        next { Request = context.Request; Result = result }
+            let! nextResult = async {
+                match result with
+                | Ok stream ->
+                    let! ret = decodeStreamAsync decoder stream |> Async.AwaitTask
+                    match ret with
+                    | Ok value -> return value |> resultMapper |> Ok
+                    | Error error -> return (DecodeError error |> Error)
+                | Error err -> return Error err
+            }
 
+            return! next { Request = context.Request; Result = nextResult }
+        }
+
+    /// **Description**
+    ///
+    /// Translate response error to exception that we can raise for the
+    /// C# API.
+    ///
+    /// **Parameters**
+    ///   * `error` - parameter of type `ResponseError`
+    ///
+    /// **Output Type**
+    ///   * `exn`
+    let error2Exception error = task {
+        match error with
+        | Exception ex -> return ex
+        | DecodeError err -> return DecodeException err
+        | HttpResponse (response, stream) ->
+            let! result = decodeStreamAsync ErrorResponse.Decoder stream
+            let error =
+                match result with
+                | Ok error -> error.Error
+                | Error message ->
+                    let error = ResponseException message
+                    error.Code <-  int response.StatusCode
+                    error
+            return error :> Exception
+    }
 
     type Decode.IGetters with
         member this.NullableField name decoder =
@@ -101,4 +143,5 @@ module Common =
             match this.Optional.Field name decoder with
                 | Some value -> value
                 | None -> null
+
 

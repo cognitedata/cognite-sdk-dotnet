@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -9,6 +10,7 @@ open Thoth.Json.Net
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
+open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
 
 [<RequireQualifiedAccess>]
@@ -36,7 +38,7 @@ module InsertDataPoints =
                 yield ("items", Seq.map (fun (it: DataPoints) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, string, string>) =
+    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, Stream>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
 
@@ -62,7 +64,7 @@ module InsertDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<string,string>) =
+    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<Stream,Stream>) =
         InsertDataPoints.insertDataPoints items fetch next
 
     let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
@@ -92,7 +94,8 @@ type InsertDataExtensions =
             | Ok response ->
                 return true
             | Error error ->
-               return raise (Error.error2Exception error)
+               let! err = error2Exception error
+               return raise err
         }
 
 

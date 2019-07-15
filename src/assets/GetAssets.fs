@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 
@@ -114,7 +115,7 @@ module GetAssets =
             | CaseMaxLastUpdatedTime value -> "maxLastUpdatedTime", value.ToString ()
             | CaseExternalIdPrefix externalId -> "externalIdPrefix", externalId
 
-    let getAssets (options: Option seq) (fetch: HttpHandler<HttpResponseMessage,string, 'a>) =
+    let getAssets (options: Option seq) (fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
         let decoder = decodeResponse Assets.Decoder id
         let query = options |> Seq.map Option.Render |> List.ofSeq
 
@@ -188,5 +189,6 @@ type GetAssetsExtensions =
                         Items = assets.Items |> Seq.map (fun asset -> asset.ToPoco ())
                     |}
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

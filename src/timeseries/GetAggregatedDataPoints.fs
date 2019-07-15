@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -195,7 +196,7 @@ module GetAggregatedDataPoints =
                 yield renderQuery param
         ]
 
-    let getAggregatedDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getAggregatedDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderDataQuery defaultOptions options
         let body = Encode.stringify request
@@ -247,6 +248,7 @@ type GetAggregatedDataPointsExtensions =
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 

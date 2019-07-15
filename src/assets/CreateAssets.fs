@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -36,7 +37,7 @@ module CreateAssets =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,string,'a>)  =
+    let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
@@ -83,5 +84,6 @@ type CreateAssetsExtensions =
             | Ok response ->
                 return response |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

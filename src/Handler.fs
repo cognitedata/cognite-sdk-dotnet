@@ -243,7 +243,7 @@ module Handler =
 
 
     /// A request function for fetching from the Cognite API.
-    let fetch<'a> (next: NextHandler<string,'a>) (ctx: HttpContext) : Async<Context<'a>> =
+    let fetch<'a> (next: NextHandler<IO.Stream,'a>) (ctx: HttpContext) : Async<Context<'a>> =
         async {
             let res = ctx.Request.Resource
             let query = ctx.Request.Query
@@ -279,11 +279,11 @@ module Handler =
                             return! client.DeleteAsync(url)
                     }
 
-                    let! content = response.Content.ReadAsStringAsync ()
+                    let! stream = response.Content.ReadAsStreamAsync ()
                     if response.IsSuccessStatusCode then
-                        return Ok content
+                        return Ok stream
                     else
-                        return (response, content) |> HttpResponse |> Error
+                        return (response, stream) |> HttpResponse |> Error
                 with
                 | ex ->
                     return ResponseError.Exception ex |> Error

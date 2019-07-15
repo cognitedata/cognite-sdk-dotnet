@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -40,7 +41,7 @@ module GetAssetsByIds =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
         let body = Encode.stringify request.Encoder
@@ -95,7 +96,8 @@ type GetAssetsByIdsExtensions =
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 
 

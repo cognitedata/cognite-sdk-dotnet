@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -54,7 +55,7 @@ module GetTimeseries =
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "assetIds", sprintf "[%s]" (String.Join (",", list))
 
-    let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
@@ -105,5 +106,6 @@ type GetTimeseriesExtensions =
                         NextCursor = response.NextCursor
                     |}
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

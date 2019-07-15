@@ -170,7 +170,7 @@ let ``Create single asset is Ok`` () = async {
     | Ok assets ->
         test <@ Seq.length assets = 1 @>
     | Error error ->
-        raise (Error.error2Exception error)
+        raise (Sdk.XunitException (error.ToString ()))
 }
 
 [<Fact>]
