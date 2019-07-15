@@ -73,7 +73,10 @@ module Common =
             use jtr = new JsonTextReader(tr)
             let! json = JValue.ReadFromAsync jtr
 
-            return Decode.fromValue "$" decoder json
+            let result = Decode.fromValue "$" decoder json
+
+            stream.Dispose ()
+            return result
         }
 
     /// **Description**
