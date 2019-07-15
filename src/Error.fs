@@ -74,7 +74,7 @@ type ResponseError =
     /// JSON decode error (unable to decode the response)
     | DecodeError of string
     /// Error response from server.
-    | HttpResponse of HttpResponseMessage*string
+    | HttpResponse of HttpResponseMessage*IO.Stream
 
 type ErrorResponse = {
     Error : ResponseException
@@ -85,30 +85,3 @@ type ErrorResponse = {
                 Error = get.Required.Field "error" ResponseException.Decoder
             }
         )
-module Error =
-    /// **Description**
-    ///
-    /// Translate response error to exception that we can raise for the
-    /// C# API.
-    ///
-    /// **Parameters**
-    ///   * `error` - parameter of type `ResponseError`
-    ///
-    /// **Output Type**
-    ///   * `exn`
-    let error2Exception error =
-        match error with
-        | Exception ex -> ex
-        | DecodeError err -> DecodeException err
-        | HttpResponse (response, content) ->
-            let result = Decode.fromString ErrorResponse.Decoder content
-            let error =
-                match result with
-                | Ok error -> error.Error
-                | Error message ->
-                    let error = ResponseException message
-                    error.Code <-  int response.StatusCode
-                    error
-            error :> Exception
-
-

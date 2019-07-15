@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -78,7 +79,7 @@ module SearchAssets =
                 yield "search", Option.Encode options
         ]
 
-    let searchAssets (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage,string, 'a>) =
+    let searchAssets (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters |> Encode.stringify
 
@@ -145,5 +146,6 @@ type SearchAssetsExtensions =
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

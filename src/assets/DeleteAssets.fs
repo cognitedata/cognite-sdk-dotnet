@@ -1,5 +1,6 @@
 ﻿namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -9,7 +10,7 @@ open Thoth.Json.Net
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
-
+open Cognite.Sdk.Common
 
 [<RequireQualifiedAccess>]
 module DeleteAssets =
@@ -31,7 +32,7 @@ module DeleteAssets =
                     ]
                 ]
 
-    let deleteAssets (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let deleteAssets (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsDeleteRequest = { Items = assets }
         let body = Encode.stringify  request.Encoder
 
@@ -40,6 +41,7 @@ module DeleteAssets =
         >=> setBody body
         >=> setResource Url
         >=> fetch
+        >=> dispose
 
 [<AutoOpen>]
 module DeleteAssetsApi =
@@ -54,10 +56,10 @@ module DeleteAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: Identity seq) (next: NextHandler<string,'a>) =
+    let deleteAssets (assets: Identity seq) (next: NextHandler<bool,'a>) =
         DeleteAssets.deleteAssets assets fetch next
 
-    let deleteAssetsAsync<'a> (assets: Identity seq) : HttpContext -> Async<Context<string>> =
+    let deleteAssetsAsync<'a> (assets: Identity seq) : HttpContext -> Async<Context<bool>> =
         DeleteAssets.deleteAssets assets fetch Async.single
 
 [<Extension>]
@@ -76,6 +78,7 @@ type DeleteAssetsExtensions =
             | Ok response ->
                 return true
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 

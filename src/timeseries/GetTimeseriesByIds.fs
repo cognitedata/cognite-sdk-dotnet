@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -35,7 +36,7 @@ module GetTimeseriesByIds =
                 Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
             })
 
-    let getTimeseriesByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getTimeseriesByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
 
         let request : TimeseriesReadRequest = {
@@ -90,7 +91,8 @@ type GetTimeseriesByIdsExtensions =
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 
     /// <summary>
@@ -110,7 +112,8 @@ type GetTimeseriesByIdsExtensions =
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 
 

@@ -1,6 +1,7 @@
 ﻿namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -90,7 +91,7 @@ module GetLatestDataPoint =
             "assetIds", sprintf "[%s]" (String.Join (",", list))
 
 
-    let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
         let body = request.Encoder |> Encode.stringify
@@ -143,6 +144,7 @@ type GetLatestDataPointExtensions =
             | Ok response ->
                 return response
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
 

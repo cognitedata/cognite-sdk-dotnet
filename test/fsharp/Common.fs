@@ -1,8 +1,9 @@
 namespace Tests
 
 open System
-open FSharp.Data
+open System.IO
 open Cognite.Sdk
+open System.Text
 
 
 [<RequireQualifiedAccess>]
@@ -14,7 +15,10 @@ module Result =
     let isError res = not (isOk res)
 
 module Fetch =
-    let fromJson (json: string) (next: NextHandler<string,_>) (ctx: HttpContext) =
-        next { Request = ctx.Request; Result = Ok json }
+
+    let fromJson (json: string) (next: NextHandler<Stream,_>) (ctx: HttpContext) =
+        let byteArray = Encoding.ASCII.GetBytes( json )
+        let stream = new MemoryStream( byteArray ) :> Stream
+        next { Request = ctx.Request; Result = Ok stream }
 
 

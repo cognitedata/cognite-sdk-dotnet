@@ -1,6 +1,7 @@
 namespace Cognite.Sdk
 
 open System
+open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -11,6 +12,7 @@ open Thoth.Json.Net
 
 open Cognite.Sdk
 open Cognite.Sdk.Api
+open Cognite.Sdk.Common
 
 [<RequireQualifiedAccess>]
 module UpdateAssets =
@@ -118,7 +120,7 @@ module UpdateAssets =
                 "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
             ]
 
-    let updateAssets (args: (int64*Option list) list) (fetch: HttpHandler<HttpResponseMessage, string, 'a>) =
+    let updateAssets (args: (int64*Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -133,6 +135,7 @@ module UpdateAssets =
         >=> setBody body
         >=> setResource Url
         >=> fetch
+        >=> dispose
 
 [<AutoOpen>]
 module UpdateAssetsApi =
@@ -148,10 +151,10 @@ module UpdateAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*(UpdateAssets.Option list)) list) (next: NextHandler<string,'a>)  : HttpContext -> Async<Context<'a>> =
+    let updateAssets (args: (int64*(UpdateAssets.Option list)) list) (next: NextHandler<bool,'a>)  : HttpContext -> Async<Context<'a>> =
         UpdateAssets.updateAssets args fetch next
 
-    let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<string>> =
+    let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<bool>> =
         UpdateAssets.updateAssets args fetch Async.single
 
 [<Extension>]
@@ -170,5 +173,6 @@ type UpdateAssetsExtensions =
             | Ok response ->
                 return true
             | Error error ->
-               return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }

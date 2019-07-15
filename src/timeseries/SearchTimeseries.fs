@@ -1,5 +1,6 @@
 namespace Cognite.Sdk
 
+open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -99,7 +100,7 @@ module SearchTimeseries =
                 yield "search", Option.Encode options
         ]
 
-    let searchTimeseries (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage,string, 'a>) =
+    let searchTimeseries (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
         let decoder = decodeResponse GetTimeseries.TimeseriesResponse.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters |> Encode.stringify
 
@@ -166,5 +167,6 @@ type SearchTimeseriesExtensions =
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-                return raise (Error.error2Exception error)
+                let! err = error2Exception error
+                return raise err
         }
