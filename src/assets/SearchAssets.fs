@@ -129,8 +129,7 @@ module SearchAssetsApi =
     ///
     /// **Parameters**
     ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
+    ///   * `limit` - Limits the maximum number of results to be returned by single request. Request may contain less
     ///   results than request limit.
     ///   * `options` - Search options.
     ///   * `filters` - Search filters.
