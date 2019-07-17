@@ -19,6 +19,7 @@ module DeleteAssets =
 
     type AssetsDeleteRequest = {
         Items: Identity seq
+        Recursive: bool
     } with
         member this.Encoder =
             Encode.object [
@@ -30,10 +31,14 @@ module DeleteAssets =
                             | CaseExternalId id -> yield "externalId", Encode.string id
                         ]
                     ]
+                yield "recursive", Encode.bool(this.Recursive)
                 ]
 
-    let deleteAssets (assets: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let request : AssetsDeleteRequest = { Items = assets }
+    let deleteAssets (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let request : AssetsDeleteRequest = {
+            Items = assets
+            Recursive = recursive
+        }
         let body = Encode.stringify  request.Encoder
 
         POST
@@ -56,11 +61,11 @@ module DeleteAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: Identity seq) (next: NextHandler<bool,'a>) =
-        DeleteAssets.deleteAssets assets fetch next
+    let deleteAssets (assets: Identity seq, recursive: bool) (next: NextHandler<bool,'a>) =
+        DeleteAssets.deleteAssets (assets, recursive) fetch next
 
-    let deleteAssetsAsync<'a> (assets: Identity seq) : HttpContext -> Async<Context<bool>> =
-        DeleteAssets.deleteAssets assets fetch Async.single
+    let deleteAssetsAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<bool>> =
+        DeleteAssets.deleteAssets (assets, recursive) fetch Async.single
 
 [<Extension>]
 type DeleteAssetsExtensions =
@@ -70,10 +75,10 @@ type DeleteAssetsExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member DeleteAssetsAsync(this: Client, assetIds: int64 seq) : Task<bool> =
+    static member DeleteAssetsAsync(this: Client, assetIds: int64 seq, recursive: bool) : Task<bool> =
         task {
             let ids = Seq.map Identity.Id assetIds
-            let! ctx = deleteAssetsAsync ids this.Ctx
+            let! ctx = deleteAssetsAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok response ->
                 return true
