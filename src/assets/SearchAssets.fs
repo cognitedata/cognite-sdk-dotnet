@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+﻿namespace Cognite.Sdk
 
 open System.IO
 open System.Collections.Generic
@@ -34,22 +34,44 @@ module SearchAssets =
                     | CaseName name -> yield "name", Encode.string name
                     | CaseDescription desc -> yield "description", Encode.string desc
             ]
+    type TimeRange = {
+        Max: int64
+        Min: int64
+    } with
+        member this.Encoder =
+            Encode.object [
+                yield "max", Encode.int64 this.Max
+                yield "min", Encode.int64 this.Min
+            ]
 
     type Filter =
         private
         | CaseName of string
         | CaseParentIds of int64 seq
+        | CaseRootIds of Identity seq
         | CaseMetaData of Map<string, string>
         | CaseSource of string
+        | CaseCreatedTime of TimeRange
+        | CaseLastUpdatedTime of TimeRange
+        | CaseRoot of bool
+        | CaseExternalIdPrefix of string
 
         /// Name of asset. Often referred to as tag.
         static member Name name = CaseName name
         /// Filter out assets that have one of the ids listed as parent. The
         static member ParentIds ids = CaseParentIds ids
+        /// Filter out assets without rootId in list
+        static member RootIds rootIds = CaseRootIds rootIds
+        /// Filter on metadata
         static member MetaData (metaData : IDictionary<string, string>) =
             metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
         /// The source of this asset.
         static member Source source = CaseSource source
+        /// Min/Max created time for this asset
+        static member CreatedTime createdTime = CaseCreatedTime createdTime
+        /// Min/Max last updated time for this asset
+        static member LastUpdatedTime lastUpdatedTime = CaseLastUpdatedTime lastUpdatedTime
+
 
         static member Encode (filters: Filter seq) =
             Encode.object [
@@ -57,8 +79,16 @@ module SearchAssets =
                     match filter with
                     | CaseName name -> yield "name", Encode.string name
                     | CaseParentIds ids -> yield "parentIds", Encode.int53seq ids
+                    | CaseRootIds ids -> yield "rootIds", Encode.list [
+                        for id in ids do
+                            yield id.Encoder
+                        ]
                     | CaseSource source -> yield "source", Encode.string source
                     | CaseMetaData md -> yield "metaData", Encode.propertyBag md
+                    | CaseCreatedTime time -> yield "createdTime", time.Encoder
+                    | CaseLastUpdatedTime time -> yield "lastUpdatedTime", time.Encoder
+                    | CaseRoot root -> yield "root", Encode.bool root
+                    | CaseExternalIdPrefix prefix -> yield "externalIdPrefix", Encode.string prefix
             ]
 
     type Assets = {
