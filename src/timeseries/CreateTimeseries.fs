@@ -63,7 +63,7 @@ module CreateTimeseriesApi =
     let createTimeseries (items: TimeseriesWriteDto list) (next: NextHandler<CreateTimeseries.TimeseriesResponse,'a>) =
         CreateTimeseries.createTimeseries items fetch next
 
-    let createTimeseriesAsync (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, CreateTimeseries.TimeseriesResponse>) =
+    let createTimeseriesAsync (items: seq<TimeseriesWriteDto>) =
         CreateTimeseries.createTimeseries items fetch Async.single
 
 [<Extension>]
@@ -77,7 +77,7 @@ type CreateTimeseriesExtensions =
     static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesWritePoco>) : Task<TimeseriesReadPoco seq> =
         task {
             let items' = items |> Seq.map TimeseriesWriteDto.FromPoco
-            let! ctx = createTimeseriesAsync items' fetch this.Ctx
+            let! ctx = createTimeseriesAsync items' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response.Items |> Seq.map (fun ts -> ts.ToPoco ())

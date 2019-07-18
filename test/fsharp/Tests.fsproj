@@ -10,6 +10,8 @@
     <Compile Include="Common.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="Timeseries.fs" />
+    <Compile Include="integration/Timeseries.fs" />
+    <Compile Include="integration/Datapoints.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
