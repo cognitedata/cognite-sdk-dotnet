@@ -44,8 +44,7 @@ module FilterAssets =
             if not (Seq.isEmpty filters) then
                 yield "filter", SearchAssets.Filter.Encode filters
             if not (Seq.isEmpty options) then
-                for option in options do
-                    yield Option.Render option
+                yield! options |> Seq.map Option.Render
         ]
     let filterAssets (options: Option seq) (filters: SearchAssets.Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder id
