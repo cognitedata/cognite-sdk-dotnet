@@ -36,6 +36,7 @@ module GetTimeseries =
         | CaseIncludeMetaData of bool
         | CaseCursor of string
         | CaseAssetIds of int64 seq
+        | CaseRootAssetIds of int64 seq
 
         static member Limit limit =
             CaseLimit limit
@@ -45,7 +46,9 @@ module GetTimeseries =
             CaseCursor cursor
         static member AssetIds ids =
             CaseAssetIds ids
-
+        static member RootAssetIds ids =
+            CaseRootAssetIds ids
+        
     let renderOption (option: Option) =
         match option with
         | CaseLimit limit -> "limit", limit.ToString ()
@@ -54,6 +57,9 @@ module GetTimeseries =
         | CaseAssetIds ids ->
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "assetIds", sprintf "[%s]" (String.Join (",", list))
+        | CaseRootAssetIds ids ->
+            let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
+            "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
     let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
