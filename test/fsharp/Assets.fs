@@ -216,3 +216,49 @@ let ``Update single asset with is Ok`` () = async {
     test <@ res.Request.Resource = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
+
+[<Fact>]
+let ``Attempt searching assets`` () = async {
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Fetch.fromJson json
+
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", "test-key")
+    let options = [
+        SearchAssets.Option.Name "str"
+    ]
+    let filter = [
+        SearchAssets.Filter.Name "string"
+    ]
+
+    let! res = (fetch, Async.single, ctx) |||> SearchAssets.searchAssets 100 options filter
+
+    test <@ Result.isOk res. Result @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/assets/search" @>
+    test <@ res.Request.Query.IsEmpty @>
+}
+
+[<Fact>]
+let ``Attempt filtering assets`` () = async {
+    let json = File.ReadAllText "Assets.json"
+    let fetch = Fetch.fromJson json
+
+    let ctx =
+        defaultContext
+        |> addHeader ("api-key", "test-key")
+    let options = [
+        FilterAssets.Option.Limit 100
+    ]
+    let filter = [
+        SearchAssets.Filter.Name "string"
+    ]
+
+    let! res = (fetch, Async.single, ctx) |||> FilterAssets.filterAssets options filter
+
+    test <@ Result.isOk res. Result @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/assets/list" @>
+    test <@ res.Request.Query.IsEmpty @>
+}

@@ -339,5 +339,80 @@ namespace Tests
                 Assert.True(value.Integer == 4234);
             }
         }
+        [Fact]
+        public async Task TestSearchAssets()
+        {
+            HttpRequestMessage request = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var json = File.ReadAllText("Assets.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+
+            var options = new List<SearchAssets.Option> {
+                SearchAssets.Option.Name("str")
+            };
+            var filters = new List<SearchAssets.Filter> {
+                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                SearchAssets.Filter.Name("string")
+            };
+
+            var result = await client.SearchAssetsAsync(100, options, filters);
+
+            Assert.NotEmpty(result);
+        }
+        [Fact]
+        public async Task TestFilterAssets()
+        {
+            HttpRequestMessage request = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var json = File.ReadAllText("Assets.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+
+            var options = new List<FilterAssets.Option> {
+                FilterAssets.Option.Limit(100)
+            };
+            var filters = new List<SearchAssets.Filter> {
+                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                SearchAssets.Filter.Name("string")
+            };
+
+            var result = await client.FilterAssetsAsync(options, filters);
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result.Items);
+        }
     }
 }
