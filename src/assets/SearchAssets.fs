@@ -1,5 +1,6 @@
 ﻿namespace Cognite.Sdk
 
+open System
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
@@ -35,13 +36,13 @@ module SearchAssets =
                     | CaseDescription desc -> yield "description", Encode.string desc
             ]
     type TimeRange = {
-        Max: int64
-        Min: int64
+        Max: DateTime
+        Min: DateTime
     } with
         member this.Encoder =
             Encode.object [
-                yield "max", Encode.int64 this.Max
-                yield "min", Encode.int64 this.Min
+                yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
+                yield "min", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
             ]
 
     type Filter =

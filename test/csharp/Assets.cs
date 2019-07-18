@@ -368,8 +368,7 @@ namespace Tests
                 SearchAssets.Option.Name("str")
             };
             var filters = new List<SearchAssets.Filter> {
-                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange((long)DateTime.Now.Subtract(DateTime.UnixEpoch).Subtract(TimeSpan.FromHours(1)).TotalMilliseconds,
-                    (long)DateTime.Now.Subtract(DateTime.UnixEpoch).Subtract(TimeSpan.FromHours(1)).TotalMilliseconds)),
+                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
                 SearchAssets.Filter.Name("string")
             };
 
@@ -406,8 +405,7 @@ namespace Tests
                 FilterAssets.Option.Limit(100)
             };
             var filters = new List<SearchAssets.Filter> {
-                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange((long)DateTime.Now.Subtract(DateTime.UnixEpoch).Subtract(TimeSpan.FromHours(1)).TotalMilliseconds,
-                    (long)DateTime.Now.Subtract(DateTime.UnixEpoch).Subtract(TimeSpan.FromHours(1)).TotalMilliseconds)),
+                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
                 SearchAssets.Filter.Name("string")
             };
 
