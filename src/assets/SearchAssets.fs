@@ -42,7 +42,7 @@ module SearchAssets =
         member this.Encoder =
             Encode.object [
                 yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
-                yield "min", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
+                yield "min", DateTimeOffset(this.Min).ToUnixTimeMilliseconds() |> Encode.int64
             ]
 
     type Filter =
