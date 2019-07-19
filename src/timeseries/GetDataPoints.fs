@@ -122,6 +122,14 @@ module GetDataPointsApi =
             Options = options
         }
 
+    let getDataPoints (id: int64) (options: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+        let options' : GetDataPoints.Options seq = Seq.singleton { Id = id; Options = options }
+        GetDataPoints.getDataPoints options'  Seq.empty fetch next
+
+    let getDataPointsAsync (id: int64) (options: GetDataPoints.Option seq) =
+        let options' : GetDataPoints.Options seq = Seq.singleton { Id = id; Options = options }
+        GetDataPoints.getDataPoints options' Seq.empty fetch Async.single
+
     /// **Description**
     ///
     /// Retrieves a list of data points from multiple time series in the same project
@@ -134,14 +142,25 @@ module GetDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getDataPoints (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+    let getDataPointsMultiple (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
         GetDataPoints.getDataPoints options defaultOptions fetch next
 
-    let getDataPointsAsync (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq)=
+    let getDataPointsMultipleAsync (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq)=
         GetDataPoints.getDataPoints options defaultOptions fetch Async.single
 
 [<Extension>]
 type GetDataPointsExtensions =
+    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.Option seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
+        task {
+            let! ctx = getDataPointsAsync id options this.Ctx
+            match ctx.Result with
+            | Ok response ->
+                return response |> Seq.map (fun points -> points.ToPoco ())
+            | Error error ->
+                let! err = error2Exception error
+                return raise err
+        }
+
     // <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
@@ -151,10 +170,10 @@ type GetDataPointsExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetDataPointsAsync (this: Client) (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
+    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Options seq, defaultOptions: GetDataPoints.Option seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
 
         task {
-            let! ctx = getDataPointsAsync options defaultOptions this.Ctx
+            let! ctx = getDataPointsMultipleAsync options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
