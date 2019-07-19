@@ -24,8 +24,7 @@ let getAssetsExample (ctx : HttpContext) = async {
 }
 
 let updateAssetsExample (ctx : HttpContext) = async {
-
-    let! rsp = updateAssets [(84025677715833721L, [ UpdateAssets.Option.SetName "string3" ] )] Async.single ctx
+    let! rsp = updateAssetsAsync [(84025677715833721L, [ UpdateAssets.Option.SetName "string3" ] )]  ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -33,7 +32,7 @@ let updateAssetsExample (ctx : HttpContext) = async {
 
 let searchAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = searchAssets 10 [SearchAssets.Option.Name "VAL"] [] Async.single ctx
+    let! rsp = searchAssetsAsync 10 [SearchAssets.Option.Name "VAL"] [] ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -66,8 +65,8 @@ let createAssetsExample ctx = async {
             yield createAssets chunk |> retry 500<ms> 5
     ]
 
-    let! rsp = request Async.single ctx
-    match rsp.Result with
+    let! result = runHandler request ctx
+    match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
