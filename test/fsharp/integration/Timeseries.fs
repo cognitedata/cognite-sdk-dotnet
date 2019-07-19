@@ -29,7 +29,7 @@ let writeCtx = createCtx testApiKeyWrite testApiProjectWrite
 let ``Get timeseries by ids is Ok`` () = async {
     // Arrange
     let ctx = readCtx
-    let id = Identity.Id 613312137748079L
+    let id = Identity.Id 126999346342304L
 
     // Act
     let! res = getTimeseriesByIdsAsync [ id ] ctx

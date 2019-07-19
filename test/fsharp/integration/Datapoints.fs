@@ -29,10 +29,10 @@ let ``Get datapoints by ids is Ok`` () = async {
     // Arrange
     let ctx = readCtx
     let defaultOptions = [
-        GetDataPoints.Option.Start "1562907600000"
-        GetDataPoints.Option.End "1562918400000"
+        GetDataPoints.Option.Start "1559797200000"
+        GetDataPoints.Option.End "1559808000000"
     ]
-    let id = 613312137748079L
+    let id = 126999346342304L
 
     // Act
     let! res = getDataPointsAsync defaultOptions [ (id, Seq.empty) ] ctx
@@ -60,7 +60,7 @@ let ``Get datapoints by ids is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
-    test <@ Seq.length datapoints = 16 @>
+    test <@ Seq.length datapoints = 15 @>
     test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
