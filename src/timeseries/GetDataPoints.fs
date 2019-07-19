@@ -12,7 +12,7 @@ open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
-open System
+
 
 [<RequireQualifiedAccess>]
 module GetDataPoints =
@@ -103,7 +103,7 @@ module GetDataPoints =
         ]
     let getDataPoints (options: Options seq) (defaultOptions: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
-        let request = renderDataQuery  options defaultOptions
+        let request = renderDataQuery options defaultOptions
         let body = Encode.stringify request
 
         POST
@@ -137,7 +137,7 @@ module GetDataPointsApi =
     ///
     let getDataPoints (id: int64) (options: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
         let options' : GetDataPoints.Options seq = Seq.singleton { Id = id; Options = options }
-        GetDataPoints.getDataPoints options'  Seq.empty fetch next
+        GetDataPoints.getDataPoints options' Seq.empty fetch next
 
     /// **Description**
     ///
