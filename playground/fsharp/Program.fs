@@ -15,6 +15,20 @@ type Config = {
     Project: string
 }
 
+let getDatapointsExample (ctx : HttpContext) = async {
+    let! rsp =
+        getDataPointsAsync [
+            dataPointOptions 20713436708L [
+                GetDataPoints.Option.Start "1524851819000"
+                GetDataPoints.Option.End "1524859650000"
+            ]
+        ] [] ctx
+
+    match rsp.Result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
+
 let getAssetsExample (ctx : HttpContext) = async {
     let! rsp = getAssetsAsync [ GetAssets.Option.Limit 2 ] ctx
 
@@ -88,7 +102,7 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        do! searchAssetsExample ctx
+        do! getDatapointsExample ctx
     } |> Async.RunSynchronously
 
     0 // return an integer exit code
