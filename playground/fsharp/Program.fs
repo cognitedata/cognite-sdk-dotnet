@@ -17,7 +17,7 @@ type Config = {
 
 let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
-        getDataPointsAsync [
+        getDataPointsMultipleAsync [
             dataPointOptions 20713436708L [
                 GetDataPoints.Option.Start "1524851819000"
                 GetDataPoints.Option.End "1524859650000"
