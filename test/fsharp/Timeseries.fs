@@ -1,14 +1,11 @@
 module Tests.Timeseries
 
-open System
 open System.IO
 
 open Xunit
 open Swensen.Unquote
 
 open Cognite.Sdk
-open Cognite.Sdk.Timeseries
-open Cognite.Sdk.Request
 
 
 [<Fact>]
