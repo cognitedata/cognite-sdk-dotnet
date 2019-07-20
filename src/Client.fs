@@ -1,7 +1,7 @@
-namespace Cognite.Sdk.Api
+namespace Fusion.Api
 
-open Cognite.Sdk
-open Cognite.Sdk.Request
+open Fusion
+open Fusion.Request
 open Microsoft.Extensions.DependencyInjection
 open System.Net.Http
 

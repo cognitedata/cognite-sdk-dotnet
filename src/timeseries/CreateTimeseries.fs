@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+namespace Fusion
 
 open System
 open System.IO
@@ -9,10 +9,10 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
-open Cognite.Sdk
-open Cognite.Sdk.Common
-open Cognite.Sdk.Api
-open Cognite.Sdk.Timeseries
+open Fusion
+open Fusion.Common
+open Fusion.Api
+open Fusion.Timeseries
 
 [<RequireQualifiedAccess>]
 module CreateTimeseries =

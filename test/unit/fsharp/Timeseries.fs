@@ -5,7 +5,7 @@ open System.IO
 open Xunit
 open Swensen.Unquote
 
-open Cognite.Sdk
+open Fusion
 
 
 [<Fact>]

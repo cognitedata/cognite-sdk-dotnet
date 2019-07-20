@@ -2,7 +2,7 @@ namespace Tests
 
 open System
 open System.IO
-open Cognite.Sdk
+open Fusion
 open System.Text
 
 

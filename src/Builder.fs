@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+namespace Fusion
 
 //open FSharp.Data
 open System.Net

@@ -1,4 +1,4 @@
-﻿namespace Cognite.Sdk
+﻿namespace Fusion
 
 open System.IO
 open System.Net.Http
@@ -8,9 +8,9 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
-open Cognite.Sdk
-open Cognite.Sdk.Api
-open Cognite.Sdk.Common
+open Fusion
+open Fusion.Api
+open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module DeleteAssets =

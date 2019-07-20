@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+namespace Fusion
 
 open System.IO
 open System.Net.Http
@@ -7,10 +7,10 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
-open Cognite.Sdk
-open Cognite.Sdk.Common
-open Cognite.Sdk.Api
-open Cognite.Sdk.Assets
+open Fusion
+open Fusion.Common
+open Fusion.Api
+open Fusion.Assets
 
 [<RequireQualifiedAccess>]
 module GetAsset =
