@@ -1,7 +1,7 @@
-﻿namespace Cognite.Sdk.Timeseries
+﻿namespace Fusion.Timeseries
 
 open System
-open Cognite.Sdk
+open Fusion
 open System.Collections.Generic
 
 [<CLIMutable>]

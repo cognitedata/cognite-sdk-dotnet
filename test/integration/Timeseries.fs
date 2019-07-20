@@ -6,8 +6,8 @@ open System.Net.Http
 open Xunit
 open Swensen.Unquote
 
-open Cognite.Sdk
-open Cognite.Sdk.Timeseries
+open Fusion
+open Fusion.Timeseries
 open Tests
 
 let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"

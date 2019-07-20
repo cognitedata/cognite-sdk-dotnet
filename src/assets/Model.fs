@@ -1,4 +1,4 @@
-namespace Cognite.Sdk.Assets
+namespace Fusion.Assets
 
 open System
 open System.Collections.Generic

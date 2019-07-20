@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+namespace Fusion
 
 open System
 open System.Net

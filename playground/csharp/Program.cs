@@ -4,10 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 
-using Cognite.Sdk;
-using Cognite.Sdk.Api;
-using Cognite.Sdk.Timeseries;
-using Cognite.Sdk.Assets;
+using Fusion;
+using Fusion.Api;
+using Fusion.Timeseries;
+using Fusion.Assets;
 
 namespace csharp
 {

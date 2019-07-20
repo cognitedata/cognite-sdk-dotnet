@@ -6,7 +6,7 @@ open System.Net.Http
 open Xunit
 open Swensen.Unquote
 
-open Cognite.Sdk
+open Fusion
 open Tests
 
 let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"

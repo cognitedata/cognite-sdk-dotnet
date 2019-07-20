@@ -5,8 +5,8 @@ open System.Net.Http
 
 open FsConfig
 
-open Cognite.Sdk
-open Cognite.Sdk.Assets
+open Fusion
+open Fusion.Assets
 
 type Config = {
     [<CustomName("API_KEY")>]

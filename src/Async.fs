@@ -1,4 +1,4 @@
-namespace Cognite.Sdk
+namespace Fusion
 
 /// Async extensions
 module Async =

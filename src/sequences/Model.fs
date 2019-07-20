@@ -1,6 +1,6 @@
-namespace Cognite.Sdk.Sequences
+namespace Fusion.Sequences
 
-open Cognite.Sdk.Common
+open Fusion.Common
 
 type ValueType =
     | String

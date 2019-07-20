@@ -7,9 +7,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Cognite.Sdk;
-using Cognite.Sdk.Assets;
-using Cognite.Sdk.Api;
+using Fusion;
+using Fusion.Assets;
+using Fusion.Api;
 using System.Linq;
 
 namespace Tests

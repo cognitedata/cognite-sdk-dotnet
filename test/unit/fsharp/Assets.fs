@@ -5,8 +5,8 @@ open System.IO
 open Xunit
 open Swensen.Unquote
 
-open Cognite.Sdk
-open Cognite.Sdk.Assets
+open Fusion
+open Fusion.Assets
 
 
 [<Fact>]
