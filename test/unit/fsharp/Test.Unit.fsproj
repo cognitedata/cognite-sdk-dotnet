@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="../../Shared/Common.fs" />
+    <Compile Include="../../shared/Common.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="Timeseries.fs" />
     <Compile Include="Program.fs" />
