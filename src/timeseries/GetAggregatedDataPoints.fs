@@ -152,7 +152,7 @@ module GetAggregatedDataPoints =
             | _ -> None
 
     /// Query parameters
-    type Option =
+    type QueryOption =
         private
         | CaseStart of string
         | CaseEnd of string
@@ -171,7 +171,13 @@ module GetAggregatedDataPoints =
         static member Limit limit =
             CaseLimit limit
 
-    let renderQuery (param: Option) : string*Thoth.Json.Net.JsonValue =
+     [<CLIMutable>]
+    type Option = {
+        Id: int64
+        QueryOptions: QueryOption seq
+    }
+
+    let renderQueryOption (param: QueryOption) : string*Thoth.Json.Net.JsonValue =
         match param with
         | CaseStart start -> "start", Encode.string start
         | CaseEnd end'  -> "end", Encode.string end'
@@ -181,24 +187,22 @@ module GetAggregatedDataPoints =
         | CaseGranularity gr -> "granularity", Encode.string (gr.ToString ())
         | CaseLimit limit -> "limit", Encode.int limit
 
-    let renderDataQuery (defaultQuery: Option seq) (args: (int64*(Option seq)) seq) =
+    let renderDataQuery (options: Option seq) (defaultOptions: QueryOption seq) =
         Encode.object [
             yield "items", Encode.list [
-                for (id, arg) in args do
+                for option in options do
                     yield Encode.object [
-                        for param in arg do
-                            yield renderQuery param
-                        yield "id", Encode.int64 id
+                        yield! option.QueryOptions |> Seq.map renderQueryOption
+                        yield "id", Encode.int64 option.Id
                     ]
             ]
 
-            for param in defaultQuery do
-                yield renderQuery param
+            yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let getAggregatedDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getAggregatedDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
-        let request = renderDataQuery defaultOptions options
+        let request = renderDataQuery options defaultOptions
         let body = Encode.stringify request
 
         POST
@@ -210,40 +214,98 @@ module GetAggregatedDataPoints =
 
 [<AutoOpen>]
 module GetAggregatedDataPointsApi =
+    /// **Description**
+    ///
+    /// Retrieves a list of aggregated data points from single time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `id` - Id of timeseries to retrieve datapoints from.
+    ///   * `options` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `next` - Next handler to invoke after this handler.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
+    ///
+    let getAggregatedDataPoints (id: int64) (options: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
+        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch next
 
     /// **Description**
     ///
-    /// Retrieves a list of data points from multiple time series in the same project
+    /// Retrieves a list of aggregated data points from single time series in the same project
     ///
     /// **Parameters**
-    ///   * `name` - parameter of type `string`
-    ///   * `query` - parameter of type `QueryParams seq`
+    ///   * `id` - Id of timeseries to retrieve datapoints from.
+    ///   * `options` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
+    ///
+    let getAggregatedDataPointsAsync (id: int64) (options: GetAggregatedDataPoints.QueryOption seq) =
+        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch Async.single
+    /// **Description**
+    ///
+    /// Retrieves a list of aggregated data points from multiple time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `options` - Sequence of `GetDataPoints.Options` describing the query for each timeseries.
+    ///   * `defaultOptions` - Sequence of `GetDataPoints.Option` to be used as default options.
     ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let getAggregatedDataPoints (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
-        GetAggregatedDataPoints.getAggregatedDataPoints defaultOptions options fetch next
+    let getAggregatedDataPointsMultiple (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
+        GetAggregatedDataPoints.getAggregatedDataPoints options defaultOptions fetch next
 
-    let getAggregatedDataPointsAsync (defaultOptions: GetAggregatedDataPoints.Option seq) (options: (int64*(GetAggregatedDataPoints.Option seq)) seq) =
-        GetAggregatedDataPoints.getAggregatedDataPoints defaultOptions options fetch Async.single
+    /// **Description**
+    ///
+    /// Retrieves a list of aggregated data points from multiple time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `options` - Sequence of `GetDataPoints.Options` describing the query for each timeseries.
+    ///   * `defaultOptions` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
+    ///
+    let getAggregatedDataPointsMultipleAsync (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) =
+        GetAggregatedDataPoints.getAggregatedDataPoints options defaultOptions fetch Async.single
 
 [<Extension>]
 type GetAggregatedDataPointsExtensions =
     /// <summary>
-    /// Retrieves a list of data points from multiple time series in the same project.
+    /// Retrieves a list of aggregated data points from single time series in the same project.
     /// </summary>
-    /// <param name="defaultQuery">Parameters describing a query for multiple datapoints. If fields in individual
+    /// <param name="id">Id of timeseries to query for datapoints. </param>
+    /// <param name="options">Options describing a query for datapoints.</param>
+    /// <returns>Http status code.</returns>
+    static member GetAggregatedDataPointsAsync (this: Client, id : int64, options: GetAggregatedDataPoints.QueryOption seq) : Task<seq<GetAggregatedDataPoints.DataPointsPoco>> =
+        task {
+            let! ctx = getAggregatedDataPointsAsync id options this.Ctx
+            match ctx.Result with
+            | Ok response ->
+                return response |> Seq.map (fun points -> points.ToPoco ())
+            | Error error ->
+                let! err = error2Exception error
+                return raise err
+        }
+
+    /// <summary>
+    /// Retrieves a list of aggregated data points from multiple time series in the same project.
+    /// </summary>
+    /// <param name="options">Parameters describing a query for multiple datapoints.</param>
+    /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
-    /// <param name="query">Parameters describing a query for multiple datapoints.</param>
-    /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsAsync (this: Client) (defaultOptions: GetAggregatedDataPoints.Option seq) (options: ValueTuple<int64, GetAggregatedDataPoints.Option seq> seq) : Task<GetAggregatedDataPoints.DataPointsPoco seq> =
+    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq) : Task<GetAggregatedDataPoints.DataPointsPoco seq> =
         task {
-            let options' = options |> Seq.map (fun struct (id, options) -> id, options)
-            let! ctx = getAggregatedDataPointsAsync defaultOptions options' this.Ctx
+            let! ctx = getAggregatedDataPointsMultipleAsync options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
