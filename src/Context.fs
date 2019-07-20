@@ -48,7 +48,7 @@ module Request =
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
     let defaultRequest =
-        let ua = sprintf "Fusion.Net / v%d.%d.%d (Cognite)" version.Major version.Minor version.Build
+        let ua = sprintf "Fusion.NET / v%d.%d.%d (Cognite)" version.Major version.Minor version.Build
         {
             HttpClient = null
             Method = RequestMethod.GET
