@@ -31,6 +31,7 @@ type HttpRequest = {
     Headers: (string * string) list
     Project: string
     Version: ApiVersion
+    ServiceUrl: string
 }
 
 type Context<'a> = {
@@ -62,6 +63,7 @@ module Request =
             ]
             Project = String.Empty
             Version = V05
+            ServiceUrl = "https://api.cognitedata.com"
         }
     let defaultResult =
         Ok (new HttpResponseMessage (HttpStatusCode.NotFound))
@@ -96,3 +98,6 @@ module Request =
 
     let setHttpClient (client: HttpClient) (context: HttpContext) =
         { context with Request = { context.Request with HttpClient = client } }
+
+    let setServiceUrl (serviceUrl: string) (context: HttpContext) =
+        { context with Request = { context.Request with ServiceUrl = serviceUrl } }
