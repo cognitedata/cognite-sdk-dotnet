@@ -249,7 +249,7 @@ module Handler =
             let query = ctx.Request.Query
 
             let url =
-                let result = sprintf "%s/api/%s/projects/%s%s" ctx.Service (ctx.Request.Version.ToString ()) ctx.Request.Project res
+                let result = sprintf "%s/api/%s/projects/%s%s" ctx.Request.ServiceUrl (ctx.Request.Version.ToString ()) ctx.Request.Project res
                 if Seq.isEmpty query then
                     result
                 else
