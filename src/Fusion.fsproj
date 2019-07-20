@@ -5,7 +5,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>0.8.0</Version>
     <PackageVersion>0.8.0</PackageVersion>
-    <PackageId>Fusion.Net</PackageId>
+    <PackageId>Fusion.NET</PackageId>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>
