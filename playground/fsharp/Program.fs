@@ -18,10 +18,13 @@ type Config = {
 let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
         getDataPointsMultipleAsync [
-            dataPointOptions 20713436708L [
-                GetDataPoints.Option.Start "1524851819000"
-                GetDataPoints.Option.End "1524859650000"
-            ]
+            {
+                Id = 20713436708L
+                QueryOptions = [
+                    GetDataPoints.QueryOption.Start "1524851819000"
+                    GetDataPoints.QueryOption.End "1524859650000"
+                ]
+            }
         ] [] ctx
 
     match rsp.Result with

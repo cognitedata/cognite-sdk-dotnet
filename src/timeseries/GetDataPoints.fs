@@ -12,6 +12,7 @@ open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
+open System.Collections.Generic
 
 
 [<RequireQualifiedAccess>]
@@ -58,7 +59,7 @@ module GetDataPoints =
                 })
 
     /// Query parameters
-    type Option =
+    type QueryOption =
         private
         | CaseStart of string
         | CaseEnd of string
@@ -74,36 +75,38 @@ module GetDataPoints =
         static member IncludeOutsidePoints iop =
             CaseIncludeOutsidePoints iop
 
+    type DefaultOption = QueryOption
+
     [<CLIMutable>]
-    type Options = {
+    type Option = {
         Id: int64
-        Options: Option seq
+        QueryOptions: QueryOption seq
     }
 
-    let renderOption (option: Option) : string*Thoth.Json.Net.JsonValue =
+    let renderQueryOption (option: QueryOption) : string*Thoth.Json.Net.JsonValue =
+
+        let a : ICollection<int> = ResizeArray () :> _
+
         match option with
         | CaseStart start -> "start", Encode.string start
         | CaseEnd end'  -> "end", Encode.string end'
         | CaseLimit limit -> "limit", Encode.int limit
         | CaseIncludeOutsidePoints iop -> "includeOutsidePoints", Encode.bool iop
 
-    let renderDataQuery (options: Options seq) (defaultOptions: Option seq) =
+    let renderRequest (options: Option seq) (defaultOptions: QueryOption seq) =
         Encode.object [
             yield "items", Encode.list [
                 for option in options do
                     yield Encode.object [
-                        for opt in option.Options do
-                            yield renderOption opt
                         yield "id", Encode.int64 option.Id
+                        yield! option.QueryOptions |> Seq.map renderQueryOption
                     ]
             ]
-
-            for param in defaultOptions do
-                yield renderOption param
+            yield! defaultOptions |> Seq.map renderQueryOption
         ]
-    let getDataPoints (options: Options seq) (defaultOptions: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
-        let request = renderDataQuery options defaultOptions
+        let request = renderRequest options defaultOptions
         let body = Encode.stringify request
 
         POST
@@ -115,12 +118,6 @@ module GetDataPoints =
 
 [<AutoOpen>]
 module GetDataPointsApi =
-    /// Helper function to create a DataPointOptions record for a single timeseries from and id and Option sequence.
-    let dataPointOptions (id: int64) (options: GetDataPoints.Option seq) : GetDataPoints.Options =
-        {
-            Id = id
-            Options = options
-        }
 
     /// **Description**
     ///
@@ -135,8 +132,8 @@ module GetDataPointsApi =
     /// **Output Type**
     ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
-    let getDataPoints (id: int64) (options: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
-        let options' : GetDataPoints.Options seq = Seq.singleton { Id = id; Options = options }
+    let getDataPoints (id: int64) (options: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
         GetDataPoints.getDataPoints options' Seq.empty fetch next
 
     /// **Description**
@@ -151,8 +148,8 @@ module GetDataPointsApi =
     /// **Output Type**
     ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
     ///
-    let getDataPointsAsync (id: int64) (options: GetDataPoints.Option seq) =
-        let options' : GetDataPoints.Options seq = Seq.singleton { Id = id; Options = options }
+    let getDataPointsAsync (id: int64) (options: GetDataPoints.QueryOption seq) =
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
         GetDataPoints.getDataPoints options' Seq.empty fetch Async.single
 
     /// **Description**
@@ -168,7 +165,7 @@ module GetDataPointsApi =
     /// **Output Type**
     ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
-    let getDataPointsMultiple (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+    let getDataPointsMultiple (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
         GetDataPoints.getDataPoints options defaultOptions fetch next
 
     /// **Description**
@@ -183,7 +180,7 @@ module GetDataPointsApi =
     /// **Output Type**
     ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
-    let getDataPointsMultipleAsync (options: GetDataPoints.Options seq) (defaultOptions: GetDataPoints.Option seq)=
+    let getDataPointsMultipleAsync (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq)=
         GetDataPoints.getDataPoints options defaultOptions fetch Async.single
 
 [<Extension>]
@@ -195,7 +192,7 @@ type GetDataPointsExtensions =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>Http status code.</returns>
-    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.Option seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
+    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
         task {
             let! ctx = getDataPointsAsync id options this.Ctx
             match ctx.Result with
@@ -214,7 +211,7 @@ type GetDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Options seq, defaultOptions: GetDataPoints.Option seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
+    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Option seq, defaultOptions: GetDataPoints.QueryOption seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
         task {
             let! ctx = getDataPointsMultipleAsync options defaultOptions this.Ctx
             match ctx.Result with
