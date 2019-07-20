@@ -1,5 +1,6 @@
-namespace Cognite.Sdk
+namespace Fusion
 
+open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -8,11 +9,10 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
-open Cognite.Sdk
-open Cognite.Sdk.Api
-open Cognite.Sdk.Common
-open Cognite.Sdk.Timeseries
-
+open Fusion
+open Fusion.Api
+open Fusion.Common
+open Fusion.Timeseries
 
 [<RequireQualifiedAccess>]
 module GetDataPoints =

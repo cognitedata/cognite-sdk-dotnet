@@ -1,7 +1,7 @@
-# Fusion.NET SDK
+# Fusion.Net SDK
 
-[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/CogniteSdk.NET/master)](https://jenkins.cognite.ai/job/github-builds/job/CogniteSdk.NET/job/master/)
-[![codecov](https://codecov.io/gh/cognitedata/CogniteSdk.NET/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/CogniteSdk.NET)
+[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/Fusion.Net/master)](https://jenkins.cognite.ai/job/github-builds/job/Fusion.Net/job/master/)
+[![codecov](https://codecov.io/gh/cognitedata/Fusion.Net/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/Fusion.Net)
 
 A cross platform and asynchronous SDK for accessing the Cognite Data Fusion API (v5) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard), thus it should work for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework). Made as part of the 2019 February 14th hackathon.
 
@@ -80,6 +80,7 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `updateAssets` - Update one or more assets.
 - `createAssets` - Create one or more assets.
 - `searchAssets` - Search for assets based on relevance.
+- `filterAssets` - Filter assets.
 
 ## Time Series API
 

@@ -1,8 +1,8 @@
-namespace Cognite.Sdk.Assets
+namespace Fusion.Assets
 
 open Thoth.Json.Net
 
-open Cognite.Sdk
+open Fusion
 
 
 [<AutoOpen>]

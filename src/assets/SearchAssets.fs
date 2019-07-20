@@ -1,4 +1,4 @@
-﻿namespace Cognite.Sdk
+﻿namespace Fusion
 
 open System
 open System.IO
@@ -10,10 +10,10 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
-open Cognite.Sdk
-open Cognite.Sdk.Assets
-open Cognite.Sdk.Api
-open Cognite.Sdk.Common
+open Fusion
+open Fusion.Assets
+open Fusion.Api
+open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module SearchAssets =

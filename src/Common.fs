@@ -1,5 +1,5 @@
 /// Common types for the SDK.
-namespace Cognite.Sdk
+namespace Fusion
 
 open System
 
