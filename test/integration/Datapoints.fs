@@ -28,14 +28,14 @@ let writeCtx = createCtx testApiKeyWrite testApiProjectWrite
 let ``Get datapoints by ids is Ok`` () = async {
     // Arrange
     let ctx = readCtx
-    let defaultOptions = [
-        GetDataPoints.Option.Start "1559797200000"
-        GetDataPoints.Option.End "1559808000000"
+    let options = [
+        GetDataPoints.QueryOption.Start "1559797200000"
+        GetDataPoints.QueryOption.End "1559808000000"
     ]
     let id = 126999346342304L
 
     // Act
-    let! res = getDataPointsAsync defaultOptions [ (id, Seq.empty) ] ctx
+    let! res = getDataPointsAsync id options ctx
 
     let resId =
         match res.Result with

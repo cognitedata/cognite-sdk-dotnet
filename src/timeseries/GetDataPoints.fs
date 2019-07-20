@@ -1,5 +1,6 @@
 namespace Fusion
 
+open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -12,7 +13,6 @@ open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Timeseries
-open System
 
 [<RequireQualifiedAccess>]
 module GetDataPoints =
@@ -58,7 +58,7 @@ module GetDataPoints =
                 })
 
     /// Query parameters
-    type Option =
+    type QueryOption =
         private
         | CaseStart of string
         | CaseEnd of string
@@ -74,31 +74,35 @@ module GetDataPoints =
         static member IncludeOutsidePoints iop =
             CaseIncludeOutsidePoints iop
 
-    let renderQuery (param: Option) : string*Thoth.Json.Net.JsonValue =
-        match param with
+    type DefaultOption = QueryOption
+
+    [<CLIMutable>]
+    type Option = {
+        Id: int64
+        QueryOptions: QueryOption seq
+    }
+
+    let renderQueryOption (option: QueryOption) : string*Thoth.Json.Net.JsonValue =
+        match option with
         | CaseStart start -> "start", Encode.string start
         | CaseEnd end'  -> "end", Encode.string end'
         | CaseLimit limit -> "limit", Encode.int limit
         | CaseIncludeOutsidePoints iop -> "includeOutsidePoints", Encode.bool iop
 
-    let renderDataQuery (defaultQuery: Option seq) (args: (int64*(Option seq)) seq) =
+    let renderRequest (options: Option seq) (defaultOptions: QueryOption seq) =
         Encode.object [
             yield "items", Encode.list [
-                for (id, arg) in args do
+                for option in options do
                     yield Encode.object [
-                        for param in arg do
-                            yield renderQuery param
-                        yield "id", Encode.int64 id
+                        yield "id", Encode.int64 option.Id
+                        yield! option.QueryOptions |> Seq.map renderQueryOption
                     ]
             ]
-
-            for param in defaultQuery do
-                yield renderQuery param
+            yield! defaultOptions |> Seq.map renderQueryOption
         ]
-
-    let getDataPoints (defaultOptions: Option seq) (options: (int64*(Option seq)) seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
-        let request = renderDataQuery defaultOptions options
+        let request = renderRequest options defaultOptions
         let body = Encode.stringify request
 
         POST
@@ -113,39 +117,99 @@ module GetDataPointsApi =
 
     /// **Description**
     ///
-    /// Retrieves a list of data points from multiple time series in the same project
+    /// Retrieves a list of data points from single time series in the same project
     ///
     /// **Parameters**
-    ///   * `name` - parameter of type `string`
-    ///   * `query` - parameter of type `QueryParams seq`
+    ///   * `id` - Id of timeseries to retrieve datapoints from.
+    ///   * `options` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `next` - Next handler to invoke after this handler.
     ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
+    ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
-    let getDataPoints (defaultArgs: GetDataPoints.Option seq) (args: (int64*(GetDataPoints.Option seq)) seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
-        GetDataPoints.getDataPoints defaultArgs args fetch next
+    let getDataPoints (id: int64) (options: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        GetDataPoints.getDataPoints options' Seq.empty fetch next
 
-    let getDataPointsAsync (defaultQueryParams: GetDataPoints.Option seq) (queryParams: (int64*(GetDataPoints.Option seq)) seq) =
-        GetDataPoints.getDataPoints defaultQueryParams queryParams fetch Async.single
+    /// **Description**
+    ///
+    /// Retrieves a list of data points from single time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `id` - Id of timeseries to retrieve datapoints from.
+    ///   * `options` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
+    ///
+    let getDataPointsAsync (id: int64) (options: GetDataPoints.QueryOption seq) =
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        GetDataPoints.getDataPoints options' Seq.empty fetch Async.single
+
+    /// **Description**
+    ///
+    /// Retrieves a list of data points from multiple time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `options` - Sequence of `GetDataPoints.Options` describing the query for each timeseries.
+    ///   * `defaultOptions` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `next` - Next handler to invoke after this handler.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
+    ///
+    let getDataPointsMultiple (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
+        GetDataPoints.getDataPoints options defaultOptions fetch next
+
+    /// **Description**
+    ///
+    /// Retrieves a list of data points from multiple time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `options` - Sequence of `GetDataPoints.Options` describing the query for each timeseries.
+    ///   * `defaultOptions` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
+    ///
+    let getDataPointsMultipleAsync (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq)=
+        GetDataPoints.getDataPoints options defaultOptions fetch Async.single
 
 [<Extension>]
 type GetDataPointsExtensions =
-    // <summary>
+
+    /// <summary>
+    /// Retrieves a list of data points from single time series in the same project.
+    /// </summary>
+    /// <param name="id">Id of timeseries to query for datapoints. </param>
+    /// <param name="options">Options describing a query for datapoints.</param>
+    /// <returns>Http status code.</returns>
+    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
+        task {
+            let! ctx = getDataPointsAsync id options this.Ctx
+            match ctx.Result with
+            | Ok response ->
+                return response |> Seq.map (fun points -> points.ToPoco ())
+            | Error error ->
+                let! err = error2Exception error
+                return raise err
+        }
+
+    /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
-    /// <param name="defaultQuery">Parameters describing a query for multiple datapoints. If fields in individual
+    /// <param name="options">Parameters describing a query for multiple datapoints.</param>
+    /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
-    /// <param name="query">Parameters describing a query for multiple datapoints.</param>
-    /// <param name="items">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetDataPointsAsync (this: Client) (defaultOptions: GetDataPoints.Option seq) (options: ValueTuple<int64, GetDataPoints.Option seq> seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
-
-        let options' = options |> Seq.map (fun struct (key, value) -> key, value)
-
+    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Option seq, defaultOptions: GetDataPoints.QueryOption seq) : Task<seq<GetDataPoints.DataPointsPoco>> =
         task {
-            let! ctx = getDataPointsAsync defaultOptions options' this.Ctx
+            let! ctx = getDataPointsMultipleAsync options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
