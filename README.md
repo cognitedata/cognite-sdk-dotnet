@@ -90,7 +90,8 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.
 - `searchTimeseries` - Retrieves a list of time series matching the specified criteria.
 
-- `getDataPoints` - Retrieves a list of data points from time series in a project
+- `getDataPoints` - Retrieves a list of data points from a single time series in a project
+- `getDataPointsMultiple` - Retrieves a list of data points from multiple time series in a project
 - `getAggregatedDataPoints` - Retrieves a list of aggregated data points from time series in a project
 - `getLatestDataPoint` - Retrieves the single latest data point in a time series.
 - `insertDataPoints` - Insert datapoints into a time series.

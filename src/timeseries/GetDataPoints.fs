@@ -12,7 +12,6 @@ open Cognite.Sdk
 open Cognite.Sdk.Api
 open Cognite.Sdk.Common
 open Cognite.Sdk.Timeseries
-open System.Collections.Generic
 
 
 [<RequireQualifiedAccess>]
@@ -84,9 +83,6 @@ module GetDataPoints =
     }
 
     let renderQueryOption (option: QueryOption) : string*Thoth.Json.Net.JsonValue =
-
-        let a : ICollection<int> = ResizeArray () :> _
-
         match option with
         | CaseStart start -> "start", Encode.string start
         | CaseEnd end'  -> "end", Encode.string end'
