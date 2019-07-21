@@ -7,6 +7,7 @@ open Swensen.Unquote
 
 open Fusion
 open Fusion.Assets
+open System.Net.Http
 
 
 [<Fact>]
@@ -23,7 +24,7 @@ let ``Get asset is Ok``() = async {
 
     // Assert
     test <@ Result.isOk response.Result @>
-    test <@ response.Request.Method = RequestMethod.GET @>
+    test <@ response.Request.Method = HttpMethod.Get @>
     test <@ response.Request.Resource = "/assets/42" @>
     test <@ response.Request.Query.IsEmpty @>
 }
@@ -104,7 +105,7 @@ let ``Get assets is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.GET @>
+    test <@ res.Request.Method = HttpMethod.Get @>
     test <@ res.Request.Resource = "/assets" @>
 
     test <@ res.Request.Query = [
@@ -132,7 +133,7 @@ let ``Create assets empty is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -162,7 +163,7 @@ let ``Create single asset is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets" @>
     test <@ res.Request.Query.IsEmpty @>
 
@@ -188,7 +189,7 @@ let ``Update single asset with no updates is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -212,7 +213,7 @@ let ``Update single asset with is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -235,7 +236,7 @@ let ``Attempt searching assets`` () = async {
     let! res = (fetch, Async.single, ctx) |||> SearchAssets.searchAssets 100 options filter
 
     test <@ Result.isOk res. Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/search" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -258,7 +259,7 @@ let ``Attempt filtering assets`` () = async {
     let! res = (fetch, Async.single, ctx) |||> FilterAssets.filterAssets options filter
 
     test <@ Result.isOk res. Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }

@@ -23,12 +23,23 @@ type ApiVersion =
         | V06 -> "0.6"
         | V10 -> "v1"
 
+type Content =
+    internal
+    | CaseJsonValue of JsonValue
+    | CaseProtobuf of Google.Protobuf.IMessage
+
+    static member JsonValue jsonValue = CaseJsonValue jsonValue
+    static member Protobuf protobuf = CaseProtobuf protobuf 
+
+type Response = JsonValue | Protobuf
+
 type HttpRequest = {
     HttpClient: HttpClient
-    Method: RequestMethod
-    Body: JsonValue option
+    Method: HttpMethod
+    Content: Content option
     Resource: string
     Query: (string * string) list
+    ResponseType: Response
     Headers: (string * string) list
     Project: string
     Version: ApiVersion
@@ -53,12 +64,12 @@ module Request =
         let ua = sprintf "Fusion.NET / v%d.%d.%d (Cognite)" version.Major version.Minor version.Build
         {
             HttpClient = null
-            Method = RequestMethod.GET
-            Body = None
+            Method = HttpMethod.Get
+            Content = None
             Resource = String.Empty
             Query = List.empty
+            ResponseType = JsonValue
             Headers = [
-                ("Accept", "application/json")
                 ("User-Agent", ua)
                 ("x-cdp-sdk", ua)
             ]

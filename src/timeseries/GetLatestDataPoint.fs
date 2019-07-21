@@ -44,15 +44,21 @@ module GetLatestDataPoint =
         Id: int64
         ExternalId: string option
         IsString: bool
-        DataPoints: DataPointDto seq
+        DataPoints: DataPointSeq
     } with
         static member Decoder : Decoder<DataPoints> =
             Decode.object (fun get ->
+                let isString = get.Required.Field "isString" Decode.bool
+                let dataPoints =
+                    if isString then
+                        get.Required.Field "datapoints" (Decode.list StringDataPointDto.Decoder) |> List.toSeq |> String
+                    else
+                        get.Required.Field "datapoints" (Decode.list NumericDataPointDto.Decoder) |> List.toSeq |> Numeric
                 {
                     Id = get.Required.Field "id" Decode.int64
                     ExternalId = get.Optional.Field "externalId" Decode.string
-                    IsString = get.Required.Field "isString" Decode.bool
-                    DataPoints = get.Required.Field "datapoints" (Decode.list DataPointDto.Decoder)
+                    IsString = isString
+                    DataPoints = dataPoints
                 })
 
     type DataResponse = {
@@ -71,7 +77,7 @@ module GetLatestDataPoint =
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody request.Encoder
+        >=> setContent (Content.JsonValue request.Encoder)
         >=> fetch
         >=> decoder
 

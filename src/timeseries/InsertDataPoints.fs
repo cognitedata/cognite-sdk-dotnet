@@ -12,6 +12,7 @@ open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Timeseries
+open Com.Cognite.V1.Timeseries.Proto
 
 [<RequireQualifiedAccess>]
 module InsertDataPoints =
@@ -19,32 +20,45 @@ module InsertDataPoints =
     let Url = "/timeseries/data"
 
     type DataPoints = {
-        DataPoints: DataPointDto seq
+        DataPoints: DataPointSeq
         Identity: Identity
     } with
-        member this.Encoder =
-            Encode.object [
-                yield ("datapoints", Seq.map (fun (it: DataPointDto) -> it.Encoder) this.DataPoints |> Encode.seq)
-                match this.Identity with
-                | CaseId id -> yield "id", Encode.int64 id
-                | CaseExternalId externalId -> yield "externalId", Encode.string externalId
-            ]
+        member this.ToProto : DataPointInsertionItem =
+            let dpItem = DataPointInsertionItem ()
+            match this.Identity with
+            | CaseId id -> dpItem.Id <- id
+            | CaseExternalId id -> dpItem.ExternalId <- id
+            match this.DataPoints with
+            | Numeric dps ->
+                dpItem.NumericDatapoints <- NumericDatapoints ()
+                dps |> Seq.map(fun dp ->
+                    let pdp = NumericDatapoint ()
+                    pdp.Timestamp <- dp.TimeStamp
+                    pdp.Value <- dp.Value 
+                    pdp
+                ) |> dpItem.NumericDatapoints.Datapoints.AddRange
+            | String dps ->
+                dpItem.StringDatapoints <- StringDatapoints ()
+                dps |> Seq.map(fun dp ->
+                    let pdp = StringDatapoint ()
+                    pdp.Timestamp <- dp.TimeStamp
+                    pdp.Value <- dp.Value
+                    pdp
+                ) |> dpItem.StringDatapoints.Datapoints.AddRange 
+            dpItem
 
-    type PointRequest = {
-        Items: DataPoints seq
-    } with
-        member this.Encoder =
-            Encode.object [
-                yield ("items", Seq.map (fun (it: DataPoints) -> it.Encoder) this.Items |> Encode.seq)
-            ]
+    let dataPointsToProtobuf (items: DataPoints seq) : DataPointInsertionRequest =
+        let request = DataPointInsertionRequest ()
+        items
+            |> Seq.map(fun item -> item.ToProto)
+            |> request.Items.AddRange
+        request
 
-    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
-        let request : PointRequest = { Items = items }
-        let body = Encode.stringify request.Encoder
+    let insertDataPoints (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
 
         POST
         >=> setVersion V10
-        >=> setBody request.Encoder
+        >=> setContent (Content.Protobuf items)
         >=> setResource Url
         >=> fetch
         >=> dispose
@@ -65,10 +79,13 @@ module InsertDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<unit,unit>) =
-        InsertDataPoints.insertDataPoints items fetch next
+    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<unit, unit>) =
+        InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch next
 
     let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
+        InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch Async.single
+    
+    let insertDataPointsAsyncProto (items: DataPointInsertionRequest) =
         InsertDataPoints.insertDataPoints items fetch Async.single
 
 [<Extension>]
@@ -80,17 +97,9 @@ type InsertDataExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>True if successful.</returns>
     [<Extension>]
-    static member InsertDataAsync (this: Client) (items: DataPointsWritePoco seq) : Task =
-        let items' =
-            Seq.map  (fun (item: DataPointsWritePoco) ->
-                {
-                    DataPoints = Seq.map DataPointDto.FromPoco item.DataPoints
-                    Identity = item.Identity
-                }: InsertDataPoints.DataPoints
-            ) items
-
+    static member InsertDataAsync (this: Client) (items: DataPointInsertionRequest) : Task =
         task {
-            let! ctx = insertDataPointsAsync items' this.Ctx
+            let! ctx = insertDataPointsAsyncProto items this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->

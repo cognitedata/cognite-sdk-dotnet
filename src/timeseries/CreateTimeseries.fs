@@ -41,7 +41,7 @@ module CreateTimeseries =
 
         POST
         >=> setVersion V10
-        >=> setBody request.Encoder
+        >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
         >=> decoder

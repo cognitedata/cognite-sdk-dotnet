@@ -6,6 +6,7 @@ open Xunit
 open Swensen.Unquote
 
 open Fusion
+open System.Net.Http
 
 
 [<Fact>]
@@ -23,7 +24,7 @@ let ``Create timeseries is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -43,7 +44,7 @@ let ``Get timeseries by ids is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/byids" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -63,7 +64,7 @@ let ``Delete timeseries is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/delete" @>
     test <@ res.Request.Query.IsEmpty @>
 }

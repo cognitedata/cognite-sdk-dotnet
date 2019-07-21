@@ -9,6 +9,7 @@ nuget Microsoft.Extensions.Http
 nuget Microsoft.NET.Test.Sdk ~> 16
 nuget Taskbuilder.fs ~> 2.1
 nuget Thoth.Json.Net ~> 3.2.0
+nuget Google.Protobuf ~> 3.8
 nuget TypeShape ~> 5
 nuget Unquote ~> 4
 nuget xunit ~> 2

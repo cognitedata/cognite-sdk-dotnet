@@ -7,6 +7,7 @@ open Fusion
 open Tests
 open Fusion.Timeseries
 open Common
+open System.Net.Http
 
 [<Fact>]
 let ``Get datapoints by id with options is Ok`` () = async {
@@ -36,7 +37,9 @@ let ``Get datapoints by id with options is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+                    match datapointDto.DataPoints with
+                    | Numeric dps -> yield! dps
+                    | String dps -> failwith "Unexpected string datapoints"
             }
         | Error _ -> Seq.empty
 
@@ -44,7 +47,7 @@ let ``Get datapoints by id with options is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 9 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -76,7 +79,9 @@ let ``Get datapoints by id with limit is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+                    match datapointDto.DataPoints with
+                    | Numeric dps -> yield! dps
+                    | String dps -> failwith "Unexpected string datapoints"
             }
         | Error _ -> Seq.empty
 
@@ -84,7 +89,7 @@ let ``Get datapoints by id with limit is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 20 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -117,7 +122,9 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+                    match datapointDto.DataPoints with
+                    | Numeric dps -> yield! dps
+                    | String dps -> failwith "Unexpected string datapoints"
             }
         | Error _ -> Seq.empty
 
@@ -125,7 +132,7 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 100 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -161,8 +168,9 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                for datapoints in datapointDto.DataPoints do
-                yield datapoints
+                    match datapointDto.DataPoints with
+                    | Numeric dps -> yield! dps
+                    | String dps -> failwith "Unexpected string datapoints"
             }
         | Error _ -> Seq.empty
 
@@ -170,7 +178,7 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ Seq.contains a.Id resIds && Seq.contains b.Id resIds @>
     test <@ Seq.length datapoints = 20 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -193,7 +201,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
     let id = 605574483685900L
 
     // Act
-    let! res = getAggregatedDataPointsAsync id options ctx
+    let! res = getAggregatedDataPointsAsync (Identity.Id id) options ctx
     let resId =
         match res.Result with
         | Ok dtos ->
@@ -208,9 +216,9 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+                    yield! datapointDto.DataPoints
             }
-        | Error _ -> Seq.empty
+        | Error err -> err |> printfn "%A"; Seq.empty
 
     let first = Seq.head datapoints
 
@@ -223,7 +231,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
     test <@ resId = id @>
     test <@ Seq.length datapoints = 25 @>
     test <@ greaterThanZero first.Average && greaterThanZero first.Min && greaterThanZero first.Sum @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -258,7 +266,9 @@ let ``Retrieve latest datapoints by id is Ok`` () = async {
         | Ok dtos ->
             seq {
                 for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+                    match datapointDto.DataPoints with
+                    | Numeric dps -> yield! dps
+                    | String dps -> failwith "Unexpected string datapoints"
             }
         | Error _ -> Seq.empty
 
@@ -266,7 +276,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 1 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data/latest" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -290,10 +300,10 @@ let ``Insert datapoints is Ok`` () = async {
     }
     let externalId = Identity.ExternalId externalIdString
 
-    let points: DataPointDto seq = Seq.ofList [ { TimeStamp = 1563048800000L; Value = Numeric.Float 3.0} ]
+    let points: NumericDataPointDto seq = Seq.ofList [ { TimeStamp = 1563048800000L; Value = 3.0} ]
 
     let datapoints: InsertDataPoints.DataPoints = {
-        DataPoints = points
+        DataPoints = Numeric points
         Identity = Identity.ExternalId externalIdString
     }
 
@@ -304,7 +314,7 @@ let ``Insert datapoints is Ok`` () = async {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/data" @>
 }
 
@@ -330,10 +340,10 @@ let ``Delete datapoints is Ok`` () = async {
     let startTimestamp =     1563048800000L;
     let endDeleteTimestamp = 1563048800051L
     let endTimestamp =       1563048800100L
-    let points : DataPointDto seq = seq { for i in startTimestamp..endTimestamp do yield { TimeStamp = i; Value = Numeric.Float 3.0 } }
+    let points : NumericDataPointDto seq = seq { for i in startTimestamp..endTimestamp do yield { TimeStamp = i; Value = 3.0 } }
 
     let datapoints : InsertDataPoints.DataPoints = {
-        DataPoints = points
+        DataPoints = Numeric points
         Identity = Identity.ExternalId externalIdString
     }
 

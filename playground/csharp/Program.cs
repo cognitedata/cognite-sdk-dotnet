@@ -8,6 +8,7 @@ using Fusion;
 using Fusion.Api;
 using Fusion.Timeseries;
 using Fusion.Assets;
+using Com.Cognite.V1.Timeseries.Proto;
 
 namespace csharp
 {
@@ -37,11 +38,11 @@ namespace csharp
                 GetAggregatedDataPoints.QueryOption.Aggregates(aggregates)
             };
             var options = new List<GetAggregatedDataPoints.Option> () {
-                new GetAggregatedDataPoints.Option () { Id = 42L, QueryOptions = new List<GetAggregatedDataPoints.QueryOption> ()}
+                new GetAggregatedDataPoints.Option () { Id = Identity.Id(42L), QueryOptions = new List<GetAggregatedDataPoints.QueryOption> ()}
             };
 
             var result = await client.GetAggregatedDataPointsMultipleAsync(options, defaultOptions);
-            Console.WriteLine("{0}", result.First().DataPoints.First().Average);
+            Console.WriteLine("{0}", result.Items.First().AggregateDatapoints.Datapoints.First().Average);
             Console.WriteLine("{0}", result);
         }
 
@@ -55,17 +56,18 @@ namespace csharp
 
             Console.WriteLine("{0}", result);
 
-            var points = new List<DataPointsWritePoco> {
-                new DataPointsWritePoco {
-                    Identity = Identity.ExternalId("test"),
-                    DataPoints = new List<DataPointPoco> {
-                        new DataPointPoco {
-                            TimeStamp = 0L,
-                            Value = Numeric.Float(1.0)
-                        }
-                    }
+            var dataPoints = new NumericDatapoints();
+            dataPoints.Datapoints.Add(new NumericDatapoint { Timestamp = 0L, Value = 1.0 });
+
+            var points = new DataPointInsertionRequest();
+            points.Items.Add(new List<DataPointInsertionItem>
+            {
+                new DataPointInsertionItem
+                {
+                    ExternalId = "test",
+                    NumericDatapoints = dataPoints
                 }
-            };
+            });
             await client.InsertDataAsync(points);
         }
 

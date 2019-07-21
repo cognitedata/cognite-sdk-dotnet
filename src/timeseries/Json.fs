@@ -8,42 +8,20 @@ open Fusion.Common
 
 [<AutoOpen>]
 module TimeseriesExtensions =
-    type DataPointDto with
-        member this.Encoder =
-            Encode.object [
-                yield "timestamp", Encode.int53 this.TimeStamp
-                match this.Value with
-                | CaseString value -> yield "value", Encode.string value
-                | CaseInteger value -> yield "value", Encode.int53 value
-                | CaseFloat value -> yield "value", Encode.float value
-            ]
-
-        static member Decoder : Decoder<DataPointDto> =
+    type NumericDataPointDto with
+        static member Decoder : Decoder<NumericDataPointDto> =
             Decode.object (fun get ->
                 {
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
-                    Value = get.Required.Field "value" (Decode.oneOf [
-                            // We do not decode integers as we don't want to end up with a mix of integers and floats.
-                            Decode.float |> Decode.map CaseFloat
-                            Decode.string |> Decode.map CaseString
-                        ])
+                    Value = get.Required.Field "value" Decode.float
                 })
-
-    type AggregateDataPointReadDto with
-        static member Decoder : Decoder<AggregateDataPointReadDto> =
+    
+    type StringDataPointDto with
+        static member Decoder : Decoder<StringDataPointDto> =
             Decode.object (fun get ->
                 {
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
-                    Average = get.Optional.Field "average" Decode.float
-                    Max = get.Optional.Field "max" Decode.float
-                    Min = get.Optional.Field "min" Decode.float
-                    Count = get.Optional.Field "count" Decode.int
-                    Sum = get.Optional.Field "sum" Decode.float
-                    Interpolation = get.Optional.Field "interpolation" Decode.float
-                    StepInterpolation = get.Optional.Field "stepInterpolation" Decode.float
-                    ContinousVariance = get.Optional.Field "continousVariance" Decode.float
-                    DiscreteVariance = get.Optional.Field "descreteVariaance" Decode.float
-                    TotalVariation = get.Optional.Field "totalVariance" Decode.float
+                    Value = get.Required.Field "value" Decode.string
                 })
 
     type TimeseriesWriteDto with

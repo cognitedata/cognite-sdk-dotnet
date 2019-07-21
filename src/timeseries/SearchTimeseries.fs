@@ -108,7 +108,7 @@ module SearchTimeseries =
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setContent (Content.JsonValue body)
         >=> setResource Url
         >=> fetch
         >=> decoder

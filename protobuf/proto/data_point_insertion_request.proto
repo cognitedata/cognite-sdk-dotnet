@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.cognite.v1.timeseries.proto;
+
+import "data_points.proto";
+
+option java_multiple_files = true;
+
+message DataPointInsertionItem {
+    oneof idOrExternalId {
+        int64 id = 1;
+        string externalId = 2;
+    }
+
+    oneof datapointType {
+        NumericDatapoints numericDatapoints = 3;
+        StringDatapoints stringDatapoints = 4;
+    }
+}
+
+message DataPointInsertionRequest {
+    repeated DataPointInsertionItem items = 1;
+}

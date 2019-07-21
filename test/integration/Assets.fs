@@ -7,6 +7,7 @@ open Fusion
 open Tests
 open Common
 open Fusion.Assets
+open System.Net.Http
 
 [<Fact>]
 let ``Get assets with limit is Ok`` () = async {
@@ -25,7 +26,7 @@ let ``Get assets with limit is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = RequestMethod.GET @>
+    test <@ res.Request.Method = HttpMethod.Get @>
     test <@ res.Request.Resource = "/assets" @>
 }
 
@@ -46,7 +47,7 @@ let ``Get asset by id is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ resId = assetId @>
-    test <@ res.Request.Method = RequestMethod.GET @>
+    test <@ res.Request.Method = HttpMethod.Get @>
     test <@ res.Request.Resource = "/assets/130452390632424" @>
 }
 
@@ -89,7 +90,7 @@ let ``Get asset by ids is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 3 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/byids" @>
 }
 
@@ -112,7 +113,7 @@ let ``Search assets is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/search" @>
 }
 
@@ -138,7 +139,7 @@ let ``Filter assets is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets/list" @>
 }
 
@@ -173,12 +174,12 @@ let ``Create and delete assets is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/assets" @>
     test <@ res.Request.Query.IsEmpty @>
 
     test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = RequestMethod.POST @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
     test <@ delRes.Request.Resource = "/assets/delete" @>
     test <@ delRes.Request.Query.IsEmpty @>
 }
@@ -242,20 +243,20 @@ let ``Update assets is Ok`` () = async {
 
     // Assert create
     test <@ Result.isOk createRes.Result @>
-    test <@ createRes.Request.Method = RequestMethod.POST @>
+    test <@ createRes.Request.Method = HttpMethod.Post @>
     test <@ createRes.Request.Resource = "/assets" @>
     test <@ createRes.Request.Query.IsEmpty @>
 
     // Assert update
     test <@ updateSuccsess @>
     test <@ Result.isOk updateRes.Result @>
-    test <@ updateRes.Request.Method = RequestMethod.POST @>
+    test <@ updateRes.Request.Method = HttpMethod.Post @>
     test <@ updateRes.Request.Resource = "/assets/update" @>
     test <@ updateRes.Request.Query.IsEmpty @>
 
     // Assert get
     test <@ Result.isOk getRes.Result @>
-    test <@ getRes.Request.Method = RequestMethod.POST @>
+    test <@ getRes.Request.Method = HttpMethod.Post @>
     test <@ getRes.Request.Resource = "/assets/byids" @>
     test <@ getRes.Request.Query.IsEmpty @>
     test <@ resExternalId = Some externalIdString @>
@@ -264,7 +265,7 @@ let ``Update assets is Ok`` () = async {
 
     // Assert delete
     test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = RequestMethod.POST @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
     test <@ delRes.Request.Resource = "/assets/delete" @>
     test <@ delRes.Request.Query.IsEmpty @>
 }
