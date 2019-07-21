@@ -7,6 +7,8 @@ open FsConfig
 
 open Fusion
 open Fusion.Assets
+open Fusion.Timeseries
+open Com.Cognite.V1.Timeseries.Proto
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -88,6 +90,48 @@ let createAssetsExample ctx = async {
     | Error err -> printfn "Error: %A" err
 }
 
+let insertDataPointsOldWay ctx = async {
+    
+    let dataPoints : NumericDataPointDto seq = seq {
+        for i in 0L..100L do
+            yield {
+                TimeStamp = DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds() - i * 10L
+                Value = (float ((1L + i) % 5L))
+            }
+        }
+    let dpInsertion : InsertDataPoints.DataPoints = {
+        DataPoints = Numeric dataPoints
+        Identity = Identity.ExternalId "testts"
+    }
+
+    let! result = insertDataPointsAsync [ dpInsertion ] ctx
+    match result.Result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+}
+
+let insertDataPointsProtoStyle ctx = async {
+    let request = DataPointInsertionRequest ()
+    let dataPoints = seq {
+        for i in 0L..100L do
+            let point = NumericDatapoint ()
+            point.Timestamp <- DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds() - i * 10L
+            point.Value <- float ((1L + i) % 5L)
+            yield point
+    }
+    let item = DataPointInsertionItem ()
+    item.NumericDatapoints <- NumericDatapoints ()
+    item.NumericDatapoints.Datapoints.AddRange(dataPoints)
+    item.ExternalId <- "testts"
+    request.Items.Add(item)
+
+    let! result = insertDataPointsAsyncProto request ctx
+    match result.Result with
+    | Ok res -> printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+
+}
+
 [<EntryPoint>]
 let main argv =
     printfn "F# Client"
@@ -105,7 +149,7 @@ let main argv =
         |> setProject (Uri.EscapeDataString config.Project)
 
     async {
-        do! getDatapointsExample ctx
+        do! insertDataPointsProtoStyle ctx
     } |> Async.RunSynchronously
 
     0 // return an integer exit code

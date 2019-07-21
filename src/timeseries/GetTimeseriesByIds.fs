@@ -45,7 +45,7 @@ module GetTimeseriesByIds =
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody request.Encoder
+        >=> setContent (Content.JsonValue request.Encoder)
         >=> fetch
         >=> decoder
 

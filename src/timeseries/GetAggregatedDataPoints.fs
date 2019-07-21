@@ -13,46 +13,36 @@ open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Timeseries
+open Com.Cognite.V1.Timeseries.Proto
 
 [<RequireQualifiedAccess>]
 module GetAggregatedDataPoints =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
-    [<CLIMutable>]
-    type DataPointsPoco = {
-        Id: int64
-        ExternalId: string
-        DataPoints: AggregateDataPointReadPoco seq
-    }
-
     type DataPoints = {
         Id: int64
         ExternalId: string option
         DataPoints: AggregateDataPointReadDto seq
     } with
-        static member Decoder : Decoder<DataPoints> =
-            Decode.object (fun get ->
-                {
-                    Id = get.Required.Field "id" Decode.int64
-                    ExternalId = get.Optional.Field "exteralId" Decode.string
-                    DataPoints = get.Required.Field "datapoints" (Decode.list AggregateDataPointReadDto.Decoder)
-                })
-        member this.ToPoco() : DataPointsPoco =
+        static member FromProto (data : DataPointListItem) : DataPoints =
             {
-                Id = this.Id
-                ExternalId = if this.ExternalId.IsSome then this.ExternalId.Value else null
-                DataPoints = this.DataPoints |> Seq.map (fun pt -> pt.ToPoco ())
+                Id = data.Id
+                ExternalId = if isNull(data.ExternalId) then None else Some data.ExternalId
+                DataPoints =
+                    match data.DatapointTypeCase with
+                    | (DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints) ->
+                        data.AggregateDatapoints.Datapoints |> Seq.map (AggregateDataPointReadDto.FromProto)
+                    | _ ->
+                        Seq.empty
             }
 
     type DataResponse = {
         Items: DataPoints seq
-    } with
-        static member Decoder : Decoder<DataResponse> =
-            Decode.object (fun get ->
-                {
-                    Items = get.Required.Field "items" (Decode.list DataPoints.Decoder)
-                })
+    }
+
+    let decodeToDto (data : DataPointListResponse) =
+        data.Items |> Seq.map (DataPoints.FromProto)
 
     type Aggregate =
         private
@@ -173,7 +163,7 @@ module GetAggregatedDataPoints =
 
      [<CLIMutable>]
     type Option = {
-        Id: int64
+        Id: Identity
         QueryOptions: QueryOption seq
     }
 
@@ -193,7 +183,9 @@ module GetAggregatedDataPoints =
                 for option in options do
                     yield Encode.object [
                         yield! option.QueryOptions |> Seq.map renderQueryOption
-                        yield "id", Encode.int64 option.Id
+                        match option.Id with
+                        | CaseId id -> yield "id", Encode.int64 id
+                        | CaseExternalId id -> yield "externalId", Encode.string id
                     ]
             ]
 
@@ -201,13 +193,26 @@ module GetAggregatedDataPoints =
         ]
 
     let getAggregatedDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
+        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> (fun item -> printfn "hey"; item) >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody request
+        >=> setContent (Content.JsonValue request)
+        >=> setResponseType Protobuf
+        >=> fetch
+        >=> decoder
+
+    let getAggregatedDataPointsProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+        let request = renderDataQuery options defaultOptions
+
+        POST
+        >=> setVersion V10
+        >=> setResource Url
+        >=> setContent (Content.JsonValue request)
+        >=> setResponseType Protobuf
         >=> fetch
         >=> decoder
 
@@ -226,7 +231,7 @@ module GetAggregatedDataPointsApi =
     /// **Output Type**
     ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
-    let getAggregatedDataPoints (id: int64) (options: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
+    let getAggregatedDataPoints (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
         let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
         GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch next
 
@@ -242,9 +247,25 @@ module GetAggregatedDataPointsApi =
     /// **Output Type**
     ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
     ///
-    let getAggregatedDataPointsAsync (id: int64) (options: GetAggregatedDataPoints.QueryOption seq) =
+    let getAggregatedDataPointsAsync (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) =
         let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
         GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch Async.single
+
+    /// **Description**
+    ///
+    /// Retrieves a list of aggregated data points from single time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `id` - Id of timeseries to retrieve datapoints from.
+    ///   * `options` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
+    ///
+    let getAggregatedDataPointsProto (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) =
+        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        GetAggregatedDataPoints.getAggregatedDataPointsProto options' Seq.empty fetch Async.single
 
     /// **Description**
     ///
@@ -276,6 +297,21 @@ module GetAggregatedDataPointsApi =
     let getAggregatedDataPointsMultipleAsync (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) =
         GetAggregatedDataPoints.getAggregatedDataPoints options defaultOptions fetch Async.single
 
+    /// **Description**
+    ///
+    /// Retrieves a list of aggregated data points from multiple time series in the same project
+    ///
+    /// **Parameters**
+    ///   * `options` - Sequence of `GetDataPoints.Options` describing the query for each timeseries.
+    ///   * `defaultOptions` - Sequence of `GetDataPoints.Option` to be used as default options.
+    ///   * `ctx` - The request HTTP context to use.
+    ///
+    /// **Output Type**
+    ///   * `Async<Result<HttpResponse,ResponseError>>`
+    ///
+    let getAggregatedDataPointsMultipleProto (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) =
+        GetAggregatedDataPoints.getAggregatedDataPointsProto options defaultOptions fetch Async.single
+
 [<Extension>]
 type GetAggregatedDataPointsExtensions =
     /// <summary>
@@ -284,12 +320,12 @@ type GetAggregatedDataPointsExtensions =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>Http status code.</returns>
-    static member GetAggregatedDataPointsAsync (this: Client, id : int64, options: GetAggregatedDataPoints.QueryOption seq) : Task<seq<GetAggregatedDataPoints.DataPointsPoco>> =
+    static member GetAggregatedDataPointsAsync (this: Client, id : Identity, options: GetAggregatedDataPoints.QueryOption seq) : Task<DataPointListResponse> =
         task {
-            let! ctx = getAggregatedDataPointsAsync id options this.Ctx
+            let! ctx = getAggregatedDataPointsProto id options this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun points -> points.ToPoco ())
+                return response
             | Error error ->
                 let err = error2Exception error
                 return raise err
@@ -303,12 +339,12 @@ type GetAggregatedDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq) : Task<GetAggregatedDataPoints.DataPointsPoco seq> =
+    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq) : Task<DataPointListResponse> =
         task {
-            let! ctx = getAggregatedDataPointsMultipleAsync options defaultOptions this.Ctx
+            let! ctx = getAggregatedDataPointsMultipleProto options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun points -> points.ToPoco ())
+                return response
             | Error error ->
                 let err = error2Exception error
                 return raise err

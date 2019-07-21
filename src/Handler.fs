@@ -14,6 +14,7 @@ open Thoth.Json.Net
 open System.Net.Http.Headers
 open System.Net
 open System.Threading.Tasks
+open Google.Protobuf
 
 [<Measure>] type ms
 
@@ -210,8 +211,11 @@ module Handler =
     let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Resource = resource  } }
 
-    let setBody (body: JsonValue) (next: NextHandler<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Body = Some body } }
+    let setContent (content: Content) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Content = Some content } }
+
+    let setResponseType (respType: Response) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with ResponseType = respType }}
 
     /// **Description**
     ///
@@ -225,15 +229,15 @@ module Handler =
     /// **Output Type**
     ///   * `Context`
     ///
-    let setMethod<'a> (method: RequestMethod) (next: NextHandler<HttpResponseMessage,'a>) (context: HttpContext) =
-        next { context with Request = { context.Request with Method = method; Body = None } }
+    let setMethod<'a> (method: HttpMethod) (next: NextHandler<HttpResponseMessage,'a>) (context: HttpContext) =
+        next { context with Request = { context.Request with Method = method; Content = None } }
 
     let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Version = version } }
 
-    let GET<'a> = setMethod<'a> RequestMethod.GET
-    let POST<'a> = setMethod<'a> RequestMethod.POST
-    let DELETE<'a> = setMethod<'a> RequestMethod.DELETE
+    let GET<'a> = setMethod<'a> HttpMethod.Get
+    let POST<'a> = setMethod<'a> HttpMethod.Post
+    let DELETE<'a> = setMethod<'a> HttpMethod.Delete
 
     let decodeStreamAsync (decoder : Decoder<'a>) (stream : IO.Stream) =
         task {
@@ -263,68 +267,89 @@ module Handler =
             length <- -1L
             false
 
-    /// A request function for fetching from the Cognite API.
-    let fetch<'a> (next: NextHandler<IO.Stream,'a>) (ctx: HttpContext) : Async<Context<'a>> =
-        async {
-            let res = ctx.Request.Resource
-            let query = ctx.Request.Query
+    type ProtobufPushStreamContent (content : IMessage) =
+        inherit HttpContent ()
+        let _content = content
+        do
+            base.Headers.ContentType <- MediaTypeHeaderValue("application/protobuf")
+        override this.SerializeToStreamAsync(stream: Stream, context: TransportContext) : Task =
+            task {
+                content.WriteTo(stream)
+            } :> Task
+        override this.TryComputeLength(length: byref<int64>) : bool =
+            length <- -1L
+            false
 
-            let url =
-                let result = sprintf "%s/api/%s/projects/%s%s" ctx.Request.ServiceUrl (ctx.Request.Version.ToString ()) ctx.Request.Project res
-                if Seq.isEmpty query then
-                    result
+    let buildRequest (ctx: HttpContext) : HttpRequestMessage =
+        let res = ctx.Request.Resource
+        let query = ctx.Request.Query
+
+        let url =
+            let result = sprintf "%s/api/%s/projects/%s%s" ctx.Request.ServiceUrl (ctx.Request.Version.ToString ()) ctx.Request.Project res
+            if Seq.isEmpty query then
+                result
+            else
+                let queryString = HttpUtility.ParseQueryString(String.Empty)
+                for (key, value) in query do
+                    queryString.Add (key, value)
+                sprintf "%s?%s" result (queryString.ToString ())
+
+        let client = ctx.Request.HttpClient
+
+        let request = new HttpRequestMessage (ctx.Request.Method, url)
+
+        let contentHeader =
+            match ctx.Request.ResponseType with
+            | JsonValue -> ("Accept", "application/json")
+            | Protobuf -> ("Accept", "application/protobuf")
+
+        for header, value in contentHeader :: ctx.Request.Headers do
+            if not (client.DefaultRequestHeaders.Contains header) then
+                request.Headers.Add (header, value)
+
+        if ctx.Request.Content.IsSome then
+            let content =
+                match ctx.Request.Content.Value with
+                    | CaseJsonValue value -> new JsonPushStreamContent (value) :> HttpContent
+                    | CaseProtobuf value -> new ProtobufPushStreamContent (value) :> HttpContent
+            request.Content <- content
+        request
+
+    let sendRequest (request: HttpRequestMessage) (client: HttpClient) : Task<Result<Stream, ResponseError>> =
+        task {
+            try
+                let! response = task {
+                    return! client.SendAsync(request)
+                }
+                let! stream = response.Content.ReadAsStreamAsync ()
+                if response.IsSuccessStatusCode then
+                    return Ok stream
                 else
-                    let queryString = HttpUtility.ParseQueryString(String.Empty)
-                    for (key, value) in query do
-                        queryString.Add (key, value)
-                    sprintf "%s?%s" result (queryString.ToString ())
-            let client = ctx.Request.HttpClient
+                    let! result = decodeStreamAsync ApiResponseError.Decoder stream
+                    match result with
+                    | Ok apiResponseError ->
+                        return apiResponseError.Error |> Error
+                    | Error message ->
+                        return {
+                            ResponseError.empty with
+                                Code = int response.StatusCode
+                                Message = message
+                        } |> Error
+            with
+            | ex ->
+                return {
+                    ResponseError.empty with
+                        Code = 400
+                        Message = ex.Message
+                        InnerException = Some ex
+                } |> Error
+        }
 
-            for header, value in ctx.Request.Headers do
-                if not (client.DefaultRequestHeaders.Contains header) then
-                    client.DefaultRequestHeaders.Add (header, value)
-
-            let resultTask = task {
-                try
-                    let! response = task {
-                        match ctx.Request.Method with
-                        | GET ->
-                            return! client.GetAsync(url)
-                        | POST ->
-                            use content = new JsonPushStreamContent(ctx.Request.Body.Value)
-                            return! client.PostAsync(url, content)
-                        | PUT ->
-                            use content = new JsonPushStreamContent(ctx.Request.Body.Value)
-                            return! client.PutAsync(url, content)
-                        | DELETE ->
-                            return! client.DeleteAsync(url)
-                    }
-                    let a = response.StatusCode
-
-                    let! stream = response.Content.ReadAsStreamAsync ()
-                    if response.IsSuccessStatusCode then
-                        return Ok stream
-                    else
-                        let! result = decodeStreamAsync ApiResponseError.Decoder stream
-                        match result with
-                        | Ok aspiResponseError ->
-                            return aspiResponseError.Error |> Error
-                        | Error message ->
-                            return {
-                                ResponseError.empty with
-                                    Code = int response.StatusCode
-                                    Message = message
-                            } |> Error
-                with
-                | ex ->
-                    return {
-                        ResponseError.empty with
-                            Code = 400
-                            Message = ex.Message
-                            InnerException = Some ex
-                    } |> Error
-            }
-
-            let! result = resultTask |> Async.AwaitTask
+    let fetch<'a> (next: NextHandler<IO.Stream, 'a>) (ctx: HttpContext) : Async<Context<'a>> =
+        async {
+            use message = buildRequest ctx
+            let! result = sendRequest message ctx.Request.HttpClient |> Async.AwaitTask
+            if ctx.Request.Content.IsSome then
+                message.Content.Dispose ()
             return! next { Request = ctx.Request; Result = result }
         }

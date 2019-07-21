@@ -41,5 +41,8 @@
     <Compile Include="timeseries/UpdateTimeseries.fs" />
     <Compile Include="timeseries/DeleteDataPoints.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\protobuf\proto.csproj" />
+  </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

@@ -7,6 +7,7 @@ open Fusion
 open Fusion.Timeseries
 open Tests
 open Common
+open System.Net.Http
 
 [<Fact>]
 let ``Get timeseries is Ok`` () = async {
@@ -25,7 +26,7 @@ let ``Get timeseries is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = RequestMethod.GET @>
+    test <@ res.Request.Method = HttpMethod.Get @>
     test <@ res.Request.Resource = "/timeseries" @>
 }
 
@@ -57,7 +58,7 @@ let ``Get timeseries by ids is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resId = id @>
     test <@ len > 0 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/byids" @>
     test <@ res.Request.Query.IsEmpty @>
 }
@@ -116,12 +117,12 @@ let ``Create and delete timeseries is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries" @>
     test <@ res.Request.Query.IsEmpty @>
 
     test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = RequestMethod.POST @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
     test <@ delRes.Request.Resource = "/timeseries/delete" @>
     test <@ delRes.Request.Query.IsEmpty @>
 }
@@ -143,7 +144,7 @@ let ``Search timeseries is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Resource = "/timeseries/search" @>
 }
 
@@ -206,19 +207,19 @@ let ``Update timeseries is Ok`` () = async {
 
     // Assert create
     test <@ Result.isOk createRes.Result @>
-    test <@ createRes.Request.Method = RequestMethod.POST @>
+    test <@ createRes.Request.Method = HttpMethod.Post @>
     test <@ createRes.Request.Resource = "/timeseries" @>
     test <@ createRes.Request.Query.IsEmpty @>
 
     // Assert update
     test <@ Result.isOk updateRes.Result @>
-    test <@ updateRes.Request.Method = RequestMethod.POST @>
+    test <@ updateRes.Request.Method = HttpMethod.Post @>
     test <@ updateRes.Request.Resource = "/timeseries/update" @>
     test <@ updateRes.Request.Query.IsEmpty @>
 
     // Assert get
     test <@ Result.isOk getRes.Result @>
-    test <@ getRes.Request.Method = RequestMethod.POST @>
+    test <@ getRes.Request.Method = HttpMethod.Post @>
     test <@ getRes.Request.Resource = "/timeseries/byids" @>
     test <@ getRes.Request.Query.IsEmpty @>
     test <@ resExternalId = Some newExternalId @>
@@ -227,7 +228,7 @@ let ``Update timeseries is Ok`` () = async {
 
     // Assert delete
     test <@ Result.isOk deleteRes.Result @>
-    test <@ deleteRes.Request.Method = RequestMethod.POST @>
+    test <@ deleteRes.Request.Method = HttpMethod.Post @>
     test <@ deleteRes.Request.Resource = "/timeseries/delete" @>
     test <@ deleteRes.Request.Query.IsEmpty @>
     

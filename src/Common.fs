@@ -111,6 +111,15 @@ module Common =
 
             return! next { Request = context.Request; Result = nextResult }
         }
+    let decodeProtobuf<'b, 'c> (parser : Stream -> 'b) (next: NextHandler<'b, 'c>) (context : Context<Stream>) =
+        async {
+            let result = context.Result
+            let nextResult =
+                match result with
+                | Ok stream -> Ok (parser stream)
+                | Error err -> Error err
+            return! next { Request = context.Request; Result = nextResult }
+        }
 
     /// Handler for disposing the stream when it's not needed anymore.
     let dispose<'a> (next: NextHandler<unit,'a>) (context: Context<Stream>) =

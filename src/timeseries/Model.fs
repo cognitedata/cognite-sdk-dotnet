@@ -1,45 +1,30 @@
 ﻿namespace Fusion.Timeseries
 
-open System
-open Fusion
 open System.Collections.Generic
+open Com.Cognite.V1.Timeseries.Proto
 
-[<CLIMutable>]
-type DataPointPoco = {
-    TimeStamp : int64
-    Value : Numeric
-}
-
-[<CLIMutable>]
-type DataPointsWritePoco = {
-    Identity: Identity
-    DataPoints: DataPointPoco seq
-}
-
-type DataPointDto = {
+type NumericDataPointDto = {
     TimeStamp: int64
-    Value: Numeric
+    Value: float
 } with
-    static member FromPoco (pt: DataPointPoco) =
+    static member FromProto (pt: NumericDatapoint) =
         {
-            TimeStamp = pt.TimeStamp
+            TimeStamp = pt.Timestamp
+            Value = pt.Value
+        }
+type StringDataPointDto = {
+    TimeStamp: int64
+    Value: string
+} with
+    static member FromProto (pt: StringDatapoint) =
+        {
+            TimeStamp = pt.Timestamp
             Value = pt.Value
         }
 
-[<CLIMutable>]
-type AggregateDataPointReadPoco = {
-    TimeStamp: int64
-    Average: float
-    Max: float
-    Min: float
-    Count: int
-    Sum: float
-    Interpolation: float
-    StepInterpolation: float
-    ContinousVariance: float
-    DiscreteVariance: float
-    TotalVariation: float
-}
+type DataPointSeq =
+    | Numeric of NumericDataPointDto seq
+    | String of StringDataPointDto seq
 
 type AggregateDataPointReadDto = {
     TimeStamp: int64
@@ -50,34 +35,23 @@ type AggregateDataPointReadDto = {
     Sum: float option
     Interpolation: float option
     StepInterpolation: float option
-    ContinousVariance: float option
+    ContinuousVariance: float option
     DiscreteVariance: float option
     TotalVariation: float option
 } with
-    member this.ToPoco() : AggregateDataPointReadPoco =
-        let average = if this.Average.IsSome then this.Average.Value else 0.0
-        let max = if this.Max.IsSome then this.Max.Value else 0.0
-        let min = if this.Min.IsSome then this.Min.Value else 0.0
-        let count = if this.Count.IsSome then this.Count.Value else 0
-        let sum = if this.Sum.IsSome then this.Sum.Value else 0.0
-        let interpolation = if this.Interpolation.IsSome then this.Interpolation.Value else 0.0
-        let stepInterpolation = if this.StepInterpolation.IsSome then this.StepInterpolation.Value else 0.0
-        let continousVariance = if this.ContinousVariance.IsSome then this.ContinousVariance.Value else 0.0
-        let discreteVariance = if this.DiscreteVariance.IsSome then this.DiscreteVariance.Value else 0.0
-        let totalVariation = if this.TotalVariation.IsSome then this.TotalVariation.Value else 0.0
-
+    static member FromProto (pt: AggregateDatapoint) =
         {
-            TimeStamp = this.TimeStamp
-            Average = average
-            Max = max
-            Min = min
-            Count = count
-            Sum = sum
-            Interpolation = interpolation
-            StepInterpolation = stepInterpolation
-            ContinousVariance = continousVariance
-            DiscreteVariance = discreteVariance
-            TotalVariation = totalVariation
+            TimeStamp = pt.Timestamp
+            Average = Some pt.Average
+            Max = Some pt.Max
+            Min = Some pt.Min
+            Count = Some (int pt.Count)
+            Sum = Some pt.Sum
+            Interpolation = Some pt.Interpolation
+            StepInterpolation = Some pt.StepInterpolation
+            ContinuousVariance = Some pt.ContinuousVariance
+            DiscreteVariance = Some pt.DiscreteVariance
+            TotalVariation = Some pt.TotalVariation
         }
 
 // C# compatible Timeserie POCO
