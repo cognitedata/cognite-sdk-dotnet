@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Compile Include="../shared/Common.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="Timeseries.fs" />
     <Compile Include="Datapoints.fs" />
     <Compile Include="Program.fs" />

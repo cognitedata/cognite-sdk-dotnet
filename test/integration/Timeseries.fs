@@ -9,27 +9,33 @@ open Swensen.Unquote
 open Fusion
 open Fusion.Timeseries
 open Tests
+open Common
 
-let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
-let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"
-let testApiProjectRead = Environment.GetEnvironmentVariable "TEST_API_PROJECT_READ"
-let testApiProjectWrite = Environment.GetEnvironmentVariable "TEST_API_PROJECT_WRITE"
+[<Fact>]
+let ``Get timeseries is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [ GetTimeseries.Option.Limit 10 ]
 
-let createCtx key project serviceUrl =
-    let client = new HttpClient ()
-    defaultContext
-    |> setHttpClient client
-    |> addHeader ("api-key", key)
-    |> setProject project
-    |> setServiceUrl serviceUrl
+    // Act
+    let! res = getTimeseriesAsync options ctx
 
-let readCtx = createCtx testApiKeyRead "publicdata" "https://api.cognitedata.com"
-let writeCtx = createCtx testApiKeyWrite "fusiondotnet-tests" "https://greenfield.cognitedata.com"
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ res.Request.Method = RequestMethod.GET @>
+    test <@ res.Request.Resource = "/timeseries" @>
+}
 
 [<Fact>]
 let ``Get timeseries by ids is Ok`` () = async {
     // Arrange
-    let ctx = readCtx
+    let ctx = readCtx ()
     let id = Identity.Id 613312137748079L
 
     // Act
@@ -62,8 +68,8 @@ let ``Get timeseries by ids is Ok`` () = async {
 [<Fact>]
 let ``Create and delete timeseries is Ok`` () = async {
     // Arrange
-    let ctx = writeCtx
-    let externalIdString = "testThisShouldBeDeleted"
+    let ctx = writeCtx ()
+    let externalIdString = "createDeleteTest"
     let dto: TimeseriesWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Timeseries sdk test"
@@ -81,7 +87,6 @@ let ``Create and delete timeseries is Ok`` () = async {
     // Act
     let! res = createTimeseriesAsync [ dto ] ctx
     let! delRes = deleteTimeseriesAsync [ externalId ] ctx
-
     let resExternalId =
         match res.Result with
         | Ok timeSereiesResponses ->
@@ -104,3 +109,23 @@ let ``Create and delete timeseries is Ok`` () = async {
     test <@ delRes.Request.Query.IsEmpty @>
 }
 
+[<Fact>]
+let ``Search timeseries is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        searchTimeseriesAsync 10 [] [ SearchTimeseries.Filter.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/timeseries/search" @>
+}
