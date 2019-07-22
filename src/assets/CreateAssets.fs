@@ -29,12 +29,10 @@ module CreateAssets =
 
     type AssetResponse = {
         Items: AssetReadDto seq
-        NextCursor : string option
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
-                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
@@ -69,7 +67,7 @@ module CreateAssetsApi =
 
 [<Extension>]
 type CreateAssetsExtensions =
-        /// <summary>
+    /// <summary>
     /// Create assets.
     /// </summary>
     /// <param name="assets">The assets to create.</param>

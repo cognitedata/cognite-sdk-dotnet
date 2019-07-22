@@ -10,13 +10,12 @@ open Thoth.Json.Net
 open Fusion
 open Fusion.Api
 open Fusion.Common
+open Fusion.Assets
 
 [<RequireQualifiedAccess>]
 module FilterAssets =
     [<Literal>]
     let Url = "/assets/list"
-
-    type Filter = SearchAssets.Filter
 
     type Option =
         private
@@ -36,20 +35,28 @@ module FilterAssets =
             | CaseLimit limit -> "limit", Encode.int limit
             | CaseCursor cursor -> "cursor", Encode.string cursor
 
+    type FilterAssetsRequest = {
+        Filters : AssetFilter seq
+        Options : Option seq
+    } with 
+        member this.Encoder =
+            Encode.object [
+                yield "filter", Encode.object [
+                    yield! this.Filters |> Seq.map AssetFilter.Render
+                ]
+                yield! this.Options |> Seq.map Option.Render
+            ]
 
-    let encodeRequest options filters =
-        Encode.object [
-            if not (Seq.isEmpty filters) then
-                yield "filter", Filter.Encode filters
-            yield! options |> Seq.map Option.Render
-        ]
-    let filterAssets (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let filterAssets (options: Option seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder id
-        let body = encodeRequest options filters
+        let request : FilterAssetsRequest = {
+            Filters = filters
+            Options = options
+        }
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> decoder
@@ -66,7 +73,7 @@ module FilterAssetsApi =
     ///   * `filters` - Search filters
     ///
     ///<returns>Assets.</return>
-    let filterAssets (options: FilterAssets.Option seq) (filters: FilterAssets.Filter seq) (next: NextHandler<GetAssets.Assets,'a>)
+    let filterAssets (options: FilterAssets.Option seq) (filters: AssetFilter seq) (next: NextHandler<GetAssets.Assets,'a>)
         : HttpContext -> Async<Context<'a>> =
             FilterAssets.filterAssets options filters fetch next
     /// **Description**
@@ -79,7 +86,7 @@ module FilterAssetsApi =
     ///   * `filters` - Search filters
     ///
     ///<returns>Assets.</return>
-    let filterAssetsAsync (options: FilterAssets.Option seq) (filters: FilterAssets.Filter seq)
+    let filterAssetsAsync (options: FilterAssets.Option seq) (filters: AssetFilter seq)
         : HttpContext -> Async<Context<GetAssets.Assets>> =
             FilterAssets.filterAssets options filters fetch Async.single
 [<Extension>]
@@ -87,13 +94,11 @@ type FilterAssetsExtensions =
     /// <summary>
     /// Retrieves list of assets matching filter. Supports pagination
     /// </summary>
-    ///
-    ///   * `options` - optional limit and cursor
-    ///   * `filters` - Search filters
-    ///
+    /// <param name="options">Optional limit and cursor</param>
+    /// <param name="filters">Search filters</param>
     ///<returns>Assets</returns>
     [<Extension>]
-    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: FilterAssets.Filter seq) =
+    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: AssetFilter seq) =
         task {
             let! ctx = filterAssetsAsync options filters this.Ctx
             match ctx.Result with

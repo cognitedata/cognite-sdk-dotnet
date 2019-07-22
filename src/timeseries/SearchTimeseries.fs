@@ -51,6 +51,7 @@ module SearchTimeseries =
         | CaseIsStep of bool
         | CaseMetaData of Map<string, string>
         | CaseAssetIds of int64 seq
+        | CaseRootAssetIds of int64 seq
         | CaseExternalIdPrefix of string
         | CaseCreatedTime of int64
         | CaseLastUpdatedTime of int64
@@ -77,6 +78,7 @@ module SearchTimeseries =
                     | CaseIsString isString -> yield "isString", Encode.bool isString
                     | CaseMetaData md -> yield "metaData", Encode.propertyBag md
                     | CaseAssetIds ids -> yield "assetIds", Encode.int53seq ids
+                    | CaseRootAssetIds ids -> yield "rootAssetIds", Encode.int53seq ids
                     | CaseExternalIdPrefix prefix -> yield "externalIdPrefix", Encode.string prefix
                     | CaseCreatedTime time -> yield "createdTime", Encode.int53 time
                     | CaseLastUpdatedTime time -> yield "lastUpdatedTime", Encode.int53 time

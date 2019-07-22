@@ -368,9 +368,9 @@ namespace Tests
             var options = new List<SearchAssets.Option> {
                 SearchAssets.Option.Name("str")
             };
-            var filters = new List<SearchAssets.Filter> {
-                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
-                SearchAssets.Filter.Name("string")
+            var filters = new List<AssetFilter> {
+                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                AssetFilter.Name("string")
             };
 
             var result = await client.SearchAssetsAsync(100, options, filters);
@@ -405,9 +405,9 @@ namespace Tests
             var options = new List<FilterAssets.Option> {
                 FilterAssets.Option.Limit(100)
             };
-            var filters = new List<SearchAssets.Filter> {
-                SearchAssets.Filter.CreatedTime(new SearchAssets.TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
-                SearchAssets.Filter.Name("string")
+            var filters = new List<AssetFilter> {
+                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                AssetFilter.Name("string")
             };
 
             var result = await client.FilterAssetsAsync(options, filters);
@@ -445,14 +445,14 @@ namespace Tests
                 FilterAssets.Option.Cursor("cursor")
             };
 
-            var filters = new List<SearchAssets.Filter> {
-                SearchAssets.Filter.MetaData(new Dictionary<string, string> { { "key1", "val1" }, { "key2", "val2" } }),
-                SearchAssets.Filter.Name("Name"),
-                SearchAssets.Filter.ParentIds(new List<long> { 1234, 12345 })
+            var filters = new List<AssetFilter> {
+                AssetFilter.MetaData(new Dictionary<string, string> { { "key1", "val1" }, { "key2", "val2" } }),
+                AssetFilter.Name("Name"),
+                AssetFilter.ParentIds(new List<long> { 1234, 12345 })
             };
 
             var result = await client.FilterAssetsAsync(options, filters);
-            var refRequest = Encode.toString(0, FilterAssets.encodeRequest(options, filters));
+            var refRequest = Encode.toString(0, new FilterAssets.FilterAssetsRequest(filters, options).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]

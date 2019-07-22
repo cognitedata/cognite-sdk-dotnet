@@ -6,6 +6,7 @@ open Swensen.Unquote
 open Fusion
 open Tests
 open Common
+open Fusion.Assets
 
 [<Fact>]
 let ``Get assets with limit is Ok`` () = async {
@@ -104,7 +105,7 @@ let ``Filter assets is Ok`` () = async {
         FilterAssets.Option.Limit 10
     ]
     let filters = [
-        FilterAssets.Filter.RootIds [ Identity.Id 6687602007296940L ]
+        Assets.AssetFilter.RootIds [ Identity.Id 6687602007296940L ]
     ]
 
     // Act

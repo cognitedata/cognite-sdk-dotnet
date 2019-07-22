@@ -23,16 +23,9 @@ module DeleteAssets =
     } with
         member this.Encoder =
             Encode.object [
-                yield "items", Encode.list [
-                    for id in this.Items do
-                        yield Encode.object [
-                            match id with
-                            | CaseId id -> yield "id", Encode.int53 id
-                            | CaseExternalId id -> yield "externalId", Encode.string id
-                        ]
-                    ]
-                yield "recursive", Encode.bool(this.Recursive)
-                ]
+                yield "items", this.Items |> Seq.map (fun item -> item.Encoder) |> Encode.seq
+                yield "recursive", Encode.bool this.Recursive
+            ]
 
     let deleteAssets (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsDeleteRequest = {
@@ -68,21 +61,21 @@ module DeleteAssetsApi =
 
 [<Extension>]
 type DeleteAssetsExtensions =
-      /// <summary>
+    /// <summary>
     /// Delete assets.
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
     /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
-    static member DeleteAssetsAsync(this: Client, assetIds: int64 seq, recursive: bool) : Task<bool> =
+    static member DeleteAssetsAsync(this: Client, ids: Identity seq, recursive: bool) : Task =
         task {
-            let ids = Seq.map Identity.Id assetIds
             let! ctx = deleteAssetsAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok response ->
-                return true
+                return ()
             | Error error ->
                 let! err = error2Exception error
                 return raise err
-        }
+        } :> Task
 

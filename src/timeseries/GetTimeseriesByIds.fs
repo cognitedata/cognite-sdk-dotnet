@@ -73,26 +73,6 @@ module GetTimeseriesByIdsApi =
 
 [<Extension>]
 type GetTimeseriesByIdsExtensions =
-     /// <summary>
-    /// Retrieves information about multiple assets in the same project.
-    /// A maximum of 1000 assets IDs may be listed per request and all
-    /// of them must be unique.
-    /// </summary>
-    /// <param name="assetId">The id of the asset to get.</param>
-    /// <returns>Asset with the given id.</returns>
-    [<Extension>]
-    static member GetTimeseriesByIdsAsync (this: Client, assetExternalIds: seq<string>) : Task<_ seq> =
-        task {
-            let ids = Seq.map Identity.ExternalId assetExternalIds
-            let! ctx = getTimeseriesByIdsAsync ids this.Ctx
-            match ctx.Result with
-            | Ok tss ->
-                return tss |> Seq.map (fun ts -> ts.ToPoco ())
-            | Error error ->
-                let! err = error2Exception error
-                return raise err
-        }
-
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
     /// A maximum of 1000 assets IDs may be listed per request and all
@@ -101,9 +81,8 @@ type GetTimeseriesByIdsExtensions =
     /// <param name="id">The id of the timeseries to get.</param>
     /// <returns>The timeseries with the given id.</returns>
     [<Extension>]
-    static member GetTimeseriesByIdsAsync (this: Client, ids: seq<int64>) : Task<seq<_>> =
+    static member GetTimeseriesByIdsAsync (this: Client, ids: seq<Identity>) : Task<seq<_>> =
         task {
-            let ids = Seq.map Identity.Id ids
             let! ctx = getTimeseriesByIdsAsync ids this.Ctx
 
             match ctx.Result with

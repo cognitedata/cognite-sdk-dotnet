@@ -43,6 +43,15 @@ type Numeric =
     static member Float value =
         CaseFloat value
 
+type TimeRange = {
+    Max: DateTime
+    Min: DateTime
+} with
+    member this.Encoder =
+        Encode.object [
+            yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
+            yield "min", DateTimeOffset(this.Min).ToUnixTimeMilliseconds() |> Encode.int64
+        ]
 [<AutoOpen>]
 module Patterns =
     /// Active pattern to permit pattern matching over numeric values.

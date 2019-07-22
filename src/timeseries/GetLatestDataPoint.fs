@@ -64,33 +64,6 @@ module GetLatestDataPoint =
                     Items = get.Required.Field "items" (Decode.list DataPoints.Decoder)
                 })
 
-    // Get parameters
-    type Option =
-        private // Expose members instead for C# interoperability
-        | CaseLimit of int32
-        | CaseIncludeMetaData of bool
-        | CaseCursor of string
-        | CaseAssetIds of int64 seq
-
-        static member Limit limit =
-            CaseLimit limit
-        static member IncludeMetaData imd =
-            CaseIncludeMetaData imd
-        static member Cursor cursor =
-            CaseCursor cursor
-        static member AssetIds ids =
-            CaseAssetIds ids
-
-    let renderOption (option: Option) =
-        match option with
-        | CaseLimit limit -> "limit", limit.ToString ()
-        | CaseIncludeMetaData imd -> "includeMetadata", imd.ToString().ToLower()
-        | CaseCursor cursor -> "cursor", cursor
-        | CaseAssetIds ids ->
-            let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
-            "assetIds", sprintf "[%s]" (String.Join (",", list))
-
-
     let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
@@ -104,7 +77,7 @@ module GetLatestDataPoint =
 
 [<AutoOpen>]
 module GetLatestDataPointApi =
-        /// **Description**
+    /// **Description**
     ///
     /// Retrieves the single latest data point in a time series.
     ///

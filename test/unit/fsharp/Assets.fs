@@ -229,7 +229,7 @@ let ``Attempt searching assets`` () = async {
         SearchAssets.Option.Name "str"
     ]
     let filter = [
-        SearchAssets.Filter.Name "string"
+        AssetFilter.Name "string"
     ]
 
     let! res = (fetch, Async.single, ctx) |||> SearchAssets.searchAssets 100 options filter
@@ -252,7 +252,7 @@ let ``Attempt filtering assets`` () = async {
         FilterAssets.Option.Limit 100
     ]
     let filter = [
-        SearchAssets.Filter.Name "string"
+        AssetFilter.Name "string"
     ]
 
     let! res = (fetch, Async.single, ctx) |||> FilterAssets.filterAssets options filter
