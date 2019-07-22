@@ -11,8 +11,6 @@ open Tests
 
 let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
 let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"
-let testApiProjectRead = Environment.GetEnvironmentVariable "TEST_API_PROJECT_READ"
-let testApiProjectWrite = Environment.GetEnvironmentVariable "TEST_API_PROJECT_WRITE"
 
 let createCtx key project =
     let client = new HttpClient ()
@@ -21,18 +19,18 @@ let createCtx key project =
     |> addHeader ("api-key", key)
     |> setProject project
 
-let readCtx = createCtx testApiKeyRead testApiProjectRead
-let writeCtx = createCtx testApiKeyWrite testApiProjectWrite
+let readCtx = createCtx testApiKeyRead "publicdata"
+let writeCtx = createCtx testApiKeyWrite "fusiondotnet-tests"
 
 [<Fact>]
 let ``Get datapoints by ids is Ok`` () = async {
     // Arrange
     let ctx = readCtx
     let options = [
-        GetDataPoints.QueryOption.Start "1559797200000"
-        GetDataPoints.QueryOption.End "1559808000000"
+        GetDataPoints.QueryOption.Start "1563175800000"
+        GetDataPoints.QueryOption.End "1563181200000"
     ]
-    let id = 126999346342304L
+    let id = 613312137748079L
 
     // Act
     let! res = getDataPointsAsync id options ctx
@@ -60,7 +58,7 @@ let ``Get datapoints by ids is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
-    test <@ Seq.length datapoints = 15 @>
+    test <@ Seq.length datapoints = 9 @>
     test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>

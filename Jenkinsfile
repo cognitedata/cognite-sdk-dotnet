@@ -20,13 +20,11 @@ podTemplate(
                                    image: 'eu.gcr.io/cognitedata/dotnet-mono:2.2-sdk',
                                    envVars: [
                                              secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-cognite-sdk-net', secretKey: 'token.txt'),
-                                             secretEnvVar(key: 'TEST_API_KEY_WRITE', secretName: 'jetfire-test-api-key', secretKey: 'playgroundApiKey'),
-                                             secretEnvVar(key: 'TEST_API_KEY_READ', secretName: 'jetfire-test-api-key', secretKey: 'playgroundApiKey'),
+                                             secretEnvVar(key: 'TEST_API_KEY_READ', secretName: 'fusiondotnet-sdk-api-keys', secretKey: 'publicdata'),
+                                             secretEnvVar(key: 'TEST_API_KEY_WRITE', secretName: 'fusiondotnet-sdk-api-keys', secretKey: 'greenfield'),
 
                                              // /codecov-script/upload-report.sh relies on the following
                                              // Jenkins and Github environment variables.
-                                             envVar(key: 'TEST_API_PROJECT_WRITE', value: "playground"),
-                                             envVar(key: 'TEST_API_PROJECT_READ', value: "playground"),
                                              envVar(key: 'JENKINS_URL', value: env.JENKINS_URL),
                                              envVar(key: 'BRANCH_NAME', value: env.BRANCH_NAME),
                                              envVar(key: 'BUILD_NUMBER', value: env.BUILD_NUMBER),
