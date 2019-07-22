@@ -177,7 +177,7 @@ module GetAggregatedDataPoints =
         QueryOptions: QueryOption seq
     }
 
-    let renderQueryOption (param: QueryOption) : string*Thoth.Json.Net.JsonValue =
+    let renderQueryOption (param: QueryOption) : string * Thoth.Json.Net.JsonValue =
         match param with
         | CaseStart start -> "start", Encode.string start
         | CaseEnd end'  -> "end", Encode.string end'
@@ -246,6 +246,7 @@ module GetAggregatedDataPointsApi =
     let getAggregatedDataPointsAsync (id: int64) (options: GetAggregatedDataPoints.QueryOption seq) =
         let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
         GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch Async.single
+
     /// **Description**
     ///
     /// Retrieves a list of aggregated data points from multiple time series in the same project
