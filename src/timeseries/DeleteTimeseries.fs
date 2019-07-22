@@ -33,7 +33,7 @@ module DeleteTimeseries =
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> dispose

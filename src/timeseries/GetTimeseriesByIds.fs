@@ -38,16 +38,14 @@ module GetTimeseriesByIds =
 
     let getTimeseriesByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
-
         let request : TimeseriesReadRequest = {
             Items = ids
         }
-        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> fetch
         >=> decoder
 

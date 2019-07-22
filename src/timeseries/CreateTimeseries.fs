@@ -38,11 +38,10 @@ module CreateTimeseries =
     let createTimeseries (items: seq<TimeseriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : TimeseriesRequest = { Items = items }
         let decoder = decodeResponse TimeseriesResponse.Decoder id
-        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> decoder

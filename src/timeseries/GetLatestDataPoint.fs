@@ -94,12 +94,11 @@ module GetLatestDataPoint =
     let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
-        let body = request.Encoder |> Encode.stringify
 
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> fetch
         >=> decoder
 

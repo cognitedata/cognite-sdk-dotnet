@@ -44,11 +44,10 @@ module GetAssetsByIds =
     let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
-        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> decoder
