@@ -80,10 +80,7 @@ module SearchAssets =
                     match filter with
                     | CaseName name -> yield "name", Encode.string name
                     | CaseParentIds ids -> yield "parentIds", Encode.int53seq ids
-                    | CaseRootIds ids -> yield "rootIds", Encode.list [
-                        for id in ids do
-                            yield id.Encoder
-                        ]
+                    | CaseRootIds ids -> yield "rootIds", ids |> Seq.map (fun (idt : Identity) -> idt.Encoder) |> Encode.seq
                     | CaseSource source -> yield "source", Encode.string source
                     | CaseMetaData md -> yield "metaData", Encode.propertyBag md
                     | CaseCreatedTime time -> yield "createdTime", time.Encoder
@@ -112,7 +109,7 @@ module SearchAssets =
 
     let searchAssets (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder (fun assets -> assets.Items)
-        let body = encodeRequest limit options filters |> Encode.stringify
+        let body = encodeRequest limit options filters
 
         POST
         >=> setVersion V10

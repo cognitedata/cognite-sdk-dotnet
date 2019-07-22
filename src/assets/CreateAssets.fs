@@ -40,11 +40,10 @@ module CreateAssets =
     let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsCreateRequest = { Items = assets }
-        let body = Encode.stringify  request.Encoder
 
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> decoder

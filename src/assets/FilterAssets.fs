@@ -47,7 +47,7 @@ module FilterAssets =
         ]
     let filterAssets (options: Option seq) (filters: SearchAssets.Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder id
-        let body = encodeRequest options filters |> Encode.stringify
+        let body = encodeRequest options filters
 
         POST
         >=> setVersion V10

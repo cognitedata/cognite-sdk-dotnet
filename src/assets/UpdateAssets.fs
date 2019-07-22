@@ -128,11 +128,9 @@ module UpdateAssets =
             ]
         }
 
-        let body = Encode.stringify request.Encoder
-
         POST
         >=> setVersion V10
-        >=> setBody body
+        >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
         >=> dispose

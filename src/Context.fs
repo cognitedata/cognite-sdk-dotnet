@@ -4,6 +4,7 @@ open System
 open System.Net
 open System.Net.Http
 open System.Reflection
+open Thoth.Json.Net
 
 type RequestMethod =
     | POST
@@ -25,7 +26,7 @@ type ApiVersion =
 type HttpRequest = {
     HttpClient: HttpClient
     Method: RequestMethod
-    Body: string option
+    Body: JsonValue option
     Resource: string
     Query: (string * string) list
     Headers: (string * string) list

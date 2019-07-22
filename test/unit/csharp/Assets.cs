@@ -11,6 +11,7 @@ using Fusion;
 using Fusion.Assets;
 using Fusion.Api;
 using System.Linq;
+using Thoth.Json.Net;
 
 namespace Tests
 {
@@ -414,5 +415,86 @@ namespace Tests
             Assert.NotNull(result);
             Assert.NotEmpty(result.Items);
         }
+        [Fact]
+        public async Task TestStreamContent()
+        {
+            string requestJson = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var respJson = File.ReadAllText("Assets.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                requestJson = await req.Content.ReadAsStringAsync();
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(respJson)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+            
+            var options = new List<FilterAssets.Option> {
+                FilterAssets.Option.Limit(100),
+                FilterAssets.Option.Cursor("cursor")
+            };
+
+            var filters = new List<SearchAssets.Filter> {
+                SearchAssets.Filter.MetaData(new Dictionary<string, string> { { "key1", "val1" }, { "key2", "val2" } }),
+                SearchAssets.Filter.Name("Name"),
+                SearchAssets.Filter.ParentIds(new List<long> { 1234, 12345 })
+            };
+
+            var result = await client.FilterAssetsAsync(options, filters);
+            var refRequest = Encode.toString(0, FilterAssets.encodeRequest(options, filters));
+            Assert.Equal(refRequest, requestJson);
+        }
+        [Fact]
+        public async Task TestStreamLargeContent()
+        {
+            string requestJson = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var respJson = File.ReadAllText("Assets.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                requestJson = await req.Content.ReadAsStringAsync();
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(respJson)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+            
+            var createAssets = new List<AssetWritePoco>();
+            for (int i = 0; i < 1000; i++) // 1000 is the maximum number of assets per request
+            {
+                createAssets.Add(new AssetWritePoco
+                {
+                    Description = "Long description which takes a lot of memory to store " + i,
+                    ExternalId = "ExternalIdsCanAlsoBeQuiteLongSometimes" + i,
+                    Name = "Names are also fairly unrestricted " + i,
+                    ParentExternalId = "With256CharactersForExternalIdsTheLimitCanGetQuiteHigh"
+                });
+            }
+
+            var result = await client.CreateAssetsAsync(createAssets);
+            var refRequest = Encode.toString(0, new CreateAssets.AssetsCreateRequest(createAssets.Select(AssetWriteDto.FromPoco)).Encoder);
+            Assert.Equal(refRequest, requestJson);
+        } 
     }
 }

@@ -4,7 +4,6 @@ open System
 open Newtonsoft.Json.Linq
 open Thoth.Json.Net
 
-
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Encode =
     let inline stringify encoder = Encode.toString 0 encoder

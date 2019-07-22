@@ -102,7 +102,7 @@ module SearchTimeseries =
 
     let searchTimeseries (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
         let decoder = decodeResponse GetTimeseries.TimeseriesResponse.Decoder (fun assets -> assets.Items)
-        let body = encodeRequest limit options filters |> Encode.stringify
+        let body = encodeRequest limit options filters
 
         POST
         >=> setVersion V10

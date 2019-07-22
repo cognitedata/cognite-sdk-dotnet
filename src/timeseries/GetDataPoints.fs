@@ -103,12 +103,11 @@ module GetDataPoints =
     let getDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request = renderRequest options defaultOptions
-        let body = Encode.stringify request
 
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setBody body
+        >=> setBody request
         >=> fetch
         >=> decoder
 

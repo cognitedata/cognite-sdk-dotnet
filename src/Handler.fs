@@ -8,6 +8,12 @@ open System.Web
 open Microsoft.FSharp.Data.UnitSystems.SI
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.IO
+open Newtonsoft.Json
+open Thoth.Json.Net
+open System.Net.Http.Headers
+open System.Net
+open System.Threading.Tasks
 
 [<Measure>] type ms
 
@@ -204,7 +210,7 @@ module Handler =
     let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Resource = resource  } }
 
-    let setBody (body: string) (next: NextHandler<_,_>) (context: HttpContext) =
+    let setBody (body: JsonValue) (next: NextHandler<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Body = Some body } }
 
     /// **Description**
@@ -241,6 +247,24 @@ module Handler =
         else
             ServerError
 
+    /// HttpContent implementation to push a JsonValue directly to the output stream.
+    type JsonPushStreamContent (content : JsonValue) =
+        inherit HttpContent ()
+        let _content = content
+        do
+            base.Headers.ContentType <- MediaTypeHeaderValue("application/json")
+        override this.SerializeToStreamAsync(stream: Stream, context: TransportContext) : Task =
+            task {
+                use sw = new StreamWriter(stream, UTF8Encoding(false), 1024, true)
+                use jtw = new JsonTextWriter(sw, Formatting = Formatting.None)
+                jtw.Formatting <- Formatting.None
+                do! content.WriteToAsync(jtw)
+                do! jtw.FlushAsync()
+                return ()
+            } :> Task
+        override this.TryComputeLength(length: byref<int64>) : bool =
+            length <- -1L
+            false
 
     /// A request function for fetching from the Cognite API.
     let fetch<'a> (next: NextHandler<IO.Stream,'a>) (ctx: HttpContext) : Async<Context<'a>> =
@@ -270,10 +294,10 @@ module Handler =
                         | GET ->
                             return! client.GetAsync(url)
                         | POST ->
-                            let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
+                            use content = new JsonPushStreamContent(ctx.Request.Body.Value)
                             return! client.PostAsync(url, content)
                         | PUT ->
-                            let content = new StringContent(ctx.Request.Body.Value, Encoding.UTF8, "application/json")
+                            use content = new JsonPushStreamContent(ctx.Request.Body.Value)
                             return! client.PutAsync(url, content)
                         | DELETE ->
                             return! client.DeleteAsync(url)

@@ -7,3 +7,4 @@
 .vscode
 coverage.lcov
 .ionide
+*.swp
