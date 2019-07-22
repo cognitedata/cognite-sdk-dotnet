@@ -35,8 +35,6 @@ module UpdateAssets =
         /// source is specified. The combination of source and sourceId must be
         /// unique.
         | CaseExternalId of string option
-        | CaseParentId of int64 option
-        | CaseParentExternalId of string option
 
         static member SetName name =
             CaseName name
@@ -86,18 +84,6 @@ module UpdateAssets =
                 | Some externalId -> yield "set", Encode.string externalId
                 | None -> yield "setNull", Encode.bool true
             ]
-        | CaseParentExternalId optParentExternalId ->
-            "externalId", Encode.object [
-                match optParentExternalId with
-                | Some parentExternalId -> yield "set", Encode.string parentExternalId
-                | None -> yield "setNull", Encode.bool true
-            ]
-        | CaseParentId optParentId ->
-            "parentId", Encode.object [
-                match optParentId with
-                | Some parentId -> yield "set", Encode.int53 parentId
-                | None -> yield "setNull", Encode.bool true
-            ]
 
 
     type AssetUpdateRequest = {
@@ -106,15 +92,13 @@ module UpdateAssets =
     } with
         member this.Encoder =
             Encode.object [
-                yield
+                yield 
                     match this.Id with
-                        | CaseId id -> ("id", Encode.int53 id)
-                        | Identity.CaseExternalId id -> ("externalId", Encode.string id)
-                yield ("update", Encode.object [
-                    for arg in this.Params do
-                        yield renderUpdateFields arg
-                ])
-
+                    | Identity.CaseId id -> "id", Encode.int53 id
+                    | Identity.CaseExternalId id -> "externalId", Encode.string id
+                yield "update", Encode.object [
+                    yield! this.Params |> Seq.map(renderUpdateFields)
+                ]
             ]
 
 
@@ -129,8 +113,7 @@ module UpdateAssets =
     let updateAssets (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsUpdateRequest = {
             Items = [
-                for (assetId, args) in args do
-                    yield { Id = assetId; Params = args }
+                yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
             ]
         }
 

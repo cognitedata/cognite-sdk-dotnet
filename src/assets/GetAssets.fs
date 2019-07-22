@@ -35,6 +35,7 @@ module GetAssets =
         | CaseCursor of string
         | CaseName of string
         | CaseParentIds of int64 seq
+        | CaseRootIds of int64 seq
         | CaseSource of string
         | CaseRoot of bool
         | CaseMinCreatedTime of int64
@@ -63,6 +64,10 @@ module GetAssets =
         /// parentId is set to null if the asset is a root asset.
         static member ParentIds ids =
             CaseParentIds ids
+
+        /// The IDs of the root assets that the assets should be children of.
+        static member RootIds ids =
+            CaseRootIds ids
 
         /// The source of this asset.
         static member Source source =
@@ -107,6 +112,7 @@ module GetAssets =
             | CaseCursor cursor -> "cursor", cursor
             | CaseName name -> "name", name
             | CaseParentIds ids -> "parentIds", Encode.int53seq ids |> Encode.stringify
+            | CaseRootIds ids -> "rootIds", Encode.int53seq ids |> Encode.stringify
             | CaseSource source -> "source", source
             | CaseRoot root -> "root", root.ToString().ToLower()
             | CaseMinCreatedTime value -> "minCreatedTime", value.ToString ()

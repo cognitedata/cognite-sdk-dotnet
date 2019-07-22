@@ -22,14 +22,7 @@ module GetAssetsByIds =
     } with
         member this.Encoder  =
             Encode.object [
-                yield "items", Encode.list [
-                    for id in this.Items do
-                        yield Encode.object [
-                            match id with
-                            | CaseId id -> yield "id", Encode.int53 id
-                            | CaseExternalId id -> yield "externalId", Encode.string id
-                        ]
-                ]
+                yield "items", this.Items |> Seq.map(fun id -> id.Encoder) |> Encode.seq
             ]
 
 
@@ -80,7 +73,7 @@ module GetAssetsByIdsApi =
 
 [<Extension>]
 type GetAssetsByIdsExtensions =
-     /// <summary>
+    /// <summary>
     /// Retrieves information about multiple assets in the same project.
     /// A maximum of 1000 assets IDs may be listed per request and all
     /// of them must be unique.

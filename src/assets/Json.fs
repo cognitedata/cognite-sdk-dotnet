@@ -21,6 +21,7 @@ module AssetsExtensions =
                     MetaData = if metadata.IsSome then metadata.Value else Map.empty
                     CreatedTime = get.Required.Field "createdTime" Decode.int64
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
+                    RootId = get.Required.Field "rootId" Decode.int64
                 })
 
     type AssetWriteDto with

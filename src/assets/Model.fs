@@ -2,6 +2,8 @@ namespace Fusion.Assets
 
 open System
 open System.Collections.Generic
+open Fusion
+open Thoth.Json.Net
 
 [<CLIMutable>]
 type AssetReadPoco = {
@@ -14,6 +16,7 @@ type AssetReadPoco = {
     Id : int64
     CreatedTime : int64
     LastUpdatedTime : int64
+    RootId: int64
 }
 
 /// Asset type for responses.
@@ -36,6 +39,8 @@ type AssetReadDto = {
     CreatedTime: int64
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
+    /// InternalId of the root object
+    RootId: int64
 } with
     /// Translates the domain type to a plain old crl object
     member this.ToPoco () : AssetReadPoco =
@@ -55,6 +60,7 @@ type AssetReadDto = {
             Id = this.Id
             CreatedTime = this.CreatedTime
             LastUpdatedTime = this.LastUpdatedTime
+            RootId = this.RootId
         }
 
 /// C# compatible Asset POCO
@@ -68,6 +74,50 @@ type AssetWritePoco = {
     Source : string
     ParentExternalId : string
 }
+
+type AssetFilter =
+    private
+    | CaseName of string
+    | CaseParentIds of int64 seq
+    | CaseRootIds of Identity seq
+    | CaseMetaData of Map<string, string>
+    | CaseSource of string
+    | CaseCreatedTime of TimeRange
+    | CaseLastUpdatedTime of TimeRange
+    | CaseRoot of bool
+    | CaseExternalIdPrefix of string
+
+    /// Name of asset. Often referred to as tag.
+    static member Name name = CaseName name
+    /// Filter out assets that have one of the ids listed as parent. The
+    static member ParentIds ids = CaseParentIds ids
+    /// Filter out assets without rootId in list
+    static member RootIds rootIds = CaseRootIds rootIds
+    /// Filter on metadata
+    static member MetaData (metaData : IDictionary<string, string>) =
+        metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
+    /// The source of this asset.
+    static member Source source = CaseSource source
+    /// Min/Max created time for this asset
+    static member CreatedTime createdTime = CaseCreatedTime createdTime
+    /// Min/Max last updated time for this asset
+    static member LastUpdatedTime lastUpdatedTime = CaseLastUpdatedTime lastUpdatedTime
+    /// True if the asset is root
+    static member Root root = CaseRoot root
+    /// Prefix on externalId
+    static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
+
+    static member Render (this: AssetFilter) =
+        match this with
+        | CaseName name -> "name", Encode.string name
+        | CaseParentIds ids -> "parentIds", Encode.int53seq ids
+        | CaseRootIds ids -> "rootIds", ids |> Seq.map(fun id -> id.Encoder) |> Encode.seq
+        | CaseSource source -> "source", Encode.string source
+        | CaseMetaData md -> "metaData", Encode.propertyBag md
+        | CaseCreatedTime time -> "createdTime", time.Encoder
+        | CaseLastUpdatedTime time -> "lastUpdatedTime", time.Encoder
+        | CaseRoot root -> "root", Encode.bool root
+        | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
 
 /// Asset type for create requests.
 type AssetWriteDto = {
