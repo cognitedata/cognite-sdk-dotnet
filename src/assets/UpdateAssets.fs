@@ -101,14 +101,20 @@ module UpdateAssets =
 
 
     type AssetUpdateRequest = {
-        Id: int64
+        Id: Identity
         Params: Option seq
     } with
         member this.Encoder =
             Encode.object [
-                yield ("id", Encode.int53 this.Id)
-                for arg in this.Params do
-                    yield renderUpdateFields arg
+                yield
+                    match this.Id with
+                        | CaseId id -> ("id", Encode.int53 id)
+                        | Identity.CaseExternalId id -> ("externalId", Encode.string id)
+                yield ("update", Encode.object [
+                    for arg in this.Params do
+                        yield renderUpdateFields arg
+                ])
+
             ]
 
 
@@ -120,7 +126,7 @@ module UpdateAssets =
                 "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
             ]
 
-    let updateAssets (args: (int64*Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let updateAssets (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsUpdateRequest = {
             Items = [
                 for (assetId, args) in args do
@@ -143,16 +149,16 @@ module UpdateAssetsApi =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
     ///
     /// **Parameters**
-    ///   * `args` - parameter of type `(int64 * UpdateArgs seq) seq`
+    ///   * `args` - parameter of type `(Identity * UpdateArgs seq) seq`
     ///   * `ctx` - The request HTTP context to use.
     ///
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (int64*(UpdateAssets.Option list)) list) (next: NextHandler<bool,'a>)  : HttpContext -> Async<Context<'a>> =
+    let updateAssets (args: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<bool,'a>)  : HttpContext -> Async<Context<'a>> =
         UpdateAssets.updateAssets args fetch next
 
-    let updateAssetsAsync (args: (int64*UpdateAssets.Option list) list) : HttpContext -> Async<Context<bool>> =
+    let updateAssetsAsync (args: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<bool>> =
         UpdateAssets.updateAssets args fetch Async.single
 
 [<Extension>]
@@ -163,7 +169,7 @@ type UpdateAssetsExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>True of successful.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<int64, UpdateAssets.Option seq> seq) : Task<bool> =
+    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq) : Task<bool> =
         task {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = updateAssetsAsync assets' this.Ctx

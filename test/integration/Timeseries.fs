@@ -1,8 +1,5 @@
 module Tests.Integration.Timeseries
 
-open System
-open System.Net.Http
-
 open Xunit
 open Swensen.Unquote
 

@@ -150,5 +150,3 @@ module Common =
             match this.Optional.Field name decoder with
                 | Some value -> value
                 | None -> null
-
-

@@ -184,7 +184,7 @@ let ``Update single asset with no updates is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = UpdateAssets.updateAssets [ 42L, [] ] fetch Async.single ctx
+    let! res = UpdateAssets.updateAssets [ Identity.Id 42L, [] ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -204,7 +204,7 @@ let ``Update single asset with is Ok`` () = async {
         |> addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||> UpdateAssets.updateAssets  [ (42L, [
+    let! res = (fetch, Async.single, ctx) |||> UpdateAssets.updateAssets  [ (Identity.Id 42L, [
         UpdateAssets.Option.SetName "New name"
         UpdateAssets.Option.SetDescription (Some "New description")
         UpdateAssets.Option.ClearSource
