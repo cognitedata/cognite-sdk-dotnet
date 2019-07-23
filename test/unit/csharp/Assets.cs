@@ -285,8 +285,8 @@ namespace Tests
             var options = new List<UpdateAssets.Option> {
                 UpdateAssets.Option.SetName("test")
             };
-            var assets = new List<ValueTuple<long, IEnumerable<UpdateAssets.Option>>> {
-                (42L, options)
+            var assets = new List<ValueTuple<Identity, IEnumerable<UpdateAssets.Option>>> {
+                (Identity.Id(42L), options)
             };
 
             // Act

@@ -1,17 +1,13 @@
 ﻿namespace Fusion
 
-open System
 open System.IO
-open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
-open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Assets
 open Fusion.Api
 open Fusion.Common
 
@@ -20,13 +16,15 @@ module FilterAssets =
     [<Literal>]
     let Url = "/assets/list"
 
+    type Filter = SearchAssets.Filter
+
     type Option =
         private
         | CaseLimit of int
         | CaseCursor of string
 
         /// Max number of results to return
-        static member Limit limit = 
+        static member Limit limit =
             if limit > MaxLimitSize || limit < 1 then
                 failwith "Limit must be set to 1000 or less"
             CaseLimit limit
@@ -42,10 +40,10 @@ module FilterAssets =
     let encodeRequest options filters =
         Encode.object [
             if not (Seq.isEmpty filters) then
-                yield "filter", SearchAssets.Filter.Encode filters
+                yield "filter", Filter.Encode filters
             yield! options |> Seq.map Option.Render
         ]
-    let filterAssets (options: Option seq) (filters: SearchAssets.Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let filterAssets (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse GetAssets.Assets.Decoder id
         let body = encodeRequest options filters
 
@@ -68,7 +66,7 @@ module FilterAssetsApi =
     ///   * `filters` - Search filters
     ///
     ///<returns>Assets.</return>
-    let filterAssets (options: FilterAssets.Option seq) (filters: SearchAssets.Filter seq) (next: NextHandler<GetAssets.Assets,'a>)
+    let filterAssets (options: FilterAssets.Option seq) (filters: FilterAssets.Filter seq) (next: NextHandler<GetAssets.Assets,'a>)
         : HttpContext -> Async<Context<'a>> =
             FilterAssets.filterAssets options filters fetch next
     /// **Description**
@@ -81,7 +79,7 @@ module FilterAssetsApi =
     ///   * `filters` - Search filters
     ///
     ///<returns>Assets.</return>
-    let filterAssetsAsync (options: FilterAssets.Option seq) (filters: SearchAssets.Filter seq)
+    let filterAssetsAsync (options: FilterAssets.Option seq) (filters: FilterAssets.Filter seq)
         : HttpContext -> Async<Context<GetAssets.Assets>> =
             FilterAssets.filterAssets options filters fetch Async.single
 [<Extension>]
@@ -95,7 +93,7 @@ type FilterAssetsExtensions =
     ///
     ///<returns>Assets</returns>
     [<Extension>]
-    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: SearchAssets.Filter seq) =
+    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: FilterAssets.Filter seq) =
         task {
             let! ctx = filterAssetsAsync options filters this.Ctx
             match ctx.Result with
