@@ -75,7 +75,7 @@ type DeleteAssetsExtensions =
             | Ok response ->
                 return ()
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         } :> Task
 

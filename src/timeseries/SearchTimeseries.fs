@@ -169,6 +169,6 @@ type SearchTimeseriesExtensions =
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }

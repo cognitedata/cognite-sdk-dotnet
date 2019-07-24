@@ -2,13 +2,9 @@
 namespace Fusion
 
 open System
-
-open Thoth.Json.Net
-open Newtonsoft.Json
-open System.Text.RegularExpressions
-open FSharp.Control.Tasks.V2.ContextInsensitive
 open System.IO
-open Newtonsoft.Json.Linq
+open System.Text.RegularExpressions
+open Thoth.Json.Net
 
 /// Id or ExternalId
 type Identity =
@@ -76,15 +72,6 @@ module Common =
     [<Literal>]
     let MaxLimitSize = 1000
 
-    let decodeStreamAsync (decoder : Decoder<'a>) (stream : IO.Stream) =
-        task {
-            use tr = new StreamReader(stream) // StreamReader will dispose the stream
-            use jtr = new JsonTextReader(tr)
-            let! json = JValue.ReadFromAsync jtr
-
-            return Decode.fromValue "$" decoder json
-        }
-
     /// **Description**
     ///
     /// JSON decode response and map decode error string to exception so we
@@ -109,7 +96,11 @@ module Common =
                     let! ret = decodeStreamAsync decoder stream |> Async.AwaitTask
                     match ret with
                     | Ok value -> return value |> resultMapper |> Ok
-                    | Error error -> return (DecodeError error |> Error)
+                    | Error message ->
+                        return {
+                            ResponseError.empty with
+                                Message = message
+                        } |> Error
                 | Error err -> return Error err
             }
 
@@ -133,29 +124,10 @@ module Common =
     ///
     /// **Output Type**
     ///   * `exn`
-    let error2Exception error = task {
-        match error with
-        | Exception ex -> return ex
-        | DecodeError err -> return DecodeException err
-        | HttpResponse (response, stream) ->
-            let! result = decodeStreamAsync ErrorResponse.Decoder stream
-            let error =
-                match result with
-                | Ok error -> error.Error
-                | Error message ->
-                    let error = ResponseException message
-                    error.Code <-  int response.StatusCode
-                    error
-            return error :> Exception
-    }
-
-    type Decode.IGetters with
-        member this.NullableField name decoder =
-            match this.Optional.Field name decoder with
-                | Some value -> Nullable(value)
-                | None -> Nullable()
-
-        member this.NullableReferenceField name decoder =
-            match this.Optional.Field name decoder with
-                | Some value -> value
-                | None -> null
+    let error2Exception error =
+        let ex = ResponseException error.Message
+        ex.Code <- error.Code
+        ex.Duplicated <- error.Duplicated |> Seq.map (Map.toSeq >> dict)
+        ex.Missing <- error.Missing |> Seq.map (Map.toSeq >> dict)
+        ex.InnerException <- if error.InnerException.IsSome then error.InnerException.Value else null
+        ex :> Exception

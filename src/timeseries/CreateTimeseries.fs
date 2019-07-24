@@ -81,6 +81,6 @@ type CreateTimeseriesExtensions =
             | Ok response ->
                 return response.Items |> Seq.map (fun ts -> ts.ToPoco ())
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }

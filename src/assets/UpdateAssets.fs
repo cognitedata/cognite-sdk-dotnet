@@ -160,6 +160,6 @@ type UpdateAssetsExtensions =
             | Ok response ->
                 return true
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }

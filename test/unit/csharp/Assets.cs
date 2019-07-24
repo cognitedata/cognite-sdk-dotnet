@@ -138,7 +138,7 @@ namespace Tests
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetsAsync(assetArgs));
+            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(assetArgs));
         }
 
         [Fact]
@@ -206,7 +206,7 @@ namespace Tests
                 .SetProject(project);
 
             // Act/Assert
-            await Assert.ThrowsAsync<DecodeException>(() => client.GetAssetAsync(42L));
+            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetAsync(42L));
         }
 
         [Fact]
@@ -439,7 +439,7 @@ namespace Tests
                 Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
-            
+
             var options = new List<FilterAssets.Option> {
                 FilterAssets.Option.Limit(100),
                 FilterAssets.Option.Cursor("cursor")
@@ -479,7 +479,7 @@ namespace Tests
                 Client.Create(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
-            
+
             var createAssets = new List<AssetWritePoco>();
             for (int i = 0; i < 1000; i++) // 1000 is the maximum number of assets per request
             {
@@ -495,6 +495,6 @@ namespace Tests
             var result = await client.CreateAssetsAsync(createAssets);
             var refRequest = Encode.toString(0, new CreateAssets.AssetsCreateRequest(createAssets.Select(AssetWriteDto.FromPoco)).Encoder);
             Assert.Equal(refRequest, requestJson);
-        } 
+        }
     }
 }

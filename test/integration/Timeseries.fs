@@ -63,6 +63,26 @@ let ``Get timeseries by ids is Ok`` () = async {
 }
 
 [<Fact>]
+let ``Get timeseries by missing id is Error`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let id = Identity.Id 0L
+
+    // Act
+    let! res = getTimeseriesByIdsAsync [ id ] ctx
+
+    let err =
+        match res.Result with
+        | Ok _ -> ResponseError.empty
+        | Error err -> err
+
+    // Assert
+    test <@ Result.isError res.Result @>
+    test <@ err.Code = 400 @>
+    test <@ err.Message = "timeseries ids not found: (id: 0 | externalId: null)" @>
+}
+
+[<Fact>]
 let ``Create and delete timeseries is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
