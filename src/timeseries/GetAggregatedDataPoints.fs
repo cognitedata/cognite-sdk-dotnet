@@ -291,7 +291,7 @@ type GetAggregatedDataPointsExtensions =
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }
 
@@ -310,7 +310,7 @@ type GetAggregatedDataPointsExtensions =
             | Ok response ->
                 return response |> Seq.map (fun points -> points.ToPoco ())
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }
 

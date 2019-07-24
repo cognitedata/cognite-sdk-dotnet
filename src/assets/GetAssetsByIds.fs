@@ -88,7 +88,7 @@ type GetAssetsByIdsExtensions =
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }
 

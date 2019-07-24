@@ -111,21 +111,35 @@ module Handler =
     let sequenceContext (ctx : Context<'a> list) : Context<'a list> = traverseContext id ctx
 
     // https://github.com/cognitedata/cdp-spark-datasource/blob/master/src/main/scala/com/cognite/spark/datasource/CdpConnector.scala#L198
-    let shouldRetry = function
-        // @larscognite: Retry on 429,
-        | 429 -> true
-        // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
-        // we lose connection to db, so 401 can be transient
-        | 401 -> true
-        // 500 is hard to say, but we should avoid having those in the api
-        | 500 ->
-          true // we get random and transient 500 responses often enough that it's worth retrying them.
-        // 502 and 503 are usually transient.
-        | 502 -> true
-        | 503 -> true
+    let shouldRetry (err: ResponseError) =
+        let retryCode =
+            match err.Code with
+            // @larscognite: Retry on 429,
+            | 429 -> true
+            // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
+            // we lose connection to db, so 401 can be transient
+            | 401 -> true
+            // 500 is hard to say, but we should avoid having those in the api
+            | 500 ->
+              true // we get random and transient 500 responses often enough that it's worth retrying them.
+            // 502 and 503 are usually transient.
+            | 502 -> true
+            | 503 -> true
+            // do not retry other responses.
+            | _ -> false
 
-        // do not retry other responses.
-        | _ -> false
+        let retryEx =
+            if err.InnerException.IsNone then
+                match err.InnerException.Value with
+                | :? Net.Http.HttpRequestException
+                | :? System.Net.WebException -> true
+                // do not retry other exceptions.
+                | _ -> false
+            else
+                false
+
+        // Retry if retriable code or retryable exception
+        retryCode || retryEx
 
     /// **Description**
     ///
@@ -152,24 +166,10 @@ module Handler =
         match ctx'.Result with
         | Ok _ -> return ctx'
         | Error err ->
-            match err with
-            | HttpResponse (httpResponse, _) ->
-                if shouldRetry (int httpResponse.StatusCode) && maxRetries > 0 then
-                    do! int initialDelay |> Async.Sleep
-                    return! retry nextDelay (maxRetries - 1) handler next ctx
-                else
-                    return ctx'
-            | Exception error ->
-                match error with
-                | :? Net.Http.HttpRequestException
-                | :? System.Net.WebException as ex ->
-                    if maxRetries > 0 then
-                        do! int initialDelay |> Async.Sleep
-
-                    return! retry nextDelay (maxRetries - 1) handler next ctx
-                | _ ->
-                    return ctx'
-            | _ ->
+            if shouldRetry err && maxRetries > 0 then
+                do! int initialDelay |> Async.Sleep
+                return! retry nextDelay (maxRetries - 1) handler next ctx
+            else
                 return ctx'
     }
 
@@ -235,17 +235,14 @@ module Handler =
     let POST<'a> = setMethod<'a> RequestMethod.POST
     let DELETE<'a> = setMethod<'a> RequestMethod.DELETE
 
-    let (|Informal|Success|Redirection|ClientError|ServerError|) x =
-        if x < 200 then
-            Informal
-        else if x < 300 then
-            Success
-        else if x < 400 then
-            Redirection
-        else if x < 500 then
-            ClientError
-        else
-            ServerError
+    let decodeStreamAsync (decoder : Decoder<'a>) (stream : IO.Stream) =
+        task {
+            use tr = new StreamReader(stream) // StreamReader will dispose the stream
+            use jtr = new JsonTextReader(tr)
+            let! json = Newtonsoft.Json.Linq.JValue.ReadFromAsync jtr
+
+            return Decode.fromValue "$" decoder json
+        }
 
     /// HttpContent implementation to push a JsonValue directly to the output stream.
     type JsonPushStreamContent (content : JsonValue) =
@@ -302,15 +299,30 @@ module Handler =
                         | DELETE ->
                             return! client.DeleteAsync(url)
                     }
+                    let a = response.StatusCode
 
                     let! stream = response.Content.ReadAsStreamAsync ()
                     if response.IsSuccessStatusCode then
                         return Ok stream
                     else
-                        return (response, stream) |> HttpResponse |> Error
+                        let! result = decodeStreamAsync ApiResponseError.Decoder stream
+                        match result with
+                        | Ok aspiResponseError ->
+                            return aspiResponseError.Error |> Error
+                        | Error message ->
+                            return {
+                                ResponseError.empty with
+                                    Code = int response.StatusCode
+                                    Message = message
+                            } |> Error
                 with
                 | ex ->
-                    return ResponseError.Exception ex |> Error
+                    return {
+                        ResponseError.empty with
+                            Code = 400
+                            Message = ex.Message
+                            InnerException = Some ex
+                    } |> Error
             }
 
             let! result = resultTask |> Async.AwaitTask

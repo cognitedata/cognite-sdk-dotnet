@@ -112,6 +112,6 @@ type GetTimeseriesExtensions =
                         NextCursor = response.NextCursor
                     |}
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }

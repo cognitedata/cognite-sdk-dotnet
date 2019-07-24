@@ -61,6 +61,6 @@ type GetAssetExtensions =
             | Ok asset ->
                 return asset
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }

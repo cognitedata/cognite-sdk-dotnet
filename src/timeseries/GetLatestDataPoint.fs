@@ -116,7 +116,7 @@ type GetLatestDataPointExtensions =
             | Ok response ->
                 return response
             | Error error ->
-                let! err = error2Exception error
+                let err = error2Exception error
                 return raise err
         }
 

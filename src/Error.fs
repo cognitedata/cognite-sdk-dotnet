@@ -1,13 +1,9 @@
 namespace Fusion
 
 open System
-open System.Net.Http
 open System.Collections.Generic
 
 open Thoth.Json.Net
-
-/// Will be raised if decoding a response fails.
-exception DecodeException of string
 
 type ErrorValue () =
     static member val Decoder : Decoder<ErrorValue> =
@@ -43,45 +39,51 @@ type ResponseException (message : string) =
     member val Code = 400 with get, set
     member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
     member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val InnerException : Exception = null with get, set
 
+and ResponseError = {
+    Code : int
+    Message : string
+    Missing : Map<string, ErrorValue> seq
+    Duplicated : Map<string, ErrorValue> seq
+    InnerException : exn option
+}
     with
-        static member Decoder : Decoder<ResponseException> =
+        static member Decoder : Decoder<ResponseError> =
             Decode.object (fun get ->
                 let message = get.Required.Field "message" Decode.string
+                {
+                    Code = get.Required.Field "code" Decode.int
+                    Message = get.Required.Field "message" Decode.string
+                    Missing =
+                        let missing = get.Optional.Field "missing" (Decode.array (Decode.dict ErrorValue.Decoder))
+                        match missing with
+                        | Some missing -> missing |> Seq.ofArray
+                        | None -> Seq.empty
+                    Duplicated =
+                        let duplicated = get.Optional.Field "duplicated" (Decode.array (Decode.dict ErrorValue.Decoder))
+                        match duplicated with
+                        | Some duplicated -> duplicated |> Seq.ofArray
+                        | None -> Seq.empty
+                    InnerException = None
+                })
 
-                let error = ResponseException message
-                error.Code <- get.Required.Field "code" Decode.int
+        static member empty =
+            {
+               Code = 400
+               Message = String.Empty
+               Missing = Seq.empty
+               Duplicated = Seq.empty
+               InnerException = None
+           }
 
-
-                let missing = get.Optional.Field "missing" (Decode.array (Decode.dict ErrorValue.Decoder))
-                match missing with
-                | Some missing ->
-                    error.Missing <- missing |> Seq.map (Map.toSeq >> dict)
-                | None -> ()
-
-                let duplicated = get.Optional.Field "duplicated" (Decode.array (Decode.dict ErrorValue.Decoder))
-                match duplicated with
-                | Some duplicated ->
-                    error.Duplicated <- duplicated |> Seq.map (Map.toSeq >> dict)
-                | None -> ()
-
-                error
-            )
-
-type ResponseError =
-    /// Exception (internal error). This should never happen.
-    | Exception of exn
-    /// JSON decode error (unable to decode the response)
-    | DecodeError of string
-    /// Error response from server.
-    | HttpResponse of HttpResponseMessage*IO.Stream
-
-type ErrorResponse = {
-    Error : ResponseException
+type ApiResponseError = {
+    Error : ResponseError
 } with
     static member Decoder =
         Decode.object (fun get ->
             {
-                Error = get.Required.Field "error" ResponseException.Decoder
+                Error = get.Required.Field "error" ResponseError.Decoder
             }
         )
+
