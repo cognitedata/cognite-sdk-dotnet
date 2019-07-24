@@ -19,7 +19,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
         getDataPointsMultipleAsync [
             {
-                Id = 20713436708L
+                Id = Identity.Id 20713436708L
                 QueryOptions = [
                     GetDataPoints.QueryOption.Start "1524851819000"
                     GetDataPoints.QueryOption.End "1524859650000"

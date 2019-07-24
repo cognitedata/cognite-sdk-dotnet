@@ -90,16 +90,58 @@ let ``Get datapoints by id with limit is Ok`` () = async {
 }
 
 [<Fact>]
+let ``Get datapoints by id with limit and timerange is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        GetDataPoints.QueryOption.Start "1562976000000"
+        GetDataPoints.QueryOption.End   "1563062399000"
+    ]
+    let id = 613312137748079L
+
+    // Act
+    let! res = getDataPointsAsync id options ctx
+
+    let resId =
+        match res.Result with
+        | Ok dtos ->
+            let h = Seq.tryHead dtos
+            match h with
+            | Some dto -> dto.Id
+            | None -> 0L
+        | Error _ -> 0L
+        |> Identity.Id
+
+    let datapoints =
+        match res.Result with
+        | Ok dtos ->
+            seq {
+                for datapointDto in dtos do
+                yield! datapointDto.DataPoints
+            }
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ resId = Identity.Id id @>
+    test <@ Seq.length datapoints = 100 @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Query.IsEmpty @>
+}
+
+
+[<Fact>]
 let ``Get datapoints by multiple id with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
 
     let a: GetDataPoints.Option = {
-        Id = 613312137748079L
+        Id = Identity.Id 613312137748079L
         QueryOptions = [ GetDataPoints.QueryOption.Limit 10 ]
     }
     let b: GetDataPoints.Option = {
-        Id = 605574483685900L
+        Id = Identity.Id 605574483685900L
         QueryOptions = [ GetDataPoints.QueryOption.Limit 10 ]
     }
     let defaultOptions: GetDataPoints.Option seq = Seq.ofList [ a; b ]
@@ -112,6 +154,7 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
         | Ok dtos ->
             Seq.map (fun (d: GetDataPoints.DataPoints) -> d.Id) dtos
         | Error _ -> Seq.ofList [ 0L ]
+        |> Seq.map Identity.Id
 
     let datapoints =
         match res.Result with

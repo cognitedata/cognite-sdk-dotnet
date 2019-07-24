@@ -24,6 +24,11 @@ type Identity =
             | CaseExternalId id -> yield "externalId", Encode.string id
         ]
 
+    member this.Render =
+        match this with
+        | CaseId id -> "id", Encode.int64 id
+        | CaseExternalId id -> "id", Encode.string id
+
 type Numeric =
     internal
     | CaseString of string
