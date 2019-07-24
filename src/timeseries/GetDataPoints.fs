@@ -29,7 +29,7 @@ module GetDataPoints =
     type DataPoints = {
         Id: int64
         ExternalId: string option
-        IsString: bool
+        IsString : bool
         DataPoints: DataPointDto seq
     } with
         static member Decoder : Decoder<DataPoints> =
@@ -74,11 +74,12 @@ module GetDataPoints =
         static member IncludeOutsidePoints iop =
             CaseIncludeOutsidePoints iop
 
+
     type DefaultOption = QueryOption
 
     [<CLIMutable>]
     type Option = {
-        Id: int64
+        Id: Identity
         QueryOptions: QueryOption seq
     }
 
@@ -91,13 +92,17 @@ module GetDataPoints =
 
     let renderRequest (options: Option seq) (defaultOptions: QueryOption seq) =
         Encode.object [
-            yield "items", Encode.list [
-                for option in options do
-                    yield Encode.object [
-                        yield "id", Encode.int64 option.Id
-                        yield! option.QueryOptions |> Seq.map renderQueryOption
-                    ]
-            ]
+            yield "items", Encode.list (
+                options
+                |> Seq.map (fun (option: Option) ->
+                    Encode.object [
+                        yield option.Id.Render
+                        yield! option.QueryOptions
+                        |> Seq.map renderQueryOption
+                        |> List.ofSeq
+                    ])
+                |> List.ofSeq
+            )
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
     let getDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
@@ -128,7 +133,7 @@ module GetDataPointsApi =
     ///   * `Context<HttpResponseMessage> -> Async<Context<'a>>`
     ///
     let getDataPoints (id: int64) (options: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
-        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
         GetDataPoints.getDataPoints options' Seq.empty fetch next
 
     /// **Description**
@@ -144,7 +149,7 @@ module GetDataPointsApi =
     ///   * `Async<Context<seq<GetDataPoints.DataPoints>>>`
     ///
     let getDataPointsAsync (id: int64) (options: GetDataPoints.QueryOption seq) =
-        let options' : GetDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        let options' : GetDataPoints.Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
         GetDataPoints.getDataPoints options' Seq.empty fetch Async.single
 
     /// **Description**
