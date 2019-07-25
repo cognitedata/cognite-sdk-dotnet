@@ -38,7 +38,7 @@ module InsertDataPoints =
                 yield ("items", Seq.map (fun (it: DataPoints) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, bool>) =
+    let insertDataPoints (items: seq<DataPoints>) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
         let request : PointRequest = { Items = items }
         let body = Encode.stringify request.Encoder
 
@@ -65,7 +65,7 @@ module InsertDataPointsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<bool,bool>) =
+    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<unit,unit>) =
         InsertDataPoints.insertDataPoints items fetch next
 
     let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
@@ -80,7 +80,7 @@ type InsertDataExtensions =
     /// <param name="items">The list of data points to insert.</param>
     /// <returns>True if successful.</returns>
     [<Extension>]
-    static member InsertDataAsync (this: Client) (items: DataPointsWritePoco seq) : Task<bool> =
+    static member InsertDataAsync (this: Client) (items: DataPointsWritePoco seq) : Task =
         let items' =
             Seq.map  (fun (item: DataPointsWritePoco) ->
                 {
@@ -92,11 +92,10 @@ type InsertDataExtensions =
         task {
             let! ctx = insertDataPointsAsync items' this.Ctx
             match ctx.Result with
-            | Ok response ->
-                return true
+            | Ok _ -> return ()
             | Error error ->
                let err = error2Exception error
                return raise err
-        }
+        } :> Task
 
 

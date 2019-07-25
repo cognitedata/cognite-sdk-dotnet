@@ -13,6 +13,7 @@ open Thoth.Json.Net
 open Fusion
 open Fusion.Api
 open Fusion.Common
+open Fusion.Assets
 
 [<RequireQualifiedAccess>]
 module UpdateAssets =
@@ -101,7 +102,6 @@ module UpdateAssets =
                 ]
             ]
 
-
     type AssetsUpdateRequest = {
         Items: AssetUpdateRequest seq
     } with
@@ -110,7 +110,16 @@ module UpdateAssets =
                 "items", Seq.map (fun (item:AssetUpdateRequest) -> item.Encoder) this.Items |> Encode.seq
             ]
 
+    type AssetResponse = {
+        Items: AssetReadDto seq
+    } with
+         static member Decoder : Decoder<AssetResponse> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+            })
+
     let updateAssets (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -122,7 +131,7 @@ module UpdateAssets =
         >=> setBody request.Encoder
         >=> setResource Url
         >=> fetch
-        >=> dispose
+        >=> decoder
 
 [<AutoOpen>]
 module UpdateAssetsApi =
@@ -138,10 +147,10 @@ module UpdateAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<string,exn>>`
     ///
-    let updateAssets (args: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<bool,'a>)  : HttpContext -> Async<Context<'a>> =
+    let updateAssets (args: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
         UpdateAssets.updateAssets args fetch next
 
-    let updateAssetsAsync (args: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<bool>> =
+    let updateAssetsAsync (args: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
         UpdateAssets.updateAssets args fetch Async.single
 
 [<Extension>]
@@ -152,13 +161,13 @@ type UpdateAssetsExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>True of successful.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq) : Task<bool> =
+    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq) : Task<AssetReadPoco seq> =
         task {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = updateAssetsAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return true
+                return response |> Seq.map (fun asset -> asset.ToPoco ()) 
             | Error error ->
                 let err = error2Exception error
                 return raise err

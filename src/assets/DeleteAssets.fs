@@ -53,10 +53,10 @@ module DeleteAssetsApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteAssets (assets: Identity seq, recursive: bool) (next: NextHandler<bool,'a>) =
+    let deleteAssets (assets: Identity seq, recursive: bool) (next: NextHandler<unit,'a>) =
         DeleteAssets.deleteAssets (assets, recursive) fetch next
 
-    let deleteAssetsAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<bool>> =
+    let deleteAssetsAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
         DeleteAssets.deleteAssets (assets, recursive) fetch Async.single
 
 [<Extension>]
@@ -72,8 +72,7 @@ type DeleteAssetsExtensions =
         task {
             let! ctx = deleteAssetsAsync (ids, recursive) this.Ctx
             match ctx.Result with
-            | Ok response ->
-                return ()
+            | Ok _ -> return ()
             | Error error ->
                 let err = error2Exception error
                 return raise err

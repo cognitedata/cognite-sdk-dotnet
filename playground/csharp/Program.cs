@@ -66,7 +66,7 @@ namespace csharp
                     }
                 }
             };
-            var result2 = await client.InsertDataAsync(points);
+            await client.InsertDataAsync(points);
         }
 
         static async Task Main(string[] args)
