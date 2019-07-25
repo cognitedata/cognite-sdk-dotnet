@@ -290,10 +290,7 @@ namespace Tests
             };
 
             // Act
-            var result = await client.UpdateAssetsAsync(assets);
-
-            // Assert
-            Assert.True(result);
+            await client.UpdateAssetsAsync(assets);
         }
 
         [Fact]

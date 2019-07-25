@@ -220,7 +220,7 @@ let ``Update assets is Ok`` () = async {
 
     let updateSuccsess =
         match updateRes.Result with
-        | Ok res -> res
+        | Ok res -> true
         | Error _ -> false
 
     // Assert create

@@ -27,7 +27,7 @@ module DeleteTimeseries =
                 yield ("items", Seq.map (fun (it: Identity) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let deleteTimeseries (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, bool>) =
+    let deleteTimeseries (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
         let request : DeleteRequest = { Items = items }
         let body = Encode.stringify request.Encoder
 
@@ -51,7 +51,7 @@ module DeleteTimeseriesApi =
     /// **Output Type**
     ///   * `Async<Result<HttpResponse,ResponseError>>`
     ///
-    let deleteTimeseries (items: Identity seq) (next: NextHandler<bool, bool>) =
+    let deleteTimeseries (items: Identity seq) (next: NextHandler<unit, unit>) =
         DeleteTimeseries.deleteTimeseries items fetch next
 
     let deleteTimeseriesAsync (items: Identity seq) =
@@ -65,13 +65,12 @@ type DeleteTimeseriesExtensions =
     /// <param name="name">The name of the timeseries to delete.</param>
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
-    static member DeleteTimeseriesAsync (this: Client) (items: Identity seq) : Task<bool> =
+    static member DeleteTimeseriesAsync (this: Client) (items: Identity seq) : Task =
         task {
             let! ctx = deleteTimeseriesAsync items this.Ctx
             match ctx.Result with
-            | Ok response ->
-                return true
+            | Ok _ -> return ()
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } :> Task
