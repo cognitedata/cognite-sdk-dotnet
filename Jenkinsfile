@@ -19,7 +19,7 @@ podTemplate(
                  containerTemplate(name: 'dotnet-mono',
                                    image: 'eu.gcr.io/cognitedata/dotnet-mono:2.2-sdk',
                                    envVars: [
-                                             secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-token-cognite-sdk-net', secretKey: 'token.txt'),
+                                             secretEnvVar(key: 'CODECOV_TOKEN', secretName: 'codecov-tokens', secretKey: 'cognite-sdk-net'),
                                              secretEnvVar(key: 'TEST_API_KEY_READ', secretName: 'fusiondotnet-sdk-api-keys', secretKey: 'publicdata'),
                                              secretEnvVar(key: 'TEST_API_KEY_WRITE', secretName: 'fusiondotnet-sdk-api-keys', secretKey: 'greenfield'),
 
