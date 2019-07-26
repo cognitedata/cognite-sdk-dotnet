@@ -20,6 +20,15 @@ module UpdateAssets =
     [<Literal>]
     let Url = "/assets/update"
 
+    type MetaDataChange = {
+        Add : Map<string, string> option
+        Remove : string seq
+    }
+
+    type MetaDataUpdate =
+        | Set of Map<string, string>
+        | Change of MetaDataChange
+
     /// Asset update parameters
     type Option =
         private
@@ -29,7 +38,7 @@ module UpdateAssets =
         | CaseDescription of string option
         /// Set or clear custom, application specific metadata. String key ->
         /// String value
-        | CaseMetaData of Map<string, string> option
+        | CaseMetaData of MetaDataUpdate option
         // Set or clear the source of this asset
         | CaseSource of string option
         /// Set or clear ID of the asset in the source. Only applicable if
@@ -44,10 +53,29 @@ module UpdateAssets =
             CaseDescription description
 
         static member SetMetaData (md : IDictionary<string, string>) =
-            md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some |> CaseMetaData
+            md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> Some |> CaseMetaData
+
+        static member SetMetaData (md : Map<string, string>) =
+            md |> Set |> Some |> CaseMetaData
 
         static member ClearMetaData () =
             CaseMetaData None
+        
+        static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
+            {
+                Add =
+                    if isNull add then
+                        None
+                    else
+                        add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
+                Remove = if isNull remove then Seq.empty else remove
+            } |> Change |> Some |> CaseMetaData
+
+        static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
+            {
+                Add = add
+                Remove = remove
+            } |> Change |> Some |> CaseMetaData
 
         static member SetSource source =
             Some source |> CaseSource
@@ -68,11 +96,19 @@ module UpdateAssets =
                 | None -> yield "setNull", Encode.bool true
             ]
         | CaseMetaData optMeta ->
-            "metadata", Encode.object [
-                match optMeta with
-                | Some meta -> yield "set", Encode.propertyBag meta
-                | None -> yield "setNull", Encode.bool true
-            ]
+            match optMeta with
+            | Some meta ->
+                match meta with
+                | Set data ->
+                    "metadata", Encode.object [
+                        yield "set", Encode.propertyBag data
+                    ]
+                | Change data ->
+                    "metadata", Encode.object [
+                        if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
+                        yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
+                    ]
+            | None -> "set", Encode.object []
         | CaseSource optSource ->
             "source", Encode.object [
                 match optSource with

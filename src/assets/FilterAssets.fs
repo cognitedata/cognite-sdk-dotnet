@@ -53,7 +53,6 @@ module FilterAssets =
             Filters = filters
             Options = options
         }
-        request.Encoder |> Encode.stringify |> printfn "%A"
 
         POST
         >=> setVersion V10

@@ -189,12 +189,20 @@ let ``Update assets is Ok`` () = async {
     let wctx = writeCtx ()
 
     let externalIdString = "createDeleteTestAssets"
+    let newMetadata = ([
+        "key1", "value1"
+        "key2", "value2"
+    ]
+    |> Map.ofList)
     let dto: Assets.AssetWriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
         ParentId = None
         Description = Some "dotnet sdk test"
-        MetaData = Map.empty
+        MetaData = [
+            "oldkey1", "oldvalue1"
+            "oldkey2", "oldvalue2"
+        ] |> Map.ofList
         Source = None
         ParentExternalId = None
     }
@@ -204,24 +212,33 @@ let ``Update assets is Ok`` () = async {
     let! createRes = createAssetsAsync [ dto ] wctx
     let! updateRes =
         updateAssetsAsync [
-            (externalId, [ UpdateAssets.Option.SetName newName ])
+            (externalId, [
+                UpdateAssets.Option.SetName newName
+                UpdateAssets.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+            ])
         ] wctx
     let! getRes = getAssetsByIdsAsync [ externalId ] wctx
     let! delRes = deleteAssetsAsync ([ externalId ], false) wctx
 
-    let resName, resExternalId =
+    let resName, resExternalId, resMetaData =
         match getRes.Result with
         | Ok assetsResponses ->
             let h = Seq.tryHead assetsResponses
             match h with
-            | Some assetResponse -> assetResponse.Name, assetResponse.ExternalId
-            | None -> "", Some ""
-        | Error _ -> "", Some ""
+            | Some assetResponse -> assetResponse.Name, assetResponse.ExternalId, assetResponse.MetaData
+            | None -> "", Some "", Map.empty
+        | Error _ -> "", Some "", Map.empty
 
     let updateSuccsess =
         match updateRes.Result with
         | Ok res -> true
         | Error _ -> false
+    
+    let metaDataOk =
+        resMetaData.ContainsKey "key1"
+        && resMetaData.ContainsKey "key2"
+        && resMetaData.ContainsKey "oldkey2"
+        && not (resMetaData.ContainsKey "oldkey1")
 
     // Assert create
     test <@ Result.isOk createRes.Result @>
@@ -243,6 +260,7 @@ let ``Update assets is Ok`` () = async {
     test <@ getRes.Request.Query.IsEmpty @>
     test <@ resExternalId = Some externalIdString @>
     test <@ resName = newName @>
+    test <@ metaDataOk @>
 
     // Assert delete
     test <@ Result.isOk delRes.Result @>
