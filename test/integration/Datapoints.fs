@@ -307,3 +307,44 @@ let ``Insert datapoints is Ok`` () = async {
     test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries/data" @>
 }
+
+[<Fact>]
+let ``Delete datapoints is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let externalIdString = "deleteDatapointsTest"
+    let dto: TimeseriesWriteDto = {
+        ExternalId = Some externalIdString
+        Name = Some "Delete datapoints test"
+        LegacyName = None
+        Description = Some "dotnet sdk test"
+        IsString = false
+        MetaData = Map.empty
+        Unit = None
+        AssetId = None
+        IsStep = false
+        SecurityCategories = Seq.empty 
+    }
+    let externalId = Identity.ExternalId externalIdString
+
+    let startTimestamp =     1563048800000L;
+    let endDeleteTimestamp = 1563048800051L
+    let endTimestamp =       1563048800100L
+    let points : DataPointDto seq = seq { for i in startTimestamp..endTimestamp do yield { TimeStamp = i; Value = Numeric.Float 3.0 } }
+
+    let datapoints : InsertDataPoints.DataPoints = {
+        DataPoints = points
+        Identity = Identity.ExternalId externalIdString
+    }
+
+    // Act
+    let! _ = createTimeseriesAsync [ dto ] ctx
+    let! _ = insertDataPointsAsync [ datapoints ] ctx
+    let! res = deleteDataPointsAsync [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }] ctx
+    let! _ = deleteTimeseriesAsync [ externalId ] ctx
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ res.Request.Method = RequestMethod.POST @>
+    test <@ res.Request.Resource = "/timeseries/data/delete" @>
+}
