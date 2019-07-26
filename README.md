@@ -49,6 +49,7 @@ This will install the main dependencies and sub-dependencies. The main dependenc
 - [FSharp.Data](https://www.nuget.org/packages/FSharp.Data/) - for HTTP Utilities.
 - [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.1) - for JSON (de)serialization.
+- [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for protobuf support
 
 ## C# API
 
@@ -86,8 +87,8 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 
 - `getTimeSeries` - Retrieves a list of all time series in a project .
 - `getTimeSeriesByIds` - Get timeseries with the given ids.
-- `createTimeSeries` - Create a new time series.
-- `queryTimeSeries` - Retrieves a list of data points from a single time series.
+- `createTimeseries` - Create one or more new time series.
+- `updateTimeseries` - Update one or more time series.
 - `deleteTimeseries`- Deletes a time series object given the name of the time series.
 - `searchTimeseries` - Retrieves a list of time series matching the specified criteria.
 
@@ -95,7 +96,8 @@ The C# API is also implemented in F# but hides F# specific datatypes such as `Op
 - `getDataPointsMultiple` - Retrieves a list of data points from multiple time series in a project
 - `getAggregatedDataPoints` - Retrieves a list of aggregated data points from time series in a project
 - `getLatestDataPoint` - Retrieves the single latest data point in a time series.
-- `insertDataPoints` - Insert datapoints into a time series.
+- `insertDataPoints` - Insert datapoints into one or more time series.
+- `deleteDataPoints` - Delete datapoints from one or more time series.
 
 ## Sequences API
 
