@@ -1,10 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <Description>.NET SDK for Cognite Data Fusion (CDF)</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>0.8.12</Version>
-    <PackageVersion>0.8.12</PackageVersion>
+    <Version>0.8.13</Version>
+    <PackageVersion>0.8.13</PackageVersion>
     <PackageId>Fusion.NET</PackageId>
+    <Author>Cognite AS</Author>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>

@@ -15,7 +15,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Fusion.fsproj" />
+    <ProjectReference Include="../../protobuf/proto.csproj" />
+    <ProjectReference Include="../../src\Fusion.NET.fsproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
