@@ -29,7 +29,6 @@ module DeleteTimeseries =
 
     let deleteTimeseries (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
         let request : DeleteRequest = { Items = items }
-        let body = Encode.stringify request.Encoder
 
         POST
         >=> setVersion V10
@@ -40,7 +39,7 @@ module DeleteTimeseries =
 
 [<AutoOpen>]
 module DeleteTimeseriesApi =
-     /// **Description**
+    /// **Description**
     ///
     /// Deletes a time series object given the name of the time series.
     ///
@@ -59,7 +58,7 @@ module DeleteTimeseriesApi =
 
 [<Extension>]
 type DeleteTimeseriesExtensions =
-  /// <summary>
+    /// <summary>
     /// Delete timeseries.
     /// </summary>
     /// <param name="name">The name of the timeseries to delete.</param>
