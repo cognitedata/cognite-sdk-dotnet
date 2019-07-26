@@ -33,26 +33,6 @@ let ``Get assets with limit is Ok`` () = async {
 let ``Get asset by id is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let assetId = 0L
-
-    // Act
-    let! res = getAssetAsync assetId ctx
-
-    let err =
-        match res.Result with
-        | Ok _ -> ResponseError.empty
-        | Error err -> err
-
-    // Assert
-    test <@ Result.isError res.Result @>
-    test <@ err.Code = 400 @>
-    test <@ err.Message = "getAsset.arg0: must be greater than or equal to 1" @>
-}
-
-[<Fact>]
-let ``Get asset by missing id is Error`` () = async {
-    // Arrange
-    let ctx = readCtx ()
     let assetId = 130452390632424L
 
     // Act
@@ -68,6 +48,26 @@ let ``Get asset by missing id is Error`` () = async {
     test <@ resId = assetId @>
     test <@ res.Request.Method = RequestMethod.GET @>
     test <@ res.Request.Resource = "/assets/130452390632424" @>
+}
+
+[<Fact>]
+let ``Get asset by missing id is Error`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let assetId = 0L
+
+    // Act
+    let! res = getAssetAsync assetId ctx
+
+    let err =
+        match res.Result with
+        | Ok _ -> ResponseError.empty
+        | Error err -> err
+
+    // Assert
+    test <@ Result.isError res.Result @>
+    test <@ err.Code = 400 @>
+    test <@ err.Message = "getAsset.arg0: must be greater than or equal to 1" @>
 }
 
 [<Fact>]

@@ -129,7 +129,7 @@ module Handler =
             | _ -> false
 
         let retryEx =
-            if err.InnerException.IsNone then
+            if err.InnerException.IsSome then
                 match err.InnerException.Value with
                 | :? Net.Http.HttpRequestException
                 | :? System.Net.WebException -> true
