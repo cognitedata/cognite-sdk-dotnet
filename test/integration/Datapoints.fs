@@ -338,13 +338,15 @@ let ``Delete datapoints is Ok`` () = async {
     }
 
     // Act
-    let! _ = createTimeseriesAsync [ dto ] ctx
-    let! _ = insertDataPointsAsync [ datapoints ] ctx
-    let! res = deleteDataPointsAsync [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }] ctx
-    let! _ = deleteTimeseriesAsync [ externalId ] ctx
-
+    let request =
+        fusion {
+            let! _ = createTimeseries [ dto ]
+            do! insertDataPoints [ datapoints ]
+            let! res = deleteDataPoints [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]
+            do! deleteTimeseries [ externalId ]
+            return res
+        }
+    let! res = runHandler request ctx 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = RequestMethod.POST @>
-    test <@ res.Request.Resource = "/timeseries/data/delete" @>
+    test <@ Result.isOk res @>
 }
