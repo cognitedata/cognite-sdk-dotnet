@@ -146,3 +146,89 @@ let ``Search timeseries is Ok`` () = async {
     test <@ res.Request.Method = RequestMethod.POST @>
     test <@ res.Request.Resource = "/timeseries/search" @>
 }
+
+[<Fact>]
+let ``Update timeseries is Ok`` () = async {
+    // Arrange
+    let wctx = writeCtx ()
+
+    let newMetadata = ([
+        "key1", "value1"
+        "key2", "value2"
+    ]
+    |> Map.ofList)
+    let dto : Timeseries.TimeseriesWriteDto = {
+        MetaData = [
+            "oldkey1", "oldvalue1"
+            "oldkey2", "oldvalue2"
+        ] |> Map.ofList
+        ExternalId = Some "testupdate"
+        Name = Some "testupdate"
+        LegacyName = None
+        Description = None
+        IsString = false
+        IsStep = false
+        Unit = None
+        AssetId = None
+        SecurityCategories = Seq.empty
+    }
+    let externalId = Identity.ExternalId dto.ExternalId.Value
+    let newExternalId = "testupdatenew"
+    let newDescription = "testdescription"
+    // Act
+    let! createRes = createTimeseriesAsync [ dto ] wctx
+    let! updateRes =
+        updateTimeseriesAsync [
+            (externalId, [
+                UpdateTimeseries.Option.SetExternalId (Some newExternalId)
+                UpdateTimeseries.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                UpdateTimeseries.Option.SetDescription (Some newDescription)
+                UpdateTimeseries.Option.SetName None
+                UpdateTimeseries.Option.SetUnit (Some "unit")
+            ])
+        ] wctx
+    let! getRes = getTimeseriesByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+    let! deleteRes = deleteTimeseriesAsync [ Identity.ExternalId newExternalId ] wctx
+    let resExternalId, resMetaData, resDescription =
+        match getRes.Result with
+        | Ok resp ->
+            let head = Seq.tryHead resp
+            match head with
+            | Some tsresp -> tsresp.ExternalId, tsresp.MetaData, tsresp.Description
+            | None -> Some "", Map.empty, Some ""
+        | Error _ -> Some "", Map.empty, Some ""
+
+    let metaDataOk =
+        resMetaData.ContainsKey "key1"
+        && resMetaData.ContainsKey "key2"
+        && resMetaData.ContainsKey "oldkey2"
+        && not (resMetaData.ContainsKey "oldkey1")
+
+    // Assert create
+    test <@ Result.isOk createRes.Result @>
+    test <@ createRes.Request.Method = RequestMethod.POST @>
+    test <@ createRes.Request.Resource = "/timeseries" @>
+    test <@ createRes.Request.Query.IsEmpty @>
+
+    // Assert update
+    test <@ Result.isOk updateRes.Result @>
+    test <@ updateRes.Request.Method = RequestMethod.POST @>
+    test <@ updateRes.Request.Resource = "/timeseries/update" @>
+    test <@ updateRes.Request.Query.IsEmpty @>
+
+    // Assert get
+    test <@ Result.isOk getRes.Result @>
+    test <@ getRes.Request.Method = RequestMethod.POST @>
+    test <@ getRes.Request.Resource = "/timeseries/byids" @>
+    test <@ getRes.Request.Query.IsEmpty @>
+    test <@ resExternalId = Some newExternalId @>
+    test <@ resDescription = Some newDescription @>
+    test <@ metaDataOk @>
+
+    // Assert delete
+    test <@ Result.isOk deleteRes.Result @>
+    test <@ deleteRes.Request.Method = RequestMethod.POST @>
+    test <@ deleteRes.Request.Resource = "/timeseries/delete" @>
+    test <@ deleteRes.Request.Query.IsEmpty @>
+    
+}
