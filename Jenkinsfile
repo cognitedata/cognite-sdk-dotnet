@@ -73,8 +73,6 @@ podTemplate(
         container('dotnet-mono') {
           stage('Install dependencies') {
             sh('mono .paket/paket.exe install')
-            // Download the latest stable `nuget.exe` to `/usr/local/bin`
-            sh('curl -o /usr/local/bin/nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe')
           }
 
           stage('Build') {

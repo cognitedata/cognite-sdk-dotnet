@@ -4,3 +4,4 @@ xunit
 xunit.runner.visualstudio
 FSharp.Core
 Unquote
+Fusion.NET.Protobuf

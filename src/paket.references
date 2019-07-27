@@ -2,3 +2,4 @@ Microsoft.Extensions.Http
 FSharp.Core
 Taskbuilder.fs
 Thoth.Json.Net
+Fusion.NET.Protobuf

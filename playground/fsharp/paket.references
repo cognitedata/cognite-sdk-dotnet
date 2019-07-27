@@ -2,3 +2,4 @@ FsConfig
 Microsoft.Extensions.Configuration
 TypeShape
 FSharp.Core
+Fusion.NET.Protobuf
