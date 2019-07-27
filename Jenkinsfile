@@ -72,6 +72,9 @@ podTemplate(
 
         container('dotnet-mono') {
           stage('Install dependencies') {
+            sh('apt-get update && apt-get install -y libxml2-utils')
+            sh('cp /nuget-credentials/nuget.config ./nuget.config')
+            sh('./credentials.sh')
             sh('mono .paket/paket.exe install')
           }
 
@@ -91,7 +94,6 @@ podTemplate(
 
           stage("Deploy package to registry") {
             if (env.BRANCH_NAME == 'master') {
-              sh('cp /nuget-credentials/nuget.config ./nuget.config')
               sh('./deploy.sh')
             }
           }
