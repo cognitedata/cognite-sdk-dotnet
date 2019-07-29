@@ -25,8 +25,11 @@ module DeleteDataPoints =
     }
 
     type DeleteRequestDto = {
+        /// Inclusive start time to delete from
         InclusiveBegin : int64
+        /// Optional exclusive end time to delete to
         ExclusiveEnd : int64 option
+        /// Id of timeseries to delete from
         Id : Identity
     } with
         static member FromPoco (item : DeleteRequestPoco) : DeleteRequestDto =
@@ -64,34 +67,27 @@ module DeleteDataPoints =
 [<AutoOpen>]
 module DeleteDataPointsApi =
     
-    /// **Description**
-    /// Delete datapoints from a given start time to an optional end time for multiple timeseries
-    /// **Parameters**
-    ///   * `items` - `seq<DeleteDataPoints.DeleteRequestDto>` list of delete requests
-    ///   * `next` - `NextHandler<unit,unit>` async handler
-    ///
-    /// **Output Type**
-    ///   * `Context<HttpResponseMessage> -> Async<Context<unit>>`
+    /// <summary>
+    /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
+    /// </summary>
+    /// <param name="items">List of delete requests.</param>
+    /// <param name="next">Async handler to use.</param>
     let deleteDataPoints (items: DeleteDataPoints.DeleteRequestDto seq) (next: NextHandler<unit, unit>) =
         DeleteDataPoints.deleteDataPoints items fetch next
     
-    /// **Description**
-    /// Delete datapoints from a given start time to an optional end time for multiple timeseries
-    /// **Parameters**
-    ///   * `items` - `seq<DeleteDataPoints.DeleteRequestDto>` list of delete requests
-    ///   * `next` - `NextHandler<unit,unit>` async handler
-    ///
-    /// **Output Type**
-    ///   * `Context<HttpResponseMessage> -> Async<Context<unit>>`
+    /// <summary>
+    /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
+    /// </summary>
+    /// <param name = "items">List of delete requests.</param>
     let deleteDataPointsAsync (items: DeleteDataPoints.DeleteRequestDto seq) =
         DeleteDataPoints.deleteDataPoints items fetch Async.single
 
 [<Extension>]
 type DeleteDataPointsExtensions =
     /// <summary>
-    /// Delete datapoints from a given start time to an optional end time for multiple timeseries
+    /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
-    /// <param name = "items"> List of delete requests </param>
+    /// <param name = "items">List of delete requests.</param>
     [<Extension>]
     static member DeleteDataPointsAsync (this: Client) (items: DeleteDataPoints.DeleteRequestPoco seq) : Task =
         task {

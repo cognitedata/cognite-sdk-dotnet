@@ -38,14 +38,19 @@ module GetTimeseries =
         | CaseAssetIds of int64 seq
         | CaseRootAssetIds of int64 seq
 
+        /// Maximum number of results to return
         static member Limit limit =
             CaseLimit limit
+        /// If true, include meta data of each timeseries
         static member IncludeMetaData imd =
             CaseIncludeMetaData imd
+        /// Cursor returned from previous query
         static member Cursor cursor =
             CaseCursor cursor
+        /// Filter out timeseries without assetId in this list
         static member AssetIds ids =
             CaseAssetIds ids
+        /// Filter out timeseries without rootAssetId in this list
         static member RootAssetIds ids =
             CaseRootAssetIds ids
         
@@ -74,32 +79,33 @@ module GetTimeseries =
 
 [<AutoOpen>]
 module GetTimeseriesApi =
-    /// **Description**
-    ///
-    /// Retrieves a list of all time series in a project, sorted by name
-    /// alphabetically. Parameters can be used to select a subset of time
-    /// series. This operation supports pagination.
-    ///
-    /// https://doc.cognitedata.com/api/v1/#operation/getTimeSeries
-    ///
-    /// **Parameters** * `query` - parameter of type `seq<QueryParams>` * `ctx`
-    /// - parameter of type `HttpContext`
-    ///
-    /// **Output Type** * `HttpHandler<FSharp.Data.HttpResponse,TimeseriesResponse>`
-    ///
+    /// <summary>
+    /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
+    /// This operation supports pagination.
+    /// </summary>
+    /// <param name="options">Timeseries lookup options.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>The timeseries with the given id and an optional cursor.</returns>
     let getTimeseries (options: GetTimeseries.Option seq) (next: NextHandler<GetTimeseries.TimeseriesResponse,'a>) : HttpContext -> Async<Context<'a>> =
         GetTimeseries.getTimeseries options fetch next
 
+    /// <summary>
+    /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
+    /// This operation supports pagination.
+    /// </summary>
+    /// <param name="options">Timeseries lookup options.</param>
+    /// <returns>The timeseries with the given id and an optional cursor.</returns>
     let getTimeseriesAsync (options: GetTimeseries.Option seq) =
         GetTimeseries.getTimeseries options fetch Async.single
 
 [<Extension>]
 type GetTimeseriesExtensions =
     /// <summary>
-    /// Get timeseries
+    /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
+    /// This operation supports pagination.
     /// </summary>
-    /// <param name="id">The id of the timeseries to get.</param>
-    /// <returns>The timeseries with the given id.</returns>
+    /// <param name="options">Timeseries lookup options.</param>
+    /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
     static member GetTimeseriesAsync (this: Client) (options: GetTimeseries.Option seq) : Task<_> =
         task {

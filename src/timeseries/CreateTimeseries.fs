@@ -48,30 +48,30 @@ module CreateTimeseries =
 
 [<AutoOpen>]
 module CreateTimeseriesApi =
-    /// **Description**
-    ///
-    /// Create new timeseries
-    ///
-    /// **Parameters**
-    ///   * `items` - The list of timeseries to create.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
-    ///
+    /// <summary>
+    /// Create one or more new timeseries.
+    /// </summary>
+    /// <param name="items">The list of timeseries to create.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of created timeseries.</returns>
     let createTimeseries (items: TimeseriesWriteDto list) (next: NextHandler<CreateTimeseries.TimeseriesResponse,'a>) =
         CreateTimeseries.createTimeseries items fetch next
 
+    /// <summary>
+    /// Create one or more new timeseries.
+    /// </summary>
+    /// <param name="items">The list of timeseries to create.</param>
+    /// <returns>List of created timeseries.</returns>
     let createTimeseriesAsync (items: seq<TimeseriesWriteDto>) =
         CreateTimeseries.createTimeseries items fetch Async.single
 
 [<Extension>]
 type CreateTimeseriesExtensions =
     /// <summary>
-    /// Create a new timeseries.
+    /// Create one or more new timeseries.
     /// </summary>
     /// <param name="items">The list of timeseries to create.</param>
-    /// <returns>Http status code.</returns>
+    /// <returns>List of created timeseries.</returns>
     [<Extension>]
     static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesWritePoco>) : Task<TimeseriesReadPoco seq> =
         task {

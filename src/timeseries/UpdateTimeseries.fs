@@ -47,22 +47,28 @@ module UpdateTimeseries =
         | CaseAssetId of int64 option
         | CaseDescription of string option
         | CaseSecurityCategories of SecurityCategoriesUpdate option
-
+        /// Set the externalId of the timeseries
         static member SetExternalId externalId =
             CaseExternalId externalId
-
+        /// Clear the externalId of the timeseries
+        static member ClearExternalId =
+            CaseExternalId None
+        /// Set the name of the timeseries
         static member SetName name =
             CaseName name
-        
+        /// Clear the name of the timeseries
+        static member ClearName =
+            CaseName None
+        /// Set the metadata of the timeseries. This removes any old metadata
         static member SetMetaData (md : IDictionary<string, string>) =
             md |> Seq.map (|KeyValue|) |> Map.ofSeq |> MetaDataUpdate.Set |> Some |> CaseMetaData
-
+        /// Set the metadata of the timeseries. This removes any old metadata
         static member SetMetaData (md : Map<string, string>) =
             md |> MetaDataUpdate.Set |> Some |> CaseMetaData
-
+        /// Clear the metadata of the timeseries
         static member ClearMetaData () =
             CaseMetaData None
-        
+        /// Change the metadata of the timeseries, adding any new metadata given in `add` and removing keys given in `remove`
         static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) : Option =
             ({
                 Add =
@@ -72,31 +78,37 @@ module UpdateTimeseries =
                         add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
                 Remove = if isNull remove then Seq.empty else remove
             } : MetaDataChange) |> MetaDataUpdate.Change |> Some |> CaseMetaData
-        
+        /// Change the metadata of the timeseries, adding any new metadata given in `add` and removing keys given in `remove`
         static member ChangeMetaData (add: Map<string, string> option, remove: string seq) : Option =
             ({
                 Add = add
                 Remove = remove
             } : MetaDataChange) |> MetaDataUpdate.Change |> Some |> CaseMetaData
-
+        /// Set the unit of the data in the timeseries
         static member SetUnit unit =
             CaseUnit unit
-        
+        /// Clear the unit of the data in the timeseries
+        static member ClearUnit =
+            CaseUnit None
+        /// Set the asset id of the timeseries
         static member SetAssetId assetId =
             CaseAssetId assetId
-        
+        /// Clear the asset id of the timeseries
         static member ClearAssetId () =
             CaseAssetId None
-
+        /// Set the description of the timeseries
         static member SetDescription description =
             CaseDescription description
-        
+        /// Clear the description of the timeseries
+        static member ClearDescription =
+            CaseDescription None
+        /// Set the security categories of the timeseries. This removes any old security categories
         static member SetSecurityCategories (ct : int64 seq) =
             ct |> Set |> Some |> CaseSecurityCategories
-        
+        /// Clear the security categories of the timeseries
         static member ClearSecurityCategories () =
             CaseSecurityCategories None
-        
+        /// Change the security categories of the timeseries, adding any in `add` and removing any in `remove`
         static member ChangeSecurityCategories (add: int64 seq) (remove: int64 seq) : Option =
             {
                 Add = if isNull add then Seq.empty else add
@@ -206,37 +218,30 @@ module UpdateTimeseries =
 
 [<AutoOpen>]
 module UpdateTimeseriesApi =
-    /// **Description**
-    /// Updates multiple timesreies within the same project.
+    /// <summary>
+    /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
-    /// **Parameters**
-    ///   * `args` - `(Identity * UpdateTimeseries.Option list)` list of attributes to update
-    ///   * `next` - `NextHandler<seq<TimeseriesReadDto>,'a>` async handler
-    ///
-    /// **Output Type**
-    ///   * `HttpContext -> Async<Context<'a>>`
-    ///
-    /// **Exceptions**
-    ///
-    let updateTimeseries (args: (Identity * (UpdateTimeseries.Option list)) list) (next: NextHandler<TimeseriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
-        UpdateTimeseries.updateTimeseries args fetch next
+    /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of updated timeseries.</returns>
+    let updateTimeseries (timeseries: (Identity * (UpdateTimeseries.Option list)) list) (next: NextHandler<TimeseriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
+        UpdateTimeseries.updateTimeseries timeseries fetch next
     
-    /// **Description**
-    /// Updates multiple timesreies within the same project.
+    /// <summary>
+    /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
-    /// **Parameters**
-    ///   * `args` - `(Identity * UpdateTimeseries.Option list) list` list of attributes to update
-    ///
-    /// **Output Type**
-    ///   * `HttpContext -> Async<Context<seq<TimeseriesReadDto>>>`
-    ///
-    /// **Exceptions**
-    ///
-    let updateTimeseriesAsync (args: (Identity * (UpdateTimeseries.Option list)) list) : HttpContext -> Async<Context<TimeseriesReadDto seq>> =
-        UpdateTimeseries.updateTimeseries args fetch Async.single
+    /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
+    /// <returns>List of updated timeseries.</returns>
+    let updateTimeseriesAsync (timeseries: (Identity * (UpdateTimeseries.Option list)) list) : HttpContext -> Async<Context<TimeseriesReadDto seq>> =
+        UpdateTimeseries.updateTimeseries timeseries fetch Async.single
 
 [<Extension>]
 type UpdateTimeseriesExtensions =
+    /// <summary>
+    /// Updates multiple timeseries within the same project.
+    /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
+    /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
+    /// <returns>List of updated timeseries.</returns>
     [<Extension>]
     static member UpdateTimeseriesAsync (this: Client, timeseries: ValueTuple<Identity, UpdateTimeseries.Option seq> seq) : Task<TimeseriesReadPoco seq> =
         task {

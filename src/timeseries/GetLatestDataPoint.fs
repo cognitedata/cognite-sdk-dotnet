@@ -20,7 +20,9 @@ module GetLatestDataPoint =
     let Url = "/timeseries/data/latest"
 
     type LatestDataPointRequest = {
+        /// Latest point to look for datapoints, as cdf timestamp string
         Before: string option
+        /// Id of timeseries
         Identity: Identity
     } with
         member this.Encoder =
@@ -103,21 +105,20 @@ module GetLatestDataPoint =
 
 [<AutoOpen>]
 module GetLatestDataPointApi =
-    /// **Description**
-    ///
+    /// <summary>
     /// Retrieves the single latest data point in a time series.
-    ///
-    /// **Parameters**
-    ///   * `queryParams` - parameter of type `seq<QueryLatestParam>`
-    ///   * `ctx` - parameter of type `HttpContext`
-    ///
-    /// **Output Type**
-    ///   * `Async<Context<seq<PointResponseDataPoints>>>`
-    ///
+    /// </summary>
+    /// <param name="options">List of requests.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of results containing the latest datapoint and ids.</returns>
     let getLatestDataPoint (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) (next: NextHandler<GetLatestDataPoint.DataPoints seq,'a>) =
         GetLatestDataPoint.getLatestDataPoint queryParams fetch next
 
-
+    /// <summary>
+    /// Retrieves the single latest data point in a time series.
+    /// </summary>
+    /// <param name="options">List of requests.</param>
+    /// <returns>List of results containing the latest datapoint and ids.</returns>
     let getLatestDataPointAsync (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) =
         GetLatestDataPoint.getLatestDataPoint queryParams fetch Async.single
 
@@ -127,9 +128,8 @@ type GetLatestDataPointExtensions =
     /// <summary>
     /// Retrieves the single latest data point in a time series.
     /// </summary>
-    /// <param name="queryParams">Instance of QueryDataLatest object with query parameters.</param>
-    /// <param name="client">The list of data points to insert.</param>
-    /// <returns>Http status code.</returns>
+    /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
+    /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
     static member GetLatestDataPointAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestDataPoint.DataPointsPoco>> =
         task {

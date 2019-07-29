@@ -56,16 +56,24 @@ module SearchTimeseries =
         | CaseCreatedTime of int64
         | CaseLastUpdatedTime of int64
 
-        /// Name of asset. Often referred to as tag.
+        /// Name of timeseries
         static member Name name = CaseName name
+        /// Unit of data in timeseries
         static member Unit unit = CaseUnit unit
+        /// True if datatype of timeseries is string
         static member IsString isString = CaseIsString isString
+        /// True if timeseries does not interpolate between datapoints
         static member IsStep isStep = CaseIsStep isStep
+        /// Metadata of timeseries as string key -> string value
         static member MetaData (metaData : IDictionary<string, string>) =
             metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
+        /// Filter out timeseries without assetId in list
         static member AssetIds ids = CaseAssetIds ids
+        /// Prefix on externalId of timeseries
         static member ExternalIdPrefix prefix = CaseExternalIdPrefix prefix
+        /// Filter out assets without this exact createdTime
         static member CreatedTime time = CaseCreatedTime time
+        /// Filter out assets without this exact updatedTime
         static member LastUpdatedTime time = CaseLastUpdatedTime time
 
         static member Encode (filters: Filter seq) =
@@ -115,36 +123,24 @@ module SearchTimeseries =
 
 [<AutoOpen>]
 module SearchTimeseriesApi =
-
-    /// **Description**
-    ///
+    /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
-    ///
-    /// **Parameters**
-    ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
-    ///   results than request limit.
-    ///   * `options` - Search options.
-    ///   * `filters` - Search filters.
-    ///
-    /// <returns>Context of assets.</returns>
+    /// </summary>
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>Timeseries matching query.</returns>>
     let searchTimeseries (limit: int) (options: SearchTimeseries.Option seq) (filters: SearchTimeseries.Filter seq) (next: NextHandler<TimeseriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         SearchTimeseries.searchTimeseries limit options filters fetch next
 
-    /// **Description**
-    ///
+    /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
-    ///
-    /// **Parameters**
-    ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
-    ///   results than request limit.
-    ///   * `options` - Search options.
-    ///   * `filters` - Search filters.
-    ///
-    /// <returns>Context of assets.</returns>
+    /// </summary>
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
+    /// <returns>Timeseries matching query.</returns>
     let searchTimeseriesAsync (limit: int) (options: SearchTimeseries.Option seq) (filters: SearchTimeseries.Filter seq): HttpContext -> Async<Context<TimeseriesReadDto seq>> =
         SearchTimeseries.searchTimeseries limit options filters fetch Async.single
 
@@ -153,14 +149,10 @@ type SearchTimeseriesExtensions =
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
     /// </summary>
-    ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
-    ///   results than request limit.
-    ///   * `options` - Search options.
-    ///   * `filters` - Search filters.
-    ///
-    /// <returns>Assets.</returns>
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
+    /// <returns>Timeseries matching query.</returns>
     [<Extension>]
     static member SearchTimeseriesAsync (this: Client, limit : int, options: SearchTimeseries.Option seq, filters: SearchTimeseries.Filter seq) : Task<_ seq> =
         task {
