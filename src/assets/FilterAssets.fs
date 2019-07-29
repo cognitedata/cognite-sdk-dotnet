@@ -63,40 +63,34 @@ module FilterAssets =
 
 [<AutoOpen>]
 module FilterAssetsApi =
-    /// **Description**
-    ///
-    /// Retrieves a list of assets matching the filter, and a cursor if given limit is exceeded
-    ///
-    /// **Parameters**
-    ///
-    ///   * `options` - optional limit and cursor
-    ///   * `filters` - Search filters
-    ///
-    ///<returns>Assets.</return>
+    /// <summary>
+    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <param name="filters">Search filters</param>
+    /// <param name="next">Async handler to use</param>
+    /// <returns>List of assets matching given filters and optional cursor</returns>
     let filterAssets (options: FilterAssets.Option seq) (filters: AssetFilter seq) (next: NextHandler<GetAssets.Assets,'a>)
         : HttpContext -> Async<Context<'a>> =
             FilterAssets.filterAssets options filters fetch next
-    /// **Description**
-    ///
-    /// Retrieves a list of assets matching the filter, and a cursor if given limit is exceeded
-    ///
-    /// **Parameters**
-    ///
-    ///   * `options` - optional limit and cursor
-    ///   * `filters` - Search filters
-    ///
-    ///<returns>Assets.</return>
+
+    /// <summary>
+    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <param name="filters">Search filters</param>
+    /// <returns>List of assets matching given filters and optional cursor</returns>
     let filterAssetsAsync (options: FilterAssets.Option seq) (filters: AssetFilter seq)
         : HttpContext -> Async<Context<GetAssets.Assets>> =
             FilterAssets.filterAssets options filters fetch Async.single
 [<Extension>]
 type FilterAssetsExtensions =
     /// <summary>
-    /// Retrieves list of assets matching filter. Supports pagination
+    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
     /// </summary>
     /// <param name="options">Optional limit and cursor</param>
     /// <param name="filters">Search filters</param>
-    ///<returns>Assets</returns>
+    /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
     static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: AssetFilter seq) =
         task {
