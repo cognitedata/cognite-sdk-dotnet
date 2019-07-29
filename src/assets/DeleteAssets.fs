@@ -42,31 +42,30 @@ module DeleteAssets =
 
 [<AutoOpen>]
 module DeleteAssetsApi =
-    /// **Description**
-    ///
-    /// Deletes multiple assets in the same project, along with all their descendants in the asset hierarchy.
-    ///
-    /// **Parameters**
-    ///   * `assets` - The list of asset ids to delete.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
-    ///
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
+    /// <param name="next">Async handler to use</param>
     let deleteAssets (assets: Identity seq, recursive: bool) (next: NextHandler<unit,'a>) =
         DeleteAssets.deleteAssets (assets, recursive) fetch next
-
+    
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
     let deleteAssetsAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
         DeleteAssets.deleteAssets (assets, recursive) fetch Async.single
 
 [<Extension>]
 type DeleteAssetsExtensions =
     /// <summary>
-    /// Delete assets.
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
-    /// <returns>HttpResponse with status code.</returns>
     [<Extension>]
     static member DeleteAssetsAsync(this: Client, ids: Identity seq, recursive: bool) : Task =
         task {

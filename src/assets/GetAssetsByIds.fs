@@ -48,25 +48,24 @@ module GetAssetsByIds =
 
 [<AutoOpen>]
 module GetAssetsByIdsApi =
-    /// **Description**
-    ///
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
-    /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
-    ///
-    /// **Parameters**
-    ///   * `args` - list of parameters for getting assets.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>Assets with given ids.</returns>
     let getAssetsByIds (ids: Identity seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         GetAssetsByIds.getAssetsByIds ids fetch next
 
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
     let getAssetsByIdsAsync (ids: Identity seq) =
         GetAssetsByIds.getAssetsByIds ids fetch Async.single
 
@@ -78,8 +77,8 @@ type GetAssetsByIdsExtensions =
     /// A maximum of 1000 assets IDs may be listed per request and all
     /// of them must be unique.
     /// </summary>
-    /// <param name="assetId">The id of the asset to get.</param>
-    /// <returns>Asset with the given id.</returns>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
     [<Extension>]
     static member GetAssetsByIdsAsync (this: Client, ids: seq<Identity>) : Task<_ seq> =
         task {

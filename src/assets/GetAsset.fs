@@ -29,27 +29,27 @@ module GetAsset =
 
 [<AutoOpen>]
 module GetAssetApi =
-    /// **Description**
-    ///
-    /// Retrieves information about an asset in a certain project given an asset id.
-    ///
-    /// **Parameters**
-    ///   * `assetId` - The id of the attet to retrieve.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
+    /// <summary>
+    /// Retrieves information about an asset given an asset id.
+    /// </summary>
+    /// <param name="assetId">The id of the asset to get.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>Asset with the given id.</returns>
     let getAsset (assetId: int64) (next: NextHandler<AssetReadDto,'a>) : HttpContext -> Async<Context<'a>> =
         GetAsset.getAsset assetId fetch next
-
+    
+    /// <summary>
+    /// Retrieves information about an asset given an asset id.
+    /// </summary>
+    /// <param name="assetId">The id of the asset to get.</param>
+    /// <returns>Asset with the given id.</returns>
     let getAssetAsync (assetId: int64) : HttpContext -> Async<Context<AssetReadDto>> =
         GetAsset.getAsset assetId fetch Async.single
 
 [<Extension>]
 type GetAssetExtensions =
     /// <summary>
-    /// Retrieves information about an asset in a certain project given an asset id.
+    /// Retrieves information about an asset given an asset id.
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>

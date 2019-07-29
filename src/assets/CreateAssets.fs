@@ -48,27 +48,27 @@ module CreateAssets =
 
 [<AutoOpen>]
 module CreateAssetsApi =
-    /// **Description**
-    ///
-    /// Creates new assets in the given project
-    ///
-    /// **Parameters**
-    ///   * `assets` - The list of assets to create.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
-    let createAssets (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    /// <summary>
+    /// Create new assets in the given project.
+    /// </summary>
+    /// <param name="assets">The assets to create.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of created assets.</returns>
+    let createAssets (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq, 'a>) =
         CreateAssets.createAssets assets fetch next
 
-    let createAssetsAsync (assets: AssetWriteDto seq) : HttpContext -> Async<Context<AssetReadDto seq>> =
+    /// <summary>
+    /// Create new assets in the given project.
+    /// </summary>
+    /// <param name="assets">The assets to create.</param>
+    /// <returns>List of created assets.</returns>
+    let createAssetsAsync (assets: AssetWriteDto seq) =
         CreateAssets.createAssets assets fetch Async.single
 
 [<Extension>]
 type CreateAssetsExtensions =
     /// <summary>
-    /// Create assets.
+    /// Create new assets in the given project.
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>

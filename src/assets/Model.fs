@@ -21,7 +21,7 @@ type AssetReadPoco = {
 
 /// Asset type for responses.
 type AssetReadDto = {
-    /// External Id provided by client. Should be unique within the project.
+    /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// The name of the asset.
     Name: string
@@ -89,7 +89,7 @@ type AssetFilter =
 
     /// Name of asset. Often referred to as tag.
     static member Name name = CaseName name
-    /// Filter out assets that have one of the ids listed as parent. The
+    /// Filter assets that have one of the ids listed as parent.
     static member ParentIds ids = CaseParentIds ids
     /// Filter out assets without rootId in list
     static member RootIds rootIds = CaseRootIds rootIds
@@ -121,7 +121,7 @@ type AssetFilter =
 
 /// Asset type for create requests.
 type AssetWriteDto = {
-    /// External Id provided by client. Should be unique within the project.
+    /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// Name of asset. Often referred to as tag.
     Name: string
@@ -133,7 +133,7 @@ type AssetWriteDto = {
     MetaData: Map<string, string>
     /// The source of this asset (NOTE: will be replaced with external Id)
     Source: string option
-    /// External Id provided by client. Should be unique within the project.
+    /// External Id of parent asset provided by client. Must be unique within the project.
     ParentExternalId: string option
 } with
     static member FromPoco (asset: AssetWritePoco) : AssetWriteDto =

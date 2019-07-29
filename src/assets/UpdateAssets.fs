@@ -32,35 +32,30 @@ module UpdateAssets =
     /// Asset update parameters
     type Option =
         private
-        /// Set the name of the asset. Often referred to as tag.
         | CaseName of string // Name cannot be null
-        /// Set or clear the description of asset.
         | CaseDescription of string option
-        /// Set or clear custom, application specific metadata. String key ->
-        /// String value
+
         | CaseMetaData of MetaDataUpdate option
-        // Set or clear the source of this asset
         | CaseSource of string option
-        /// Set or clear ID of the asset in the source. Only applicable if
-        /// source is specified. The combination of source and sourceId must be
-        /// unique.
+        /// Set or clear the ExternalId of the asset. This must be unique within the project.
         | CaseExternalId of string option
 
+        /// Set the name of the asset. Often referred to as tag.
         static member SetName name =
             CaseName name
-
+        /// Set or clear the description of asset.
         static member SetDescription description =
             CaseDescription description
-
+        /// Set metadata of asset. This removes any old metadata.
         static member SetMetaData (md : IDictionary<string, string>) =
             md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> Some |> CaseMetaData
-
+        /// Set metadata of asset. This removes any old metadata.
         static member SetMetaData (md : Map<string, string>) =
             md |> Set |> Some |> CaseMetaData
-
+        /// Remove all metadata from asset
         static member ClearMetaData () =
             CaseMetaData None
-        
+        /// Change metadata of asset by adding new data as given in "add" and removing keys given in "remove"
         static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
             {
                 Add =
@@ -70,18 +65,24 @@ module UpdateAssets =
                         add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
                 Remove = if isNull remove then Seq.empty else remove
             } |> Change |> Some |> CaseMetaData
-
+        /// Change metadata of asset by adding new data as given in "add" and removing keys given in "remove"
         static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
             {
                 Add = add
                 Remove = remove
             } |> Change |> Some |> CaseMetaData
-
+        /// Set the source of this asset
         static member SetSource source =
             Some source |> CaseSource
-
+        /// Clear the source of this asset
         static member ClearSource =
             CaseSource None
+        /// Set the externalId of asset. Must be unique within the project
+        static member SetExternalId id =
+            CaseExternalId id
+        /// Clear the externalId of asset.
+        static member ClearExternalId =
+            CaseExternalId None
 
     let renderUpdateFields (arg: Option) =
         match arg with
@@ -171,31 +172,30 @@ module UpdateAssets =
 
 [<AutoOpen>]
 module UpdateAssetsApi =
-    /// **Description**
-    ///
-    /// Updates multiple assets within the same project. Updating assets does not replace the existing asset hierarchy.
-    /// This operation supports partial updates, meaning that fields omitted from the requests are not changed.
-    ///
-    /// **Parameters**
-    ///   * `args` - parameter of type `(Identity * UpdateArgs seq) seq`
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<string,exn>>`
-    ///
-    let updateAssets (args: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
-        UpdateAssets.updateAssets args fetch next
+    /// <summary>
+    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
+    /// </summary>
+    /// <param name="assets">The list of assets to update.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of updated assets.</returns>
+    let updateAssets (assets: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+        UpdateAssets.updateAssets assets fetch next
 
-    let updateAssetsAsync (args: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
-        UpdateAssets.updateAssets args fetch Async.single
+    /// <summary>
+    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
+    /// </summary>
+    /// <param name="assets">The list of assets to update.</param>
+    /// <returns>List of updated assets.</returns>
+    let updateAssetsAsync (assets: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
+        UpdateAssets.updateAssets assets fetch Async.single
 
 [<Extension>]
 type UpdateAssetsExtensions =
     /// <summary>
-    /// Update assets.
+    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
-    /// <returns>True of successful.</returns>
+    /// <returns>List of updated assets.</returns>
     [<Extension>]
     static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq) : Task<AssetReadPoco seq> =
         task {

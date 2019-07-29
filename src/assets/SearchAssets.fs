@@ -23,7 +23,9 @@ module SearchAssets =
         | CaseName of string
         | CaseDescription of string
 
+        /// Fuzzy search on name
         static member Name name = CaseName name
+        /// Fuzzy search on description
         static member Description description = CaseDescription description
 
         static member Render (this: Option) =
@@ -73,35 +75,27 @@ module SearchAssets =
 
 [<AutoOpen>]
 module SearchAssetsApi =
-
-    /// **Description**
-    ///
+    /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+    /// </summary>
     ///
-    /// **Parameters**
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
     ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. Request may contain less
-    ///   results than request limit.
-    ///   * `options` - Search options.
-    ///   * `filters` - Search filters.
-    ///
-    /// <returns>Context of assets.</returns>
+    /// <returns>List of assets matching given criteria.</returns>
     let searchAssets (limit: int) (options: SearchAssets.Option seq) (filters: AssetFilter seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         SearchAssets.searchAssets limit options filters fetch next
 
-    /// **Description**
-    ///
+    /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+    /// </summary>
     ///
-    /// **Parameters**
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
     ///
-    ///   * `limit` - Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
-    ///   results than request limit.
-    ///   * `options` - Search options.
-    ///   * `filters` - Search filters.
-    ///
-    /// <returns>Context of assets.</returns>
+    /// <returns>List of assets matching given criteria.</returns>
     let searchAssetsAsync (limit: int) (options: SearchAssets.Option seq) (filters: AssetFilter seq): HttpContext -> Async<Context<AssetReadDto seq>> =
         SearchAssets.searchAssets limit options filters fetch Async.single
 
@@ -111,13 +105,11 @@ type SearchAssetsExtensions =
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
     /// </summary>
     ///
-    /// <param name="limit">Limits the maximum number of results to be returned by single request. In case there are more
-    ///   results to the request 'nextCursor' attribute will be provided as part of response. Request may contain less
-    ///   results than request limit.</param>
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
     /// <param name="options">Search options.</param>
     /// <param name="filters">Search filters.</param>
     ///
-    /// <returns>Assets.</returns>
+    /// <returns>List of assets matching given criteria.</returns>
     [<Extension>]
     static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: AssetFilter seq) : Task<_ seq> =
         task {

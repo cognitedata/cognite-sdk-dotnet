@@ -83,26 +83,25 @@ module GetAssets =
         static member MinCreatedTime time =
             CaseMinCreatedTime time
 
-        /// It is the number of seconds that have elapsed since 00:00:00
+        /// Number of seconds that have elapsed since 00:00:00
         /// Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
         /// leap seconds.
         static member MaxCreatedTime time =
             CaseMaxCreatedTime time
 
-        /// It is the number of seconds that have elapsed since 00:00:00
+        /// Number of seconds that have elapsed since 00:00:00
         /// Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
         /// leap seconds.
         static member MinLastUpdatedTime time =
             CaseMinLastUpdatedTime time
 
-        /// It is the number of seconds that have elapsed since 00:00:00
+        /// Number of seconds that have elapsed since 00:00:00
         /// Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
         /// leap seconds.
         static member MaxLastUpdatedTime time =
             CaseMaxLastUpdatedTime time
 
-        /// External Id provided by client. Should be unique within the
-        /// project.
+        /// External Id provided by client. Unique within the project.
         static member ExternalIdPrefix prefix =
             CaseExternalIdPrefix prefix
 
@@ -134,56 +133,39 @@ module GetAssets =
 
 [<AutoOpen>]
 module GetAssetsApi =
-    /// **Description**
-    ///
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
+    /// <summary>
+    /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
+    /// 
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
-    ///
-    /// **Parameters**
-    ///   * `args` - list of parameters for getting assets.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
+    /// returned.
+    /// </summary>
+    /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of assets and optional cursor.</returns>
     let getAssets (options: GetAssets.Option seq) (next: NextHandler<GetAssets.Assets,'a>) : HttpContext -> Async<Context<'a>> =
         GetAssets.getAssets options fetch next
 
-    /// **Description**
-    ///
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
+    /// <summary>
+    /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
+    /// 
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
-    ///
-    /// **Parameters**
-    ///   * `args` - list of parameters for getting assets.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<Response,exn>>`
-    ///
+    /// returned.
+    /// </summary>
+    /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
+    /// <returns>List of assets and optional cursor.</returns>
     let getAssetsAsync (options: GetAssets.Option seq) : HttpContext -> Async<Context<GetAssets.Assets>> =
         GetAssets.getAssets options fetch Async.single
 
 [<Extension>]
 type GetAssetsExtensions =
     /// <summary>
-    /// Retrieve a list of all assets in the given project. The list is sorted alphabetically by name. This operation
-    /// supports pagination.
-    ///
+    /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
+    /// 
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
-    /// returned. Names and descriptions are fuzzy searched using edit distance. The fuzziness parameter controls the
-    /// maximum edit distance when considering matches for the name and description fields.
+    /// returned.
     /// </summary>
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
-    /// <returns>List of assets.</returns>
+    /// <returns>List of assets and optional cursor.</returns>
     [<Extension>]
     static member GetAssetsAsync (this: Client, args: GetAssets.Option seq) =
         task {
