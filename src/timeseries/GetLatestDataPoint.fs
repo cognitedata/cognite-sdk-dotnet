@@ -40,6 +40,14 @@ module GetLatestDataPoint =
                 yield ("items", Seq.map (fun (it: LatestDataPointRequest) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
+    type DataPointsPoco = {
+        Id: int64
+        ExternalId: string
+        IsString: bool
+        NumericDataPoints: seq<NumericDataPointDto>
+        StringDataPoints: seq<StringDataPointDto>
+    }
+
     type DataPoints = {
         Id: int64
         ExternalId: string option
@@ -60,6 +68,18 @@ module GetLatestDataPoint =
                     IsString = isString
                     DataPoints = dataPoints
                 })
+        static member ToPoco (item : DataPoints) : DataPointsPoco =
+            let stringDataPoints, numericDataPoints =
+                match item.DataPoints with
+                | String data -> data, Seq.empty
+                | Numeric data -> Seq.empty, data
+            {
+                Id = item.Id
+                ExternalId = if item.ExternalId.IsSome then item.ExternalId.Value else Unchecked.defaultof<string>
+                IsString = item.IsString
+                NumericDataPoints = numericDataPoints
+                StringDataPoints = stringDataPoints
+            }
 
     type DataResponse = {
         Items: DataPoints seq
@@ -111,7 +131,7 @@ type GetLatestDataPointExtensions =
     /// <param name="client">The list of data points to insert.</param>
     /// <returns>Http status code.</returns>
     [<Extension>]
-    static member GetLatestDataPointAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestDataPoint.DataPoints>> =
+    static member GetLatestDataPointAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestDataPoint.DataPointsPoco>> =
         task {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
@@ -120,7 +140,7 @@ type GetLatestDataPointExtensions =
             let! ctx = getLatestDataPointAsync query this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response
+                return response |> Seq.map (GetLatestDataPoint.DataPoints.ToPoco)
             | Error error ->
                 let err = error2Exception error
                 return raise err
