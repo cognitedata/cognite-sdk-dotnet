@@ -25,7 +25,6 @@ module GetAssetsByIds =
                 yield "items", this.Items |> Seq.map(fun id -> id.Encoder) |> Encode.seq
             ]
 
-
     type AssetResponse = {
         Items: AssetReadDto seq
     } with
