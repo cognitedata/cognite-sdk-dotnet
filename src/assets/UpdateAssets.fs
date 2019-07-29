@@ -53,7 +53,7 @@ module UpdateAssets =
         /// Remove all metadata from asset
         static member ClearMetaData () =
             CaseMetaData None
-        /// Change metadata of asset by adding new data as given in "add" and removing keys given in "remove"
+        /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
         static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
             {
                 Add =
@@ -63,7 +63,7 @@ module UpdateAssets =
                         add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
                 Remove = if isNull remove then Seq.empty else remove
             } |> Change |> Some |> CaseMetaData
-        /// Change metadata of asset by adding new data as given in "add" and removing keys given in "remove"
+        /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
         static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
             {
                 Add = add

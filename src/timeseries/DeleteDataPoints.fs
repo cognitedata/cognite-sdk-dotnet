@@ -66,7 +66,6 @@ module DeleteDataPoints =
 
 [<AutoOpen>]
 module DeleteDataPointsApi =
-    
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
