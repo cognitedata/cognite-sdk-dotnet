@@ -200,7 +200,7 @@ module GetAggregatedDataPoints =
         ]
 
     let getAggregatedDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> (fun item -> printfn "hey"; item) >> decodeToDto)
+        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
