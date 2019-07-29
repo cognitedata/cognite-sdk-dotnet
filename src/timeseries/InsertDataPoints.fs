@@ -20,7 +20,9 @@ module InsertDataPoints =
     let Url = "/timeseries/data"
 
     type DataPoints = {
+        /// List of either numeric or string datapoints to be inserted
         DataPoints: DataPointSeq
+        /// Id of the timeseries to insert into
         Identity: Identity
     } with
         member this.ToProto : DataPointInsertionItem =
@@ -65,37 +67,34 @@ module InsertDataPoints =
 
 [<AutoOpen>]
 module InsertDataPointsApi =
-    /// **Description**
-    ///
-    /// Inserts a list of data points to a time series. If a data point is
-    /// posted to a timestamp that is already in the series, the existing
-    /// data point for that timestamp will be overwritten.
-    ///
-    /// **Parameters**
-    ///   * `name` - The name of the timeseries to insert data points into.
-    ///   * `items` - The list of data points to insert.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
-    ///
+    /// <summary>
+    /// Insert data into one or more timeseries.
+    /// </summary>
+    /// <param name="items">The list of datapoint insertion requests.</param>
+    /// <param name="next">Async handler to use.</param>
     let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<unit, unit>) =
         InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch next
-
+    
+    /// <summary>
+    /// Insert data into one or more timeseries.
+    /// </summary>
+    /// <param name="items">The list of datapoint insertion requests.</param>
     let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
         InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch Async.single
     
+    /// <summary>
+    /// Insert data into one or more timeseries.
+    /// </summary>
+    /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param> 
     let insertDataPointsAsyncProto (items: DataPointInsertionRequest) =
         InsertDataPoints.insertDataPoints items fetch Async.single
 
 [<Extension>]
 type InsertDataExtensions =
     /// <summary>
-    /// Insert data into named time series.
+    /// Insert data into one or more timeseries.
     /// </summary>
-    /// <param name="name">The name of the timeseries to insert data into.</param>
-    /// <param name="items">The list of data points to insert.</param>
-    /// <returns>True if successful.</returns>
+    /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
     static member InsertDataAsync (this: Client) (items: DataPointInsertionRequest) : Task =
         task {

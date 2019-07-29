@@ -34,10 +34,8 @@ module UpdateAssets =
         private
         | CaseName of string // Name cannot be null
         | CaseDescription of string option
-
         | CaseMetaData of MetaDataUpdate option
         | CaseSource of string option
-        /// Set or clear the ExternalId of the asset. This must be unique within the project.
         | CaseExternalId of string option
 
         /// Set the name of the asset. Often referred to as tag.

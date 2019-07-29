@@ -17,9 +17,7 @@ module DeleteTimeseries =
     [<Literal>]
     let Url = "/timeseries/delete"
 
-    /// Used for retrieving multiple time series
     type DeleteRequest = {
-        /// Sequence of items to retrieve
         Items: seq<Identity>
     } with
         member this.Encoder =
@@ -39,30 +37,27 @@ module DeleteTimeseries =
 
 [<AutoOpen>]
 module DeleteTimeseriesApi =
-    /// **Description**
-    ///
-    /// Deletes a time series object given the name of the time series.
-    ///
-    /// **Parameters**
-    ///   * `name` - The name of the timeseries to delete.
-    ///   * `ctx` - The request HTTP context to use.
-    ///
-    /// **Output Type**
-    ///   * `Async<Result<HttpResponse,ResponseError>>`
-    ///
+    /// <summary>
+    /// Delete one or more timeseries.
+    /// </summary>
+    /// <param name="items">List of timeseries ids to delete.</param>
+    /// <param name="next">Async handler to use.</param>
     let deleteTimeseries (items: Identity seq) (next: NextHandler<unit, unit>) =
         DeleteTimeseries.deleteTimeseries items fetch next
 
+    /// <summary>
+    /// Delete one or more timeseries.
+    /// </summary>
+    /// <param name="items">List of timeseries ids to delete.</param>
     let deleteTimeseriesAsync (items: Identity seq) =
         DeleteTimeseries.deleteTimeseries items fetch Async.single
 
 [<Extension>]
 type DeleteTimeseriesExtensions =
     /// <summary>
-    /// Delete timeseries.
+    /// Delete one or more timeseries.
     /// </summary>
-    /// <param name="name">The name of the timeseries to delete.</param>
-    /// <returns>List of created timeseries.</returns>
+    /// <param name="items">List of timeseries ids to delete.</param>
     [<Extension>]
     static member DeleteTimeseriesAsync (this: Client) (items: Identity seq) : Task =
         task {
