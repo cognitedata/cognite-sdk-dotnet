@@ -44,6 +44,11 @@ type Client private (context: HttpContext) =
         |> setHttpClient client
         |> Client.New
 
+    member this.SetServiceUrl (serviceUrl: string) =
+        context
+        |> setServiceUrl serviceUrl
+        |> Client.New
+
     /// <summary>
     /// Creates a Client for accessing the API.
     /// </summary>
