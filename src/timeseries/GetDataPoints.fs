@@ -199,6 +199,7 @@ type GetDataPointsExtensions =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
+    [<Extension>]
     static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq) : Task<DataPointListResponse> =
         task {
             let! ctx = getDataPointsProto id options this.Ctx
