@@ -16,7 +16,11 @@ type Client private (context: HttpContext) =
     let fetch  = fetch
 
     /// Create new client with a default context (e.g will connect to CDF when used.)
-    new () = Client (defaultContext)
+    new () = Client defaultContext
+
+    new (httpClient: HttpClient) =
+        let context = defaultContext |> setHttpClient httpClient
+        Client(context)
 
     member internal __.Ctx =
         context
