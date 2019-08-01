@@ -67,6 +67,9 @@ podTemplate(
                 ])
 
                 gitCommit = sh(returnStdout: true, script: 'git rev-parse --short=12 HEAD').trim()
+                version = sh(returnStdout: true, script: "git describe --tags HEAD || true").trim()
+                version = version.replaceFirst(/-(\d+)-.*/, '-build.$1')
+                print version
             }
         }
 
@@ -94,7 +97,7 @@ podTemplate(
 
           stage("Deploy package to registry") {
             if (env.BRANCH_NAME == 'master') {
-              sh('./deploy.sh')
+              sh("./deploy.sh ${version}")
             }
           }
         }
