@@ -1,12 +1,12 @@
 namespace Fusion
 
-open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -73,8 +73,8 @@ type CreateTimeseriesExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
-    static member CreateTimeseriesAsync (this: Client) (items: seq<TimeseriesWritePoco>) : Task<TimeseriesReadPoco seq> =
-        task {
+    static member CreateTimeseriesAsync (this: Client, items: seq<TimeseriesWritePoco>, [<Optional>] token: CancellationToken) : Task<TimeseriesReadPoco seq> =
+        async {
             let items' = items |> Seq.map TimeseriesWriteDto.FromPoco
             let! ctx = createTimeseriesAsync items' this.Ctx
             match ctx.Result with
@@ -83,4 +83,4 @@ type CreateTimeseriesExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

@@ -3,14 +3,15 @@
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open System.Threading.Tasks
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Api
 open Fusion.Common
+open System.Threading
 
 [<RequireQualifiedAccess>]
 module DeleteAssets =
@@ -67,13 +68,13 @@ type DeleteAssetsExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     [<Extension>]
-    static member DeleteAssetsAsync(this: Client, ids: Identity seq, recursive: bool) : Task =
-        task {
+    static member DeleteAssetsAsync(this: Client, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+        async {
             let! ctx = deleteAssetsAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        } :> Task
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> Task
 

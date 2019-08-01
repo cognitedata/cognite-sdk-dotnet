@@ -4,8 +4,9 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -59,12 +60,12 @@ type DeleteTimeseriesExtensions =
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     [<Extension>]
-    static member DeleteTimeseriesAsync (this: Client) (items: Identity seq) : Task =
-        task {
+    static member DeleteTimeseriesAsync (this: Client, items: Identity seq, [<Optional>] token: CancellationToken) : Task =
+        async {
             let! ctx = deleteTimeseriesAsync items this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        } :> Task
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> Task

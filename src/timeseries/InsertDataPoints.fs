@@ -4,9 +4,8 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
-
-open FSharp.Control.Tasks.V2
-open Thoth.Json.Net
+open System.Runtime.InteropServices
+open System.Threading
 
 open Fusion
 open Fusion.Api
@@ -96,14 +95,14 @@ type InsertDataExtensions =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
-    static member InsertDataAsync (this: Client) (items: DataPointInsertionRequest) : Task =
-        task {
+    static member InsertDataAsync (this: Client, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
+        async {
             let! ctx = insertDataPointsAsyncProto items this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
                let err = error2Exception error
                return raise err
-        } :> Task
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token):> Task
 
 

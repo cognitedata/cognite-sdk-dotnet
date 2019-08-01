@@ -5,8 +5,9 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -131,8 +132,8 @@ type GetLatestDataPointExtensions =
     /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
-    static member GetLatestDataPointAsync (this: Client) (options: ValueTuple<Identity, string> seq) : Task<seq<GetLatestDataPoint.DataPointsPoco>> =
-        task {
+    static member GetLatestDataPointAsync (this: Client, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<GetLatestDataPoint.DataPointsPoco>> =
+        async {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
                   Before = if (isNull before) then None else Some before
@@ -144,5 +145,5 @@ type GetLatestDataPointExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 

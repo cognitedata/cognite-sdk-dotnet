@@ -5,8 +5,9 @@ open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -154,8 +155,8 @@ type SearchTimeseriesExtensions =
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
-    static member SearchTimeseriesAsync (this: Client, limit : int, options: SearchTimeseries.Option seq, filters: SearchTimeseries.Filter seq) : Task<_ seq> =
-        task {
+    static member SearchTimeseriesAsync (this: Client, limit : int, options: SearchTimeseries.Option seq, filters: SearchTimeseries.Filter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        async {
             let! ctx = searchTimeseriesAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok tss ->
@@ -163,4 +164,4 @@ type SearchTimeseriesExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

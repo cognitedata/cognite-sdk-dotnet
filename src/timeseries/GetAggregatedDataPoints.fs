@@ -1,12 +1,12 @@
 namespace Fusion
 
-open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -296,8 +296,8 @@ type GetAggregatedDataPointsExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsAsync (this: Client, id : Identity, options: GetAggregatedDataPoints.QueryOption seq) : Task<DataPointListResponse> =
-        task {
+    static member GetAggregatedDataPointsAsync (this: Client, id : Identity, options: GetAggregatedDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        async {
             let! ctx = getAggregatedDataPointsProto id options this.Ctx
             match ctx.Result with
             | Ok response ->
@@ -305,7 +305,7 @@ type GetAggregatedDataPointsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -315,8 +315,8 @@ type GetAggregatedDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq) : Task<DataPointListResponse> =
-        task {
+    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        async {
             let! ctx = getAggregatedDataPointsMultipleProto options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
@@ -324,5 +324,5 @@ type GetAggregatedDataPointsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 

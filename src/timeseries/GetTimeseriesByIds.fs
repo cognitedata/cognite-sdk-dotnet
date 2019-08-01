@@ -4,8 +4,9 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -83,8 +84,8 @@ type GetTimeseriesByIdsExtensions =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
-    static member GetTimeseriesByIdsAsync (this: Client, ids: seq<Identity>) : Task<seq<_>> =
-        task {
+    static member GetTimeseriesByIdsAsync (this: Client, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
+        async {
             let! ctx = getTimeseriesByIdsAsync ids this.Ctx
 
             match ctx.Result with
@@ -93,7 +94,7 @@ type GetTimeseriesByIdsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
 
 
