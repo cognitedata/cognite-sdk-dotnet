@@ -3,14 +3,14 @@ namespace Fusion
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open System.Threading.Tasks
-
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Fusion
 open Fusion.Common
 open Fusion.Api
 open Fusion.Assets
+open System.Threading
 
 [<RequireQualifiedAccess>]
 module GetAsset =
@@ -54,8 +54,8 @@ type GetAssetExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAssetAsync (this: Client, assetId: int64) : Task<AssetReadDto> =
-        task {
+    static member GetAssetAsync (this: Client, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
+        async {
             let! ctx = getAssetAsync assetId this.Ctx
             match ctx.Result with
             | Ok asset ->
@@ -63,4 +63,4 @@ type GetAssetExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

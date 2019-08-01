@@ -4,6 +4,8 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
@@ -111,8 +113,8 @@ type SearchAssetsExtensions =
     ///
     /// <returns>List of assets matching given criteria.</returns>
     [<Extension>]
-    static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: AssetFilter seq) : Task<_ seq> =
-        task {
+    static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        async {
             let! ctx = searchAssetsAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
@@ -120,4 +122,4 @@ type SearchAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask (op, cancellationToken = token)

@@ -5,15 +5,16 @@ open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 open System.Threading.Tasks
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Assets
+open System.Threading
 
 [<RequireQualifiedAccess>]
 module UpdateAssets =
@@ -195,8 +196,8 @@ type UpdateAssetsExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq) : Task<AssetReadPoco seq> =
-        task {
+    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq, [<Optional>] token: CancellationToken) : Task<AssetReadPoco seq> =
+        async {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = updateAssetsAsync assets' this.Ctx
             match ctx.Result with
@@ -205,4 +206,4 @@ type UpdateAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken=token)

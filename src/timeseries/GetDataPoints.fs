@@ -1,12 +1,12 @@
 namespace Fusion
 
-open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
@@ -200,8 +200,8 @@ type GetDataPointsExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
-    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq) : Task<DataPointListResponse> =
-        task {
+    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        async {
             let! ctx = getDataPointsProto id options this.Ctx
             match ctx.Result with
             | Ok response ->
@@ -209,7 +209,7 @@ type GetDataPointsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -219,8 +219,8 @@ type GetDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
-    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Option seq, defaultOptions: GetDataPoints.QueryOption seq) : Task<DataPointListResponse> =
-        task {
+    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Option seq, defaultOptions: GetDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        async {
             let! ctx = getDataPointsMultipleProto options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
@@ -228,5 +228,5 @@ type GetDataPointsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 

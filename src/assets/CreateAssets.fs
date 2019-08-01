@@ -4,14 +4,15 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Assets
+open System.Threading
 
 
 [<RequireQualifiedAccess>]
@@ -73,8 +74,8 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssetsAsync (this: Client, assets: AssetWritePoco seq) : Task<AssetReadPoco seq> =
-        task {
+    static member CreateAssetsAsync (this: Client, assets: AssetWritePoco seq, [<Optional>] token: CancellationToken) : Task<AssetReadPoco seq> =
+        async {
             let assets' = assets |> Seq.map AssetWriteDto.FromPoco
             let! ctx = createAssetsAsync assets' this.Ctx
             match ctx.Result with
@@ -83,4 +84,4 @@ type CreateAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

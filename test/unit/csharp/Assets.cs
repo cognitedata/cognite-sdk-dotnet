@@ -12,6 +12,7 @@ using Fusion.Assets;
 using Fusion.Api;
 using System.Linq;
 using Thoth.Json.Net;
+using System.Threading;
 
 namespace Tests
 {
@@ -492,6 +493,55 @@ namespace Tests
             var result = await client.CreateAssetsAsync(createAssets);
             var refRequest = Encode.toString(0, new CreateAssets.AssetsCreateRequest(createAssets.Select(AssetWriteDto.FromPoco)).Encoder);
             Assert.Equal(refRequest, requestJson);
+        }
+        [Fact]
+        public async Task TestCancellationToken()
+        {
+            HttpRequestMessage request = null;
+            var apiKey = "api-key";
+            var project = "project";
+            var json = File.ReadAllText("Assets.json");
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
+            {
+                request = req;
+
+                var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(json)
+                };
+
+                return await Task.FromResult(responseMessage);
+            }));
+
+            var client =
+                Client.Create(httpClient)
+                .AddHeader("api-key", apiKey)
+                .SetProject(project);
+
+            var options = new List<FilterAssets.Option> {
+                FilterAssets.Option.Limit(100)
+            };
+            var filters = new List<AssetFilter> {
+                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                AssetFilter.Name("string")
+            };
+            using (var src = new CancellationTokenSource())
+            {
+                src.Cancel();
+                try
+                {
+                    var result = await client.FilterAssetsAsync(options, filters, src.Token);
+                    Assert.NotNull(result);
+                    Assert.NotEmpty(result.Items);
+                }
+                catch (TaskCanceledException e)
+                {
+                    Assert.IsType<TaskCanceledException>(e);
+                    return;
+                }
+                Assert.False(true, "Expected task to fail");
+            }
         }
     }
 }

@@ -4,6 +4,8 @@ open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
 open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
@@ -79,8 +81,8 @@ type GetAssetsByIdsExtensions =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     [<Extension>]
-    static member GetAssetsByIdsAsync (this: Client, ids: seq<Identity>) : Task<_ seq> =
-        task {
+    static member GetAssetsByIdsAsync (this: Client, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        async {
             let! ctx = getAssetsByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
@@ -88,7 +90,7 @@ type GetAssetsByIdsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
 
 

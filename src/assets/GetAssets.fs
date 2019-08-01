@@ -4,6 +4,8 @@ open System
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Thoth.Json.Net
@@ -167,8 +169,8 @@ type GetAssetsExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets and optional cursor.</returns>
     [<Extension>]
-    static member GetAssetsAsync (this: Client, args: GetAssets.Option seq) =
-        task {
+    static member GetAssetsAsync (this: Client, args: GetAssets.Option seq, [<Optional>] token: CancellationToken) =
+        async {
             let! ctx = getAssetsAsync args this.Ctx
             match ctx.Result with
             | Ok assets ->
@@ -179,4 +181,4 @@ type GetAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

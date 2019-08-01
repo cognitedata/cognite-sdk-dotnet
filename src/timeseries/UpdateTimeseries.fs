@@ -6,9 +6,10 @@ open System.Net.Http
 open System.IO
 open System.Threading.Tasks
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
 
 open Thoth.Json.Net
-open FSharp.Control.Tasks.V2
 
 open Fusion
 open Fusion.Api
@@ -243,8 +244,8 @@ type UpdateTimeseriesExtensions =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
     [<Extension>]
-    static member UpdateTimeseriesAsync (this: Client, timeseries: ValueTuple<Identity, UpdateTimeseries.Option seq> seq) : Task<TimeseriesReadPoco seq> =
-        task {
+    static member UpdateTimeseriesAsync (this: Client, timeseries: ValueTuple<Identity, UpdateTimeseries.Option seq> seq, [<Optional>] token: CancellationToken) : Task<TimeseriesReadPoco seq> =
+        async {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = updateTimeseriesAsync timeseries' this.Ctx
             match ctx.Result with
@@ -253,4 +254,4 @@ type UpdateTimeseriesExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)

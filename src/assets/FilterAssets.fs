@@ -3,14 +3,15 @@
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Api
 open Fusion.Common
 open Fusion.Assets
+open System.Threading
 
 [<RequireQualifiedAccess>]
 module FilterAssets =
@@ -92,8 +93,8 @@ type FilterAssetsExtensions =
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: AssetFilter seq) =
-        task {
+    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) =
+        async {
             let! ctx = filterAssetsAsync options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
@@ -104,4 +105,4 @@ type FilterAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        }
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
