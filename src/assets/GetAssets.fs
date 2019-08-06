@@ -14,6 +14,7 @@ open Fusion
 open Fusion.Common
 open Fusion.Api
 open Fusion.Assets
+open System.Threading
 
 [<RequireQualifiedAccess>]
 module GetAssets =
@@ -137,7 +138,7 @@ module GetAssets =
 module GetAssetsApi =
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
-    /// 
+    ///
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
     /// returned.
     /// </summary>
@@ -149,7 +150,7 @@ module GetAssetsApi =
 
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
-    /// 
+    ///
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
     /// returned.
     /// </summary>
@@ -162,7 +163,7 @@ module GetAssetsApi =
 type GetAssetsExtensions =
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
-    /// 
+    ///
     /// You can retrieve a subset of assets by supplying additional fields; Only assets satisfying all criteria will be
     /// returned.
     /// </summary>

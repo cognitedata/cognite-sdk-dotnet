@@ -113,18 +113,14 @@ module Common =
         }
     let decodeProtobuf<'b, 'c> (parser : Stream -> 'b) (next: NextHandler<'b, 'c>) (context : Context<Stream>) =
         async {
-            let result = context.Result
-            let nextResult =
-                match result with
-                | Ok stream -> Ok (parser stream)
-                | Error err -> Error err
-            return! next { Request = context.Request; Result = nextResult }
+            let result = context.Result |> Result.map parser
+            return! next { Request = context.Request; Result = result }
         }
 
     /// Handler for disposing the stream when it's not needed anymore.
     let dispose<'a> (next: NextHandler<unit,'a>) (context: Context<Stream>) =
         async {
-            let nextResult = context.Result |> Result.map (fun stream -> stream.Dispose ();)
+            let nextResult = context.Result |> Result.map (fun stream -> stream.Dispose ())
             return! next { Request = context.Request; Result = nextResult }
         }
 
