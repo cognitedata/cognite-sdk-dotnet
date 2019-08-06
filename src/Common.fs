@@ -27,7 +27,7 @@ type Identity =
     member this.Render =
         match this with
         | CaseId id -> "id", Encode.int64 id
-        | CaseExternalId id -> "id", Encode.string id
+        | CaseExternalId id -> "externalId", Encode.string id
 
 type Numeric =
     internal
