@@ -1,5 +1,6 @@
 namespace Fusion
 
+
 open System
 open System.Net
 open System.Net.Http
@@ -29,12 +30,12 @@ type Content =
     | CaseProtobuf of Google.Protobuf.IMessage
 
     static member JsonValue jsonValue = CaseJsonValue jsonValue
-    static member Protobuf protobuf = CaseProtobuf protobuf 
+    static member Protobuf protobuf = CaseProtobuf protobuf
 
 type Response = JsonValue | Protobuf
 
 type HttpRequest = {
-    HttpClient: HttpClient
+    HttpClient: HttpClient option
     Method: HttpMethod
     Content: Content option
     Resource: string
@@ -44,6 +45,7 @@ type HttpRequest = {
     Project: string
     Version: ApiVersion
     ServiceUrl: string
+    AppId: string option
 }
 
 type Context<'a> = {
@@ -53,17 +55,17 @@ type Context<'a> = {
 
 type HttpContext = Context<HttpResponseMessage>
 
-[<AutoOpen>]
-module Request =
-    let version =
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module Context =
+    let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
         {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
 
     /// Default context to use. Fetches from http://api.cognitedata.com.
-    let defaultRequest =
+    let internal defaultRequest =
         let ua = sprintf "Fusion.NET / v%d.%d.%d (Cognite)" version.Major version.Minor version.Build
         {
-            HttpClient = null
+            HttpClient = None
             Method = HttpMethod.Get
             Content = None
             Resource = String.Empty
@@ -76,11 +78,12 @@ module Request =
             Project = String.Empty
             Version = V05
             ServiceUrl = "https://api.cognitedata.com"
+            AppId = None
         }
-    let defaultResult =
+    let internal defaultResult =
         Ok (new HttpResponseMessage (HttpStatusCode.NotFound))
 
-    let defaultContext : Context<HttpResponseMessage> = {
+    let internal defaultContext : Context<HttpResponseMessage> = {
         Request = defaultRequest
         Result = defaultResult
     }
@@ -104,12 +107,18 @@ module Request =
     ///
     /// **Output Type**
     ///   * `Context`
-    ///
     let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Project = project } }
 
     let setHttpClient (client: HttpClient) (context: HttpContext) =
-        { context with Request = { context.Request with HttpClient = client } }
+        { context with Request = { context.Request with HttpClient = Some client } }
+
+    let setAppId (appId: string) (context: HttpContext) =
+        { context with Request = { context.Request with AppId = Some appId } }
 
     let setServiceUrl (serviceUrl: string) (context: HttpContext) =
         { context with Request = { context.Request with ServiceUrl = serviceUrl } }
+
+    /// Create new context with default values.
+    let create () =
+        defaultContext

@@ -91,7 +91,7 @@ let createAssetsExample ctx = async {
 }
 
 let insertDataPointsOldWay ctx = async {
-    
+
     let dataPoints : NumericDataPointDto seq = seq {
         for i in 0L..100L do
             yield {
@@ -143,10 +143,11 @@ let main argv =
 
     use client = new HttpClient ()
     let ctx =
-        defaultContext
-        |> setHttpClient client
-        |> addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
-        |> setProject (Uri.EscapeDataString config.Project)
+        Context.create ()
+        |> Context.setAppId "playground"
+        |> Context.setHttpClient client
+        |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+        |> Context.setProject (Uri.EscapeDataString config.Project)
 
     async {
         do! insertDataPointsProtoStyle ctx

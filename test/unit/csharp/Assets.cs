@@ -48,7 +48,9 @@ namespace Tests
                 };
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -94,7 +96,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -128,7 +132,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -164,7 +170,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -200,9 +208,10 @@ namespace Tests
                 return await Task.FromResult(responseMessage);
             }));
 
-
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -232,7 +241,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -279,7 +290,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -316,7 +329,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -359,7 +374,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -396,7 +413,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -434,7 +453,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -474,7 +495,9 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetAppId("test")
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
@@ -515,7 +538,8 @@ namespace Tests
             }));
 
             var client =
-                Client.Create(httpClient)
+                Client.Create()
+                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 

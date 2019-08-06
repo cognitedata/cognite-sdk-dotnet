@@ -80,7 +80,9 @@ namespace csharp
 
             using (var httpClient = new HttpClient ()) {
                 var client =
-                    Client.Create(httpClient)
+                    Client.Create()
+                    .SetAppId("playground")
+                    .SetHttpClient(httpClient)
                     .AddHeader("api-key", apiKey)
                     .SetProject(project);
 
