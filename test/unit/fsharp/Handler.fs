@@ -44,9 +44,11 @@ let ``Get asset with fusion return expression is Ok``() = async {
     let client = new HttpClient(new HttpMessageHandlerStub(stub))
 
     let ctx =
-        defaultContext
-        |> setHttpClient client
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.setHttpClient client
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let req = fusion {
@@ -80,9 +82,11 @@ let ``Get asset with fusion returnFrom expression is Ok``() = async {
     let client = new HttpClient(new HttpMessageHandlerStub(stub))
 
     let ctx =
-        defaultContext
-        |> setHttpClient client
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.setHttpClient client
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let req = fusion {
@@ -115,9 +119,11 @@ let ``Get asset with retry is Ok``() = async {
     let client = new HttpClient(new HttpMessageHandlerStub(stub))
 
     let ctx =
-        defaultContext
-        |> setHttpClient client
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.setHttpClient client
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let req = getAsset 42L |> retry 0<ms> 5
@@ -147,9 +153,11 @@ let ``Get asset with retries on server internal error``() = async {
     let client = new HttpClient(new HttpMessageHandlerStub(stub))
 
     let ctx =
-        defaultContext
-        |> setHttpClient client
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.setHttpClient client
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let req = getAsset 42L |> retry 0<ms> 5
@@ -159,4 +167,74 @@ let ``Get asset with retries on server internal error``() = async {
     // Assert
     test <@ Result.isError result @>
     test <@ retries' = 6 @>
+}
+
+[<Fact>]
+let ``Get asset without http client throws exception``() = async {
+    // Arrange
+    let mutable retries = 0
+    let json = File.ReadAllText "Asset.json"
+    let stub =
+        Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
+        (task {
+            let responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            responseMessage.Content <- new StringContent(json)
+            return responseMessage
+        }))
+
+    let client = new HttpClient(new HttpMessageHandlerStub(stub))
+
+    let ctx =
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
+
+    // Act
+    let req = getAsset 42L |> retry 0<ms> 5
+    let! result = async {
+        try
+            let! result = runHandler req ctx
+            return false
+        with
+        | _ -> return true
+    }
+
+    // Assert
+    test <@ result @>
+}
+
+[<Fact>]
+let ``Get asset without appId throws exception``() = async {
+    // Arrange
+    let mutable retries = 0
+    let json = File.ReadAllText "Asset.json"
+    let stub =
+        Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
+        (task {
+            let responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError)
+            responseMessage.Content <- new StringContent(json)
+            return responseMessage
+        }))
+
+    let client = new HttpClient(new HttpMessageHandlerStub(stub))
+
+    let ctx =
+        Context.create ()
+        |> Context.setHttpClient client
+        |> Context.setProject "test"
+        |> Context.addHeader ("api-key", "test-key")
+
+    // Act
+    let req = getAsset 42L |> retry 0<ms> 5
+    let! result = async {
+        try
+            let! result = runHandler req ctx
+            return false
+        with
+        | _ -> return true
+    }
+
+    // Assert
+    test <@ result @>
 }

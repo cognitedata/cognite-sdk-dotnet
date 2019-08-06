@@ -16,8 +16,9 @@ let ``Create timeseries is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = CreateTimeseries.createTimeseries [] fetch Async.single ctx
@@ -36,8 +37,9 @@ let ``Get timeseries by ids is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = GetTimeseriesByIds.getTimeseriesByIds [ Identity.Id 0L ] fetch Async.single ctx
@@ -56,8 +58,9 @@ let ``Delete timeseries is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = DeleteTimeseries.deleteTimeseries [ Identity.Id 42L] fetch Async.single ctx

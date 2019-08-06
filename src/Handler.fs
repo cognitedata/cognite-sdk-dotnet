@@ -1,20 +1,20 @@
 namespace Fusion
 
 open System
+open System.Net
 open System.Net.Http
+open System.Net.Http.Headers
+open System.IO
 open System.Text
+open System.Threading.Tasks
 open System.Web
 
 open Microsoft.FSharp.Data.UnitSystems.SI
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open System.IO
+open Google.Protobuf
 open Newtonsoft.Json
 open Thoth.Json.Net
-open System.Net.Http.Headers
-open System.Net
-open System.Threading.Tasks
-open Google.Protobuf
 
 [<Measure>] type ms
 
@@ -76,7 +76,7 @@ module Handler =
 
     let compose (first : HttpHandler<'a, 'b, 'd>) (second : HttpHandler<'b, 'c, 'd>) : HttpHandler<'a,'c,'d> =
         fun (next: NextHandler<_, _>) (ctx : Context<'a>) ->
-            let next'  = second next
+            let next' = second next
             let next'' = first next'
 
             next'' ctx
@@ -93,7 +93,7 @@ module Handler =
         let (>>=) ctx fn = bind fn ctx
 
         let retn a =
-            { Request = Request.defaultRequest; Result = Ok a }
+            { Request = Context.defaultRequest; Result = Ok a }
 
         // define a "cons" function
         let cons head tail = head :: tail
@@ -262,7 +262,7 @@ module Handler =
                 do! content.WriteToAsync(jtw)
                 do! jtw.FlushAsync()
                 return ()
-            } :> Task
+            } :> _
         override this.TryComputeLength(length: byref<int64>) : bool =
             length <- -1L
             false
@@ -275,15 +275,14 @@ module Handler =
         override this.SerializeToStreamAsync(stream: Stream, context: TransportContext) : Task =
             task {
                 content.WriteTo(stream)
-            } :> Task
+            } :> _
         override this.TryComputeLength(length: byref<int64>) : bool =
             length <- -1L
             false
 
-    let buildRequest (ctx: HttpContext) : HttpRequestMessage =
+    let buildRequest (client: HttpClient) (ctx: HttpContext) : HttpRequestMessage =
         let res = ctx.Request.Resource
         let query = ctx.Request.Query
-
         let url =
             let result = sprintf "%s/api/%s/projects/%s%s" ctx.Request.ServiceUrl (ctx.Request.Version.ToString ()) ctx.Request.Project res
             if Seq.isEmpty query then
@@ -294,16 +293,20 @@ module Handler =
                     queryString.Add (key, value)
                 sprintf "%s?%s" result (queryString.ToString ())
 
-        let client = ctx.Request.HttpClient
 
         let request = new HttpRequestMessage (ctx.Request.Method, url)
+
+        let appIdHeader =
+            match ctx.Request.AppId with
+            | Some appId -> ("x-cdp-app", appId)
+            | None -> failwith "Client must set the application ID (appId)"
 
         let contentHeader =
             match ctx.Request.ResponseType with
             | JsonValue -> ("Accept", "application/json")
             | Protobuf -> ("Accept", "application/protobuf")
 
-        for header, value in contentHeader :: ctx.Request.Headers do
+        for header, value in contentHeader :: appIdHeader :: ctx.Request.Headers do
             if not (client.DefaultRequestHeaders.Contains header) then
                 request.Headers.Add (header, value)
 
@@ -318,9 +321,7 @@ module Handler =
     let sendRequest (request: HttpRequestMessage) (client: HttpClient) : Task<Result<Stream, ResponseError>> =
         task {
             try
-                let! response = task {
-                    return! client.SendAsync(request)
-                }
+                let! response = client.SendAsync request
                 let! stream = response.Content.ReadAsStreamAsync ()
                 if response.IsSuccessStatusCode then
                     return Ok stream
@@ -347,8 +348,13 @@ module Handler =
 
     let fetch<'a> (next: NextHandler<IO.Stream, 'a>) (ctx: HttpContext) : Async<Context<'a>> =
         async {
-            use message = buildRequest ctx
-            let! result = sendRequest message ctx.Request.HttpClient |> Async.AwaitTask
+            let client =
+                match ctx.Request.HttpClient with
+                | Some client -> client
+                | None -> failwith "Must set httpClient"
+            use message = buildRequest client ctx
+
+            let! result = sendRequest message client |> Async.AwaitTask
             if ctx.Request.Content.IsSome then
                 message.Content.Dispose ()
             return! next { Request = ctx.Request; Result = result }

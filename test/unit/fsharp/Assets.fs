@@ -16,8 +16,9 @@ let ``Get asset is Ok``() = async {
     let json = File.ReadAllText "Asset.json"
     let fetch = Fetch.fromJson json
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! response = GetAsset.getAsset 42L fetch Async.single ctx
@@ -36,8 +37,9 @@ let ``Get invalid asset is Error`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
 
     // Act
@@ -54,8 +56,9 @@ let ``Get asset with extra fields is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! response = GetAsset.getAsset 42L fetch Async.single ctx
@@ -72,8 +75,9 @@ let ``Get asset with missing optional fields is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! response = GetAsset.getAsset 42L fetch Async.single ctx
@@ -89,8 +93,9 @@ let ``Get assets is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
     let args = [
             GetAssets.Option.Name "string"
             GetAssets.Option.Source "source"
@@ -125,8 +130,9 @@ let ``Create assets empty is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = CreateAssets.createAssets [] fetch Async.single ctx
@@ -145,8 +151,9 @@ let ``Create single asset is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     let asset: AssetWriteDto = {
         Name = "myAsset"
@@ -181,8 +188,9 @@ let ``Update single asset with no updates is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = UpdateAssets.updateAssets [ Identity.Id 42L, [] ] fetch Async.single ctx
@@ -201,8 +209,9 @@ let ``Update single asset with is Ok`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
 
     // Act
     let! res = (fetch, Async.single, ctx) |||> UpdateAssets.updateAssets  [ (Identity.Id 42L, [
@@ -224,8 +233,9 @@ let ``Attempt searching assets`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
     let options = [
         SearchAssets.Option.Name "str"
     ]
@@ -247,8 +257,9 @@ let ``Attempt filtering assets`` () = async {
     let fetch = Fetch.fromJson json
 
     let ctx =
-        defaultContext
-        |> addHeader ("api-key", "test-key")
+        Context.create ()
+        |> Context.setAppId "test"
+        |> Context.addHeader ("api-key", "test-key")
     let options = [
         FilterAssets.Option.Limit 100
     ]

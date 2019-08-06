@@ -1,10 +1,7 @@
 namespace Fusion.Api
 
 open Fusion
-open Fusion.Request
-open Microsoft.Extensions.DependencyInjection
 open System.Net.Http
-
 
 
 /// <summary>
@@ -15,12 +12,12 @@ type Client private (context: HttpContext) =
     let context = context
     let fetch = fetch
 
-    /// Create new client with a default context (e.g will connect to CDF when used.)
-    new () = Client defaultContext
-
+    /// For use with AddHttpClient dependency injection
     new (httpClient: HttpClient) =
-        let context = defaultContext |> setHttpClient httpClient
-        Client(context)
+        let context =
+            Context.create ()
+            |> Context.setHttpClient httpClient
+        Client context
 
     member internal __.Ctx =
         context
@@ -31,7 +28,7 @@ type Client private (context: HttpContext) =
     /// <param name="project">Name of project.</param>
     member this.AddHeader (name: string, value: string)  =
         context
-        |> addHeader (name, value)
+        |> Context.addHeader (name, value)
         |> Client.New
 
     /// <summary>
@@ -40,27 +37,30 @@ type Client private (context: HttpContext) =
     /// <param name="project">Name of project.</param>
     member this.SetProject (project: string) =
         context
-        |> setProject project
+        |> Context.setProject project
+        |> Client.New
+
+    member this.SetAppId (appId: string) =
+        context
+        |> Context.setAppId appId
         |> Client.New
 
     member this.SetHttpClient (client: HttpClient) =
         context
-        |> setHttpClient client
+        |> Context.setHttpClient client
         |> Client.New
 
     member this.SetServiceUrl (serviceUrl: string) =
         context
-        |> setServiceUrl serviceUrl
+        |> Context.setServiceUrl serviceUrl
         |> Client.New
 
     /// <summary>
     /// Creates a Client for accessing the API.
     /// </summary>
-    static member Create (client: HttpClient) =
-        Client().SetHttpClient(client)
-
     static member Create () =
-        Client ()
+        let context = Context.create ()
+        Client context
 
     static member private New (context: HttpContext)  =
-        Client (context)
+        Client context

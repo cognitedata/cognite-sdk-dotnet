@@ -3,10 +3,10 @@ namespace Fusion
 open System.Net.Http
 
 type RequestBuilder () =
-    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next defaultContext
-    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = defaultRequest; Result = Ok res }
+    member this.Zero () : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next _ -> next Context.defaultContext
+    member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = Context.defaultRequest; Result = Ok res }
 
-    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = defaultResult }
+    member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = Context.defaultResult }
 
     member this.ReturnFrom (req : HttpHandler<'a, 'b, 'c>)  : HttpHandler<'a, 'b, 'c>  = req
 
