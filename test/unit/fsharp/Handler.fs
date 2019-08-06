@@ -25,6 +25,78 @@ open System.Net
                 return! sendAsync.Invoke(request, cancellationToken)
             }
 
+
+[<Fact>]
+let ``Get asset with fusion return expression is Ok``() = async {
+    // Arrange
+    let mutable retries = 0
+    let json = File.ReadAllText "Asset.json"
+
+    let stub =
+        Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
+        (task {
+            retries <- retries + 1
+            let responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            responseMessage.Content <- new StringContent(json)
+            return responseMessage
+        }))
+
+    let client = new HttpClient(new HttpMessageHandlerStub(stub))
+
+    let ctx =
+        defaultContext
+        |> setHttpClient client
+        |> addHeader ("api-key", "test-key")
+
+    // Act
+    let req = fusion {
+        let! result = getAsset 42L
+        return result
+    }
+
+    let! result = runHandler req ctx
+    let retries' = retries
+
+    // Assert
+    test <@ Result.isOk result @>
+    test <@ retries' = 1 @>
+}
+
+[<Fact>]
+let ``Get asset with fusion returnFrom expression is Ok``() = async {
+    // Arrange
+    let mutable retries = 0
+    let json = File.ReadAllText "Asset.json"
+
+    let stub =
+        Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
+        (task {
+            retries <- retries + 1
+            let responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
+            responseMessage.Content <- new StringContent(json)
+            return responseMessage
+        }))
+
+    let client = new HttpClient(new HttpMessageHandlerStub(stub))
+
+    let ctx =
+        defaultContext
+        |> setHttpClient client
+        |> addHeader ("api-key", "test-key")
+
+    // Act
+    let req = fusion {
+        return! getAsset 42L
+    }
+
+    let! result = runHandler req ctx
+    let retries' = retries
+
+    // Assert
+    test <@ Result.isOk result @>
+    test <@ retries' = 1 @>
+}
+
 [<Fact>]
 let ``Get asset with retry is Ok``() = async {
     // Arrange

@@ -1,7 +1,5 @@
 namespace Fusion
 
-//open FSharp.Data
-open System.Net
 open System.Net.Http
 
 type RequestBuilder () =
@@ -9,6 +7,8 @@ type RequestBuilder () =
     member this.Return (res: 'a) : HttpHandler<HttpResponseMessage, 'a, _> = fun next _ ->  next { Request = defaultRequest; Result = Ok res }
 
     member this.Return (req: HttpRequest) : HttpHandler<HttpResponseMessage, HttpResponseMessage, _> = fun next ctx -> next { Request = req; Result = defaultResult }
+
+    member this.ReturnFrom (req : HttpHandler<'a, 'b, 'c>)  : HttpHandler<'a, 'b, 'c>  = req
 
     member this.Delay (fn) = fn ()
 
