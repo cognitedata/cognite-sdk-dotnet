@@ -62,6 +62,12 @@ module Patterns =
         | CaseFloat value -> Float value
         | CaseString value -> String value
 
+    /// Active pattern to permit pattern matching over identity values.
+    let (|Id|ExternalId|) (value : Identity) : Choice<int64, string>  =
+        match value with
+        | CaseId value -> Id value
+        | CaseExternalId value -> ExternalId value
+
     let (|ParseInteger|_|) (str: string) =
        let mutable intvalue = 0
        if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
