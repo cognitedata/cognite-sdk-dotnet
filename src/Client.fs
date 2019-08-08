@@ -13,7 +13,7 @@ open System.Net.Http
 /// <param name="context">Context to use for this session.</param>
 type Client private (context: HttpContext) =
     let context = context
-    let fetch  = fetch
+    let fetch = fetch
 
     /// Create new client with a default context (e.g will connect to CDF when used.)
     new () = Client defaultContext
