@@ -1,4 +1,4 @@
-﻿namespace Fusion
+﻿namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
@@ -9,12 +9,11 @@ open System.Threading.Tasks
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
 open System.Threading
 
 [<RequireQualifiedAccess>]
-module DeleteAssets =
+module Delete =
     [<Literal>]
     let Url = "/assets/delete"
 
@@ -28,7 +27,7 @@ module DeleteAssets =
                 yield "recursive", Encode.bool this.Recursive
             ]
 
-    let deleteAssets (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let deleteCore (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : AssetsDeleteRequest = {
             Items = assets
             Recursive = recursive
@@ -41,24 +40,22 @@ module DeleteAssets =
         >=> fetch
         >=> dispose
 
-[<AutoOpen>]
-module DeleteAssetsApi =
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     /// <param name="next">Async handler to use</param>
-    let deleteAssets (assets: Identity seq, recursive: bool) (next: NextHandler<unit,'a>) =
-        DeleteAssets.deleteAssets (assets, recursive) fetch next
-    
+    let delete (assets: Identity seq, recursive: bool) (next: NextHandler<unit,'a>) =
+        deleteCore (assets, recursive) fetch next
+
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
-    let deleteAssetsAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
-        DeleteAssets.deleteAssets (assets, recursive) fetch Async.single
+    let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
+        deleteCore (assets, recursive) fetch Async.single
 
 [<Extension>]
 type DeleteAssetsExtensions =
@@ -68,9 +65,9 @@ type DeleteAssetsExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     [<Extension>]
-    static member DeleteAssetsAsync(this: Client, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync(this: Client, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
         async {
-            let! ctx = deleteAssetsAsync (ids, recursive) this.Ctx
+            let! ctx = Delete.deleteAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->

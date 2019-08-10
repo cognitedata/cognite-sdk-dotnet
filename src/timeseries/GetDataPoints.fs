@@ -1,22 +1,17 @@
-namespace Fusion
+namespace Fusion.DataPoints
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
+open Fusion.TimeSeries
 open Com.Cognite.V1.Timeseries.Proto
 
 [<RequireQualifiedAccess>]
-module GetDataPoints =
+module List =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -100,7 +95,7 @@ module GetDataPoints =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let getDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let listCore (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderRequest options defaultOptions
 
@@ -112,7 +107,7 @@ module GetDataPoints =
         >=> fetch
         >=> decoder
 
-    let getDataPointsProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let listProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderRequest options defaultOptions
 
@@ -124,9 +119,6 @@ module GetDataPoints =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetDataPointsApi =
-
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
     /// </summary>
@@ -134,9 +126,9 @@ module GetDataPointsApi =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
-    let getDataPoints (id: int64) (options: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
-        let options' : GetDataPoints.Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        GetDataPoints.getDataPoints options' Seq.empty fetch next
+    let list (id: int64) (options: QueryOption seq) (next: NextHandler<DataPoints seq,'a>) =
+        let options' : Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
+        listCore options' Seq.empty fetch next
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -144,9 +136,9 @@ module GetDataPointsApi =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
-    let getDataPointsAsync (id: int64) (options: GetDataPoints.QueryOption seq) =
-        let options' : GetDataPoints.Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        GetDataPoints.getDataPoints options' Seq.empty fetch Async.single
+    let listAsync (id: int64) (options: QueryOption seq) =
+        let options' : Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
+        listCore options' Seq.empty fetch Async.single
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -154,9 +146,9 @@ module GetDataPointsApi =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
-    let getDataPointsProto (id: int64) (options: GetDataPoints.QueryOption seq) =
-        let options' : GetDataPoints.Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        GetDataPoints.getDataPointsProto options' Seq.empty fetch Async.single
+    let listProtoAsync (id: int64) (options: QueryOption seq) =
+        let options' : Option seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
+        listProto options' Seq.empty fetch Async.single
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -166,8 +158,8 @@ module GetDataPointsApi =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
-    let getDataPointsMultiple (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq) (next: NextHandler<GetDataPoints.DataPoints seq,'a>) =
-        GetDataPoints.getDataPoints options defaultOptions fetch next
+    let listMultiple (options: Option seq) (defaultOptions: QueryOption seq) (next: NextHandler<DataPoints seq,'a>) =
+        listCore options defaultOptions fetch next
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -176,10 +168,10 @@ module GetDataPointsApi =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
-    let getDataPointsMultipleAsync (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq) =
-        GetDataPoints.getDataPoints options defaultOptions fetch Async.single
-    
-    
+    let listMultipleAsync (options: Option seq) (defaultOptions: QueryOption seq) =
+        listCore options defaultOptions fetch Async.single
+
+
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
     /// </summary>
@@ -187,11 +179,23 @@ module GetDataPointsApi =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries as c# protobuf object.</returns>
-    let getDataPointsMultipleProto (options: GetDataPoints.Option seq) (defaultOptions: GetDataPoints.QueryOption seq) =
-        GetDataPoints.getDataPointsProto options defaultOptions fetch Async.single
+    let listMultipleProtoAsync (options: Option seq) (defaultOptions: QueryOption seq) =
+        listProto options defaultOptions fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Com.Cognite.V1.Timeseries.Proto
+
+open Fusion.DataPoints
+open Fusion.Common
 
 [<Extension>]
-type GetDataPointsExtensions =
+type GetDataPointsClientExtensions =
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -200,12 +204,12 @@ type GetDataPointsExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
-    static member GetDataPointsAsync (this: Client, id : int64, options: GetDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAsync (this: Client, id : int64, options: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = getDataPointsProto id options this.Ctx
+            let! ctx = List.listProtoAsync id options this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response 
+                return response
             | Error error ->
                 let err = error2Exception error
                 return raise err
@@ -219,9 +223,9 @@ type GetDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
-    static member GetDataPointsMultipleAsync (this: Client, options: GetDataPoints.Option seq, defaultOptions: GetDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member ListMultipleAsync (this: Client, options: List.Option seq, defaultOptions: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = getDataPointsMultipleProto options defaultOptions this.Ctx
+            let! ctx = List.listMultipleProtoAsync options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response

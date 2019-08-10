@@ -4,14 +4,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 
-using Fusion;
-using Fusion.Api;
-using Fusion.Timeseries;
-using Fusion.Assets;
 using Com.Cognite.V1.Timeseries.Proto;
+
+using Fusion;
+using Fusion.DataPoints;
+
+using Assets = Fusion.Assets;
+using Timeseries = Fusion.TimeSeries;
 
 namespace csharp
 {
+
     class Program
     {
         /// <summary>
@@ -21,10 +24,10 @@ namespace csharp
         /// <returns>Task</returns>
         static async Task GetAssetsExample(Client client)
         {
-            var assetArgs = new List<GetAssets.Option> {
-                GetAssets.Option.Name("string3")
+            var assetArgs = new List<Assets.List.Option> {
+                Fusion.Assets.List.Option.Name("string3")
             };
-            var result = await client.GetAssetsAsync(assetArgs);
+            var result = await client.Assets.ListAsync(assetArgs);
 
             var asset = result.Items.First();
             Console.WriteLine("{0}", asset.ParentId);
@@ -33,26 +36,26 @@ namespace csharp
 
         static async Task QueryTimeseriesDataExample(Client client)
         {
-            var aggregates = new List<GetAggregatedDataPoints.Aggregate> { GetAggregatedDataPoints.Aggregate.Average };
-            var defaultOptions = new List<GetAggregatedDataPoints.QueryOption> {
-                GetAggregatedDataPoints.QueryOption.Aggregates(aggregates)
+            var aggregates = new List<Aggregated.Aggregate> { Aggregated.Aggregate.Average };
+            var defaultOptions = new List<Aggregated.QueryOption> {
+                Aggregated.QueryOption.Aggregates(aggregates)
             };
-            var options = new List<GetAggregatedDataPoints.Option> () {
-                new GetAggregatedDataPoints.Option () { Id = Identity.Id(42L), QueryOptions = new List<GetAggregatedDataPoints.QueryOption> ()}
+            var options = new List<Aggregated.Option> () {
+                new Aggregated.Option () { Id = Identity.Id(42L), QueryOptions = new List<Aggregated.QueryOption> ()}
             };
 
-            var result = await client.GetAggregatedDataPointsMultipleAsync(options, defaultOptions);
+            var result = await client.DataPoints.GetAggregatedMultipleAsync(options, defaultOptions);
             Console.WriteLine("{0}", result.Items.First().AggregateDatapoints.Datapoints.First().Average);
             Console.WriteLine("{0}", result);
         }
 
         static async Task CreateTimeseriesDataExample(Client client)
         {
-            var timeseries = new TimeseriesWritePoco {
-                    Name = "Testing"
+            var timeseries = new Fusion.TimeSeries.WritePoco {
+                Name = "Testing"
             };
 
-            var result = await client.CreateTimeseriesAsync(new List<TimeseriesWritePoco> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<Fusion.TimeSeries.WritePoco> { timeseries });
 
             Console.WriteLine("{0}", result);
 
@@ -68,7 +71,7 @@ namespace csharp
                     NumericDatapoints = dataPoints
                 }
             });
-            await client.InsertDataAsync(points);
+            await client.DataPoints.InsertAsync(points);
         }
 
         static async Task Main(string[] args)

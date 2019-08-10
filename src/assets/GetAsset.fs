@@ -1,24 +1,18 @@
-namespace Fusion
+namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading.Tasks
 
 open Fusion
 open Fusion.Common
-open Fusion.Api
-open Fusion.Assets
-open System.Threading
 
 [<RequireQualifiedAccess>]
-module GetAsset =
+module Get =
     [<Literal>]
     let Url = "/assets"
 
-    let getAsset (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse AssetReadDto.Decoder id
+    let getCore (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let decoder = decodeResponse ReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
         GET
@@ -27,36 +21,44 @@ module GetAsset =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetAssetApi =
     /// <summary>
-    /// Retrieves information about an asset given an asset id.
+    /// Retrieves information about an asset given an asset id. Expects a next continuation handler.
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Asset with the given id.</returns>
-    let getAsset (assetId: int64) (next: NextHandler<AssetReadDto,'a>) : HttpContext -> Async<Context<'a>> =
-        GetAsset.getAsset assetId fetch next
-    
+    let get (assetId: int64) (next: NextHandler<ReadDto,'a>) : HttpContext -> Async<Context<'a>> =
+        getCore assetId fetch next
+
     /// <summary>
     /// Retrieves information about an asset given an asset id.
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
-    let getAssetAsync (assetId: int64) : HttpContext -> Async<Context<AssetReadDto>> =
-        GetAsset.getAsset assetId fetch Async.single
+    let getAsync (assetId: int64) : HttpContext -> Async<Context<ReadDto>> =
+        getCore assetId fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading.Tasks
+
+open Fusion.Assets
+open Fusion.Common
+open System.Threading
 
 [<Extension>]
-type GetAssetExtensions =
+type GetAssetClientExtensions =
     /// <summary>
     /// Retrieves information about an asset given an asset id.
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAssetAsync (this: Client, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
+    static member GetAsync (this: ClientExtensions.Assets, assetId: int64, [<Optional>] token: CancellationToken) : Task<ReadDto> =
         async {
-            let! ctx = getAssetAsync assetId this.Ctx
+            let! ctx = Get.getAsync assetId this.Ctx
             match ctx.Result with
             | Ok asset ->
                 return asset

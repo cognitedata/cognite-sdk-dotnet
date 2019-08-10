@@ -83,20 +83,13 @@ module Common =
     [<Literal>]
     let MaxLimitSize = 1000
 
-    /// **Description**
-    ///
-    /// JSON decode response and map decode error string to exception so we
-    /// don't get more response error types.
-    ///
-    /// **Parameters**
-    ///   * `decoder` - parameter of type `'a`
-    ///   * `result` - parameter of type `Result<'b,'c>`
-    ///
-    /// **Output Type**
-    ///   * `Result<'d,'c>`
-    ///
-    /// **Exceptions**
-    ///
+    /// <summary>
+    /// JSON decode response and map decode error string to exception so we don't get more response error types.
+    /// </summary>
+    /// <param name="decoder">Decoder to use. </param>
+    /// <param name="resultMapper">Mapper for transforming the result.</param>
+    /// <param name="next">The next async handler to use.</param>
+    /// <returns>Decoded context.</returns>
     let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: Context<Stream>) =
         async {
             let result = context.Result

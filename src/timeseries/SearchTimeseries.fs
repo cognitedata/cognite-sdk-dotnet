@@ -1,4 +1,4 @@
-namespace Fusion
+namespace Fusion.TimeSeries
 
 open System.IO
 open System.Collections.Generic
@@ -11,12 +11,10 @@ open System.Threading
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
-open Fusion.Timeseries
 open Fusion.Common
 
 [<RequireQualifiedAccess>]
-module SearchTimeseries =
+module Search =
     [<Literal>]
     let Url = "/timeseries/search"
 
@@ -44,7 +42,7 @@ module SearchTimeseries =
                     | CaseQuery query -> yield "query", Encode.string query
             ]
 
-    type Filter =
+    type FilterOption =
         private
         | CaseName of string
         | CaseUnit of string
@@ -77,7 +75,7 @@ module SearchTimeseries =
         /// Filter out assets without this exact updatedTime
         static member LastUpdatedTime time = CaseLastUpdatedTime time
 
-        static member Encode (filters: Filter seq) =
+        static member Encode (filters: FilterOption seq) =
             Encode.object [
                 for filter in filters do
                     match filter with
@@ -94,11 +92,11 @@ module SearchTimeseries =
             ]
 
     type Timeseries = {
-        Items: TimeseriesReadDto seq } with
+        Items: ReadDto seq } with
 
         static member Decoder : Decoder<Timeseries> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
             })
 
     let encodeRequest limit options filters =
@@ -106,13 +104,13 @@ module SearchTimeseries =
             if limit > 0 then
                 yield "limit", Encode.int limit
             if not (Seq.isEmpty filters) then
-                yield "filter", Filter.Encode filters
+                yield "filter", FilterOption.Encode filters
             if not (Seq.isEmpty options) then
                 yield "search", Option.Encode options
         ]
 
-    let searchTimeseries (limit: int) (options: Option seq) (filters: Filter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = decodeResponse GetTimeseries.TimeseriesResponse.Decoder (fun assets -> assets.Items)
+    let searchCore (limit: int) (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
+        let decoder = decodeResponse List.TimeseriesResponse.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -122,8 +120,6 @@ module SearchTimeseries =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module SearchTimeseriesApi =
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
     /// </summary>
@@ -132,8 +128,8 @@ module SearchTimeseriesApi =
     /// <param name="filters">Search filters.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Timeseries matching query.</returns>>
-    let searchTimeseries (limit: int) (options: SearchTimeseries.Option seq) (filters: SearchTimeseries.Filter seq) (next: NextHandler<TimeseriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
-        SearchTimeseries.searchTimeseries limit options filters fetch next
+    let search (limit: int) (options: Option seq) (filters: FilterOption seq) (next: NextHandler<ReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+        searchCore limit options filters fetch next
 
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
@@ -142,11 +138,11 @@ module SearchTimeseriesApi =
     /// <param name="options">Search options.</param>
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
-    let searchTimeseriesAsync (limit: int) (options: SearchTimeseries.Option seq) (filters: SearchTimeseries.Filter seq): HttpContext -> Async<Context<TimeseriesReadDto seq>> =
-        SearchTimeseries.searchTimeseries limit options filters fetch Async.single
+    let searchAsync (limit: int) (options: Option seq) (filters: FilterOption seq): HttpContext -> Async<Context<ReadDto seq>> =
+        searchCore limit options filters fetch Async.single
 
 [<Extension>]
-type SearchTimeseriesExtensions =
+type SearchTimeSeriesClientExtensions =
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
     /// </summary>
@@ -155,9 +151,9 @@ type SearchTimeseriesExtensions =
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
-    static member SearchTimeseriesAsync (this: Client, limit : int, options: SearchTimeseries.Option seq, filters: SearchTimeseries.Filter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member SearchAsync (this: ClientExtensions.TimeSeries, limit : int, options: Search.Option seq, filters: Search.FilterOption seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
-            let! ctx = searchTimeseriesAsync limit options filters this.Ctx
+            let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToPoco ())

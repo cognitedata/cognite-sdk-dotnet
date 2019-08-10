@@ -21,7 +21,7 @@ let ``Get asset is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = GetAsset.getAsset 42L fetch Async.single ctx
+    let! response = Assets.Get.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -43,7 +43,7 @@ let ``Get invalid asset is Error`` () = async {
 
 
     // Act
-    let! response = GetAsset.getAsset 42L fetch Async.single ctx
+    let! response = Assets.Get.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isError response.Result @>
@@ -61,7 +61,7 @@ let ``Get asset with extra fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = GetAsset.getAsset 42L fetch Async.single ctx
+    let! response = Assets.Get.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -80,7 +80,7 @@ let ``Get asset with missing optional fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = GetAsset.getAsset 42L fetch Async.single ctx
+    let! response = Assets.Get.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -97,16 +97,16 @@ let ``Get assets is Ok`` () = async {
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
     let args = [
-            GetAssets.Option.Name "string"
-            GetAssets.Option.Source "source"
-            GetAssets.Option.Root false
-            GetAssets.Option.ParentIds [42L; 43L]
-            GetAssets.Option.Limit 10
-            GetAssets.Option.Cursor "mycursor"
+            Assets.List.Option.Name "string"
+            Assets.List.Option.Source "source"
+            Assets.List.Option.Root false
+            Assets.List.Option.ParentIds [42L; 43L]
+            Assets.List.Option.Limit 10
+            Assets.List.Option.Cursor "mycursor"
         ]
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||>  GetAssets.getAssets args
+    let! res = (fetch, Async.single, ctx) |||>  Assets.List.listCore args
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -135,7 +135,7 @@ let ``Create assets empty is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = CreateAssets.createAssets [] fetch Async.single ctx
+    let! res = Assets.Create.createCore [] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -155,7 +155,7 @@ let ``Create single asset is Ok`` () = async {
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
 
-    let asset: AssetWriteDto = {
+    let asset: Assets.WriteDto = {
         Name = "myAsset"
         Description = Some "Description"
         MetaData = Map.empty
@@ -166,7 +166,7 @@ let ``Create single asset is Ok`` () = async {
     }
 
     // Act
-    let! res = CreateAssets.createAssets [ asset ] fetch Async.single ctx
+    let! res = Assets.Create.createCore [ asset ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -193,7 +193,7 @@ let ``Update single asset with no updates is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = UpdateAssets.updateAssets [ Identity.Id 42L, [] ] fetch Async.single ctx
+    let! res = Assets.Update.updateCore [ Identity.Id 42L, [] ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -214,10 +214,10 @@ let ``Update single asset with is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||> UpdateAssets.updateAssets  [ (Identity.Id 42L, [
-        UpdateAssets.Option.SetName "New name"
-        UpdateAssets.Option.SetDescription (Some "New description")
-        UpdateAssets.Option.ClearSource
+    let! res = (fetch, Async.single, ctx) |||> Assets.Update.updateCore  [ (Identity.Id 42L, [
+        Assets.Update.Option.SetName "New name"
+        Assets.Update.Option.SetDescription (Some "New description")
+        Assets.Update.Option.ClearSource
     ])]
 
     // Assert
@@ -237,13 +237,13 @@ let ``Attempt searching assets`` () = async {
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
     let options = [
-        SearchAssets.Option.Name "str"
+        Assets.Search.Option.Name "str"
     ]
     let filter = [
-        AssetFilter.Name "string"
+        Assets.FilterOption.Name "string"
     ]
 
-    let! res = (fetch, Async.single, ctx) |||> SearchAssets.searchAssets 100 options filter
+    let! res = (fetch, Async.single, ctx) |||> Assets.Search.searchCore 100 options filter
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
@@ -261,13 +261,13 @@ let ``Attempt filtering assets`` () = async {
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
     let options = [
-        FilterAssets.Option.Limit 100
+        Assets.Filter.Option.Limit 100
     ]
     let filter = [
-        AssetFilter.Name "string"
+        Assets.FilterOption.Name "string"
     ]
 
-    let! res = (fetch, Async.single, ctx) |||> FilterAssets.filterAssets options filter
+    let! res = (fetch, Async.single, ctx) |||> Assets.Filter.filterCore options filter
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>

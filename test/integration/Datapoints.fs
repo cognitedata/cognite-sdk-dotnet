@@ -5,7 +5,7 @@ open Swensen.Unquote
 
 open Fusion
 open Tests
-open Fusion.Timeseries
+open Fusion.TimeSeries
 open Common
 open System.Net.Http
 
@@ -14,13 +14,13 @@ let ``Get datapoints by id with options is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        GetDataPoints.QueryOption.Start "1563175800000"
-        GetDataPoints.QueryOption.End "1563181200000"
+        DataPoints.List.QueryOption.Start "1563175800000"
+        DataPoints.List.QueryOption.End "1563181200000"
     ]
     let id = 613312137748079L
 
     // Act
-    let! res = getDataPointsAsync id options ctx
+    let! res = DataPoints.List.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -57,12 +57,12 @@ let ``Get datapoints by id with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        GetDataPoints.QueryOption.Limit 20
+        DataPoints.List.QueryOption.Limit 20
     ]
     let id = 613312137748079L
 
     // Act
-    let! res = getDataPointsAsync id options ctx
+    let! res = DataPoints.List.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -99,13 +99,13 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        GetDataPoints.QueryOption.Start "1562976000000"
-        GetDataPoints.QueryOption.End   "1563062399000"
+        DataPoints.List.QueryOption.Start "1562976000000"
+        DataPoints.List.QueryOption.End   "1563062399000"
     ]
     let id = 613312137748079L
 
     // Act
-    let! res = getDataPointsAsync id options ctx
+    let! res = DataPoints.List.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -143,23 +143,23 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
 
-    let a: GetDataPoints.Option = {
+    let a: DataPoints.List.Option = {
         Id = Identity.Id 613312137748079L
-        QueryOptions = [ GetDataPoints.QueryOption.Limit 10 ]
+        QueryOptions = [ DataPoints.List.QueryOption.Limit 10 ]
     }
-    let b: GetDataPoints.Option = {
+    let b: DataPoints.List.Option = {
         Id = Identity.Id 605574483685900L
-        QueryOptions = [ GetDataPoints.QueryOption.Limit 10 ]
+        QueryOptions = [ DataPoints.List.QueryOption.Limit 10 ]
     }
-    let defaultOptions: GetDataPoints.Option seq = Seq.ofList [ a; b ]
+    let defaultOptions: DataPoints.List.Option seq = Seq.ofList [ a; b ]
 
     // Act
-    let! res = getDataPointsMultipleAsync defaultOptions [] ctx
+    let! res = DataPoints.List.listMultipleAsync defaultOptions [] ctx
 
     let resIds =
         match res.Result with
         | Ok dtos ->
-            Seq.map (fun (d: GetDataPoints.DataPoints) -> d.Id) dtos
+            Seq.map (fun (d: DataPoints.List.DataPoints) -> d.Id) dtos
         | Error _ -> Seq.ofList [ 0L ]
         |> Seq.map Identity.Id
 
@@ -188,20 +188,20 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        GetAggregatedDataPoints.QueryOption.Start "1563048800000"
-        GetAggregatedDataPoints.QueryOption.End "1563135200000"
-        GetAggregatedDataPoints.QueryOption.Granularity (GetAggregatedDataPoints.Granularity.Hour 1)
-        GetAggregatedDataPoints.QueryOption.Aggregates [
-            GetAggregatedDataPoints.Aggregate.Average
-            GetAggregatedDataPoints.Aggregate.Sum
-            GetAggregatedDataPoints.Aggregate.Min
+        DataPoints.Aggregated.QueryOption.Start "1563048800000"
+        DataPoints.Aggregated.QueryOption.End "1563135200000"
+        DataPoints.Aggregated.QueryOption.Granularity (DataPoints.Aggregated.Granularity.Hour 1)
+        DataPoints.Aggregated.QueryOption.Aggregates [
+            DataPoints.Aggregated.Aggregate.Average
+            DataPoints.Aggregated.Aggregate.Sum
+            DataPoints.Aggregated.Aggregate.Min
         ]
     ]
 
     let id = 605574483685900L
 
     // Act
-    let! res = getAggregatedDataPointsAsync (Identity.Id id) options ctx
+    let! res = DataPoints.Aggregated.getAggregatedAsync (Identity.Id id) options ctx
     let resId =
         match res.Result with
         | Ok dtos ->
@@ -241,7 +241,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
 let ``Retrieve latest datapoints by id is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let latestDataPointRequest: GetLatestDataPoint.LatestDataPointRequest = {
+    let latestDataPointRequest: DataPoints.Latest.LatestRequest = {
         Before = Some "2w-ago"
         Identity = Identity.Id 613312137748079L
     }
@@ -249,7 +249,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = async {
     let id = 613312137748079L
 
     // Act
-    let! res = getLatestDataPointAsync [ latestDataPointRequest ] ctx
+    let! res = DataPoints.Latest.getAsync [ latestDataPointRequest ] ctx
 
     let resId =
         match res.Result with
@@ -286,7 +286,7 @@ let ``Insert datapoints is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "insertDatapointsTest"
-    let dto: TimeseriesWriteDto = {
+    let dto: TimeSeries.WriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Insert datapoints test"
         LegacyName = None
@@ -302,15 +302,15 @@ let ``Insert datapoints is Ok`` () = async {
 
     let points: NumericDataPointDto seq = Seq.ofList [ { TimeStamp = 1563048800000L; Value = 3.0} ]
 
-    let datapoints: InsertDataPoints.DataPoints = {
+    let datapoints: DataPoints.Insert.DataPoints = {
         DataPoints = Numeric points
         Identity = Identity.ExternalId externalIdString
     }
 
     // Act
-    let! _ = createTimeseriesAsync [ dto ] ctx
-    let! res = insertDataPointsAsync [ datapoints ] ctx
-    let! _ = deleteTimeseriesAsync [ externalId ] ctx
+    let! _ = TimeSeries.Create.createAsync [ dto ] ctx
+    let! res = DataPoints.Insert.insertAsync [ datapoints ] ctx
+    let! _ = TimeSeries.Delete.deleteAsync [ externalId ] ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -323,7 +323,7 @@ let ``Delete datapoints is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "deleteDatapointsTest"
-    let dto: TimeseriesWriteDto = {
+    let dto: TimeSeries.WriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Delete datapoints test"
         LegacyName = None
@@ -333,7 +333,7 @@ let ``Delete datapoints is Ok`` () = async {
         Unit = None
         AssetId = None
         IsStep = false
-        SecurityCategories = Seq.empty 
+        SecurityCategories = Seq.empty
     }
     let externalId = Identity.ExternalId externalIdString
 
@@ -342,7 +342,7 @@ let ``Delete datapoints is Ok`` () = async {
     let endTimestamp =       1563048800100L
     let points : NumericDataPointDto seq = seq { for i in startTimestamp..endTimestamp do yield { TimeStamp = i; Value = 3.0 } }
 
-    let datapoints : InsertDataPoints.DataPoints = {
+    let datapoints : DataPoints.Insert.DataPoints = {
         DataPoints = Numeric points
         Identity = Identity.ExternalId externalIdString
     }
@@ -350,13 +350,13 @@ let ``Delete datapoints is Ok`` () = async {
     // Act
     let request =
         fusion {
-            let! _ = createTimeseries [ dto ]
-            do! insertDataPoints [ datapoints ]
-            let! res = deleteDataPoints [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]
-            do! deleteTimeseries [ externalId ]
+            let! _ = TimeSeries.Create.create [ dto ]
+            do! DataPoints.Insert.insert [ datapoints ]
+            let! res = DataPoints.Delete.delete [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]
+            do! TimeSeries.Delete.delete [ externalId ]
             return res
         }
-    let! res = runHandler request ctx 
+    let! res = runHandler request ctx
     // Assert
     test <@ Result.isOk res @>
 }

@@ -1,22 +1,15 @@
-namespace Fusion
+namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
-open Fusion.Assets
 open Fusion.Common
 
 [<RequireQualifiedAccess>]
-module GetAssetsByIds =
+module Retrieve =
     [<Literal>]
     let Url = "/assets/byids"
     type AssetRequest = {
@@ -28,14 +21,14 @@ module GetAssetsByIds =
             ]
 
     type AssetResponse = {
-        Items: AssetReadDto seq
+        Items: ReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
             })
 
-    let getAssetsByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
 
@@ -46,9 +39,6 @@ module GetAssetsByIds =
         >=> fetch
         >=> decoder
 
-
-[<AutoOpen>]
-module GetAssetsByIdsApi =
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
     /// A maximum of 1000 assets IDs may be listed per request and all
@@ -57,8 +47,8 @@ module GetAssetsByIdsApi =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Assets with given ids.</returns>
-    let getAssetsByIds (ids: Identity seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
-        GetAssetsByIds.getAssetsByIds ids fetch next
+    let getByIds (ids: Identity seq) (next: NextHandler<ReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+        getByIdsCore ids fetch next
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -67,12 +57,22 @@ module GetAssetsByIdsApi =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let getAssetsByIdsAsync (ids: Identity seq) =
-        GetAssetsByIds.getAssetsByIds ids fetch Async.single
+    let getByIdsAsync (ids: Identity seq) =
+        getByIdsCore ids fetch Async.single
 
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.Assets
+open Fusion.Common
 
 [<Extension>]
-type GetAssetsByIdsExtensions =
+type GetAssetsByIdsClientExtensions =
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
     /// A maximum of 1000 assets IDs may be listed per request and all
@@ -81,9 +81,9 @@ type GetAssetsByIdsExtensions =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     [<Extension>]
-    static member GetAssetsByIdsAsync (this: Client, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member GetByIdsAsync (this: ClientExtensions.Assets, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
-            let! ctx = getAssetsByIdsAsync ids this.Ctx
+            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToPoco ())

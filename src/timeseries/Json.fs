@@ -1,9 +1,7 @@
-﻿namespace Fusion.Timeseries
+﻿namespace Fusion.TimeSeries
 
-open System
 open Thoth.Json.Net
 open Fusion
-open Fusion.Common
 
 
 [<AutoOpen>]
@@ -15,7 +13,7 @@ module TimeseriesExtensions =
                     TimeStamp = get.Required.Field "timestamp" Decode.int64
                     Value = get.Required.Field "value" Decode.float
                 })
-    
+
     type StringDataPointDto with
         static member Decoder : Decoder<StringDataPointDto> =
             Decode.object (fun get ->
@@ -24,7 +22,7 @@ module TimeseriesExtensions =
                     Value = get.Required.Field "value" Decode.string
                 })
 
-    type TimeseriesWriteDto with
+    type WriteDto with
         member this.Encoder =
             Encode.object [
                 if this.ExternalId.IsSome then
@@ -50,8 +48,8 @@ module TimeseriesExtensions =
                     yield "securityCategories", Encode.seq (Seq.map Encode.int53 this.SecurityCategories)
             ]
 
-    type TimeseriesReadDto with
-        static member Decoder : Decoder<TimeseriesReadDto> =
+    type ReadDto with
+        static member Decoder : Decoder<ReadDto> =
             Decode.object (fun get ->
                 let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {

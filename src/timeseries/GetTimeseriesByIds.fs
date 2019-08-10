@@ -1,4 +1,4 @@
-namespace Fusion
+namespace Fusion.TimeSeries
 
 open System.IO
 open System.Net.Http
@@ -10,12 +10,10 @@ open System.Threading
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
 
 [<RequireQualifiedAccess>]
-module GetTimeseriesByIds =
+module GetByIds =
     [<Literal>]
     let Url = "/timeseries/byids"
 
@@ -30,14 +28,14 @@ module GetTimeseriesByIds =
             ]
 
     type TimeseriesResponse = {
-        Items: TimeseriesReadDto seq
+        Items: ReadDto seq
     } with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder)
             })
 
-    let getTimeseriesByIds (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesReadRequest = {
             Items = ids
@@ -50,8 +48,6 @@ module GetTimeseriesByIds =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetTimeseriesByIdsApi =
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
     /// A maximum of 1000 timeseries IDs may be listed per request and all
@@ -60,8 +56,8 @@ module GetTimeseriesByIdsApi =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given ids.</returns>
-    let getTimeseriesByIds (ids: seq<Identity>) (next: NextHandler<TimeseriesReadDto seq,'a>)=
-        GetTimeseriesByIds.getTimeseriesByIds ids fetch next
+    let getByIds (ids: seq<Identity>) (next: NextHandler<ReadDto seq,'a>)=
+        getByIdsCore ids fetch next
 
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
@@ -70,12 +66,22 @@ module GetTimeseriesByIdsApi =
     /// </summary>
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
-    let getTimeseriesByIdsAsync (ids: seq<Identity>) =
-        GetTimeseriesByIds.getTimeseriesByIds ids fetch Async.single
+    let getByIdsAsync (ids: seq<Identity>) =
+        getByIdsCore ids fetch Async.single
 
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.TimeSeries
+open Fusion.Common
 
 [<Extension>]
-type GetTimeseriesByIdsExtensions =
+type GetTimeseriesByIdsClientExtensions =
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
     /// A maximum of 1000 timeseries IDs may be listed per request and all
@@ -84,9 +90,9 @@ type GetTimeseriesByIdsExtensions =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
-    static member GetTimeseriesByIdsAsync (this: Client, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
+    static member GetByIdsAsync (this: ClientExtensions.TimeSeries, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
         async {
-            let! ctx = getTimeseriesByIdsAsync ids this.Ctx
+            let! ctx = GetByIds.getByIdsAsync ids this.Ctx
 
             match ctx.Result with
             | Ok tss ->

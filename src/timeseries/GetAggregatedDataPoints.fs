@@ -1,22 +1,17 @@
-namespace Fusion
+namespace Fusion.DataPoints
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
+open Com.Cognite.V1.Timeseries.Proto
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
-open Com.Cognite.V1.Timeseries.Proto
+open Fusion.TimeSeries
 
 [<RequireQualifiedAccess>]
-module GetAggregatedDataPoints =
+module Aggregated =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -199,7 +194,7 @@ module GetAggregatedDataPoints =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let getAggregatedDataPoints (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getAggregatedCore (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
@@ -211,7 +206,7 @@ module GetAggregatedDataPoints =
         >=> fetch
         >=> decoder
 
-    let getAggregatedDataPointsProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getAggregatedProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
@@ -223,8 +218,6 @@ module GetAggregatedDataPoints =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetAggregatedDataPointsApi =
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
     /// </summary>
@@ -232,9 +225,9 @@ module GetAggregatedDataPointsApi =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedDataPoints (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
-        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
-        GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch next
+    let getAggregated (id: Identity) (options: QueryOption seq) (next: NextHandler<DataPoints seq,'a>) =
+        let options' : Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        getAggregatedCore options' Seq.empty fetch next
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
@@ -242,9 +235,9 @@ module GetAggregatedDataPointsApi =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedDataPointsAsync (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) =
-        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
-        GetAggregatedDataPoints.getAggregatedDataPoints options' Seq.empty fetch Async.single
+    let getAggregatedAsync (id: Identity) (options: QueryOption seq) =
+        let options' : Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        getAggregatedCore options' Seq.empty fetch Async.single
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
@@ -252,9 +245,9 @@ module GetAggregatedDataPointsApi =
     /// <param name="id">Id of timeseries to query for datapoints. </param>
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
-    let getAggregatedDataPointsProto (id: Identity) (options: GetAggregatedDataPoints.QueryOption seq) =
-        let options' : GetAggregatedDataPoints.Option seq = Seq.singleton { Id = id; QueryOptions = options }
-        GetAggregatedDataPoints.getAggregatedDataPointsProto options' Seq.empty fetch Async.single
+    let getAggregatedDataPointsProto (id: Identity) (options: QueryOption seq) =
+        let options' : Option seq = Seq.singleton { Id = id; QueryOptions = options }
+        getAggregatedProto options' Seq.empty fetch Async.single
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -264,8 +257,8 @@ module GetAggregatedDataPointsApi =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedDataPointsMultiple (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) (next: NextHandler<GetAggregatedDataPoints.DataPoints seq,'a>) =
-        GetAggregatedDataPoints.getAggregatedDataPoints options defaultOptions fetch next
+    let getAggregatedMultiple (options: Option seq) (defaultOptions: QueryOption seq) (next: NextHandler<DataPoints seq,'a>) =
+        getAggregatedCore options defaultOptions fetch next
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -274,8 +267,8 @@ module GetAggregatedDataPointsApi =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedDataPointsMultipleAsync (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) =
-        GetAggregatedDataPoints.getAggregatedDataPoints options defaultOptions fetch Async.single
+    let getAggregatedMultipleAsync (options: Option seq) (defaultOptions: QueryOption seq) =
+        getAggregatedCore options defaultOptions fetch Async.single
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -284,11 +277,23 @@ module GetAggregatedDataPointsApi =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
-    let getAggregatedDataPointsMultipleProto (options: GetAggregatedDataPoints.Option seq) (defaultOptions: GetAggregatedDataPoints.QueryOption seq) =
-        GetAggregatedDataPoints.getAggregatedDataPointsProto options defaultOptions fetch Async.single
+    let getAggregatedMultipleProto (options: Option seq) (defaultOptions: QueryOption seq) =
+        getAggregatedProto options defaultOptions fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Com.Cognite.V1.Timeseries.Proto
+
+open Fusion.DataPoints
+open Fusion.Common
 
 [<Extension>]
-type GetAggregatedDataPointsExtensions =
+type AggregatedClientExtensions =
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
     /// </summary>
@@ -296,9 +301,9 @@ type GetAggregatedDataPointsExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsAsync (this: Client, id : Identity, options: GetAggregatedDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedAsync (this: ClientExtensions.DataPoints, id : Identity, options: Aggregated.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = getAggregatedDataPointsProto id options this.Ctx
+            let! ctx = Aggregated.getAggregatedDataPointsProto id options this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response
@@ -315,9 +320,9 @@ type GetAggregatedDataPointsExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedDataPointsMultipleAsync (this: Client, options: GetAggregatedDataPoints.Option seq, defaultOptions: GetAggregatedDataPoints.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedMultipleAsync (this: ClientExtensions.DataPoints, options: Aggregated.Option seq, defaultOptions: Aggregated.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = getAggregatedDataPointsMultipleProto options defaultOptions this.Ctx
+            let! ctx = Aggregated.getAggregatedMultipleProto options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response

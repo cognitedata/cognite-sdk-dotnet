@@ -1,22 +1,15 @@
-﻿namespace Fusion
+﻿namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
-open FSharp.Control.Tasks.V2
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Assets
-open Fusion.Api
 open Fusion.Common
 
 [<RequireQualifiedAccess>]
-module SearchAssets =
+module Search =
     [<Literal>]
     let Url = "/assets/search"
 
@@ -36,22 +29,22 @@ module SearchAssets =
             | CaseDescription desc -> "description", Encode.string desc
 
     type Assets = {
-        Items: AssetReadDto seq
+        Items: ReadDto seq
     } with
         static member Decoder : Decoder<Assets> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
             })
-    
+
     type SearchAssetsRequest = {
         Limit: int
-        Filters: AssetFilter seq
-        Options: Option seq 
+        Filters: FilterOption seq
+        Options: Option seq
     } with
         member this.Encoder =
             Encode.object [
                 yield "filter", Encode.object [
-                    yield! this.Filters |> Seq.map AssetFilter.Render
+                    yield! this.Filters |> Seq.map FilterOption.Render
                 ]
                 yield "search", Encode.object [
                     yield! this.Options |> Seq.map Option.Render
@@ -59,9 +52,9 @@ module SearchAssets =
                 if this.Limit > 0 then
                     yield "limit", Encode.int this.Limit
             ]
-            
-    let searchAssets (limit: int) (options: Option seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse GetAssets.Assets.Decoder (fun assets -> assets.Items)
+
+    let searchCore (limit: int) (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let decoder = decodeResponse List.Assets.Decoder (fun assets -> assets.Items)
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
@@ -75,8 +68,6 @@ module SearchAssets =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module SearchAssetsApi =
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
     /// </summary>
@@ -86,8 +77,8 @@ module SearchAssetsApi =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let searchAssets (limit: int) (options: SearchAssets.Option seq) (filters: AssetFilter seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
-        SearchAssets.searchAssets limit options filters fetch next
+    let search (limit: int) (options: Option seq) (filters: FilterOption seq) (next: NextHandler<ReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+        searchCore limit options filters fetch next
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -98,11 +89,21 @@ module SearchAssetsApi =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let searchAssetsAsync (limit: int) (options: SearchAssets.Option seq) (filters: AssetFilter seq): HttpContext -> Async<Context<AssetReadDto seq>> =
-        SearchAssets.searchAssets limit options filters fetch Async.single
+    let searchAsync (limit: int) (options: Option seq) (filters: FilterOption seq): HttpContext -> Async<Context<ReadDto seq>> =
+        searchCore limit options filters fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.Assets
+open Fusion.Common
 
 [<Extension>]
-type SearchAssetsExtensions =
+type SearchAssetsClientExtensions =
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
     /// </summary>
@@ -113,9 +114,9 @@ type SearchAssetsExtensions =
     ///
     /// <returns>List of assets matching given criteria.</returns>
     [<Extension>]
-    static member SearchAssetsAsync (this: Client, limit : int, options: SearchAssets.Option seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member SearchAsync (this: ClientExtensions.Assets, limit : int, options: Search.Option seq, filters: FilterOption seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
-            let! ctx = searchAssetsAsync limit options filters this.Ctx
+            let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToPoco ())
