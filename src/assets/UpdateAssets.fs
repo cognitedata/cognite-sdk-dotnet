@@ -1,6 +1,5 @@
-namespace Fusion
+namespace Fusion.Assets
 
-open System
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
@@ -11,13 +10,11 @@ open System.Threading.Tasks
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Assets
 open System.Threading
 
 [<RequireQualifiedAccess>]
-module UpdateAssets =
+module Update =
     [<Literal>]
     let Url = "/assets/update"
 
@@ -129,7 +126,7 @@ module UpdateAssets =
     } with
         member this.Encoder =
             Encode.object [
-                yield 
+                yield
                     match this.Id with
                     | Identity.CaseId id -> "id", Encode.int53 id
                     | Identity.CaseExternalId id -> "externalId", Encode.string id
@@ -147,14 +144,14 @@ module UpdateAssets =
             ]
 
     type AssetResponse = {
-        Items: AssetReadDto seq
+        Items: ReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
             })
 
-    let updateAssets (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let updateCore (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
@@ -169,40 +166,49 @@ module UpdateAssets =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module UpdateAssetsApi =
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAssets (assets: (Identity * (UpdateAssets.Option list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
-        UpdateAssets.updateAssets assets fetch next
+    let update (assets: (Identity * (Option list)) list) (next: NextHandler<ReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+        updateCore assets fetch next
 
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAssetsAsync (assets: (Identity * UpdateAssets.Option list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
-        UpdateAssets.updateAssets assets fetch Async.single
+    let updateAsync (assets: (Identity * Option list) list) : HttpContext -> Async<Context<ReadDto seq>> =
+        updateCore assets fetch Async.single
+
+namespace Fusion
+
+open System
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
+
+open Fusion.Assets
+open Fusion.Common
 
 [<Extension>]
-type UpdateAssetsExtensions =
+type UpdateAssetsClientExtensions =
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
     [<Extension>]
-    static member UpdateAssetsAsync (this: Client, assets: ValueTuple<Identity, UpdateAssets.Option seq> seq, [<Optional>] token: CancellationToken) : Task<AssetReadPoco seq> =
+    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, Update.Option seq> seq, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
         async {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = updateAssetsAsync assets' this.Ctx
+            let! ctx = Update.updateAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToPoco ()) 
+                return response |> Seq.map (fun asset -> asset.ToPoco ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

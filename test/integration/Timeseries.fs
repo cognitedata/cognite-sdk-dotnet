@@ -4,7 +4,7 @@ open Xunit
 open Swensen.Unquote
 
 open Fusion
-open Fusion.Timeseries
+open Fusion.TimeSeries
 open Tests
 open Common
 open System.Net.Http
@@ -13,10 +13,10 @@ open System.Net.Http
 let ``Get timeseries is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let options = [ GetTimeseries.Option.Limit 10 ]
+    let options = [ TimeSeries.List.Option.Limit 10 ]
 
     // Act
-    let! res = getTimeseriesAsync options ctx
+    let! res = TimeSeries.List.listAsync options ctx
 
     let len =
         match res.Result with
@@ -37,7 +37,7 @@ let ``Get timeseries by ids is Ok`` () = async {
     let id = Identity.Id 613312137748079L
 
     // Act
-    let! res = getTimeseriesByIdsAsync [ id ] ctx
+    let! res = TimeSeries.GetByIds.getByIdsAsync [ id ] ctx
 
     let resId =
         match res.Result with
@@ -70,7 +70,7 @@ let ``Get timeseries by missing id is Error`` () = async {
     let id = Identity.Id 0L
 
     // Act
-    let! res = getTimeseriesByIdsAsync [ id ] ctx
+    let! res = TimeSeries.GetByIds.getByIdsAsync [ id ] ctx
 
     let err =
         match res.Result with
@@ -88,7 +88,7 @@ let ``Create and delete timeseries is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTest"
-    let dto: TimeseriesWriteDto = {
+    let dto: TimeSeries.WriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Timeseries sdk test"
         LegacyName = None
@@ -103,8 +103,8 @@ let ``Create and delete timeseries is Ok`` () = async {
     let externalId = Identity.ExternalId externalIdString
 
     // Act
-    let! res = createTimeseriesAsync [ dto ] ctx
-    let! delRes = deleteTimeseriesAsync [ externalId ] ctx
+    let! res = TimeSeries.Create.createAsync [ dto ] ctx
+    let! delRes = TimeSeries.Delete.deleteAsync [ externalId ] ctx
     let resExternalId =
         match res.Result with
         | Ok timeSereiesResponses ->
@@ -134,7 +134,7 @@ let ``Search timeseries is Ok`` () = async {
 
     // Act
     let! res =
-        searchTimeseriesAsync 10 [] [ SearchTimeseries.Filter.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeries.Search.FilterOption.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
 
     let len =
         match res.Result with
@@ -158,7 +158,7 @@ let ``Update timeseries is Ok`` () = async {
         "key2", "value2"
     ]
     |> Map.ofList)
-    let dto : Timeseries.TimeseriesWriteDto = {
+    let dto : TimeSeries.WriteDto = {
         MetaData = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
@@ -177,19 +177,19 @@ let ``Update timeseries is Ok`` () = async {
     let newExternalId = "testupdatenew"
     let newDescription = "testdescription"
     // Act
-    let! createRes = createTimeseriesAsync [ dto ] wctx
+    let! createRes = TimeSeries.Create.createAsync [ dto ] wctx
     let! updateRes =
-        updateTimeseriesAsync [
+        TimeSeries.Update.updateAsync [
             (externalId, [
-                UpdateTimeseries.Option.SetExternalId (Some newExternalId)
-                UpdateTimeseries.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                UpdateTimeseries.Option.SetDescription (Some newDescription)
-                UpdateTimeseries.Option.SetName None
-                UpdateTimeseries.Option.SetUnit (Some "unit")
+                TimeSeries.Update.Option.SetExternalId (Some newExternalId)
+                TimeSeries.Update.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                TimeSeries.Update.Option.SetDescription (Some newDescription)
+                TimeSeries.Update.Option.SetName None
+                TimeSeries.Update.Option.SetUnit (Some "unit")
             ])
         ] wctx
-    let! getRes = getTimeseriesByIdsAsync [ Identity.ExternalId newExternalId ] wctx
-    let! deleteRes = deleteTimeseriesAsync [ Identity.ExternalId newExternalId ] wctx
+    let! getRes = TimeSeries.GetByIds.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+    let! deleteRes = TimeSeries.Delete.deleteAsync [ Identity.ExternalId newExternalId ] wctx
     let resExternalId, resMetaData, resDescription =
         match getRes.Result with
         | Ok resp ->
@@ -231,5 +231,5 @@ let ``Update timeseries is Ok`` () = async {
     test <@ deleteRes.Request.Method = HttpMethod.Post @>
     test <@ deleteRes.Request.Resource = "/timeseries/delete" @>
     test <@ deleteRes.Request.Query.IsEmpty @>
-    
+
 }

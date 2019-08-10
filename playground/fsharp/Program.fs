@@ -4,11 +4,11 @@ open System
 open System.Net.Http
 
 open FsConfig
+open Com.Cognite.V1.Timeseries.Proto
 
 open Fusion
 open Fusion.Assets
-open Fusion.Timeseries
-open Com.Cognite.V1.Timeseries.Proto
+open Fusion.TimeSeries
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -19,12 +19,12 @@ type Config = {
 
 let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
-        getDataPointsMultipleAsync [
+        DataPoints.List.listMultipleAsync [
             {
                 Id = Identity.Id 20713436708L
                 QueryOptions = [
-                    GetDataPoints.QueryOption.Start "1524851819000"
-                    GetDataPoints.QueryOption.End "1524859650000"
+                    DataPoints.List.QueryOption.Start "1524851819000"
+                    DataPoints.List.QueryOption.End "1524859650000"
                 ]
             }
         ] [] ctx
@@ -35,7 +35,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
 }
 
 let getAssetsExample (ctx : HttpContext) = async {
-    let! rsp = getAssetsAsync [ GetAssets.Option.Limit 2 ] ctx
+    let! rsp = Assets.List.listAsync [ Assets.List.Option.Limit 2 ] ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res
@@ -43,7 +43,7 @@ let getAssetsExample (ctx : HttpContext) = async {
 }
 
 let updateAssetsExample (ctx : HttpContext) = async {
-    let! rsp = updateAssetsAsync [(Identity.Id 84025677715833721L, [ UpdateAssets.Option.SetName "string3" ] )]  ctx
+    let! rsp = Assets.Update.updateAsync [(Identity.Id 84025677715833721L, [ Assets.Update.Option.SetName "string3" ] )]  ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -51,7 +51,7 @@ let updateAssetsExample (ctx : HttpContext) = async {
 
 let searchAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = searchAssetsAsync 10 [SearchAssets.Option.Name "VAL"] [] ctx
+    let! rsp = Assets.Search.searchAsync 10 [ Assets.Search.Option.Name "VAL" ] [] ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -69,10 +69,10 @@ let createAssetsExample ctx = async {
     }]
 
     let request = fusion {
-        let! ga = createAssets assets
+        let! ga = Assets.Create.create assets
 
         let! gb = concurrent [
-            createAssets assets |> retry 500<ms> 5
+            Assets.Create.create assets |> retry 500<ms> 5
         ]
 
         return gb
@@ -81,7 +81,7 @@ let createAssetsExample ctx = async {
     let request = concurrent [
         let chunks = Seq.chunkBySize 10 assets
         for chunk in chunks do
-            yield createAssets chunk |> retry 500<ms> 5
+            yield Assets.Create.create chunk |> retry 500<ms> 5
     ]
 
     let! result = runHandler request ctx
@@ -99,12 +99,12 @@ let insertDataPointsOldWay ctx = async {
                 Value = (float ((1L + i) % 5L))
             }
         }
-    let dpInsertion : InsertDataPoints.DataPoints = {
+    let dpInsertion : DataPoints.Insert.DataPoints = {
         DataPoints = Numeric dataPoints
         Identity = Identity.ExternalId "testts"
     }
 
-    let! result = insertDataPointsAsync [ dpInsertion ] ctx
+    let! result = DataPoints.Insert.insertAsync [ dpInsertion ] ctx
     match result.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -125,7 +125,7 @@ let insertDataPointsProtoStyle ctx = async {
     item.ExternalId <- "testts"
     request.Items.Add(item)
 
-    let! result = insertDataPointsAsyncProto request ctx
+    let! result = DataPoints.Insert.insertAsyncProto request ctx
     match result.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err

@@ -1,26 +1,20 @@
-﻿namespace Fusion
+﻿namespace Fusion.DataPoints
 
-open System
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
+open Fusion.TimeSeries
 
 [<RequireQualifiedAccess>]
-module GetLatestDataPoint =
+module Latest =
     [<Literal>]
     let Url = "/timeseries/data/latest"
 
-    type LatestDataPointRequest = {
+    type LatestRequest = {
         /// Latest point to look for datapoints, as cdf timestamp string
         Before: string option
         /// Id of timeseries
@@ -36,11 +30,11 @@ module GetLatestDataPoint =
             ]
 
     type LatestDataPointsRequest = {
-        Items: seq<LatestDataPointRequest>
+        Items: seq<LatestRequest>
     } with
         member this.Encoder =
             Encode.object [
-                yield ("items", Seq.map (fun (it: LatestDataPointRequest) -> it.Encoder) this.Items |> Encode.seq)
+                yield ("items", Seq.map (fun (it: LatestRequest) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type DataPointsPoco = {
@@ -93,7 +87,7 @@ module GetLatestDataPoint =
                     Items = get.Required.Field "items" (Decode.list DataPoints.Decoder)
                 })
 
-    let getLatestDataPoint (options: LatestDataPointRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getCore (options: LatestRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
 
@@ -104,25 +98,34 @@ module GetLatestDataPoint =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetLatestDataPointApi =
     /// <summary>
     /// Retrieves the single latest data point in a time series.
     /// </summary>
     /// <param name="options">List of requests.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
-    let getLatestDataPoint (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) (next: NextHandler<GetLatestDataPoint.DataPoints seq,'a>) =
-        GetLatestDataPoint.getLatestDataPoint queryParams fetch next
+    let get (queryParams: LatestRequest seq) (next: NextHandler<DataPoints seq,'a>) =
+        getCore queryParams fetch next
 
     /// <summary>
     /// Retrieves the single latest data point in a time series.
     /// </summary>
     /// <param name="options">List of requests.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
-    let getLatestDataPointAsync (queryParams: GetLatestDataPoint.LatestDataPointRequest seq) =
-        GetLatestDataPoint.getLatestDataPoint queryParams fetch Async.single
+    let getAsync (queryParams: LatestRequest seq) =
+        getCore queryParams fetch Async.single
 
+
+namespace Fusion
+
+open System
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.DataPoints
+open Fusion.Common
 
 [<Extension>]
 type GetLatestDataPointExtensions =
@@ -132,16 +135,16 @@ type GetLatestDataPointExtensions =
     /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
-    static member GetLatestDataPointAsync (this: Client, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<GetLatestDataPoint.DataPointsPoco>> =
+    static member GetLatestAsync (this: Client, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<Latest.DataPointsPoco>> =
         async {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
                   Before = if (isNull before) then None else Some before
-                  } : GetLatestDataPoint.LatestDataPointRequest)
-            let! ctx = getLatestDataPointAsync query this.Ctx
+                  } : Latest.LatestRequest)
+            let! ctx = Latest.getAsync query this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (GetLatestDataPoint.DataPoints.ToPoco)
+                return response |> Seq.map (Latest.DataPoints.ToPoco)
             | Error error ->
                 let err = error2Exception error
                 return raise err

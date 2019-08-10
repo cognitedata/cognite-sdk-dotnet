@@ -1,4 +1,4 @@
-﻿namespace Fusion.Timeseries
+﻿namespace Fusion.TimeSeries
 
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
@@ -56,7 +56,7 @@ type AggregateDataPointReadDto = {
 
 // C# compatible Timeserie POCO
 [<CLIMutable>]
-type TimeseriesWritePoco = {
+type WritePoco = {
     ExternalId : string
     Name : string
     LegacyName : string
@@ -69,7 +69,8 @@ type TimeseriesWritePoco = {
     SecurityCategories : int64 seq
 }
 
-type TimeseriesWriteDto = {
+type WriteDto = {
+    /// Externally provided ID for the time series (optional, but recommended.)
     ExternalId: string option
     /// Unique name of time series
     Name: string option
@@ -96,7 +97,7 @@ type TimeseriesWriteDto = {
     /// Security categories required in order to access this time series.
     SecurityCategories: seq<int64>
 } with
-    static member FromPoco (ts: TimeseriesWritePoco) : TimeseriesWriteDto =
+    static member FromPoco (ts: WritePoco) : WriteDto =
         let metaData =
             if not (isNull ts.MetaData) then
                 ts.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -116,7 +117,7 @@ type TimeseriesWriteDto = {
         }
 
 [<CLIMutable>]
-type TimeseriesReadPoco = {
+type ReadPoco = {
     Id : int64
     ExternalId : string
     Name : string
@@ -131,7 +132,7 @@ type TimeseriesReadPoco = {
     LastUpdatedTime : int64
 }
 
-type TimeseriesReadDto = {
+type ReadDto = {
     /// Javascript friendly internal ID given to the object.
     Id: int64
     /// Externally supplied id of the time series
@@ -157,7 +158,7 @@ type TimeseriesReadDto = {
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 } with
-    member this.ToPoco () : TimeseriesReadPoco =
+    member this.ToPoco () : ReadPoco =
         let name = if this.Name.IsSome then this.Name.Value else null
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else null

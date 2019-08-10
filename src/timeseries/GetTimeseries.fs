@@ -1,32 +1,26 @@
-namespace Fusion
+namespace Fusion.TimeSeries
 
 open System
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
 
 [<RequireQualifiedAccess>]
-module GetTimeseries =
+module List =
     [<Literal>]
     let Url = "/timeseries"
 
     type TimeseriesResponse = {
-        Items: TimeseriesReadDto seq
+        Items: ReadDto seq
         NextCursor: string option
     } with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
@@ -54,7 +48,7 @@ module GetTimeseries =
         /// Filter out timeseries without rootAssetId in this list
         static member RootAssetIds ids =
             CaseRootAssetIds ids
-        
+
     let renderOption (option: Option) =
         match option with
         | CaseLimit limit -> "limit", limit.ToString ()
@@ -67,7 +61,7 @@ module GetTimeseries =
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
-    let getTimeseries (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let listCore (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
@@ -78,8 +72,6 @@ module GetTimeseries =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetTimeseriesApi =
     /// <summary>
     /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
     /// This operation supports pagination.
@@ -87,8 +79,8 @@ module GetTimeseriesApi =
     /// <param name="options">Timeseries lookup options.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let getTimeseries (options: GetTimeseries.Option seq) (next: NextHandler<GetTimeseries.TimeseriesResponse,'a>) : HttpContext -> Async<Context<'a>> =
-        GetTimeseries.getTimeseries options fetch next
+    let list (options: Option seq) (next: NextHandler<TimeseriesResponse,'a>) : HttpContext -> Async<Context<'a>> =
+        listCore options fetch next
 
     /// <summary>
     /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
@@ -96,11 +88,21 @@ module GetTimeseriesApi =
     /// </summary>
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let getTimeseriesAsync (options: GetTimeseries.Option seq) =
-        GetTimeseries.getTimeseries options fetch Async.single
+    let listAsync (options: Option seq) =
+        listCore options fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.TimeSeries
+open Fusion.Common
 
 [<Extension>]
-type GetTimeseriesExtensions =
+type ListTimeseriesClientExtensions =
     /// <summary>
     /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
     /// This operation supports pagination.
@@ -108,9 +110,9 @@ type GetTimeseriesExtensions =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
-    static member GetTimeseriesAsync (this: Client, options: GetTimeseries.Option seq, [<Optional>] token: CancellationToken) : Task<_> =
+    static member ListAsync (this: ClientExtensions.TimeSeries, options: List.Option seq, [<Optional>] token: CancellationToken) : Task<_> =
         async {
-            let! ctx = getTimeseriesAsync options this.Ctx
+            let! ctx = List.listAsync options this.Ctx
 
             match ctx.Result with
             | Ok response ->

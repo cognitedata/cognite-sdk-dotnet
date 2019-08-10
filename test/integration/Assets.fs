@@ -13,10 +13,10 @@ open System.Net.Http
 let ``Get assets with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let options = [ GetAssets.Option.Limit 10 ]
+    let options = [ Assets.List.Option.Limit 10 ]
 
     // Act
-    let! res = getAssetsAsync options ctx
+    let! res = Assets.List.listAsync options ctx
 
     let len =
         match res.Result with
@@ -37,7 +37,7 @@ let ``Get asset by id is Ok`` () = async {
     let assetId = 130452390632424L
 
     // Act
-    let! res = getAssetAsync assetId ctx
+    let! res = Assets.Get.getAsync assetId ctx
 
     let resId =
         match res.Result with
@@ -58,7 +58,7 @@ let ``Get asset by missing id is Error`` () = async {
     let assetId = 0L
 
     // Act
-    let! res = getAssetAsync assetId ctx
+    let! res = Assets.Get.getAsync assetId ctx
 
     let err =
         match res.Result with
@@ -80,7 +80,7 @@ let ``Get asset by ids is Ok`` () = async {
         |> Seq.map Identity.Id
 
     // Act
-    let! res = getAssetsByIdsAsync assetIds ctx
+    let! res = Assets.Retrieve.getByIdsAsync assetIds ctx
 
     let len =
         match res.Result with
@@ -99,11 +99,11 @@ let ``Search assets is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        SearchAssets.Option.Name "23"
+        Assets.Search.Option.Name "23"
     ]
 
     // Act
-    let! res = searchAssetsAsync 10 options [] ctx
+    let! res = Assets.Search.searchAsync 10 options [] ctx
 
     let len =
         match res.Result with
@@ -122,14 +122,14 @@ let ``Filter assets is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        FilterAssets.Option.Limit 10
+        Assets.Filter.Option.Limit 10
     ]
     let filters = [
-        Assets.AssetFilter.RootIds [ Identity.Id 6687602007296940L ]
+        Assets.FilterOption.RootIds [ Identity.Id 6687602007296940L ]
     ]
 
     // Act
-    let! res = filterAssetsAsync options filters ctx
+    let! res = Assets.Filter.filterAsync options filters ctx
 
     let len =
         match res.Result with
@@ -148,7 +148,7 @@ let ``Create and delete assets is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTestAssets"
-    let dto: Assets.AssetWriteDto = {
+    let dto: Assets.WriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
         ParentId = None
@@ -160,8 +160,8 @@ let ``Create and delete assets is Ok`` () = async {
     let externalId = Identity.ExternalId externalIdString
 
     // Act
-    let! res = createAssetsAsync [ dto ] ctx
-    let! delRes = deleteAssetsAsync ([ externalId ], false) ctx
+    let! res = Assets.Create.createAsync [ dto ] ctx
+    let! delRes = Assets.Delete.deleteAsync ([ externalId ], false) ctx
     let resExternalId =
         match res.Result with
         | Ok assetsResponses ->
@@ -195,7 +195,7 @@ let ``Update assets is Ok`` () = async {
         "key2", "value2"
     ]
     |> Map.ofList)
-    let dto: Assets.AssetWriteDto = {
+    let dto: Assets.WriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
         ParentId = None
@@ -210,16 +210,16 @@ let ``Update assets is Ok`` () = async {
     let externalId = Identity.ExternalId externalIdString
     let newName = "UpdatedName"
     // Act
-    let! createRes = createAssetsAsync [ dto ] wctx
+    let! createRes = Assets.Create.createAsync [ dto ] wctx
     let! updateRes =
-        updateAssetsAsync [
+        Assets.Update.updateAsync [
             (externalId, [
-                UpdateAssets.Option.SetName newName
-                UpdateAssets.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                Assets.Update.Option.SetName newName
+                Assets.Update.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
             ])
         ] wctx
-    let! getRes = getAssetsByIdsAsync [ externalId ] wctx
-    let! delRes = deleteAssetsAsync ([ externalId ], false) wctx
+    let! getRes = Assets.Retrieve.getByIdsAsync [ externalId ] wctx
+    let! delRes = Assets.Delete.deleteAsync ([ externalId ], false) wctx
 
     let resName, resExternalId, resMetaData =
         match getRes.Result with
@@ -234,7 +234,7 @@ let ``Update assets is Ok`` () = async {
         match updateRes.Result with
         | Ok res -> true
         | Error _ -> false
-    
+
     let metaDataOk =
         resMetaData.ContainsKey "key1"
         && resMetaData.ContainsKey "key2"

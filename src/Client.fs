@@ -1,9 +1,19 @@
-namespace Fusion.Api
+namespace Fusion
 
-open Fusion
 open System.Net.Http
 
+module ClientExtensions =
+    type Assets internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
 
+    type TimeSeries internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
+
+    type DataPoints internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
 /// <summary>
 /// Client for making requests to the API.
 /// </summary>
@@ -26,7 +36,7 @@ type Client private (context: HttpContext) =
     /// Add header for accessing the API.
     /// </summary>
     /// <param name="project">Name of project.</param>
-    member this.AddHeader (name: string, value: string)  =
+    member this.AddHeader (name: string, value: string) =
         context
         |> Context.addHeader (name, value)
         |> Client.New
@@ -64,3 +74,7 @@ type Client private (context: HttpContext) =
 
     static member private New (context: HttpContext)  =
         Client context
+
+    member val Assets = ClientExtensions.Assets context with get
+    member val TimeSeries = ClientExtensions.TimeSeries context with get
+    member val DataPoints = ClientExtensions.DataPoints context with get

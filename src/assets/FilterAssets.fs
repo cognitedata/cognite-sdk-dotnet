@@ -1,20 +1,15 @@
-﻿namespace Fusion
+﻿namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
 
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Assets
-open System.Threading
 
 [<RequireQualifiedAccess>]
-module FilterAssets =
+module Filter =
     [<Literal>]
     let Url = "/assets/list"
 
@@ -36,21 +31,21 @@ module FilterAssets =
             | CaseLimit limit -> "limit", Encode.int limit
             | CaseCursor cursor -> "cursor", Encode.string cursor
 
-    type FilterAssetsRequest = {
-        Filters : AssetFilter seq
+    type Request = {
+        Filters : FilterOption seq
         Options : Option seq
-    } with 
+    } with
         member this.Encoder =
             Encode.object [
                 yield "filter", Encode.object [
-                    yield! this.Filters |> Seq.map AssetFilter.Render
+                    yield! this.Filters |> Seq.map FilterOption.Render
                 ]
                 yield! this.Options |> Seq.map Option.Render
             ]
 
-    let filterAssets (options: Option seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse GetAssets.Assets.Decoder id
-        let request : FilterAssetsRequest = {
+    let filterCore (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+        let decoder = decodeResponse List.Assets.Decoder id
+        let request : Request = {
             Filters = filters
             Options = options
         }
@@ -62,8 +57,6 @@ module FilterAssets =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module FilterAssetsApi =
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
     /// </summary>
@@ -71,9 +64,9 @@ module FilterAssetsApi =
     /// <param name="filters">Search filters</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let filterAssets (options: FilterAssets.Option seq) (filters: AssetFilter seq) (next: NextHandler<GetAssets.Assets,'a>)
+    let filter (options: Option seq) (filters: FilterOption seq) (next: NextHandler<List.Assets,'a>)
         : HttpContext -> Async<Context<'a>> =
-            FilterAssets.filterAssets options filters fetch next
+            filterCore options filters fetch next
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -81,9 +74,20 @@ module FilterAssetsApi =
     /// <param name="options">Optional limit and cursor</param>
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let filterAssetsAsync (options: FilterAssets.Option seq) (filters: AssetFilter seq)
-        : HttpContext -> Async<Context<GetAssets.Assets>> =
-            FilterAssets.filterAssets options filters fetch Async.single
+    let filterAsync (options: Option seq) (filters: FilterOption seq)
+        : HttpContext -> Async<Context<List.Assets>> =
+            filterCore options filters fetch Async.single
+
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+
+open Fusion.Assets
+open Fusion.Common
+open System.Threading
+
 [<Extension>]
 type FilterAssetsExtensions =
     /// <summary>
@@ -93,9 +97,9 @@ type FilterAssetsExtensions =
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member FilterAssetsAsync (this: Client, options: FilterAssets.Option seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) =
+    static member FilterAsync (this: ClientExtensions.Assets, options: Filter.Option seq, filters: FilterOption seq, [<Optional>] token: CancellationToken) =
         async {
-            let! ctx = filterAssetsAsync options filters this.Ctx
+            let! ctx = Filter.filterAsync options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
                 return {|

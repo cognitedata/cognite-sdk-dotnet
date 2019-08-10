@@ -7,8 +7,8 @@ open Fusion
 
 [<AutoOpen>]
 module AssetsExtensions =
-    type AssetReadDto with
-        static member Decoder : Decoder<AssetReadDto> =
+    type ReadDto with
+        static member Decoder : Decoder<ReadDto> =
             Decode.object (fun get ->
                 let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {
@@ -24,7 +24,7 @@ module AssetsExtensions =
                     RootId = get.Required.Field "rootId" Decode.int64
                 })
 
-    type AssetWriteDto with
+    type WriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
@@ -41,4 +41,17 @@ module AssetsExtensions =
                 if this.ParentExternalId.IsSome then
                     yield "parentExternalId", Encode.string this.ParentExternalId.Value
             ]
+
+    type FilterOption with
+        static member Render (this: FilterOption) =
+            match this with
+            | CaseName name -> "name", Encode.string name
+            | CaseParentIds ids -> "parentIds", Encode.int53seq ids
+            | CaseRootIds ids -> "rootIds", ids |> Seq.map(fun id -> id.Encoder) |> Encode.seq
+            | CaseSource source -> "source", Encode.string source
+            | CaseMetaData md -> "metaData", Encode.propertyBag md
+            | CaseCreatedTime time -> "createdTime", time.Encoder
+            | CaseLastUpdatedTime time -> "lastUpdatedTime", time.Encoder
+            | CaseRoot root -> "root", Encode.bool root
+            | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
 

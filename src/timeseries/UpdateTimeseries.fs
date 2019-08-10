@@ -1,4 +1,4 @@
-namespace Fusion
+namespace Fusion.TimeSeries
 
 open System
 open System.Collections.Generic
@@ -12,15 +12,13 @@ open System.Threading
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Timeseries
 
 [<RequireQualifiedAccess>]
-module UpdateTimeseries =
+module Update =
     [<Literal>]
     let Url = "/timeseries/update"
-    
+
     type MetaDataChange = {
         Add : Map<string, string> option
         Remove : string seq
@@ -29,7 +27,7 @@ module UpdateTimeseries =
     type MetaDataUpdate =
         | Set of Map<string, string>
         | Change of MetaDataChange
-    
+
     type SecurityCategoriesChange = {
         Add : int64 seq
         Remove : int64 seq
@@ -195,14 +193,14 @@ module UpdateTimeseries =
                 "items", this.Items |> Seq.map(fun item -> item.Encoder) |> Encode.seq
             ]
     type TimeseriesResponse = {
-        Items: TimeseriesReadDto seq
+        Items: ReadDto seq
     } with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TimeseriesReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder)
             })
-    
-    let updateTimeseries (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+
+    let updateCore (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesUpdateRequests = {
            Items = [
@@ -217,37 +215,35 @@ module UpdateTimeseries =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module UpdateTimeseriesApi =
     /// <summary>
     /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated timeseries.</returns>
-    let updateTimeseries (timeseries: (Identity * (UpdateTimeseries.Option list)) list) (next: NextHandler<TimeseriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
-        UpdateTimeseries.updateTimeseries timeseries fetch next
-    
+    let update (timeseries: (Identity * (Option list)) list) (next: NextHandler<ReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
+        updateCore timeseries fetch next
+
     /// <summary>
     /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
-    let updateTimeseriesAsync (timeseries: (Identity * (UpdateTimeseries.Option list)) list) : HttpContext -> Async<Context<TimeseriesReadDto seq>> =
-        UpdateTimeseries.updateTimeseries timeseries fetch Async.single
+    let updateAsync (timeseries: (Identity * (Option list)) list) : HttpContext -> Async<Context<ReadDto seq>> =
+        updateCore timeseries fetch Async.single
 
 [<Extension>]
-type UpdateTimeseriesExtensions =
+type ClientExtensions =
     /// <summary>
     /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
     [<Extension>]
-    static member UpdateTimeseriesAsync (this: Client, timeseries: ValueTuple<Identity, UpdateTimeseries.Option seq> seq, [<Optional>] token: CancellationToken) : Task<TimeseriesReadPoco seq> =
+    static member UpdateAsync (this: ClientExtensions.TimeSeries, timeseries: ValueTuple<Identity, Update.Option seq> seq, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
         async {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = updateTimeseriesAsync timeseries' this.Ctx
+            let! ctx = Update.updateAsync timeseries' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun timeseries -> timeseries.ToPoco ())

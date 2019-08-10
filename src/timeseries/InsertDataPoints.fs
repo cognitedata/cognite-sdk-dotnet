@@ -1,20 +1,16 @@
-namespace Fusion
+namespace Fusion.DataPoints
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
-open Fusion
-open Fusion.Api
-open Fusion.Common
-open Fusion.Timeseries
 open Com.Cognite.V1.Timeseries.Proto
 
+open Fusion
+open Fusion.Common
+open Fusion.TimeSeries
+
 [<RequireQualifiedAccess>]
-module InsertDataPoints =
+module Insert =
     [<Literal>]
     let Url = "/timeseries/data"
 
@@ -35,7 +31,7 @@ module InsertDataPoints =
                 dps |> Seq.map(fun dp ->
                     let pdp = NumericDatapoint ()
                     pdp.Timestamp <- dp.TimeStamp
-                    pdp.Value <- dp.Value 
+                    pdp.Value <- dp.Value
                     pdp
                 ) |> dpItem.NumericDatapoints.Datapoints.AddRange
             | String dps ->
@@ -45,7 +41,7 @@ module InsertDataPoints =
                     pdp.Timestamp <- dp.TimeStamp
                     pdp.Value <- dp.Value
                     pdp
-                ) |> dpItem.StringDatapoints.Datapoints.AddRange 
+                ) |> dpItem.StringDatapoints.Datapoints.AddRange
             dpItem
 
     let dataPointsToProtobuf (items: DataPoints seq) : DataPointInsertionRequest =
@@ -55,8 +51,7 @@ module InsertDataPoints =
             |> request.Items.AddRange
         request
 
-    let insertDataPoints (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
-
+    let insertCore (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
         POST
         >=> setVersion V10
         >=> setContent (Content.Protobuf items)
@@ -64,45 +59,53 @@ module InsertDataPoints =
         >=> fetch
         >=> dispose
 
-[<AutoOpen>]
-module InsertDataPointsApi =
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let insertDataPoints (items: InsertDataPoints.DataPoints list) (next: NextHandler<unit, unit>) =
-        InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch next
-    
+    let insert (items: DataPoints list) (next: NextHandler<unit, unit>) =
+        insertCore (dataPointsToProtobuf items) fetch next
+
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
-    let insertDataPointsAsync (items: seq<InsertDataPoints.DataPoints>) =
-        InsertDataPoints.insertDataPoints (InsertDataPoints.dataPointsToProtobuf items) fetch Async.single
-    
+    let insertAsync (items: seq<DataPoints>) =
+        insertCore (dataPointsToProtobuf items) fetch Async.single
+
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
-    /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param> 
-    let insertDataPointsAsyncProto (items: DataPointInsertionRequest) =
-        InsertDataPoints.insertDataPoints items fetch Async.single
+    /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param>
+    let insertAsyncProto (items: DataPointInsertionRequest) =
+         insertCore items fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Com.Cognite.V1.Timeseries.Proto
+
+open Fusion.DataPoints
+open Fusion.Common
 
 [<Extension>]
-type InsertDataExtensions =
+type InsertDataPointsClientExtensions =
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
-    static member InsertDataAsync (this: Client, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
+    static member InsertAsync (this: ClientExtensions.DataPoints, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
         async {
-            let! ctx = insertDataPointsAsyncProto items this.Ctx
+            let! ctx = Insert.insertAsyncProto items this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
                let err = error2Exception error
                return raise err
         } |> fun op -> Async.StartAsTask(op, cancellationToken = token):> Task
-
-

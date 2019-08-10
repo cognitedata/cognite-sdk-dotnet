@@ -21,7 +21,7 @@ let ``Create timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = CreateTimeseries.createTimeseries [] fetch Async.single ctx
+    let! res = TimeSeries.Create.createCore [] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -42,7 +42,7 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = GetTimeseriesByIds.getTimeseriesByIds [ Identity.Id 0L ] fetch Async.single ctx
+    let! res = TimeSeries.GetByIds.getByIdsCore [ Identity.Id 0L ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -63,7 +63,7 @@ let ``Delete timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = DeleteTimeseries.deleteTimeseries [ Identity.Id 42L] fetch Async.single ctx
+    let! res = TimeSeries.Delete.deleteCore [ Identity.Id 42L] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -79,18 +79,18 @@ let ``Parse granularity works`` () =
         "3d"; "d"; "5h"; "h"; "42m"; "m"; "300s"; "s"
     ]
     let expected = [
-        GetAggregatedDataPoints.Granularity.Day 3
-        GetAggregatedDataPoints.Granularity.Day 1
-        GetAggregatedDataPoints.Granularity.Hour 5
-        GetAggregatedDataPoints.Granularity.Hour 1
-        GetAggregatedDataPoints.Granularity.Minute 42
-        GetAggregatedDataPoints.Granularity.Minute 1
-        GetAggregatedDataPoints.Granularity.Second 300
-        GetAggregatedDataPoints.Granularity.Second 1
+        DataPoints.Aggregated.Granularity.Day 3
+        DataPoints.Aggregated.Granularity.Day 1
+        DataPoints.Aggregated.Granularity.Hour 5
+        DataPoints.Aggregated.Granularity.Hour 1
+        DataPoints.Aggregated.Granularity.Minute 42
+        DataPoints.Aggregated.Granularity.Minute 1
+        DataPoints.Aggregated.Granularity.Second 300
+        DataPoints.Aggregated.Granularity.Second 1
     ]
 
     // Act
-    let granularity = input |> List.map GetAggregatedDataPoints.Granularity.FromString
+    let granularity = input |> List.map DataPoints.Aggregated.Granularity.FromString
 
     // Assert
     test <@ granularity = expected @>

@@ -1,4 +1,4 @@
-namespace Fusion
+namespace Fusion.DataPoints
 
 open System.IO
 open System.Net.Http
@@ -10,11 +10,10 @@ open System.Threading
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
 
 [<RequireQualifiedAccess>]
-module DeleteDataPoints =
+module Delete =
     [<Literal>]
     let Url = "/timeseries/data/delete"
 
@@ -54,10 +53,10 @@ module DeleteDataPoints =
             Encode.object [
                 yield "items", this.Items |> Seq.map (fun it -> it.Encoder) |> Encode.seq
             ]
-    
-    let deleteDataPoints (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
+
+    let deleteCore (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
         let request : DeleteRequest = { Items = items }
-        
+
         POST
         >=> setVersion V10
         >=> setContent (Content.JsonValue request.Encoder)
@@ -65,34 +64,43 @@ module DeleteDataPoints =
         >=> fetch
         >=> dispose
 
-[<AutoOpen>]
-module DeleteDataPointsApi =
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
     /// <param name="items">List of delete requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let deleteDataPoints (items: DeleteDataPoints.DeleteRequestDto seq) (next: NextHandler<unit, unit>) =
-        DeleteDataPoints.deleteDataPoints items fetch next
-    
+    let delete (items: DeleteRequestDto seq) (next: NextHandler<unit, unit>) =
+        deleteCore items fetch next
+
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
-    let deleteDataPointsAsync (items: DeleteDataPoints.DeleteRequestDto seq) =
-        DeleteDataPoints.deleteDataPoints items fetch Async.single
+    let deleteAsync (items: DeleteRequestDto seq) =
+        deleteCore items fetch Async.single
+
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.DataPoints
+open Fusion.Common
 
 [<Extension>]
-type DeleteDataPointsExtensions =
+type DeleteDataPointsClientExtensions =
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     [<Extension>]
-    static member DeleteDataPointsAsync (this: Client, items: DeleteDataPoints.DeleteRequestPoco seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync (this: ClientExtensions.DataPoints, items: Delete.DeleteRequestPoco seq, [<Optional>] token: CancellationToken) : Task =
         async {
-            let items' = items |> Seq.map DeleteDataPoints.DeleteRequestDto.FromPoco
-            let! ctx = deleteDataPointsAsync items' this.Ctx
+            let items' = items |> Seq.map Delete.DeleteRequestDto.FromPoco
+            let! ctx = Delete.deleteAsync items' this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->

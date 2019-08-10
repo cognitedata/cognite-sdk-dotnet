@@ -3,16 +3,17 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
-using Fusion;
-using Fusion.Assets;
-using Fusion.Api;
-using System.Linq;
 using Thoth.Json.Net;
-using System.Threading;
+
+using Fusion;
+
+using Assets = Fusion.Assets;
 
 namespace Tests
 {
@@ -54,17 +55,17 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<GetAssets.Option> {
-                GetAssets.Option.Name("string3"),
-                GetAssets.Option.ExternalIdPrefix("prefix"),
-                GetAssets.Option.Root(false),
-                GetAssets.Option.Source("source"),
-                GetAssets.Option.ParentIds(new List<long> {42L, 43L })
+            var options = new List<Assets.List.Option> {
+                Assets.List.Option.Name("string3"),
+                Assets.List.Option.ExternalIdPrefix("prefix"),
+                Assets.List.Option.Root(false),
+                Assets.List.Option.Source("source"),
+                Assets.List.Option.ParentIds(new List<long> {42L, 43L })
                 //.MetaData(new Dictionary<string, string> {{ "option1", "value1"}});
             };
 
             // Act
-            var result = await client.GetAssetsAsync(options);
+            var result = await client.Assets.ListAsync(options);
 
             // Assert
             Assert.Single(result.Items);
@@ -102,12 +103,12 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<GetAssets.Option> {
-                GetAssets.Option.Name("string3")
+            var options = new List<Assets.List.Option> {
+                Assets.List.Option.Name("string3")
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(options));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(options));
         }
 
         [Fact]
@@ -138,14 +139,14 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assetArgs = new List<GetAssets.Option> {
-                GetAssets.Option.Name("string3"),
-                GetAssets.Option.Source("source"),
-                GetAssets.Option.Root(true)
+            var assetArgs = new List<Assets.List.Option> {
+                Assets.List.Option.Name("string3"),
+                Assets.List.Option.Source("source"),
+                Assets.List.Option.Root(true)
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetsAsync(assetArgs));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(assetArgs));
         }
 
         [Fact]
@@ -177,7 +178,7 @@ namespace Tests
                 .SetProject(project);
 
             // Act
-            var result = await client.GetAssetAsync(42L);
+            var result = await client.Assets.GetAsync(42L);
 
             // Assert
             Assert.Equal(HttpMethod.Get, request.Method);
@@ -216,7 +217,7 @@ namespace Tests
                 .SetProject(project);
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.GetAssetAsync(42L));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.GetAsync(42L));
         }
 
         [Fact]
@@ -247,10 +248,10 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assets = new List<AssetWritePoco> {
-                new AssetWritePoco () { Name = "name1", Description = "description1" },
-                new AssetWritePoco () { Name = "name2", Description = "description2" },
-                new AssetWritePoco () {
+            var assets = new List<Assets.WritePoco> {
+                new Assets.WritePoco () { Name = "name1", Description = "description1" },
+                new Assets.WritePoco () { Name = "name2", Description = "description2" },
+                new Assets.WritePoco () {
                     Name = "name3",
                     Description = "description3",
                     Source = "source",
@@ -262,7 +263,7 @@ namespace Tests
             };
 
             // Act
-            var result = await client.CreateAssetsAsync (assets);
+            var result = await client.Assets.CreateAsync (assets);
 
             // Assert
             Assert.Single(result);
@@ -296,15 +297,15 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<UpdateAssets.Option> {
-                UpdateAssets.Option.SetName("test")
+            var options = new List<Assets.Update.Option> {
+                Assets.Update.Option.SetName("test")
             };
-            var assets = new List<ValueTuple<Identity, IEnumerable<UpdateAssets.Option>>> {
+            var assets = new List<ValueTuple<Identity, IEnumerable<Assets.Update.Option>>> {
                 (Identity.Id(42L), options)
             };
 
             // Act
-            await client.UpdateAssetsAsync(assets);
+            await client.Assets.UpdateAsync(assets);
         }
 
         [Fact]
@@ -341,7 +342,7 @@ namespace Tests
 
             // Act
             try {
-                var result = await client.GetAssetsByIdsAsync(assets);
+                var result = await client.Assets.GetByIdsAsync(assets);
             } catch (ResponseException ex) {
                 Assert.True(ex.Code == 400);
 
@@ -380,15 +381,15 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<SearchAssets.Option> {
-                SearchAssets.Option.Name("str")
+            var options = new List<Assets.Search.Option> {
+                Assets.Search.Option.Name("str")
             };
-            var filters = new List<AssetFilter> {
-                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
-                AssetFilter.Name("string")
+            var filters = new List<Assets.FilterOption> {
+                Assets.FilterOption.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                Assets.FilterOption.Name("string")
             };
 
-            var result = await client.SearchAssetsAsync(100, options, filters);
+            var result = await client.Assets.SearchAsync(100, options, filters);
 
             Assert.NotEmpty(result);
         }
@@ -419,15 +420,15 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<FilterAssets.Option> {
-                FilterAssets.Option.Limit(100)
+            var options = new List<Assets.Filter.Option> {
+                Assets.Filter.Option.Limit(100)
             };
-            var filters = new List<AssetFilter> {
-                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
-                AssetFilter.Name("string")
+            var filters = new List<Assets.FilterOption> {
+                Assets.FilterOption.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                Assets.FilterOption.Name("string")
             };
 
-            var result = await client.FilterAssetsAsync(options, filters);
+            var result = await client.Assets.FilterAsync(options, filters);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result.Items);
@@ -459,19 +460,19 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<FilterAssets.Option> {
-                FilterAssets.Option.Limit(100),
-                FilterAssets.Option.Cursor("cursor")
+            var options = new List<Assets.Filter.Option> {
+                Assets.Filter.Option.Limit(100),
+                Assets.Filter.Option.Cursor("cursor")
             };
 
-            var filters = new List<AssetFilter> {
-                AssetFilter.MetaData(new Dictionary<string, string> { { "key1", "val1" }, { "key2", "val2" } }),
-                AssetFilter.Name("Name"),
-                AssetFilter.ParentIds(new List<long> { 1234, 12345 })
+            var filters = new List<Assets.FilterOption> {
+                Assets.FilterOption.MetaData(new Dictionary<string, string> { { "key1", "val1" }, { "key2", "val2" } }),
+                Assets.FilterOption.Name("Name"),
+                Assets.FilterOption.ParentIds(new List<long> { 1234, 12345 })
             };
 
-            var result = await client.FilterAssetsAsync(options, filters);
-            var refRequest = Encode.toString(0, new FilterAssets.FilterAssetsRequest(filters, options).Encoder);
+            var result = await client.Assets.FilterAsync(options, filters);
+            var refRequest = Encode.toString(0, new Assets.Filter.Request(filters, options).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]
@@ -501,10 +502,10 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var createAssets = new List<AssetWritePoco>();
+            var createAssets = new List<Assets.WritePoco>();
             for (int i = 0; i < 1000; i++) // 1000 is the maximum number of assets per request
             {
-                createAssets.Add(new AssetWritePoco
+                createAssets.Add(new Assets.WritePoco
                 {
                     Description = "Long description which takes a lot of memory to store " + i,
                     ExternalId = "ExternalIdsCanAlsoBeQuiteLongSometimes" + i,
@@ -513,8 +514,8 @@ namespace Tests
                 });
             }
 
-            var result = await client.CreateAssetsAsync(createAssets);
-            var refRequest = Encode.toString(0, new CreateAssets.AssetsCreateRequest(createAssets.Select(AssetWriteDto.FromPoco)).Encoder);
+            var result = await client.Assets.CreateAsync(createAssets);
+            var refRequest = Encode.toString(0, new Assets.Create.Request(createAssets.Select(Assets.WriteDto.FromPoco)).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]
@@ -543,19 +544,19 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<FilterAssets.Option> {
-                FilterAssets.Option.Limit(100)
+            var options = new List<Assets.Filter.Option> {
+                Assets.Filter.Option.Limit(100)
             };
-            var filters = new List<AssetFilter> {
-                AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
-                AssetFilter.Name("string")
+            var filters = new List<Assets.FilterOption> {
+                Assets.FilterOption.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
+                Assets.FilterOption.Name("string")
             };
             using (var src = new CancellationTokenSource())
             {
                 src.Cancel();
                 try
                 {
-                    var result = await client.FilterAssetsAsync(options, filters, src.Token);
+                    var result = await client.Assets.FilterAsync(options, filters, src.Token);
                     Assert.NotNull(result);
                     Assert.NotEmpty(result.Items);
                 }

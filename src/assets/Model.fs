@@ -1,12 +1,10 @@
 namespace Fusion.Assets
 
-open System
 open System.Collections.Generic
 open Fusion
-open Thoth.Json.Net
 
 [<CLIMutable>]
-type AssetReadPoco = {
+type ReadPoco = {
     ExternalId : string
     Name : string
     ParentId : int64
@@ -20,7 +18,7 @@ type AssetReadPoco = {
 }
 
 /// Asset type for responses.
-type AssetReadDto = {
+type ReadDto = {
     /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// The name of the asset.
@@ -43,7 +41,7 @@ type AssetReadDto = {
     RootId: int64
 } with
     /// Translates the domain type to a plain old crl object
-    member this.ToPoco () : AssetReadPoco =
+    member this.ToPoco () : ReadPoco =
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
@@ -65,7 +63,7 @@ type AssetReadDto = {
 
 /// C# compatible Asset POCO
 [<CLIMutable>]
-type AssetWritePoco = {
+type WritePoco = {
     ExternalId : string
     Name : string
     ParentId : int64
@@ -75,7 +73,7 @@ type AssetWritePoco = {
     ParentExternalId : string
 }
 
-type AssetFilter =
+type FilterOption =
     private
     | CaseName of string
     | CaseParentIds of int64 seq
@@ -107,20 +105,8 @@ type AssetFilter =
     /// Prefix on externalId
     static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
 
-    static member Render (this: AssetFilter) =
-        match this with
-        | CaseName name -> "name", Encode.string name
-        | CaseParentIds ids -> "parentIds", Encode.int53seq ids
-        | CaseRootIds ids -> "rootIds", ids |> Seq.map(fun id -> id.Encoder) |> Encode.seq
-        | CaseSource source -> "source", Encode.string source
-        | CaseMetaData md -> "metaData", Encode.propertyBag md
-        | CaseCreatedTime time -> "createdTime", time.Encoder
-        | CaseLastUpdatedTime time -> "lastUpdatedTime", time.Encoder
-        | CaseRoot root -> "root", Encode.bool root
-        | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
-
 /// Asset type for create requests.
-type AssetWriteDto = {
+type WriteDto = {
     /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// Name of asset. Often referred to as tag.
@@ -136,7 +122,7 @@ type AssetWriteDto = {
     /// External Id of parent asset provided by client. Must be unique within the project.
     ParentExternalId: string option
 } with
-    static member FromPoco (asset: AssetWritePoco) : AssetWriteDto =
+    static member FromPoco (asset: WritePoco) : WriteDto =
         let metaData =
             if not (isNull asset.MetaData) then
                 asset.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq

@@ -1,44 +1,38 @@
-namespace Fusion
+namespace Fusion.Assets
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
 
 open Thoth.Json.Net
 
 open Fusion
-open Fusion.Api
 open Fusion.Common
-open Fusion.Assets
-open System.Threading
 
 
 [<RequireQualifiedAccess>]
-module CreateAssets =
+module Create =
     [<Literal>]
     let Url = "/assets"
 
-    type AssetsCreateRequest = {
-        Items: AssetWriteDto seq
+    type Request = {
+        Items: WriteDto seq
     } with
          member this.Encoder =
             Encode.object [
-                yield "items", Seq.map (fun (it: AssetWriteDto) -> it.Encoder) this.Items |> Encode.seq
+                yield "items", Seq.map (fun (it: WriteDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
     type AssetResponse = {
-        Items: AssetReadDto seq
+        Items: ReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
             })
 
-    let createAssets (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
+    let createCore (assets: WriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
         let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
-        let request : AssetsCreateRequest = { Items = assets }
+        let request : Request = { Items = assets }
 
         POST
         >=> setVersion V10
@@ -47,24 +41,32 @@ module CreateAssets =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module CreateAssetsApi =
     /// <summary>
     /// Create new assets in the given project.
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created assets.</returns>
-    let createAssets (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq, 'a>) =
-        CreateAssets.createAssets assets fetch next
+    let create (assets: WriteDto seq) (next: NextHandler<ReadDto seq, 'a>) =
+        createCore assets fetch next
 
     /// <summary>
     /// Create new assets in the given project.
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let createAssetsAsync (assets: AssetWriteDto seq) =
-        CreateAssets.createAssets assets fetch Async.single
+    let createAsync (assets: WriteDto seq) =
+        createCore assets fetch Async.single
+
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+
+open Fusion.Assets
+open Fusion.Common
+open System.Threading
 
 [<Extension>]
 type CreateAssetsExtensions =
@@ -74,10 +76,10 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAssetsAsync (this: Client, assets: AssetWritePoco seq, [<Optional>] token: CancellationToken) : Task<AssetReadPoco seq> =
+    static member CreateAsync (this: ClientExtensions.Assets, assets: WritePoco seq, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
         async {
-            let assets' = assets |> Seq.map AssetWriteDto.FromPoco
-            let! ctx = createAssetsAsync assets' this.Ctx
+            let assets' = assets |> Seq.map WriteDto.FromPoco
+            let! ctx = Create.createAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun asset -> asset.ToPoco ())

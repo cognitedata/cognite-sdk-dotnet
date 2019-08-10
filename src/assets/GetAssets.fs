@@ -1,37 +1,29 @@
-namespace Fusion
+namespace Fusion.Assets
 
-open System
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading
 
-open FSharp.Control.Tasks.V2.ContextInsensitive
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Common
-open Fusion.Api
-open Fusion.Assets
-open System.Threading
 
-[<RequireQualifiedAccess>]
-module GetAssets =
+module List =
     [<Literal>]
     let Url = "/assets"
 
     type Assets = {
-        Items: AssetReadDto seq
+        Items: ReadDto seq
         NextCursor : string option } with
 
         static member Decoder : Decoder<Assets> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     // Get parameters
+    [<RequireQualifiedAccess>]
     type Option =
         private // Expose members instead for C# interoperability
         | CaseLimit of int
@@ -123,7 +115,7 @@ module GetAssets =
             | CaseMaxLastUpdatedTime value -> "maxLastUpdatedTime", value.ToString ()
             | CaseExternalIdPrefix externalId -> "externalIdPrefix", externalId
 
-    let getAssets (options: Option seq) (fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
+    let listCore (options: Option seq) (fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
         let decoder = decodeResponse Assets.Decoder id
         let query = options |> Seq.map Option.Render |> List.ofSeq
 
@@ -134,8 +126,6 @@ module GetAssets =
         >=> fetch
         >=> decoder
 
-[<AutoOpen>]
-module GetAssetsApi =
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
     ///
@@ -145,8 +135,8 @@ module GetAssetsApi =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of assets and optional cursor.</returns>
-    let getAssets (options: GetAssets.Option seq) (next: NextHandler<GetAssets.Assets,'a>) : HttpContext -> Async<Context<'a>> =
-        GetAssets.getAssets options fetch next
+    let list (options: Option seq) (next: NextHandler<Assets,'a>) : HttpContext -> Async<Context<'a>> =
+        listCore options fetch next
 
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
@@ -156,11 +146,21 @@ module GetAssetsApi =
     /// </summary>
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets and optional cursor.</returns>
-    let getAssetsAsync (options: GetAssets.Option seq) : HttpContext -> Async<Context<GetAssets.Assets>> =
-        GetAssets.getAssets options fetch Async.single
+    let listAsync (options: Option seq) : HttpContext -> Async<Context<Assets>> =
+        listCore options fetch Async.single
+
+namespace Fusion
+
+open System
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+
+open Fusion.Assets
+open Fusion.Common
 
 [<Extension>]
-type GetAssetsExtensions =
+type ListAssetsClientExtension =
     /// <summary>
     /// List all assets in the given project. If given limit or 1000 results are exceeded, return a cursor to paginate through results.
     ///
@@ -170,9 +170,9 @@ type GetAssetsExtensions =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets and optional cursor.</returns>
     [<Extension>]
-    static member GetAssetsAsync (this: Client, args: GetAssets.Option seq, [<Optional>] token: CancellationToken) =
+    static member ListAsync (this: ClientExtensions.Assets, args: List.Option seq, [<Optional>] token: CancellationToken) =
         async {
-            let! ctx = getAssetsAsync args this.Ctx
+            let! ctx = List.listAsync args this.Ctx
             match ctx.Result with
             | Ok assets ->
                 return {|
