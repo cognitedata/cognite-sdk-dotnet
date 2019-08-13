@@ -1,12 +1,13 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
+
 
 [<RequireQualifiedAccess>]
 module Delete =
@@ -46,15 +47,15 @@ module Delete =
     let deleteAsync (items: Identity seq) =
         deleteCore items fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.TimeSeries
-open Fusion.Common
+open Oryx
+open CogniteSdk.TimeSeries
 
 [<Extension>]
 type DeleteTimeSeriesClientExtensions =

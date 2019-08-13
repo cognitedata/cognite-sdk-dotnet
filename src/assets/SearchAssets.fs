@@ -1,12 +1,13 @@
-﻿namespace Fusion.Assets
+﻿namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
+
 
 [<RequireQualifiedAccess>]
 module Search =
@@ -54,7 +55,7 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse List.Assets.Decoder (fun assets -> assets.Items)
+        let decoder = Encode.decodeResponse List.Assets.Decoder (fun assets -> assets.Items)
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
@@ -92,15 +93,16 @@ module Search =
     let searchAsync (limit: int) (options: Option seq) (filters: FilterOption seq): HttpContext -> Async<Context<ReadDto seq>> =
         searchCore limit options filters fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.Assets
-open Fusion.Common
+open Oryx
+open CogniteSdk.Assets
+
 
 [<Extension>]
 type SearchAssetsClientExtensions =

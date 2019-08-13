@@ -1,13 +1,14 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
 
+
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Update =
@@ -148,7 +149,7 @@ module Update =
             })
 
     let updateCore (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -179,7 +180,7 @@ module Update =
     let updateAsync (assets: (Identity * Option list) list) : HttpContext -> Async<Context<ReadDto seq>> =
         updateCore assets fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System
 open System.Runtime.CompilerServices
@@ -187,8 +188,9 @@ open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
-open Fusion.Assets
-open Fusion.Common
+open Oryx
+open CogniteSdk.Assets
+
 
 [<Extension>]
 type UpdateAssetsClientExtensions =

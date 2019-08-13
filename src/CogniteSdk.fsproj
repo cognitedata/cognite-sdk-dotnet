@@ -9,13 +9,8 @@
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Async.fs" />
-    <Compile Include="Error.fs" />
-    <Compile Include="Context.fs" />
-    <Compile Include="Handler.fs" />
-    <Compile Include="Encode.fs" />
     <Compile Include="Common.fs" />
-    <Compile Include="Builder.fs" />
+    <Compile Include="Error.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="assets/Model.fs" />
     <Compile Include="assets/Json.fs" />
@@ -41,5 +36,6 @@
     <Compile Include="timeseries/UpdateTimeseries.fs" />
     <Compile Include="timeseries/DeleteDataPoints.fs" />
   </ItemGroup>
+
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>

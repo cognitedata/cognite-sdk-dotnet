@@ -1,12 +1,12 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 
 [<RequireQualifiedAccess>]
@@ -31,7 +31,7 @@ module Create =
             })
 
     let createCore (assets: WriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
-        let decoder = decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = assets }
 
         POST
@@ -58,15 +58,16 @@ module Create =
     let createAsync (assets: WriteDto seq) =
         createCore assets fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
+open System.Threading
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 
-open Fusion.Assets
-open Fusion.Common
-open System.Threading
+
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type CreateAssetsExtensions =

@@ -1,6 +1,9 @@
-namespace Fusion
+namespace CogniteSdk
 
+open System
+open System.Collections.Generic
 open System.Net.Http
+open Oryx
 
 module ClientExtensions =
     type Assets internal (context: HttpContext) =
@@ -14,18 +17,19 @@ module ClientExtensions =
     type DataPoints internal (context: HttpContext) =
         member internal __.Ctx =
             context
+
 /// <summary>
 /// Client for making requests to the API.
 /// </summary>
 /// <param name="context">Context to use for this session.</param>
 type Client private (context: HttpContext) =
     let context = context
-    let fetch = fetch
 
     /// For use with AddHttpClient dependency injection
     new (httpClient: HttpClient) =
         let context =
             Context.create ()
+            |> Context.setUrlBuilder Context.urlBuilder
             |> Context.setHttpClient httpClient
         Client context
 
@@ -39,7 +43,7 @@ type Client private (context: HttpContext) =
     member this.AddHeader (name: string, value: string) =
         context
         |> Context.addHeader (name, value)
-        |> Client.New
+        |> Client
 
     /// <summary>
     /// Set project for accessing the API.
@@ -48,31 +52,31 @@ type Client private (context: HttpContext) =
     member this.SetProject (project: string) =
         context
         |> Context.setProject project
-        |> Client.New
+        |> Client
 
     member this.SetAppId (appId: string) =
         context
         |> Context.setAppId appId
-        |> Client.New
+        |> Client
 
     member this.SetHttpClient (client: HttpClient) =
         context
         |> Context.setHttpClient client
-        |> Client.New
+        |> Client
 
     member this.SetServiceUrl (serviceUrl: string) =
         context
         |> Context.setServiceUrl serviceUrl
-        |> Client.New
+        |> Client
 
     /// <summary>
     /// Creates a Client for accessing the API.
     /// </summary>
     static member Create () =
-        let context = Context.create ()
-        Client context
+        let context =
+            Context.create ()
+            |> Context.setUrlBuilder Context.urlBuilder
 
-    static member private New (context: HttpContext)  =
         Client context
 
     member val Assets = ClientExtensions.Assets context with get

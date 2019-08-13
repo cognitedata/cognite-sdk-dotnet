@@ -1,10 +1,23 @@
 /// Common types for the SDK.
-namespace Fusion
+namespace CogniteSdk
 
 open System
-open System.IO
-open System.Text.RegularExpressions
+ open System.Text.RegularExpressions
+open System.Reflection
+
+open Oryx
 open Thoth.Json.Net
+
+type ApiVersion =
+    | V05
+    | V06
+    | V10
+
+    override this.ToString () =
+        match this with
+        | V05 -> "0.5"
+        | V06 -> "0.6"
+        | V10 -> "v1"
 
 /// Id or ExternalId
 type Identity =
@@ -79,64 +92,50 @@ module Patterns =
        then Some (List.tail [ for x in m.Groups -> x.Value ])
        else None
 
+[<AutoOpen>]
 module Common =
     [<Literal>]
     let MaxLimitSize = 1000
 
-    /// <summary>
-    /// JSON decode response and map decode error string to exception so we don't get more response error types.
-    /// </summary>
-    /// <param name="decoder">Decoder to use. </param>
-    /// <param name="resultMapper">Mapper for transforming the result.</param>
-    /// <param name="next">The next async handler to use.</param>
-    /// <returns>Decoded context.</returns>
-    let decodeResponse<'a, 'b, 'c> (decoder : Decoder<'a>) (resultMapper : 'a -> 'b) (next: NextHandler<'b,'c>) (context: Context<Stream>) =
-        async {
-            let result = context.Result
+module Context =
+    let urlBuilder (request: HttpRequest) =
+        let extra = request.Extra
+        let version = extra.["apiVersion"]
+        let project = extra.["project"]
+        let resource = extra.["resource"]
+        let serviceUrl =
+            if Map.containsKey "serviceUrl" extra
+            then extra.["serviceUrl"]
+            else "https://api.cognitedata.com"
 
-            let! nextResult = async {
-                match result with
-                | Ok stream ->
-                    let! ret = decodeStreamAsync decoder stream |> Async.AwaitTask
-                    match ret with
-                    | Ok value -> return value |> resultMapper |> Ok
-                    | Error message ->
-                        return {
-                            ResponseError.empty with
-                                Message = message
-                        } |> Error
-                | Error err -> return Error err
-            }
+        if not (Map.containsKey "hasAppId" extra)
+        then failwith "Client must set the Application ID (appId)"
 
-            return! next { Request = context.Request; Result = nextResult }
-        }
-    let decodeProtobuf<'b, 'c> (parser : Stream -> 'b) (next: NextHandler<'b, 'c>) (context : Context<Stream>) =
-        async {
-            let result = context.Result |> Result.map parser
-            return! next { Request = context.Request; Result = result }
-        }
+        sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
 
-    /// Handler for disposing the stream when it's not needed anymore.
-    let dispose<'a> (next: NextHandler<unit,'a>) (context: Context<Stream>) =
-        async {
-            let nextResult = context.Result |> Result.map (fun stream -> stream.Dispose ())
-            return! next { Request = context.Request; Result = nextResult }
-        }
+    let private version =
+        let version = Assembly.GetExecutingAssembly().GetName().Version
+        {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
 
-    /// **Description**
-    ///
-    /// Translate response error to exception that we can raise for the
-    /// C# API.
-    ///
-    /// **Parameters**
-    ///   * `error` - parameter of type `ResponseError`
-    ///
-    /// **Output Type**
-    ///   * `exn`
-    let error2Exception error =
-        let ex = ResponseException error.Message
-        ex.Code <- error.Code
-        ex.Duplicated <- error.Duplicated |> Seq.map (Map.toSeq >> dict)
-        ex.Missing <- error.Missing |> Seq.map (Map.toSeq >> dict)
-        ex.InnerException <- if error.InnerException.IsSome then error.InnerException.Value else null
-        ex :> Exception
+    /// Set the project to connect to.
+    let setProject (project: string) (context: HttpContext) =
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", project) } }
+
+    let setAppId (appId: string) (context: HttpContext) =
+        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", "true") } }
+
+    let setServiceUrl (serviceUrl: string) (context: HttpContext) =
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", serviceUrl) } }
+
+    let create () =
+        Context.defaultContext
+        |> Context.setUrlBuilder urlBuilder
+
+[<AutoOpen>]
+module Handlers =
+    let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", resource) } }
+
+    let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
+

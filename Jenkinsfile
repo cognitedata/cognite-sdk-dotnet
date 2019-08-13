@@ -1,6 +1,6 @@
 @Library('jenkins-helpers@v0.1.10') _
 
-def label = "cognite-net-sdk-${UUID.randomUUID().toString()}"
+def label = "cognite-sdk-dotnet-${UUID.randomUUID().toString()}"
 
 podTemplate(
     label: label,

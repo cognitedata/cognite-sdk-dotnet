@@ -1,12 +1,14 @@
-﻿namespace Fusion.Assets
+﻿namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
+
 
 [<RequireQualifiedAccess>]
 module Filter =
@@ -44,7 +46,7 @@ module Filter =
             ]
 
     let filterCore (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse List.Assets.Decoder id
+        let decoder = Encode.decodeResponse List.Assets.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -79,14 +81,15 @@ module Filter =
             filterCore options filters fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
-
-open Fusion.Assets
-open Fusion.Common
 open System.Threading
+
+
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type FilterAssetsExtensions =

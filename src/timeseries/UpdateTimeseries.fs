@@ -1,18 +1,15 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System
 open System.Collections.Generic
 open System.Net.Http
 open System.IO
-open System.Threading.Tasks
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading
 
+
+open Oryx
 open Thoth.Json.Net
+open CogniteSdk
 
-open Fusion
-open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module Update =
@@ -201,7 +198,7 @@ module Update =
             })
 
     let updateCore (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesUpdateRequests = {
            Items = [
                yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -232,8 +229,21 @@ module Update =
     let updateAsync (timeseries: (Identity * (Option list)) list) : HttpContext -> Async<Context<ReadDto seq>> =
         updateCore timeseries fetch Async.single
 
+namespace CogniteSdk
+
+open System
+open System.Threading.Tasks
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+
+open Oryx
+open CogniteSdk
+open CogniteSdk.TimeSeries
+
+
 [<Extension>]
-type ClientExtensions =
+type UpdateTimeseriesClientExtensions =
     /// <summary>
     /// Updates multiple timeseries within the same project.
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
