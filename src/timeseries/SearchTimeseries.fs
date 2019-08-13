@@ -1,17 +1,12 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
+open Oryx
 open Thoth.Json.Net
-
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Search =
@@ -110,7 +105,7 @@ module Search =
         ]
 
     let searchCore (limit: int) (options: Option seq) (filters: FilterOption seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = decodeResponse List.TimeseriesResponse.Decoder (fun assets -> assets.Items)
+        let decoder = Encode.decodeResponse List.TimeseriesResponse.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -140,6 +135,20 @@ module Search =
     /// <returns>Timeseries matching query.</returns>
     let searchAsync (limit: int) (options: Option seq) (filters: FilterOption seq): HttpContext -> Async<Context<ReadDto seq>> =
         searchCore limit options filters fetch Async.single
+
+namespace CogniteSdk
+
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
+
+
+open Oryx
+open Thoth.Json.Net
+open CogniteSdk
+open CogniteSdk.TimeSeries
+
 
 [<Extension>]
 type SearchTimeSeriesClientExtensions =

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fusion", "src\Fusion.NET.fsproj", "{71D7712C-6ED2-4E70-AEA4-54FA149149C9}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk", "src\CogniteSdk.fsproj", "{71D7712C-6ED2-4E70-AEA4-54FA149149C9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D6594809-62AA-416C-AA3E-D289963F012E}"
 EndProject

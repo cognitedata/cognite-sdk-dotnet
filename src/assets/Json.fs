@@ -1,9 +1,8 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
+
+open Oryx
 
 open Thoth.Json.Net
-
-open Fusion
-
 
 [<AutoOpen>]
 module AssetsExtensions =

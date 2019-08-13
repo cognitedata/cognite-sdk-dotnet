@@ -1,13 +1,13 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
+open CogniteSdk
 
-open Fusion
-open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module List =
@@ -62,7 +62,7 @@ module List =
             "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
     let listCore (query: Option seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
+        let decoder = Encode.decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
         GET
@@ -91,15 +91,16 @@ module List =
     let listAsync (options: Option seq) =
         listCore options fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.TimeSeries
-open Fusion.Common
+open Oryx
+open CogniteSdk.TimeSeries
+
 
 [<Extension>]
 type ListTimeseriesClientExtensions =

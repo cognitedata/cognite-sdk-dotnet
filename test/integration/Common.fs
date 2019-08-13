@@ -3,7 +3,8 @@ module Tests.Integration.Common
 open System
 open System.Net.Http
 
-open Fusion
+open Oryx
+open CogniteSdk
 
 let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
 let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"

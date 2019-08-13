@@ -1,13 +1,15 @@
 module Tests.Integration.Datapoints
 
+open System.Net.Http
+
 open Xunit
 open Swensen.Unquote
 
-open Fusion
-open Tests
-open Fusion.TimeSeries
+open Oryx
+open CogniteSdk
+open CogniteSdk.TimeSeries
 open Common
-open System.Net.Http
+open Tests
 
 [<Fact>]
 let ``Get datapoints by id with options is Ok`` () = async {
@@ -48,7 +50,7 @@ let ``Get datapoints by id with options is Ok`` () = async {
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 9 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -90,7 +92,7 @@ let ``Get datapoints by id with limit is Ok`` () = async {
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 20 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -133,7 +135,7 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 100 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -179,7 +181,7 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
     test <@ Seq.contains a.Id resIds && Seq.contains b.Id resIds @>
     test <@ Seq.length datapoints = 20 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -232,7 +234,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
     test <@ Seq.length datapoints = 25 @>
     test <@ greaterThanZero first.Average && greaterThanZero first.Min && greaterThanZero first.Sum @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/list" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -277,7 +279,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = async {
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 1 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data/latest" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data/latest" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -315,7 +317,7 @@ let ``Insert datapoints is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/timeseries/data" @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/data" @>
 }
 
 [<Fact>]
@@ -349,7 +351,7 @@ let ``Delete datapoints is Ok`` () = async {
 
     // Act
     let request =
-        fusion {
+        oryx {
             let! _ = TimeSeries.Create.create [ dto ]
             do! DataPoints.Insert.insert [ datapoints ]
             let! res = DataPoints.Delete.delete [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]

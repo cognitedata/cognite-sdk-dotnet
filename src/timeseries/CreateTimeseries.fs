@@ -1,12 +1,12 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Create =
@@ -31,7 +31,7 @@ module Create =
 
     let createCore (items: seq<WriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : TimeseriesRequest = { Items = items }
-        let decoder = decodeResponse TimeseriesResponse.Decoder id
+        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder id
 
         POST
         >=> setVersion V10
@@ -58,15 +58,15 @@ module Create =
         createCore items fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.TimeSeries
-open Fusion.Common
+open Oryx
+open CogniteSdk.TimeSeries
 
 [<Extension>]
 type CreateTimeSeriesClientExtensions =

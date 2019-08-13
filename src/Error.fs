@@ -1,17 +1,17 @@
-namespace Fusion
+namespace CogniteSdk
 
 open System
 open System.Collections.Generic
 
-open Thoth.Json.Net
+open Oryx
 
-type ErrorValue () =
-    static member val Decoder : Decoder<ErrorValue> =
-        Decode.oneOf [
-            Decode.int |> Decode.map (fun value -> IntegerValue value :> ErrorValue)
-            Decode.float |> Decode.map (fun value -> FloatValue value :> ErrorValue)
-            Decode.string |> Decode.map (fun value ->StringValue value :> ErrorValue)
-        ]
+type ResponseException (message : string) =
+    inherit Exception(message)
+
+    member val Code = 400 with get, set
+    member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val InnerException : Exception = null with get, set
 
 and IntegerValue (value: int) =
     inherit ErrorValue ()
@@ -33,57 +33,33 @@ and StringValue (value) =
     override this.ToString () =
         sprintf "%s" this.String
 
-type ResponseException (message : string) =
-    inherit Exception(message)
+[<AutoOpen>]
+module Error =
+    [<Literal>]
+    let MaxLimitSize = 1000
 
-    member val Code = 400 with get, set
-    member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
-    member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
-    member val InnerException : Exception = null with get, set
+    /// Convert Oryx types to CogniteSdk types for convenience to avoid having to open the Oryx namespace.
+    let convertTypes (_: string) (value: ErrorValue) =
+        match value with
+        | :? Oryx.IntegerValue as value -> IntegerValue value.Integer :> ErrorValue
+        | :? Oryx.FloatValue  as value -> FloatValue value.Float :> _
+        | :? Oryx.StringValue  as value -> StringValue value.String :> _
+        | _ -> failwith "Unknown type"
 
-and ResponseError = {
-    Code : int
-    Message : string
-    Missing : Map<string, ErrorValue> seq
-    Duplicated : Map<string, ErrorValue> seq
-    InnerException : exn option
-}
-    with
-        static member Decoder : Decoder<ResponseError> =
-            Decode.object (fun get ->
-                let message = get.Required.Field "message" Decode.string
-                {
-                    Code = get.Required.Field "code" Decode.int
-                    Message = get.Required.Field "message" Decode.string
-                    Missing =
-                        let missing = get.Optional.Field "missing" (Decode.array (Decode.dict ErrorValue.Decoder))
-                        match missing with
-                        | Some missing -> missing |> Seq.ofArray
-                        | None -> Seq.empty
-                    Duplicated =
-                        let duplicated = get.Optional.Field "duplicated" (Decode.array (Decode.dict ErrorValue.Decoder))
-                        match duplicated with
-                        | Some duplicated -> duplicated |> Seq.ofArray
-                        | None -> Seq.empty
-                    InnerException = None
-                })
-
-        static member empty =
-            {
-               Code = 400
-               Message = String.Empty
-               Missing = Seq.empty
-               Duplicated = Seq.empty
-               InnerException = None
-           }
-
-type ApiResponseError = {
-    Error : ResponseError
-} with
-    static member Decoder =
-        Decode.object (fun get ->
-            {
-                Error = get.Required.Field "error" ResponseError.Decoder
-            }
-        )
-
+    /// **Description**
+    ///
+    /// Translate response error to exception that we can raise for the
+    /// C# API.
+    ///
+    /// **Parameters**
+    ///   * `error` - parameter of type `ResponseError`
+    ///
+    /// **Output Type**
+    ///   * `exn`
+    let error2Exception error =
+        let ex = ResponseException error.Message
+        ex.Code <- error.Code
+        ex.Duplicated <- error.Duplicated |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
+        ex.Missing <- error.Missing |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
+        ex.InnerException <- if error.InnerException.IsSome then error.InnerException.Value else null
+        ex :> Exception

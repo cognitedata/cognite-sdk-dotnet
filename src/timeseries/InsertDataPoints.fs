@@ -1,13 +1,15 @@
-namespace Fusion.DataPoints
+namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
 
 open Com.Cognite.V1.Timeseries.Proto
 
-open Fusion
-open Fusion.Common
-open Fusion.TimeSeries
+
+open Oryx
+open CogniteSdk
+open CogniteSdk.TimeSeries
+
 
 [<RequireQualifiedAccess>]
 module Insert =
@@ -81,7 +83,8 @@ module Insert =
     let insertAsyncProto (items: DataPointInsertionRequest) =
          insertCore items fetch Async.single
 
-namespace Fusion
+
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -89,9 +92,10 @@ open System.Runtime.InteropServices
 open System.Threading
 
 open Com.Cognite.V1.Timeseries.Proto
+open Oryx
+open CogniteSdk.DataPoints
 
-open Fusion.DataPoints
-open Fusion.Common
+
 
 [<Extension>]
 type InsertDataPointsClientExtensions =

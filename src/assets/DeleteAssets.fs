@@ -1,12 +1,12 @@
-﻿namespace Fusion.Assets
+﻿namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Delete =
@@ -53,15 +53,15 @@ module Delete =
     let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
         deleteCore (assets, recursive) fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
+open System.Runtime.InteropServices
 
-open Fusion
-open Fusion.Common
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type DeleteAssetsExtensions =
@@ -79,5 +79,5 @@ type DeleteAssetsExtensions =
             | Error error ->
                 let err = error2Exception error
                 return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> Task
+        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> _
 

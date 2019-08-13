@@ -1,16 +1,12 @@
-namespace Fusion.TimeSeries
+namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
+open Oryx
 open Thoth.Json.Net
+open CogniteSdk
 
-open Fusion
-open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module GetByIds =
@@ -36,7 +32,7 @@ module GetByIds =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesReadRequest = {
             Items = ids
         }
@@ -70,15 +66,16 @@ module GetByIds =
         getByIdsCore ids fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.TimeSeries
-open Fusion.Common
+open Oryx
+open CogniteSdk.TimeSeries
+
 
 [<Extension>]
 type GetTimeseriesByIdsClientExtensions =

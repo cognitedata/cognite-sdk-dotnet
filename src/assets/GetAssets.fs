@@ -1,12 +1,12 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 module List =
     [<Literal>]
@@ -116,7 +116,7 @@ module List =
             | CaseExternalIdPrefix externalId -> "externalIdPrefix", externalId
 
     let listCore (options: Option seq) (fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = decodeResponse Assets.Decoder id
+        let decoder = Encode.decodeResponse Assets.Decoder id
         let query = options |> Seq.map Option.Render |> List.ofSeq
 
         GET
@@ -149,15 +149,15 @@ module List =
     let listAsync (options: Option seq) : HttpContext -> Async<Context<Assets>> =
         listCore options fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.Assets
-open Fusion.Common
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type ListAssetsClientExtension =

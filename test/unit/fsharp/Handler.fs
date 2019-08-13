@@ -6,6 +6,7 @@ open Xunit
 open Swensen.Unquote
 
 open System
+open System.Net
 open System.Net.Http
 open System.Threading
 open System.Threading.Tasks
@@ -13,8 +14,8 @@ open System.Threading.Tasks
 open FSharp.Control.Tasks.V2
 
 
-open Fusion
-open System.Net
+open Oryx
+open CogniteSdk
 
     type HttpMessageHandlerStub (sendAsync: Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>) =
         inherit HttpMessageHandler ()
@@ -51,7 +52,7 @@ let ``Get asset with fusion return expression is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = fusion {
+    let req = oryx {
         let! result = Assets.Get.get 42L
         return result
     }
@@ -89,7 +90,7 @@ let ``Get asset with fusion returnFrom expression is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = fusion {
+    let req = oryx {
         return! Assets.Get.get 42L
     }
 

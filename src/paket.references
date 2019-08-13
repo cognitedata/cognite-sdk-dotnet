@@ -3,3 +3,4 @@ FSharp.Core
 Taskbuilder.fs
 Thoth.Json.Net
 Fusion.NET.Protobuf
+Oryx

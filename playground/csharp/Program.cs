@@ -6,15 +6,14 @@ using System.Linq;
 
 using Com.Cognite.V1.Timeseries.Proto;
 
-using Fusion;
-using Fusion.DataPoints;
+using CogniteSdk;
+using CogniteSdk.DataPoints;
 
-using Assets = Fusion.Assets;
-using Timeseries = Fusion.TimeSeries;
+using Assets = CogniteSdk.Assets;
+using TimeSeries = CogniteSdk.TimeSeries;
 
 namespace csharp
 {
-
     class Program
     {
         /// <summary>
@@ -25,7 +24,7 @@ namespace csharp
         static async Task GetAssetsExample(Client client)
         {
             var assetArgs = new List<Assets.List.Option> {
-                Fusion.Assets.List.Option.Name("string3")
+                Assets.List.Option.Name("string3")
             };
             var result = await client.Assets.ListAsync(assetArgs);
 
@@ -51,11 +50,11 @@ namespace csharp
 
         static async Task CreateTimeseriesDataExample(Client client)
         {
-            var timeseries = new Fusion.TimeSeries.WritePoco {
+            var timeseries = new TimeSeries.WritePoco {
                 Name = "Testing"
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<Fusion.TimeSeries.WritePoco> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeries.WritePoco> { timeseries });
 
             Console.WriteLine("{0}", result);
 

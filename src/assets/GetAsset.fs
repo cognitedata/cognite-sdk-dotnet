@@ -1,10 +1,11 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
-open Fusion
-open Fusion.Common
+open Oryx
+open CogniteSdk
+
 
 [<RequireQualifiedAccess>]
 module Get =
@@ -12,7 +13,7 @@ module Get =
     let Url = "/assets"
 
     let getCore (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse ReadDto.Decoder id
+        let decoder = Encode.decodeResponse ReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
         GET
@@ -38,15 +39,15 @@ module Get =
     let getAsync (assetId: int64) : HttpContext -> Async<Context<ReadDto>> =
         getCore assetId fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
+open System.Threading
 open System.Threading.Tasks
 
-open Fusion.Assets
-open Fusion.Common
-open System.Threading
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type GetAssetClientExtensions =

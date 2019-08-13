@@ -1,7 +1,7 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.Collections.Generic
-open Fusion
+open CogniteSdk
 
 /// Read/write asset type.
 type Asset internal (externalId: string, name: string, description: string, parentId: int64, metadata: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =

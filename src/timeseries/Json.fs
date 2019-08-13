@@ -1,7 +1,8 @@
-﻿namespace Fusion.TimeSeries
+﻿namespace CogniteSdk.TimeSeries
 
 open Thoth.Json.Net
-open Fusion
+open Oryx
+open CogniteSdk
 
 
 [<AutoOpen>]

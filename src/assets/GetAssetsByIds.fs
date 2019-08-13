@@ -1,12 +1,13 @@
-namespace Fusion.Assets
+namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
 
+
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Retrieve =
@@ -29,7 +30,7 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse AssetResponse.Decoder (fun response -> response.Items)
+        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
 
         POST
@@ -61,15 +62,16 @@ module Retrieve =
         getByIdsCore ids fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.Assets
-open Fusion.Common
+
+open Oryx
+open CogniteSdk.Assets
 
 [<Extension>]
 type GetAssetsByIdsClientExtensions =

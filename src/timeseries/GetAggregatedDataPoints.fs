@@ -1,14 +1,15 @@
-namespace Fusion.DataPoints
+namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
 
 open Com.Cognite.V1.Timeseries.Proto
+open Oryx
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
-open Fusion.TimeSeries
+open CogniteSdk
+open CogniteSdk.TimeSeries
+
 
 [<RequireQualifiedAccess>]
 module Aggregated =
@@ -195,7 +196,7 @@ module Aggregated =
         ]
 
     let getAggregatedCore (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -207,7 +208,7 @@ module Aggregated =
         >=> decoder
 
     let getAggregatedProto (options: Option seq) (defaultOptions: QueryOption seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -280,7 +281,7 @@ module Aggregated =
     let getAggregatedMultipleProto (options: Option seq) (defaultOptions: QueryOption seq) =
         getAggregatedProto options defaultOptions fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
@@ -289,8 +290,9 @@ open System.Threading
 
 open Com.Cognite.V1.Timeseries.Proto
 
-open Fusion.DataPoints
-open Fusion.Common
+open Oryx
+open CogniteSdk.DataPoints
+
 
 [<Extension>]
 type AggregatedClientExtensions =

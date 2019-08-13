@@ -1,4 +1,4 @@
-﻿namespace Fusion.TimeSeries
+﻿namespace CogniteSdk.TimeSeries
 
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto

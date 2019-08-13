@@ -1,13 +1,14 @@
-﻿namespace Fusion.DataPoints
+﻿namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
 
+
 open Thoth.Json.Net
 
-open Fusion
-open Fusion.Common
-open Fusion.TimeSeries
+open Oryx
+open CogniteSdk
+open CogniteSdk.TimeSeries
 
 [<RequireQualifiedAccess>]
 module Latest =
@@ -88,7 +89,7 @@ module Latest =
                 })
 
     let getCore (options: LatestRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = decodeResponse DataResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
 
         POST
@@ -116,7 +117,7 @@ module Latest =
         getCore queryParams fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System
 open System.Runtime.CompilerServices
@@ -124,8 +125,9 @@ open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.DataPoints
-open Fusion.Common
+open Oryx
+open CogniteSdk.DataPoints
+open CogniteSdk.Common
 
 [<Extension>]
 type GetLatestDataPointExtensions =

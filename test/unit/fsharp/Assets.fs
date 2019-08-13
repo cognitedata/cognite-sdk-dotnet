@@ -1,13 +1,14 @@
 module Tests.Assets
 
 open System.IO
+open System.Net.Http
 
 open Xunit
 open Swensen.Unquote
 
-open Fusion
-open Fusion.Assets
-open System.Net.Http
+open Oryx
+open CogniteSdk
+open CogniteSdk.Assets
 
 
 [<Fact>]
@@ -26,7 +27,7 @@ let ``Get asset is Ok``() = async {
     // Assert
     test <@ Result.isOk response.Result @>
     test <@ response.Request.Method = HttpMethod.Get @>
-    test <@ response.Request.Resource = "/assets/42" @>
+    test <@ response.Request.Extra.["resource"] = "/assets/42" @>
     test <@ response.Request.Query.IsEmpty @>
 }
 
@@ -111,15 +112,15 @@ let ``Get assets is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Resource = "/assets" @>
+    test <@ res.Request.Extra.["resource"] = "/assets" @>
 
     test <@ res.Request.Query = [
-        ("name", "string")
-        ("source", "source")
-        ("root", "false")
-        ("parentIds", "[42,43]")
-        ("limit", "10")
-        ("cursor", "mycursor")
+        "name", "string"
+        "source", "source"
+        "root", "false"
+        "parentIds", "[42,43]"
+        "limit", "10"
+        "cursor", "mycursor"
     ] @>
 }
 
@@ -140,7 +141,7 @@ let ``Create assets empty is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets" @>
+    test <@ res.Request.Extra.["resource"] = "/assets" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -171,7 +172,7 @@ let ``Create single asset is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets" @>
+    test <@ res.Request.Extra.["resource"] = "/assets" @>
     test <@ res.Request.Query.IsEmpty @>
 
     match res.Result with
@@ -198,7 +199,7 @@ let ``Update single asset with no updates is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets/update" @>
+    test <@ res.Request.Extra.["resource"] = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -223,7 +224,7 @@ let ``Update single asset with is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets/update" @>
+    test <@ res.Request.Extra.["resource"] = "/assets/update" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -247,7 +248,7 @@ let ``Attempt searching assets`` () = async {
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets/search" @>
+    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
     test <@ res.Request.Query.IsEmpty @>
 }
 
@@ -271,6 +272,6 @@ let ``Attempt filtering assets`` () = async {
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/assets/list" @>
+    test <@ res.Request.Extra.["resource"] = "/assets/list" @>
     test <@ res.Request.Query.IsEmpty @>
 }

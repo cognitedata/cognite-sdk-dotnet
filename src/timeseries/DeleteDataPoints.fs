@@ -1,16 +1,12 @@
-namespace Fusion.DataPoints
+namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
 
+open Oryx
 open Thoth.Json.Net
+open CogniteSdk
 
-open Fusion
-open Fusion.Common
 
 [<RequireQualifiedAccess>]
 module Delete =
@@ -80,15 +76,16 @@ module Delete =
         deleteCore items fetch Async.single
 
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
-open Fusion.DataPoints
-open Fusion.Common
+open Oryx
+open CogniteSdk.DataPoints
+
 
 [<Extension>]
 type DeleteDataPointsClientExtensions =

@@ -1,9 +1,10 @@
 namespace Tests
 
-open System
 open System.IO
-open Fusion
 open System.Text
+
+open Oryx
+open CogniteSdk
 
 
 [<RequireQualifiedAccess>]

@@ -6,9 +6,10 @@ open System.Net.Http
 open FsConfig
 open Com.Cognite.V1.Timeseries.Proto
 
-open Fusion
-open Fusion.Assets
-open Fusion.TimeSeries
+open Oryx
+open CogniteSdk
+open CogniteSdk.Assets
+open CogniteSdk.TimeSeries
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -68,7 +69,7 @@ let createAssetsExample ctx = async {
         ParentExternalId = None
     }]
 
-    let request = fusion {
+    let request = oryx {
         let! ga = Assets.Create.create assets
 
         let! gb = concurrent [

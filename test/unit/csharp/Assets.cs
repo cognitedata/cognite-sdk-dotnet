@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 using Thoth.Json.Net;
 
-using Fusion;
+using CogniteSdk;
 
-using Assets = Fusion.Assets;
+using Assets = CogniteSdk.Assets;
 
 namespace Tests
 {
@@ -337,7 +337,7 @@ namespace Tests
                 .SetProject(project);
 
             var assets = new List<Identity> {
-                Identity.Id(42L)
+                Identity.Id(4L)
             };
 
             // Act
@@ -348,12 +348,13 @@ namespace Tests
 
                 var error = ex.Missing.First()["id"];
 
-                Assert.True(error is IntegerValue);
+                Assert.IsType<IntegerValue>(error);
                 var value = error as IntegerValue;
 
                 Assert.True(value.Integer == 4234);
             }
         }
+
         [Fact]
         public async Task TestSearchAssets()
         {
