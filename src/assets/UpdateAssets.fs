@@ -3,15 +3,11 @@ namespace Fusion.Assets
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading.Tasks
 
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Common
-open System.Threading
 
 [<RequireQualifiedAccess>]
 module Update =
@@ -202,13 +198,13 @@ type UpdateAssetsClientExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
     [<Extension>]
-    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, Update.Option seq> seq, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
+    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, Update.Option seq> seq, [<Optional>] token: CancellationToken) : Task<Asset seq> =
         async {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToPoco ())
+                return response |> Seq.map (fun asset -> asset.ToAsset ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

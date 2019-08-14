@@ -86,7 +86,7 @@ type GetAssetsByIdsClientExtensions =
             let! ctx = Retrieve.getByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.ToPoco ())
+                return assets |> Seq.map (fun asset -> asset.ToAsset ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

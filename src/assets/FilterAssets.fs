@@ -104,7 +104,7 @@ type FilterAssetsExtensions =
             | Ok assets ->
                 return {|
                         NextCursor = assets.NextCursor
-                        Items = assets.Items |> Seq.map (fun asset -> asset.ToPoco ())
+                        Items = assets.Items |> Seq.map (fun asset -> asset.ToAsset ())
                     |}
             | Error error ->
                 let err = error2Exception error
