@@ -191,7 +191,7 @@ let ``Get asset without http client throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = getAsset 42L |> retry 0<ms> 5
+    let req = Assets.Get.get 42L |> retry 0<ms> 5
     let! result = async {
         try
             let! result = runHandler req ctx
@@ -226,7 +226,7 @@ let ``Get asset without appId throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = getAsset 42L |> retry 0<ms> 5
+    let req = Assets.Get.get 42L |> retry 0<ms> 5
     let! result = async {
         try
             let! result = runHandler req ctx

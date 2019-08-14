@@ -204,7 +204,7 @@ type GetDataPointsClientExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
-    static member GetAsync (this: Client, id : int64, options: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAsync (this: ClientExtensions.DataPoints, id : int64, options: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = List.listProtoAsync id options this.Ctx
             match ctx.Result with
@@ -223,7 +223,7 @@ type GetDataPointsClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
-    static member ListMultipleAsync (this: Client, options: List.Option seq, defaultOptions: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member ListMultipleAsync (this: ClientExtensions.DataPoints, options: List.Option seq, defaultOptions: List.QueryOption seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = List.listMultipleProtoAsync options defaultOptions this.Ctx
             match ctx.Result with

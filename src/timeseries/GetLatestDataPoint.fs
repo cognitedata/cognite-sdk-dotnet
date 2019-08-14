@@ -135,7 +135,7 @@ type GetLatestDataPointExtensions =
     /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
-    static member GetLatestAsync (this: Client, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<Latest.DataPointsPoco>> =
+    static member GetLatestAsync (this: ClientExtensions.DataPoints, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<Latest.DataPointsPoco>> =
         async {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
