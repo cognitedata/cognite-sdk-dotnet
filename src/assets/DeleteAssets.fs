@@ -2,15 +2,11 @@
 
 open System.IO
 open System.Net.Http
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading.Tasks
 
 open Thoth.Json.Net
 
 open Fusion
 open Fusion.Common
-open System.Threading
 
 [<RequireQualifiedAccess>]
 module Delete =
@@ -57,6 +53,16 @@ module Delete =
     let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
         deleteCore (assets, recursive) fetch Async.single
 
+namespace Fusion
+
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
+
+open Fusion
+open Fusion.Common
+
 [<Extension>]
 type DeleteAssetsExtensions =
     /// <summary>
@@ -65,9 +71,9 @@ type DeleteAssetsExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     [<Extension>]
-    static member DeleteAsync(this: Client, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync(this: ClientExtensions.Assets, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
         async {
-            let! ctx = Delete.deleteAsync (ids, recursive) this.Ctx
+            let! ctx = Assets.Delete.deleteAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
