@@ -248,10 +248,10 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var assets = new List<Assets.WritePoco> {
-                new Assets.WritePoco () { Name = "name1", Description = "description1" },
-                new Assets.WritePoco () { Name = "name2", Description = "description2" },
-                new Assets.WritePoco () {
+            var assets = new List<Assets.Asset> {
+                new Assets.Asset () { Name = "name1", Description = "description1" },
+                new Assets.Asset () { Name = "name2", Description = "description2" },
+                new Assets.Asset () {
                     Name = "name3",
                     Description = "description3",
                     Source = "source",
@@ -502,10 +502,10 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var createAssets = new List<Assets.WritePoco>();
+            var createAssets = new List<Assets.Asset>();
             for (int i = 0; i < 1000; i++) // 1000 is the maximum number of assets per request
             {
-                createAssets.Add(new Assets.WritePoco
+                createAssets.Add(new Assets.Asset
                 {
                     Description = "Long description which takes a lot of memory to store " + i,
                     ExternalId = "ExternalIdsCanAlsoBeQuiteLongSometimes" + i,
@@ -515,7 +515,7 @@ namespace Tests
             }
 
             var result = await client.Assets.CreateAsync(createAssets);
-            var refRequest = Encode.toString(0, new Assets.Create.Request(createAssets.Select(Assets.WriteDto.FromPoco)).Encoder);
+            var refRequest = Encode.toString(0, new Assets.Create.Request(createAssets.Select(Assets.WriteDto.FromAsset)).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]

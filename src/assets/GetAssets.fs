@@ -177,7 +177,7 @@ type ListAssetsClientExtension =
             | Ok assets ->
                 return {|
                         NextCursor = if assets.NextCursor.IsSome then assets.NextCursor.Value else String.Empty
-                        Items = assets.Items |> Seq.map (fun asset -> asset.ToPoco ())
+                        Items = assets.Items |> Seq.map (fun asset -> asset.ToAsset ())
                     |}
             | Error error ->
                 let err = error2Exception error

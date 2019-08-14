@@ -76,13 +76,13 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAsync (this: ClientExtensions.Assets, assets: WritePoco seq, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
+    static member CreateAsync (this: ClientExtensions.Assets, assets: Asset seq, [<Optional>] token: CancellationToken) : Task<Asset seq> =
         async {
-            let assets' = assets |> Seq.map WriteDto.FromPoco
+            let assets' = assets |> Seq.map WriteDto.FromAsset
             let! ctx = Create.createAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToPoco ())
+                return response |> Seq.map (fun asset -> asset.ToAsset ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

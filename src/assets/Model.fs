@@ -3,19 +3,31 @@ namespace Fusion.Assets
 open System.Collections.Generic
 open Fusion
 
-[<CLIMutable>]
-type ReadPoco = {
-    ExternalId : string
-    Name : string
-    ParentId : int64
-    Description : string
-    MetaData : IDictionary<string, string>
-    Source : string
-    Id : int64
-    CreatedTime : int64
-    LastUpdatedTime : int64
-    RootId: int64
-}
+/// Read/write asset type.
+type Asset internal (externalId: string, name: string, description: string, parentId: int64, metadata: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =
+    let mutable _parentExternalId : string = parentExternalId
+
+    member val ExternalId : string = externalId with get, set
+    member val Name : string = null with get, set
+    member val ParentId : int64 = 0L with get, set
+    member val Description : string = null with get, set
+    member val MetaData : IDictionary<string, string> = null with get, set
+    member val Source : string = null with get, set
+
+    member val Id : int64 = id with get
+    member val CreatedTime : int64 = createdTime with get
+    member val LastUpdatedTime : int64 = lastUpdatedTime with get
+    member val RootId: int64 = rootId with get
+    member this.ParentExternalId
+        with set (value) = _parentExternalId <- value
+        and internal get () = _parentExternalId
+
+    // Create new Asset.
+    new () =
+        Asset(null, null, null, 0L, null, null, 0L, 0L, 0L, 0L, null)
+    // Create new Asset.
+    new (externalId: string, name: string, description: string, parentId: int64, metadata: IDictionary<string, string>, source: string, parentExternalId: string) =
+        Asset(externalId, name, description, parentId, metadata, source, 0L, 0L, 0L, 0L, parentExternalId)
 
 /// Asset type for responses.
 type ReadDto = {
@@ -41,37 +53,26 @@ type ReadDto = {
     RootId: int64
 } with
     /// Translates the domain type to a plain old crl object
-    member this.ToPoco () : ReadPoco =
+    member this.ToAsset () : Asset =
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
         let parentId = if this.ParentId.IsSome then this.ParentId.Value else 0L
 
-        {
-            ExternalId = externalId
-            Name = this.Name
-            ParentId = parentId
-            Description = description
-            MetaData = metaData
-            Source = source
-            Id = this.Id
-            CreatedTime = this.CreatedTime
-            LastUpdatedTime = this.LastUpdatedTime
-            RootId = this.RootId
-        }
-
-/// C# compatible Asset POCO
-[<CLIMutable>]
-type WritePoco = {
-    ExternalId : string
-    Name : string
-    ParentId : int64
-    Description : string
-    MetaData : IDictionary<string, string>
-    Source : string
-    ParentExternalId : string
-}
+        Asset(
+            externalId = externalId,
+            name = this.Name,
+            description = description,
+            parentId = parentId,
+            metadata = metaData,
+            source = source,
+            id = this.Id,
+            createdTime = this.CreatedTime,
+            lastUpdatedTime = this.LastUpdatedTime,
+            rootId = this.RootId,
+            parentExternalId = null
+        )
 
 type FilterOption =
     private
@@ -122,7 +123,7 @@ type WriteDto = {
     /// External Id of parent asset provided by client. Must be unique within the project.
     ParentExternalId: string option
 } with
-    static member FromPoco (asset: WritePoco) : WriteDto =
+    static member FromAsset (asset: Asset) : WriteDto =
         let metaData =
             if not (isNull asset.MetaData) then
                 asset.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
