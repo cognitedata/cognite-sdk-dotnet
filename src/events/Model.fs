@@ -35,9 +35,9 @@ type ReadDto = {
     StartTime : int64 option
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     EndTime : int64 option
-    /// Type of the event, e.g ‘failure’.
+    /// Type of the event, e.g ï¿½failureï¿½.
     Type : string option
-    /// Subtype of the event, e.g ‘electrical’.
+    /// Subtype of the event, e.g ï¿½electricalï¿½.
     SubType : string option
     /// Textual description of the event.
     Description : string option
@@ -85,9 +85,9 @@ type WriteDto = {
     StartTime : int64 option
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     EndTime : int64 option
-    /// Type of the event, e.g ‘failure’.
+    /// Type of the event, e.g ï¿½failureï¿½.
     Type : string option
-    /// Subtype of the event, e.g ‘electrical’.
+    /// Subtype of the event, e.g ï¿½electricalï¿½.
     SubType : string option
     /// Textual description of the event.
     Description : string option
