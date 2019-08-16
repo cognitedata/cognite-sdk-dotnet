@@ -36,8 +36,9 @@
     <Compile Include="timeseries/DeleteDataPoints.fs" />
     <Compile Include="events\Model.fs" />
     <Compile Include="events\Json.fs" />
+    <Compile Include="events\CreateEvents.fs" />
+    <Compile Include="events\DeleteEvents.fs" />
     <Compile Include="Client.fs" />
-
   </ItemGroup>
 
   <Import Project="..\.paket\Paket.Restore.targets" />

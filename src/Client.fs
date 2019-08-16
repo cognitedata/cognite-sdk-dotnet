@@ -3,6 +3,23 @@ namespace CogniteSdk
 open System.Net.Http
 open Oryx
 
+module ClientExtensions =
+    type Assets internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
+
+    type TimeSeries internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
+
+    type DataPoints internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
+
+    type Events internal (context: HttpContext) =
+        member internal __.Ctx =
+            context
+
 /// <summary>
 /// Client for making requests to the API.
 /// </summary>

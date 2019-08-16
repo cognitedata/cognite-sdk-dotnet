@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -12,6 +12,7 @@
     <Compile Include="Timeseries.fs" />
     <Compile Include="Datapoints.fs" />
     <Compile Include="Assets.fs" />
+    <Compile Include="Events.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
