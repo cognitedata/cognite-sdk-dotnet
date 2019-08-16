@@ -17,7 +17,7 @@ module EventExtensions =
                     StartTime = get.Optional.Field "startTime" Decode.int64
                     EndTime = get.Optional.Field "endTime" Decode.int64
                     Type = get.Optional.Field "type" Decode.string
-                    SubType = get.Optional.Field "subType" Decode.string
+                    SubType = get.Optional.Field "subtype" Decode.string
                     Description = get.Optional.Field "description" Decode.string
                     MetaData = if metadata.IsSome then metadata.Value else Map.empty
                     AssetIds = if assetIds.IsSome then assetIds.Value else List.empty
@@ -30,18 +30,12 @@ module EventExtensions =
     type WriteDto with
         member this.Encoder =
             Encode.object [
-                if this.ExternalId.IsSome then 
-                    yield "externalId", Encode.string this.ExternalId.Value
-                if this.StartTime.IsSome then
-                    yield "startTime", Encode.int64 this.StartTime.Value
-                if this.EndTime.IsSome then
-                    yield "endTime", Encode.int64 this.EndTime.Value
-                if this.Type.IsSome then
-                    yield "type", Encode.string this.Type.Value
-                if this.SubType.IsSome then
-                    yield "subType", Encode.string this.SubType.Value
-                if this.Description.IsSome then
-                    yield "description", Encode.string this.Description.Value
+                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
+                yield! Encode.optionalProperty "startTime" Encode.int64 this.StartTime
+                yield! Encode.optionalProperty "endTime" Encode.int64 this.EndTime
+                yield! Encode.optionalProperty "type" Encode.string this.Type
+                yield! Encode.optionalProperty "subtype" Encode.string this.SubType
+                yield! Encode.optionalProperty "description" Encode.string this.Description
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.propertyBag this.MetaData
                     yield "metadata", metaString
