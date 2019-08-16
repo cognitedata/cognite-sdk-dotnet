@@ -6,7 +6,8 @@ open Swensen.Unquote
 open Fusion
 open Tests
 open Common
-open Fusion.Events
+open CogniteSdk
+open CogniteSdk.Events
 open System.Net.Http
 
 [<Fact>]
@@ -43,11 +44,11 @@ let ``Create and delete events is Ok`` () = async {
     test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Resource = "/events" @>
+    test <@ res.Request.Extra.["resource"] = "/events" @>
     test <@ res.Request.Query.IsEmpty @>
 
     test <@ Result.isOk delRes.Result @>
     test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Resource = "/events/delete" @>
+    test <@ delRes.Request.Extra.["resource"] = "/events/delete" @>
     test <@ delRes.Request.Query.IsEmpty @>
 }

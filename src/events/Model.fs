@@ -1,7 +1,7 @@
-namespace Fusion.Events
+namespace CogniteSdk.Events
 
 open System.Collections.Generic
-open Fusion
+open CogniteSdk
 
 /// Read/write event type.
 type Event internal (externalId: string, startTime: int64, endDate: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64) =

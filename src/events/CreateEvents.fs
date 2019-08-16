@@ -1,12 +1,12 @@
-namespace Fusion.Events
+namespace CogniteSdk.Events
 
 open System.IO
 open System.Net.Http
 
 open Thoth.Json.Net
+open CogniteSdk
+open Oryx
 
-open Fusion
-open Fusion.Common
 
 
 [<RequireQualifiedAccess>]
@@ -31,7 +31,7 @@ module Create =
             })
 
     let createCore (events: WriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
-        let decoder = decodeResponse EventResponse.Decoder (fun res -> res.Items)
+        let decoder = Encode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = events }
 
         POST
@@ -64,8 +64,8 @@ open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 
-open Fusion.Events
-open Fusion.Common
+open CogniteSdk.Events
+open CogniteSdk
 open System.Threading
 
 [<Extension>]
@@ -82,7 +82,7 @@ type CreateEventExtensions =
             let! ctx = Create.createAsync events' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToEvent ())
+                return response |> Seq.map (fun event -> event.ToEvent ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

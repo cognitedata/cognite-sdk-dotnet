@@ -1,8 +1,8 @@
-namespace Fusion.Events
+namespace CogniteSdk.Events
 
+open Oryx
 open Thoth.Json.Net
-
-open Fusion
+open CogniteSdk
 
 
 [<AutoOpen>]

@@ -1,12 +1,11 @@
-﻿namespace Fusion.Events
+﻿namespace CogniteSdk.Events
 
 open System.IO
 open System.Net.Http
 
 open Thoth.Json.Net
-
-open Fusion
-open Fusion.Common
+open Oryx
+open CogniteSdk
 
 [<RequireQualifiedAccess>]
 module Delete =
@@ -55,8 +54,7 @@ open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
-open Fusion
-open Fusion.Common
+open CogniteSdk
 
 [<Extension>]
 type DeleteEventExtensions =
