@@ -1,5 +1,8 @@
 STORAGE: NONE
 NUGET
+  remote: https://cognite.jfrog.io/cognite/api/nuget/nuget
+    CogniteSdk.Protobuf (0.9.0)
+      Google.Protobuf (>= 3.9) - restriction: >= netstandard2.0
   remote: https://www.nuget.org/api/v2
     coverlet.msbuild (2.5.1)
     FsConfig (2.0.2)
@@ -863,6 +866,3 @@ NUGET
       xunit.extensibility.core (2.4.1) - restriction: >= netstandard1.1
     xunit.runner.visualstudio (2.4.1)
       Microsoft.NET.Test.Sdk (>= 15.0) - restriction: >= netcoreapp1.0
-  remote: https://cognite.jfrog.io/cognite/api/nuget/nuget
-    Fusion.NET.Protobuf (0.9.0)
-      Google.Protobuf (>= 3.9) - restriction: >= netstandard2.0
