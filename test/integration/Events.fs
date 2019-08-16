@@ -3,7 +3,6 @@ module Tests.Integration.Events
 open Xunit
 open Swensen.Unquote
 
-open Fusion
 open Tests
 open Common
 open CogniteSdk

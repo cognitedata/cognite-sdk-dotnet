@@ -51,32 +51,31 @@ module Create =
         createCore events fetch next
 
     /// <summary>
-    /// Create new assets in the given project.
+    /// Create new events in the given project.
     /// </summary>
-    /// <param name="assets">The assets to create.</param>
-    /// <returns>List of created assets.</returns>
+    /// <param name="events">The events to create.</param>
+    /// <returns>List of created events.</returns>
     let createAsync (events: WriteDto seq) =
         createCore events fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 
 open CogniteSdk.Events
-open CogniteSdk
 open System.Threading
 
 [<Extension>]
 type CreateEventExtensions =
     /// <summary>
-    /// Create new assets in the given project.
+    /// Create new events in the given project.
     /// </summary>
-    /// <param name="assets">The assets to create.</param>
-    /// <returns>List of created assets.</returns>
+    /// <param name="events">The events to create.</param>
+    /// <returns>List of created events.</returns>
     [<Extension>]
-    static member CreateAsync (this: ClientExtensions.Events, events: Event seq, [<Optional>] token: CancellationToken) : Task<Event seq> =
+    static member Create (this: ClientExtensions.Events, events: Event seq, [<Optional>] token: CancellationToken) : Task<Event seq> =
         async {
             let events' = events |> Seq.map WriteDto.FromEvent
             let! ctx = Create.createAsync events' this.Ctx

@@ -47,7 +47,7 @@ module Delete =
     let deleteAsync<'a> (events: Identity seq) : HttpContext -> Async<Context<unit>> =
         deleteCore (events) fetch Async.single
 
-namespace Fusion
+namespace CogniteSdk
 
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -63,7 +63,7 @@ type DeleteEventExtensions =
     /// </summary>
     /// <param name="events">The list of events to delete.</param>
     [<Extension>]
-    static member DeleteAsync(this: ClientExtensions.Events, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
+    static member Delete(this: ClientExtensions.Events, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Events.Delete.deleteAsync (ids) this.Ctx
             match ctx.Result with
