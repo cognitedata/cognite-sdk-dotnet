@@ -46,7 +46,7 @@ module EventExtensions =
                     let metaString = Encode.propertyBag this.MetaData
                     yield "metadata", metaString
                 if not (Seq.isEmpty this.AssetIds) then
-                    let assetIdString = Encode.seq (Seq.map Encode.int53 this.AssetIds)
+                    let assetIdString = Seq.map Encode.int53 this.AssetIds |> Encode.seq
                     yield "assetIds", assetIdString
 
             ]
