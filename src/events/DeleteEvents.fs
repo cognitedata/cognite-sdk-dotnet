@@ -38,14 +38,14 @@ module Delete =
     /// <param name="events">The list of events to delete.</param>
     /// <param name="next">Async handler to use</param>
     let delete (events: Identity seq) (next: NextHandler<unit,'a>) =
-        deleteCore (events) fetch next
+        deleteCore events fetch next
 
     /// <summary>
     /// Delete multiple events in the same project
     /// </summary>
     /// <param name="events">The list of events to delete.</param>
     let deleteAsync<'a> (events: Identity seq) : HttpContext -> Async<Context<unit>> =
-        deleteCore (events) fetch Async.single
+        deleteCore events fetch Async.single
 
 namespace CogniteSdk
 
@@ -61,9 +61,10 @@ type DeleteEventExtensions =
     /// <summary>
     /// Delete multiple events in the same project
     /// </summary>
-    /// <param name="events">The list of events to delete.</param>
+    /// <param name="ids">The list of events to delete</param>
+    /// <param name="token">Propagates notification that operations should be canceled</param>
     [<Extension>]
-    static member Delete(this: ClientExtensions.Events, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync(this: ClientExtensions.Events, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Events.Delete.deleteAsync (ids) this.Ctx
             match ctx.Result with

@@ -73,9 +73,10 @@ type CreateEventExtensions =
     /// Create new events in the given project.
     /// </summary>
     /// <param name="events">The events to create.</param>
+    /// <param name="token">Propagates notification that operations should be canceled</param>
     /// <returns>List of created events.</returns>
     [<Extension>]
-    static member Create (this: ClientExtensions.Events, events: Event seq, [<Optional>] token: CancellationToken) : Task<Event seq> =
+    static member CreateAsync(this: ClientExtensions.Events, events: Event seq, [<Optional>] token: CancellationToken) : Task<Event seq> =
         async {
             let events' = events |> Seq.map WriteDto.FromEvent
             let! ctx = Create.createAsync events' this.Ctx

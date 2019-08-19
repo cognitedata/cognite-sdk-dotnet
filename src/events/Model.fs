@@ -4,17 +4,17 @@ open System.Collections.Generic
 open CogniteSdk
 
 /// Read/write event type.
-type Event internal (externalId: string, startTime: int64, endDate: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64) =
+type Event internal (externalId: string, startTime: int64, endTime: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64) =
 
     member val ExternalId : string = externalId with get, set
-    member val StartTime : int64 = 0L with get, set
-    member val EndTime : int64 = 0L with get, set
-    member val Type : string = null with get, set
-    member val SubType : string = null with get, set
-    member val Description : string = null with get, set
-    member val MetaData : IDictionary<string, string> = null with get, set
-    member val AssetIds : IEnumerable<int64> = null with get, set
-    member val Source : string = null with get, set
+    member val StartTime : int64 = startTime with get, set
+    member val EndTime : int64 = endTime with get, set
+    member val Type : string = eventType with get, set
+    member val SubType : string = eventSubType with get, set
+    member val Description : string = description with get, set
+    member val MetaData : IDictionary<string, string> = metadata with get, set
+    member val AssetIds : IEnumerable<int64> = assetIds with get, set
+    member val Source : string = source with get, set
 
     member val Id : int64 = id with get
     member val CreatedTime : int64 = createdTime with get
@@ -22,10 +22,10 @@ type Event internal (externalId: string, startTime: int64, endDate: int64, event
 
     // Create new Event.
     new () =
-        Event(null, 0L, 0L, null, null, null, null, null, null, 0L, 0L, 0L)
+        Event(externalId=null, startTime=0L, endTime=0L, eventType=null, eventSubType=null, description=null, metadata=null, assetIds=null, source=null, id=0L, createdTime=0L, lastUpdatedTime=0L)
     // Create new Event.
     new (externalId: string, startTime: int64, endTime: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string) =
-        Event(externalId, startTime, endTime, eventType, eventSubType, description, metadata, assetIds, source, 0L, 0L, 0L)
+        Event(externalId=externalId, startTime=startTime, endTime=endTime, eventType=eventType, eventSubType=eventSubType, description=description, metadata=metadata, assetIds=assetIds, source=source, id=0L, createdTime=0L, lastUpdatedTime=0L)
 
 /// Event type for responses.
 type ReadDto = {
@@ -35,9 +35,9 @@ type ReadDto = {
     StartTime : int64 option
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     EndTime : int64 option
-    /// Type of the event, e.g �failure�.
+    /// Type of the event, e.g 'failure'.
     Type : string option
-    /// Subtype of the event, e.g �electrical�.
+    /// Subtype of the event, e.g 'electrical'.
     SubType : string option
     /// Textual description of the event.
     Description : string option
@@ -85,9 +85,9 @@ type WriteDto = {
     StartTime : int64 option
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     EndTime : int64 option
-    /// Type of the event, e.g �failure�.
+    /// Type of the event, e.g 'failure'.
     Type : string option
-    /// Subtype of the event, e.g �electrical�.
+    /// Subtype of the event, e.g 'electrical'.
     SubType : string option
     /// Textual description of the event.
     Description : string option
