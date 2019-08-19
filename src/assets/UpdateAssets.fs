@@ -10,74 +10,75 @@ open Thoth.Json.Net
 
 open CogniteSdk
 
+type MetaDataChange = {
+    Add : Map<string, string> option
+    Remove : string seq
+}
+
+type MetaDataUpdate =
+    | Set of Map<string, string>
+    | Change of MetaDataChange
+
+/// Asset update parameters
+type AssetUpdate =
+    private
+    | CaseName of string // Name cannot be null
+    | CaseDescription of string option
+    | CaseMetaData of MetaDataUpdate option
+    | CaseSource of string option
+    | CaseExternalId of string option
+
+    /// Set the name of the asset. Often referred to as tag.
+    static member SetName name =
+        CaseName name
+    /// Set or clear the description of asset.
+    static member SetDescription description =
+        CaseDescription description
+    /// Set metadata of asset. This removes any old metadata.
+    static member SetMetaData (md : IDictionary<string, string>) =
+        md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> Some |> CaseMetaData
+    /// Set metadata of asset. This removes any old metadata.
+    static member SetMetaData (md : Map<string, string>) =
+        md |> Set |> Some |> CaseMetaData
+    /// Remove all metadata from asset
+    static member ClearMetaData () =
+        CaseMetaData None
+    /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
+    static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
+        {
+            Add =
+                if isNull add then
+                    None
+                else
+                    add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
+            Remove = if isNull remove then Seq.empty else remove
+        } |> Change |> Some |> CaseMetaData
+    /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
+    static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
+        {
+            Add = add
+            Remove = remove
+        } |> Change |> Some |> CaseMetaData
+    /// Set the source of this asset
+    static member SetSource source =
+        Some source |> CaseSource
+    /// Clear the source of this asset
+    static member ClearSource =
+        CaseSource None
+    /// Set the externalId of asset. Must be unique within the project
+    static member SetExternalId id =
+        CaseExternalId id
+    /// Clear the externalId of asset.
+    static member ClearExternalId =
+        CaseExternalId None
+
+
 [<RequireQualifiedAccess>]
 module Update =
     [<Literal>]
     let Url = "/assets/update"
 
-    type MetaDataChange = {
-        Add : Map<string, string> option
-        Remove : string seq
-    }
-
-    type MetaDataUpdate =
-        | Set of Map<string, string>
-        | Change of MetaDataChange
-
-    /// Asset update parameters
-    type Option =
-        private
-        | CaseName of string // Name cannot be null
-        | CaseDescription of string option
-        | CaseMetaData of MetaDataUpdate option
-        | CaseSource of string option
-        | CaseExternalId of string option
-
-        /// Set the name of the asset. Often referred to as tag.
-        static member SetName name =
-            CaseName name
-        /// Set or clear the description of asset.
-        static member SetDescription description =
-            CaseDescription description
-        /// Set metadata of asset. This removes any old metadata.
-        static member SetMetaData (md : IDictionary<string, string>) =
-            md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> Some |> CaseMetaData
-        /// Set metadata of asset. This removes any old metadata.
-        static member SetMetaData (md : Map<string, string>) =
-            md |> Set |> Some |> CaseMetaData
-        /// Remove all metadata from asset
-        static member ClearMetaData () =
-            CaseMetaData None
-        /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
-        static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
-            {
-                Add =
-                    if isNull add then
-                        None
-                    else
-                        add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
-                Remove = if isNull remove then Seq.empty else remove
-            } |> Change |> Some |> CaseMetaData
-        /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
-        static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
-            {
-                Add = add
-                Remove = remove
-            } |> Change |> Some |> CaseMetaData
-        /// Set the source of this asset
-        static member SetSource source =
-            Some source |> CaseSource
-        /// Clear the source of this asset
-        static member ClearSource =
-            CaseSource None
-        /// Set the externalId of asset. Must be unique within the project
-        static member SetExternalId id =
-            CaseExternalId id
-        /// Clear the externalId of asset.
-        static member ClearExternalId =
-            CaseExternalId None
-
-    let renderUpdateFields (arg: Option) =
+    let renderUpdateFields (arg: AssetUpdate) =
         match arg with
         | CaseName name ->
             "name", Encode.object [
@@ -117,9 +118,10 @@ module Update =
             ]
 
 
-    type AssetUpdateRequest = {
+
+    type private AssetUpdateRequest = {
         Id: Identity
-        Params: Option seq
+        Params: AssetUpdate seq
     } with
         member this.Encoder =
             Encode.object [
@@ -132,7 +134,7 @@ module Update =
                 ]
             ]
 
-    type AssetsUpdateRequest = {
+    type private AssetsUpdateRequest = {
         Items: AssetUpdateRequest seq
     } with
         member this.Encoder =
@@ -141,14 +143,14 @@ module Update =
             ]
 
     type AssetResponse = {
-        Items: ReadDto seq
+        Items: AssetReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let updateCore (args: (Identity * Option list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
@@ -169,7 +171,7 @@ module Update =
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let update (assets: (Identity * (Option list)) list) (next: NextHandler<ReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
         updateCore assets fetch next
 
     /// <summary>
@@ -177,7 +179,7 @@ module Update =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAsync (assets: (Identity * Option list) list) : HttpContext -> Async<Context<ReadDto seq>> =
+    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
         updateCore assets fetch Async.single
 
 namespace CogniteSdk
@@ -200,13 +202,13 @@ type UpdateAssetsClientExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
     [<Extension>]
-    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, Update.Option seq> seq, [<Optional>] token: CancellationToken) : Task<Asset seq> =
+    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, AssetUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         async {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToAsset ())
+                return response |> Seq.map (fun asset -> asset.ToEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

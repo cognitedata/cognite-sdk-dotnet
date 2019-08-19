@@ -1,7 +1,5 @@
 namespace CogniteSdk
 
-open System
-open System.Collections.Generic
 open System.Net.Http
 open Oryx
 

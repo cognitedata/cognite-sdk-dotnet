@@ -7,10 +7,9 @@ using System.Linq;
 using Com.Cognite.V1.Timeseries.Proto;
 
 using CogniteSdk;
+using CogniteSdk.Assets;
+using CogniteSdk.TimeSeries;
 using CogniteSdk.DataPoints;
-
-using Assets = CogniteSdk.Assets;
-using TimeSeries = CogniteSdk.TimeSeries;
 
 namespace csharp
 {
@@ -23,10 +22,10 @@ namespace csharp
         /// <returns>Task</returns>
         static async Task GetAssetsExample(Client client)
         {
-            var assetArgs = new List<Assets.List.Option> {
-                Assets.List.Option.Name("string3")
+            var query = new List<AssetQuery> {
+                AssetQuery.Name("string3")
             };
-            var result = await client.Assets.ListAsync(assetArgs);
+            var result = await client.Assets.ListAsync(query);
 
             var asset = result.Items.First();
             Console.WriteLine("{0}", asset.ParentId);
@@ -35,12 +34,12 @@ namespace csharp
 
         static async Task QueryTimeseriesDataExample(Client client)
         {
-            var aggregates = new List<Aggregated.Aggregate> { Aggregated.Aggregate.Average };
-            var defaultOptions = new List<Aggregated.QueryOption> {
-                Aggregated.QueryOption.Aggregates(aggregates)
+            var aggregates = new List<Aggregate> { Aggregate.Average };
+            var defaultOptions = new List<AggregateQuery> {
+                AggregateQuery.Aggregates(aggregates)
             };
-            var options = new List<Aggregated.Option> () {
-                new Aggregated.Option () { Id = Identity.Id(42L), QueryOptions = new List<Aggregated.QueryOption> ()}
+            var options = new List<MultipleAggregateQuery> () {
+                new MultipleAggregateQuery () { Id = Identity.Id(42L), AggregateQuery = new List<AggregateQuery> () }
             };
 
             var result = await client.DataPoints.GetAggregatedMultipleAsync(options, defaultOptions);
@@ -50,11 +49,11 @@ namespace csharp
 
         static async Task CreateTimeseriesDataExample(Client client)
         {
-            var timeseries = new TimeSeries.WritePoco {
+            var timeseries = new TimeSeriesEntity {
                 Name = "Testing"
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<TimeSeries.WritePoco> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesEntity> { timeseries });
 
             Console.WriteLine("{0}", result);
 

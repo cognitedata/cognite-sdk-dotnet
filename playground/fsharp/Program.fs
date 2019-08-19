@@ -10,6 +10,7 @@ open Oryx
 open CogniteSdk
 open CogniteSdk.Assets
 open CogniteSdk.TimeSeries
+open CogniteSdk.DataPoints
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -20,12 +21,12 @@ type Config = {
 
 let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
-        DataPoints.List.listMultipleAsync [
+        DataPoints.listMultipleAsync [
             {
                 Id = Identity.Id 20713436708L
                 QueryOptions = [
-                    DataPoints.List.QueryOption.Start "1524851819000"
-                    DataPoints.List.QueryOption.End "1524859650000"
+                    DataPointQuery.Start "1524851819000"
+                    DataPointQuery.End "1524859650000"
                 ]
             }
         ] [] ctx
@@ -36,7 +37,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
 }
 
 let getAssetsExample (ctx : HttpContext) = async {
-    let! rsp = Assets.List.listAsync [ Assets.List.Option.Limit 2 ] ctx
+    let! rsp = Assets.listAsync [ AssetQuery.Limit 2 ] ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res
@@ -44,7 +45,7 @@ let getAssetsExample (ctx : HttpContext) = async {
 }
 
 let updateAssetsExample (ctx : HttpContext) = async {
-    let! rsp = Assets.Update.updateAsync [(Identity.Id 84025677715833721L, [ Assets.Update.Option.SetName "string3" ] )]  ctx
+    let! rsp = Assets.Update.updateAsync [ (Identity.Id 84025677715833721L, [ AssetUpdate.SetName "string3" ] )]  ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -52,7 +53,7 @@ let updateAssetsExample (ctx : HttpContext) = async {
 
 let searchAssetsExample (ctx : HttpContext) = async {
 
-    let! rsp = Assets.Search.searchAsync 10 [ Assets.Search.Option.Name "VAL" ] [] ctx
+    let! rsp = Assets.Search.searchAsync 10 [ AssetSearch.Name "VAL" ] [] ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err

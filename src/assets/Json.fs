@@ -6,8 +6,8 @@ open Thoth.Json.Net
 
 [<AutoOpen>]
 module AssetsExtensions =
-    type ReadDto with
-        static member Decoder : Decoder<ReadDto> =
+    type AssetReadDto with
+        static member Decoder : Decoder<AssetReadDto> =
             Decode.object (fun get ->
                 let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {
@@ -23,7 +23,7 @@ module AssetsExtensions =
                     RootId = get.Required.Field "rootId" Decode.int64
                 })
 
-    type WriteDto with
+    type AssetWriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
@@ -41,8 +41,8 @@ module AssetsExtensions =
                     yield "parentExternalId", Encode.string this.ParentExternalId.Value
             ]
 
-    type FilterOption with
-        static member Render (this: FilterOption) =
+    type AssetFilter with
+        static member Render (this: AssetFilter) =
             match this with
             | CaseName name -> "name", Encode.string name
             | CaseParentIds ids -> "parentIds", Encode.int53seq ids

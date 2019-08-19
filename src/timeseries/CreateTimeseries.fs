@@ -14,22 +14,22 @@ module Create =
     let Url = "/timeseries"
 
     type TimeseriesRequest = {
-        Items: seq<WriteDto>
+        Items: seq<TimeSeriesWriteDto>
     } with
         member this.Encoder =
             Encode.object [
-                yield ("items", Seq.map (fun (it: WriteDto) -> it.Encoder) this.Items |> Encode.seq)
+                yield ("items", Seq.map (fun (it: TimeSeriesWriteDto) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
     type TimeseriesResponse = {
-        Items: ReadDto seq
+        Items: TimeSeriesReadDto seq
     } with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
             })
 
-    let createCore (items: seq<WriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let createCore (items: seq<TimeSeriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let request : TimeseriesRequest = { Items = items }
         let decoder = Encode.decodeResponse TimeseriesResponse.Decoder id
 
@@ -46,7 +46,7 @@ module Create =
     /// <param name="items">The list of timeseries to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created timeseries.</returns>
-    let create (items: WriteDto list) (next: NextHandler<TimeseriesResponse,'a>) =
+    let create (items: TimeSeriesWriteDto list) (next: NextHandler<TimeseriesResponse,'a>) =
         createCore items fetch next
 
     /// <summary>
@@ -54,7 +54,7 @@ module Create =
     /// </summary>
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
-    let createAsync (items: seq<WriteDto>) =
+    let createAsync (items: seq<TimeSeriesWriteDto>) =
         createCore items fetch Async.single
 
 
@@ -76,13 +76,13 @@ type CreateTimeSeriesClientExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
-    static member CreateAsync (this: ClientExtensions.TimeSeries, items: seq<WritePoco>, [<Optional>] token: CancellationToken) : Task<ReadPoco seq> =
+    static member CreateAsync (this: ClientExtensions.TimeSeries, items: seq<TimeSeriesEntity>, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         async {
-            let items' = items |> Seq.map WriteDto.FromPoco
+            let items' = items |> Seq.map TimeSeriesWriteDto.FromEntity
             let! ctx = Create.createAsync items' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response.Items |> Seq.map (fun ts -> ts.ToPoco ())
+                return response.Items |> Seq.map (fun ts -> ts.ToEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

@@ -8,7 +8,8 @@ open Swensen.Unquote
 
 open Oryx
 open CogniteSdk
-
+open CogniteSdk.TimeSeries
+open CogniteSdk.DataPoints
 
 [<Fact>]
 let ``Create timeseries is Ok`` () = async {
@@ -80,18 +81,18 @@ let ``Parse granularity works`` () =
         "3d"; "d"; "5h"; "h"; "42m"; "m"; "300s"; "s"
     ]
     let expected = [
-        DataPoints.Aggregated.Granularity.Day 3
-        DataPoints.Aggregated.Granularity.Day 1
-        DataPoints.Aggregated.Granularity.Hour 5
-        DataPoints.Aggregated.Granularity.Hour 1
-        DataPoints.Aggregated.Granularity.Minute 42
-        DataPoints.Aggregated.Granularity.Minute 1
-        DataPoints.Aggregated.Granularity.Second 300
-        DataPoints.Aggregated.Granularity.Second 1
+        Granularity.Day 3
+        Granularity.Day 1
+        Granularity.Hour 5
+        Granularity.Hour 1
+        Granularity.Minute 42
+        Granularity.Minute 1
+        Granularity.Second 300
+        Granularity.Second 1
     ]
 
     // Act
-    let granularity = input |> List.map DataPoints.Aggregated.Granularity.FromString
+    let granularity = input |> List.map Granularity.FromString
 
     // Assert
     test <@ granularity = expected @>

@@ -10,6 +10,14 @@ open Oryx
 open CogniteSdk
 open CogniteSdk.TimeSeries
 
+type DataPointCollection = {
+    Id: int64
+    ExternalId: string
+    IsString: bool
+    NumericDataPoints: seq<NumericDataPointDto>
+    StringDataPoints: seq<StringDataPointDto>
+}
+
 [<RequireQualifiedAccess>]
 module Latest =
     [<Literal>]
@@ -38,14 +46,6 @@ module Latest =
                 yield ("items", Seq.map (fun (it: LatestRequest) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    type DataPointsPoco = {
-        Id: int64
-        ExternalId: string
-        IsString: bool
-        NumericDataPoints: seq<NumericDataPointDto>
-        StringDataPoints: seq<StringDataPointDto>
-    }
-
     type DataPoints = {
         Id: int64
         ExternalId: string option
@@ -66,7 +66,7 @@ module Latest =
                     IsString = isString
                     DataPoints = dataPoints
                 })
-        static member ToPoco (item : DataPoints) : DataPointsPoco =
+        static member ToCollection (item : DataPoints) : DataPointCollection =
             let stringDataPoints, numericDataPoints =
                 match item.DataPoints with
                 | String data -> data, Seq.empty
@@ -137,7 +137,7 @@ type GetLatestDataPointExtensions =
     /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
-    static member GetLatestAsync (this: ClientExtensions.DataPoints, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<Latest.DataPointsPoco>> =
+    static member GetLatestAsync (this: ClientExtensions.DataPoints, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<DataPointCollection>> =
         async {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;
@@ -146,7 +146,7 @@ type GetLatestDataPointExtensions =
             let! ctx = Latest.getAsync query this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (Latest.DataPoints.ToPoco)
+                return response |> Seq.map (Latest.DataPoints.ToCollection)
             | Error error ->
                 let err = error2Exception error
                 return raise err

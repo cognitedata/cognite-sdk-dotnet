@@ -3,6 +3,36 @@
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
 
+/// Read/write timeseries type.
+type TimeSeriesEntity internal (externalId: string, name: string, description: string, unit: string, isStep: bool, isString: bool, metaData: IDictionary<string, string>,securityCategories: int64 seq, id: int64, assetId: int64, legacyName: string, createdTime: int64, lastUpdatedTime: int64) =
+
+    let mutable _legacyName : string = legacyName
+
+    member val ExternalId : string = externalId with get, set
+    member val Name : string = name with get, set
+    member val Description : string = description with get, set
+    member val IsStep : bool = isStep with get, set
+    member val IsString : bool = isString with get, set
+    member val Unit : string = unit with get, set
+
+    member val MetaData : IDictionary<string, string> = metaData with get, set
+    member val SecurityCategories : int64 seq = securityCategories with get, set
+    member val Id : int64 = id with get
+    member val AssetId: int64 = assetId with get, set
+    member val CreatedTime : int64 = createdTime with get
+    member val LastUpdatedTime : int64 = lastUpdatedTime with get
+
+    member this.LegacyName
+        with set (value) = _legacyName <- value
+        and internal get () = _legacyName
+
+    // Create new Asset.
+    new () =
+        TimeSeriesEntity(externalId=null, name=null, description=null, unit=null, isStep=false, isString=false, metaData=null, securityCategories=null, id=0L, assetId=0L, legacyName=null, createdTime=0L, lastUpdatedTime=0L)
+    // Create new Asset.
+    new (externalId: string, name: string, description: string, unit: string, isStep: bool, isString: bool, metaData: IDictionary<string, string>, securityCategories: int64 seq, assetId: int64, legacyName: string) =
+        TimeSeriesEntity(externalId=externalId, name=name, description=description, unit=unit, isStep=isStep, isString=isString, metaData=metaData, securityCategories=securityCategories, id=0L, assetId=assetId, legacyName=legacyName, createdTime=0L, lastUpdatedTime=0L)
+
 type NumericDataPointDto = {
     TimeStamp: int64
     Value: float
@@ -54,22 +84,8 @@ type AggregateDataPointReadDto = {
             TotalVariation = Some pt.TotalVariation
         }
 
-// C# compatible Timeserie POCO
-[<CLIMutable>]
-type WritePoco = {
-    ExternalId : string
-    Name : string
-    LegacyName : string
-    Description : string
-    IsString : bool
-    MetaData : IDictionary<string, string>
-    Unit : string
-    AssetId : int64
-    IsStep : bool
-    SecurityCategories : int64 seq
-}
 
-type WriteDto = {
+type TimeSeriesWriteDto = {
     /// Externally provided ID for the time series (optional, but recommended.)
     ExternalId: string option
     /// Unique name of time series
@@ -97,7 +113,7 @@ type WriteDto = {
     /// Security categories required in order to access this time series.
     SecurityCategories: seq<int64>
 } with
-    static member FromPoco (ts: WritePoco) : WriteDto =
+    static member FromEntity (ts: TimeSeriesEntity) : TimeSeriesWriteDto =
         let metaData =
             if not (isNull ts.MetaData) then
                 ts.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -116,23 +132,7 @@ type WriteDto = {
             SecurityCategories = if isNull ts.SecurityCategories then Seq.empty else ts.SecurityCategories
         }
 
-[<CLIMutable>]
-type ReadPoco = {
-    Id : int64
-    ExternalId : string
-    Name : string
-    IsString : bool
-    MetaData : IDictionary<string, string>
-    Unit : string
-    AssetId : int64
-    IsStep : bool
-    Description : string
-    SecurityCategories : int64 seq
-    CreatedTime : int64
-    LastUpdatedTime : int64
-}
-
-type ReadDto = {
+type TimeSeriesReadDto = {
     /// Javascript friendly internal ID given to the object.
     Id: int64
     /// Externally supplied id of the time series
@@ -158,7 +158,7 @@ type ReadDto = {
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 } with
-    member this.ToPoco () : ReadPoco =
+    member this.ToEntity () : TimeSeriesEntity =
         let name = if this.Name.IsSome then this.Name.Value else null
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else null
@@ -167,17 +167,18 @@ type ReadDto = {
         let unit = if this.Unit.IsSome then this.Unit.Value else null
         let sc = if this.SecurityCategories.IsSome then this.SecurityCategories.Value else Seq.empty
 
-        {
-            Id = this.Id
-            ExternalId = externalId
-            Name = name
-            IsString = this.IsString
-            MetaData = metaData
-            Unit = unit
-            AssetId = assetId
-            IsStep = this.IsStep
-            Description = description
-            SecurityCategories = sc
-            CreatedTime = this.CreatedTime
-            LastUpdatedTime = this.LastUpdatedTime
-        }
+        TimeSeriesEntity(
+            id = this.Id,
+            externalId = externalId,
+            name = name,
+            isString = this.IsString,
+            metaData = metaData,
+            unit = unit,
+            assetId = assetId,
+            isStep = this.IsStep,
+            description = description,
+            securityCategories = sc,
+            createdTime = this.CreatedTime,
+            lastUpdatedTime = this.LastUpdatedTime,
+            legacyName = null
+        )

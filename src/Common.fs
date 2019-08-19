@@ -2,7 +2,7 @@
 namespace CogniteSdk
 
 open System
- open System.Text.RegularExpressions
+open System.Text.RegularExpressions
 open System.Reflection
 
 open Oryx
@@ -97,6 +97,7 @@ module Common =
     [<Literal>]
     let MaxLimitSize = 1000
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Context =
     let urlBuilder (request: HttpRequest) =
         let extra = request.Extra
@@ -131,6 +132,7 @@ module Context =
         Context.defaultContext
         |> Context.setUrlBuilder urlBuilder
 
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handlers =
     let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =

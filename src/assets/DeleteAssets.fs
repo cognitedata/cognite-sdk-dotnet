@@ -73,7 +73,7 @@ type DeleteAssetsExtensions =
     [<Extension>]
     static member DeleteAsync(this: ClientExtensions.Assets, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
         async {
-            let! ctx = Assets.Delete.deleteAsync (ids, recursive) this.Ctx
+            let! ctx = Delete.deleteAsync (ids, recursive) this.Ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->

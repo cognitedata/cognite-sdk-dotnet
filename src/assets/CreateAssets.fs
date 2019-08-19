@@ -15,22 +15,22 @@ module Create =
     let Url = "/assets"
 
     type Request = {
-        Items: WriteDto seq
+        Items: AssetWriteDto seq
     } with
          member this.Encoder =
             Encode.object [
-                yield "items", Seq.map (fun (it: WriteDto) -> it.Encoder) this.Items |> Encode.seq
+                yield "items", Seq.map (fun (it: AssetWriteDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
     type AssetResponse = {
-        Items: ReadDto seq
+        Items: AssetReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let createCore (assets: WriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
+    let createCore (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
         let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = assets }
 
@@ -47,7 +47,7 @@ module Create =
     /// <param name="assets">The assets to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created assets.</returns>
-    let create (assets: WriteDto seq) (next: NextHandler<ReadDto seq, 'a>) =
+    let create (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq, 'a>) =
         createCore assets fetch next
 
     /// <summary>
@@ -55,7 +55,7 @@ module Create =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let createAsync (assets: WriteDto seq) =
+    let createAsync (assets: AssetWriteDto seq) =
         createCore assets fetch Async.single
 
 namespace CogniteSdk
@@ -77,13 +77,13 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAsync (this: ClientExtensions.Assets, assets: Asset seq, [<Optional>] token: CancellationToken) : Task<Asset seq> =
+    static member CreateAsync (this: ClientExtensions.Assets, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         async {
-            let assets' = assets |> Seq.map WriteDto.FromAsset
+            let assets' = assets |> Seq.map AssetWriteDto.FromEntity
             let! ctx = Create.createAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToAsset ())
+                return response |> Seq.map (fun asset -> asset.ToEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

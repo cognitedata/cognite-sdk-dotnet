@@ -14,10 +14,10 @@ open Common
 let ``Get timeseries is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let options = [ TimeSeries.List.Option.Limit 10 ]
+    let options = [ TimeSeriesQuery.Limit 10 ]
 
     // Act
-    let! res = TimeSeries.List.listAsync options ctx
+    let! res = TimeSeries.TimeSeries.listAsync options ctx
 
     let len =
         match res.Result with
@@ -89,7 +89,7 @@ let ``Create and delete timeseries is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTest"
-    let dto: TimeSeries.WriteDto = {
+    let dto: TimeSeries.TimeSeriesWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Timeseries sdk test"
         LegacyName = None
@@ -135,7 +135,7 @@ let ``Search timeseries is Ok`` () = async {
 
     // Act
     let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeries.Search.FilterOption.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
 
     let len =
         match res.Result with
@@ -159,7 +159,7 @@ let ``Update timeseries is Ok`` () = async {
         "key2", "value2"
     ]
     |> Map.ofList)
-    let dto : TimeSeries.WriteDto = {
+    let dto : TimeSeries.TimeSeriesWriteDto = {
         MetaData = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
@@ -182,11 +182,11 @@ let ``Update timeseries is Ok`` () = async {
     let! updateRes =
         TimeSeries.Update.updateAsync [
             (externalId, [
-                TimeSeries.Update.Option.SetExternalId (Some newExternalId)
-                TimeSeries.Update.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                TimeSeries.Update.Option.SetDescription (Some newDescription)
-                TimeSeries.Update.Option.SetName None
-                TimeSeries.Update.Option.SetUnit (Some "unit")
+                TimeSeriesUpdate.SetExternalId (Some newExternalId)
+                TimeSeriesUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                TimeSeriesUpdate.SetDescription (Some newDescription)
+                TimeSeriesUpdate.SetName None
+                TimeSeriesUpdate.SetUnit (Some "unit")
             ])
         ] wctx
     let! getRes = TimeSeries.GetByIds.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx

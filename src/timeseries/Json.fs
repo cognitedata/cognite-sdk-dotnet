@@ -23,7 +23,7 @@ module TimeseriesExtensions =
                     Value = get.Required.Field "value" Decode.string
                 })
 
-    type WriteDto with
+    type TimeSeriesWriteDto with
         member this.Encoder =
             Encode.object [
                 if this.ExternalId.IsSome then
@@ -49,8 +49,8 @@ module TimeseriesExtensions =
                     yield "securityCategories", Encode.seq (Seq.map Encode.int53 this.SecurityCategories)
             ]
 
-    type ReadDto with
-        static member Decoder : Decoder<ReadDto> =
+    type TimeSeriesReadDto with
+        static member Decoder : Decoder<TimeSeriesReadDto> =
             Decode.object (fun get ->
                 let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 {
