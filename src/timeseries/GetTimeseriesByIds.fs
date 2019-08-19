@@ -87,7 +87,7 @@ type GetTimeseriesByIdsClientExtensions =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
-    static member GetByIdsAsync (this: ClientExtensions.TimeSeries, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
+    static member GetByIdsAsync (this: TimeSeriesClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
         async {
             let! ctx = GetByIds.getByIdsAsync ids this.Ctx
 

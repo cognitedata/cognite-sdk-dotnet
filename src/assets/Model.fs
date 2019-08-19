@@ -1,6 +1,8 @@
 namespace CogniteSdk.Assets
 
+
 open System.Collections.Generic
+open Oryx
 
 /// Read/write asset entity type.
 type AssetEntity internal (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =
@@ -138,3 +140,6 @@ type AssetWriteDto = {
             Source = if isNull asset.Source then None else Some asset.Source
             ParentExternalId = if isNull asset.ParentExternalId then None else Some asset.ParentExternalId
         }
+type ClientExtension internal (context: HttpContext) =
+    member internal __.Ctx =
+        context

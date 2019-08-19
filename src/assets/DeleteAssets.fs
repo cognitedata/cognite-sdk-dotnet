@@ -71,7 +71,7 @@ type DeleteAssetsExtensions =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     [<Extension>]
-    static member DeleteAsync(this: ClientExtensions.Assets, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync(this: ClientExtension, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Delete.deleteAsync (ids, recursive) this.Ctx
             match ctx.Result with

@@ -64,7 +64,7 @@ type DeleteTimeSeriesClientExtensions =
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     [<Extension>]
-    static member DeleteAsync (this: ClientExtensions.TimeSeries, items: Identity seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync (this: TimeSeriesClientExtension, items: Identity seq, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Delete.deleteAsync items this.Ctx
             match ctx.Result with

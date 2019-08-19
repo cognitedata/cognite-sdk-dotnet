@@ -170,7 +170,7 @@ type ListAssetsClientExtension =
     /// <param name="args">The asset argument object containing parameters to get used for the asset query.</param>
     /// <returns>List of assets and optional cursor.</returns>
     [<Extension>]
-    static member ListAsync (this: ClientExtensions.Assets, args: AssetQuery seq, [<Optional>] token: CancellationToken) =
+    static member ListAsync (this: ClientExtension, args: AssetQuery seq, [<Optional>] token: CancellationToken) =
         async {
             let! ctx = Assets.listAsync args this.Ctx
             match ctx.Result with

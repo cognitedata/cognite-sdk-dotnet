@@ -111,7 +111,7 @@ type ListTimeseriesClientExtensions =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
-    static member ListAsync (this: ClientExtensions.TimeSeries, options: TimeSeries.TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
+    static member ListAsync (this: TimeSeriesClientExtension, options: TimeSeries.TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
         async {
             let! ctx = TimeSeries.listAsync options this.Ctx
 

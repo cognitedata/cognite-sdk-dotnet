@@ -100,7 +100,7 @@ type FilterAssetsExtensions =
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member FilterAsync (this: ClientExtensions.Assets, options: AssetFilterQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) =
+    static member FilterAsync (this: ClientExtension, options: AssetFilterQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) =
         async {
             let! ctx = Filter.filterAsync options filters this.Ctx
             match ctx.Result with

@@ -116,7 +116,7 @@ type SearchAssetsClientExtensions =
     ///
     /// <returns>List of assets matching given criteria.</returns>
     [<Extension>]
-    static member SearchAsync (this: ClientExtensions.Assets, limit : int, options: AssetSearch seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member SearchAsync (this: ClientExtension, limit : int, options: AssetSearch seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
             let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with

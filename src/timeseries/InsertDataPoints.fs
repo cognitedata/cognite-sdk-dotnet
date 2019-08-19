@@ -104,7 +104,7 @@ type InsertDataPointsClientExtensions =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
-    static member InsertAsync (this: ClientExtensions.DataPoints, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
+    static member InsertAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Insert.insertAsyncProto items this.Ctx
             match ctx.Result with

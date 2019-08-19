@@ -83,7 +83,7 @@ type GetAssetsByIdsClientExtensions =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     [<Extension>]
-    static member GetByIdsAsync (this: ClientExtensions.Assets, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
             let! ctx = Retrieve.getByIdsAsync ids this.Ctx
             match ctx.Result with

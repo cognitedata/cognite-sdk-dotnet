@@ -202,7 +202,7 @@ type UpdateAssetsClientExtensions =
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
     [<Extension>]
-    static member UpdateAsync (this: ClientExtensions.Assets, assets: ValueTuple<Identity, AssetUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
+    static member UpdateAsync (this: ClientExtension, assets: ValueTuple<Identity, AssetUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         async {
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync assets' this.Ctx

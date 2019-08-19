@@ -57,7 +57,7 @@ type GetAssetClientExtensions =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     [<Extension>]
-    static member GetAsync (this: ClientExtensions.Assets, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
+    static member GetAsync (this: ClientExtension, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
         async {
             let! ctx = Single.getAsync assetId this.Ctx
             match ctx.Result with

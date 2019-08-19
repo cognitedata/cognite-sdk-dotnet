@@ -77,7 +77,7 @@ type CreateAssetsExtensions =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     [<Extension>]
-    static member CreateAsync (this: ClientExtensions.Assets, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
+    static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         async {
             let assets' = assets |> Seq.map AssetWriteDto.FromEntity
             let! ctx = Create.createAsync assets' this.Ctx

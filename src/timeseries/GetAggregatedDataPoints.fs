@@ -307,7 +307,7 @@ type AggregatedClientExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedAsync (this: ClientExtensions.DataPoints, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedAsync (this: TimeSeries.DataPointsClientExtension, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = Aggregated.getAggregatedDataPointsProto id options this.Ctx
             match ctx.Result with
@@ -326,7 +326,7 @@ type AggregatedClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedMultipleAsync (this: ClientExtensions.DataPoints, options: MultipleAggregateQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: MultipleAggregateQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = Aggregated.getAggregatedMultipleProto options defaultOptions this.Ctx
             match ctx.Result with

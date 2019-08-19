@@ -2,6 +2,7 @@
 
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
+open Oryx
 
 /// Read/write timeseries type.
 type TimeSeriesEntity internal (externalId: string, name: string, description: string, unit: string, isStep: bool, isString: bool, metaData: IDictionary<string, string>,securityCategories: int64 seq, id: int64, assetId: int64, legacyName: string, createdTime: int64, lastUpdatedTime: int64) =
@@ -182,3 +183,11 @@ type TimeSeriesReadDto = {
             lastUpdatedTime = this.LastUpdatedTime,
             legacyName = null
         )
+
+type TimeSeriesClientExtension internal (context: HttpContext) =
+    member internal __.Ctx =
+        context
+
+type DataPointsClientExtension internal (context: HttpContext) =
+    member internal __.Ctx =
+        context

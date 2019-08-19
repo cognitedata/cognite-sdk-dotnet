@@ -161,7 +161,7 @@ type SearchTimeSeriesClientExtensions =
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
-    static member SearchAsync (this: ClientExtensions.TimeSeries, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member SearchAsync (this: TimeSeriesClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
             let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with
