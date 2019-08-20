@@ -26,25 +26,19 @@ module TimeseriesExtensions =
     type TimeSeriesWriteDto with
         member this.Encoder =
             Encode.object [
-                if this.ExternalId.IsSome then
-                    yield "externalId", Encode.string this.ExternalId.Value
-                if this.Name.IsSome then
-                    yield "name", Encode.string this.Name.Value
-                if this.LegacyName.IsSome then
-                    yield "legacyName", Encode.string this.LegacyName.Value
-                if this.Description.IsSome then
-                    yield "description", Encode.string this.Description.Value
+                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
+                yield! Encode.optionalProperty "name" Encode.string this.Name
+                yield! Encode.optionalProperty "legacyName" Encode.string this.LegacyName
+                yield! Encode.optionalProperty "description" Encode.string this.Description
+                yield! Encode.optionalProperty "unit" Encode.string this.Unit
+                yield! Encode.optionalProperty "assetId" Encode.int53 this.AssetId
                 if this.IsString then
                     yield ("isString", Encode.bool this.IsString)
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.dict (Map.map (fun key value -> Encode.string value) this.MetaData)
                     yield "metadata", metaString
-                if this.Unit.IsSome then
-                    yield "unit", Encode.string this.Unit.Value
                 if this.IsStep then
                     yield "isStep", Encode.bool this.IsStep
-                if this.AssetId.IsSome then
-                    yield "assetId", Encode.int53 this.AssetId.Value
                 if not (Seq.isEmpty this.SecurityCategories) then
                     yield "securityCategories", Encode.seq (Seq.map Encode.int53 this.SecurityCategories)
             ]

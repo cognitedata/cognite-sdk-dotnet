@@ -26,19 +26,15 @@ module AssetsExtensions =
     type AssetWriteDto with
         member this.Encoder =
             Encode.object [
-                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
                 yield "name", Encode.string this.Name
-                if this.ParentId.IsSome then
-                    yield "parentId", Encode.int53 this.ParentId.Value
-                if this.Description.IsSome then
-                    yield "description", Encode.string this.Description.Value
+                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
+                yield! Encode.optionalProperty "parentId" Encode.int53 this.ParentId
+                yield! Encode.optionalProperty "description" Encode.string this.Description
+                yield! Encode.optionalProperty "source" Encode.string this.Source
+                yield! Encode.optionalProperty "parentExternalId" Encode.string this.ParentExternalId
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.propertyBag this.MetaData
                     yield "metadata", metaString
-                if this.Source.IsSome then
-                    yield "source", Encode.string this.Source.Value
-                if this.ParentExternalId.IsSome then
-                    yield "parentExternalId", Encode.string this.ParentExternalId.Value
             ]
 
     type AssetFilter with
