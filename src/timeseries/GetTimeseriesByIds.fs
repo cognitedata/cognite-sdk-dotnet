@@ -24,11 +24,11 @@ module GetByIds =
             ]
 
     type TimeseriesResponse = {
-        Items: ReadDto seq
+        Items: TimeSeriesReadDto seq
     } with
         static member Decoder : Decoder<TimeseriesResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder)
+                Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
@@ -52,7 +52,7 @@ module GetByIds =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given ids.</returns>
-    let getByIds (ids: seq<Identity>) (next: NextHandler<ReadDto seq,'a>)=
+    let getByIds (ids: seq<Identity>) (next: NextHandler<TimeSeriesReadDto seq,'a>)=
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -87,13 +87,13 @@ type GetTimeseriesByIdsClientExtensions =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
-    static member GetByIdsAsync (this: ClientExtensions.TimeSeries, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
+    static member GetByIdsAsync (this: TimeSeriesClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
         async {
             let! ctx = GetByIds.getByIdsAsync ids this.Ctx
 
             match ctx.Result with
             | Ok tss ->
-                return tss |> Seq.map (fun ts -> ts.ToPoco ())
+                return tss |> Seq.map (fun ts -> ts.ToEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

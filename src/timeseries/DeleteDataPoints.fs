@@ -7,18 +7,17 @@ open Oryx
 open Thoth.Json.Net
 open CogniteSdk
 
+[<CLIMutable>]
+type DataPointsDelete = {
+    InclusiveBegin : int64
+    ExclusiveEnd : int64
+    Id : Identity
+}
 
 [<RequireQualifiedAccess>]
 module Delete =
     [<Literal>]
     let Url = "/timeseries/data/delete"
-
-    [<CLIMutable>]
-    type DeleteRequestPoco = {
-        InclusiveBegin : int64
-        ExclusiveEnd : int64
-        Id : Identity
-    }
 
     type DeleteRequestDto = {
         /// Inclusive start time to delete from
@@ -28,7 +27,7 @@ module Delete =
         /// Id of timeseries to delete from
         Id : Identity
     } with
-        static member FromPoco (item : DeleteRequestPoco) : DeleteRequestDto =
+        static member FromDelete (item : DataPointsDelete) : DeleteRequestDto =
             {
                 InclusiveBegin = item.InclusiveBegin
                 ExclusiveEnd = if item.ExclusiveEnd = 0L then None else Some item.ExclusiveEnd
@@ -94,9 +93,9 @@ type DeleteDataPointsClientExtensions =
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     [<Extension>]
-    static member DeleteAsync (this: ClientExtensions.DataPoints, items: Delete.DeleteRequestPoco seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
         async {
-            let items' = items |> Seq.map Delete.DeleteRequestDto.FromPoco
+            let items' = items |> Seq.map Delete.DeleteRequestDto.FromDelete
             let! ctx = Delete.deleteAsync items' this.Ctx
             match ctx.Result with
             | Ok _ -> return ()

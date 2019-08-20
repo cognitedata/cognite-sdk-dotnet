@@ -16,10 +16,10 @@ open Tests
 let ``Get assets with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
-    let options = [ Assets.List.Option.Limit 10 ]
+    let query = [ AssetQuery.Limit 10 ]
 
     // Act
-    let! res = Assets.List.listAsync options ctx
+    let! res = Assets.listAsync query ctx
 
     let len =
         match res.Result with
@@ -40,7 +40,7 @@ let ``Get asset by id is Ok`` () = async {
     let assetId = 130452390632424L
 
     // Act
-    let! res = Assets.Get.getAsync assetId ctx
+    let! res = Assets.Single.getAsync assetId ctx
 
     let resId =
         match res.Result with
@@ -61,7 +61,7 @@ let ``Get asset by missing id is Error`` () = async {
     let assetId = 0L
 
     // Act
-    let! res = Assets.Get.getAsync assetId ctx
+    let! res = Assets.Single.getAsync assetId ctx
 
     let err =
         match res.Result with
@@ -102,7 +102,7 @@ let ``Search assets is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        Assets.Search.Option.Name "23"
+        AssetSearch.Name "23"
     ]
 
     // Act
@@ -125,10 +125,10 @@ let ``Filter assets is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        Assets.Filter.Option.Limit 10
+        AssetFilterQuery.Limit 10
     ]
     let filters = [
-        Assets.FilterOption.RootIds [ Identity.Id 6687602007296940L ]
+        AssetFilter.RootIds [ Identity.Id 6687602007296940L ]
     ]
 
     // Act
@@ -151,7 +151,7 @@ let ``Create and delete assets is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTestAssets"
-    let dto: Assets.WriteDto = {
+    let dto: AssetWriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
         ParentId = None
@@ -198,7 +198,7 @@ let ``Update assets is Ok`` () = async {
         "key2", "value2"
     ]
     |> Map.ofList)
-    let dto: Assets.WriteDto = {
+    let dto: AssetWriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
         ParentId = None
@@ -217,8 +217,8 @@ let ``Update assets is Ok`` () = async {
     let! updateRes =
         Assets.Update.updateAsync [
             (externalId, [
-                Assets.Update.Option.SetName newName
-                Assets.Update.Option.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                AssetUpdate.SetName newName
+                AssetUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
             ])
         ] wctx
     let! getRes = Assets.Retrieve.getByIdsAsync [ externalId ] wctx

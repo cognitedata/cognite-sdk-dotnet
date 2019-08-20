@@ -1,18 +1,19 @@
 namespace CogniteSdk.Assets
 
-open System.Collections.Generic
-open CogniteSdk
 
-/// Read/write asset type.
-type Asset internal (externalId: string, name: string, description: string, parentId: int64, metadata: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =
+open System.Collections.Generic
+open Oryx
+
+/// Read/write asset entity type.
+type AssetEntity internal (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =
     let mutable _parentExternalId : string = parentExternalId
 
     member val ExternalId : string = externalId with get, set
-    member val Name : string = null with get, set
-    member val ParentId : int64 = 0L with get, set
-    member val Description : string = null with get, set
-    member val MetaData : IDictionary<string, string> = null with get, set
-    member val Source : string = null with get, set
+    member val Name : string = name with get, set
+    member val ParentId : int64 = parentId with get, set
+    member val Description : string = description with get, set
+    member val MetaData : IDictionary<string, string> = metaData with get, set
+    member val Source : string = source with get, set
 
     member val Id : int64 = id with get
     member val CreatedTime : int64 = createdTime with get
@@ -22,15 +23,16 @@ type Asset internal (externalId: string, name: string, description: string, pare
         with set (value) = _parentExternalId <- value
         and internal get () = _parentExternalId
 
-    // Create new Asset.
+    /// Create new empty AssetEntity. Set content using the properties.
     new () =
-        Asset(null, null, null, 0L, null, null, 0L, 0L, 0L, 0L, null)
-    // Create new Asset.
-    new (externalId: string, name: string, description: string, parentId: int64, metadata: IDictionary<string, string>, source: string, parentExternalId: string) =
-        Asset(externalId, name, description, parentId, metadata, source, 0L, 0L, 0L, 0L, parentExternalId)
+        AssetEntity(null, null, null, 0L, null, null, 0L, 0L, 0L, 0L, null)
+    /// Create new Asset.
+    new (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, parentExternalId: string) =
+        AssetEntity(externalId, name, description, parentId, metaData, source, 0L, 0L, 0L, 0L, parentExternalId)
 
+/// Read/write asset type.
 /// Asset type for responses.
-type ReadDto = {
+type AssetReadDto = {
     /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// The name of the asset.
@@ -53,19 +55,19 @@ type ReadDto = {
     RootId: int64
 } with
     /// Translates the domain type to a plain old crl object
-    member this.ToAsset () : Asset =
+    member this.ToEntity () : AssetEntity =
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
         let parentId = if this.ParentId.IsSome then this.ParentId.Value else 0L
 
-        Asset(
+        AssetEntity(
             externalId = externalId,
             name = this.Name,
             description = description,
             parentId = parentId,
-            metadata = metaData,
+            metaData = metaData,
             source = source,
             id = this.Id,
             createdTime = this.CreatedTime,
@@ -74,15 +76,15 @@ type ReadDto = {
             parentExternalId = null
         )
 
-type FilterOption =
+type AssetFilter =
     private
     | CaseName of string
     | CaseParentIds of int64 seq
-    | CaseRootIds of Identity seq
+    | CaseRootIds of CogniteSdk.Identity seq
     | CaseMetaData of Map<string, string>
     | CaseSource of string
-    | CaseCreatedTime of TimeRange
-    | CaseLastUpdatedTime of TimeRange
+    | CaseCreatedTime of CogniteSdk.TimeRange
+    | CaseLastUpdatedTime of CogniteSdk.TimeRange
     | CaseRoot of bool
     | CaseExternalIdPrefix of string
 
@@ -107,7 +109,7 @@ type FilterOption =
     static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
 
 /// Asset type for create requests.
-type WriteDto = {
+type AssetWriteDto = {
     /// External Id provided by client. Must be unique within the project.
     ExternalId: string option
     /// Name of asset. Often referred to as tag.
@@ -123,7 +125,7 @@ type WriteDto = {
     /// External Id of parent asset provided by client. Must be unique within the project.
     ParentExternalId: string option
 } with
-    static member FromAsset (asset: Asset) : WriteDto =
+    static member FromEntity (asset: AssetEntity) : AssetWriteDto =
         let metaData =
             if not (isNull asset.MetaData) then
                 asset.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -139,3 +141,6 @@ type WriteDto = {
             ParentExternalId = if isNull asset.ParentExternalId then None else Some asset.ParentExternalId
         }
 
+type ClientExtension internal (context: HttpContext) =
+    member internal __.Ctx =
+        context

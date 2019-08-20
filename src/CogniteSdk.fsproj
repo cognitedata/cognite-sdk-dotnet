@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Error.fs" />
-    <Compile Include="Client.fs" />
     <Compile Include="assets/Model.fs" />
     <Compile Include="assets/Json.fs" />
     <Compile Include="assets/CreateAssets.fs" />
@@ -35,6 +34,7 @@
     <Compile Include="timeseries/InsertDataPoints.fs" />
     <Compile Include="timeseries/UpdateTimeseries.fs" />
     <Compile Include="timeseries/DeleteDataPoints.fs" />
+    <Compile Include="Client.fs" />
   </ItemGroup>
 
   <Import Project="..\.paket\Paket.Restore.targets" />

@@ -3,13 +3,12 @@ namespace CogniteSdk.Assets
 open System.IO
 open System.Net.Http
 
-
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
 
-[<RequireQualifiedAccess>]
+[<AutoOpen>]
 module Retrieve =
     [<Literal>]
     let Url = "/assets/byids"
@@ -22,11 +21,11 @@ module Retrieve =
             ]
 
     type AssetResponse = {
-        Items: ReadDto seq
+        Items: AssetReadDto seq
     } with
          static member Decoder : Decoder<AssetResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
@@ -48,7 +47,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Assets with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextHandler<ReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -83,12 +82,12 @@ type GetAssetsByIdsClientExtensions =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     [<Extension>]
-    static member GetByIdsAsync (this: ClientExtensions.Assets, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
             let! ctx = Retrieve.getByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.ToAsset ())
+                return assets |> Seq.map (fun asset -> asset.ToEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err
