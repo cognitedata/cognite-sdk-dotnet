@@ -7,8 +7,8 @@ open CogniteSdk
 
 [<AutoOpen>]
 module EventExtensions =
-    type ReadDto with
-        static member Decoder : Decoder<ReadDto> =
+    type EventReadDto with
+        static member Decoder : Decoder<EventReadDto> =
             Decode.object (fun get ->
                 let metadata = get.Optional.Field "metadata" (Decode.dict Decode.string)
                 let assetIds = get.Optional.Field "assetIds" (Decode.list Decode.int64)
@@ -27,7 +27,7 @@ module EventExtensions =
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
-    type WriteDto with
+    type EventWriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
