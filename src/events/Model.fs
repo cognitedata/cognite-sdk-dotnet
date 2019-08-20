@@ -1,7 +1,7 @@
 namespace CogniteSdk.Events
 
 open System.Collections.Generic
-open CogniteSdk
+open Oryx
 
 /// Read/write event type.
 type Event internal (externalId: string, startTime: int64, endTime: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64) =
@@ -121,3 +121,6 @@ type WriteDto = {
             Source = if isNull event.Source then None else Some event.Source
         }
 
+type EventsClientExtension internal (context: HttpContext) =
+    member internal __.Ctx =
+        context
