@@ -38,11 +38,11 @@ namespace csharp
             var defaultOptions = new List<AggregateQuery> {
                 AggregateQuery.Aggregates(aggregates)
             };
-            var options = new List<MultipleAggregateQuery> () {
-                new MultipleAggregateQuery () { Id = Identity.Id(42L), AggregateQuery = new List<AggregateQuery> () }
+            var query = new List<AggregateMultipleQuery> () {
+                new AggregateMultipleQuery () { Id = Identity.Id(42L), AggregateQuery = new List<AggregateQuery> () }
             };
 
-            var result = await client.DataPoints.GetAggregatedMultipleAsync(options, defaultOptions);
+            var result = await client.DataPoints.GetAggregatedMultipleAsync(query, defaultOptions);
             Console.WriteLine("{0}", result.Items.First().AggregateDatapoints.Datapoints.First().Average);
             Console.WriteLine("{0}", result);
         }

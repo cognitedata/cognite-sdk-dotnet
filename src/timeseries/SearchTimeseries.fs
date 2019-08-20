@@ -107,7 +107,7 @@ module Search =
         ]
 
     let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = Encode.decodeResponse TimeSeries.TimeseriesResponse.Decoder (fun assets -> assets.Items)
+        let decoder = Encode.decodeResponse TimeSeries.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST

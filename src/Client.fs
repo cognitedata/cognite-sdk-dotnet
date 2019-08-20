@@ -64,6 +64,9 @@ type Client private (context: HttpContext) =
 
         Client context
 
+    /// Client Assets extension methods
     member val Assets = Assets.ClientExtension context with get
+    /// Client TimeSeries extension methods
     member val TimeSeries = TimeSeries.TimeSeriesClientExtension context with get
+    /// Client DataPoints extension methods
     member val DataPoints = TimeSeries.DataPointsClientExtension context with get

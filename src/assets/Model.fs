@@ -140,6 +140,7 @@ type AssetWriteDto = {
             Source = if isNull asset.Source then None else Some asset.Source
             ParentExternalId = if isNull asset.ParentExternalId then None else Some asset.ParentExternalId
         }
+
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =
         context

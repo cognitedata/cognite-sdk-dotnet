@@ -38,11 +38,11 @@ module TimeSeries =
     [<Literal>]
     let Url = "/timeseries"
 
-    type TimeseriesResponse = {
+    type TimeSeriesItemsDto = {
         Items: TimeSeriesReadDto seq
         NextCursor: string option
     } with
-        static member Decoder : Decoder<TimeseriesResponse> =
+        static member Decoder : Decoder<TimeSeriesItemsDto> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
@@ -62,7 +62,7 @@ module TimeSeries =
             "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
     let listCore (query: TimeSeriesQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse<TimeseriesResponse, TimeseriesResponse, 'a> TimeseriesResponse.Decoder id
+        let decoder = Encode.decodeResponse<TimeSeriesItemsDto, TimeSeriesItemsDto, 'a> TimeSeriesItemsDto.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
         GET
@@ -79,7 +79,7 @@ module TimeSeries =
     /// <param name="options">Timeseries lookup options.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let list (options: TimeSeriesQuery seq) (next: NextHandler<TimeseriesResponse,'a>) : HttpContext -> Async<Context<'a>> =
+    let list (options: TimeSeriesQuery seq) (next: NextHandler<TimeSeriesItemsDto,'a>) : HttpContext -> Async<Context<'a>> =
         listCore options fetch next
 
     /// <summary>
@@ -101,6 +101,11 @@ open System.Threading
 open Oryx
 open CogniteSdk.TimeSeries
 
+[<CLIMutable>]
+type TimeSeriesItems = {
+    Items: TimeSeriesEntity seq
+    NextCursor: string
+}
 
 [<Extension>]
 type ListTimeseriesClientExtensions =
@@ -117,10 +122,9 @@ type ListTimeseriesClientExtensions =
 
             match ctx.Result with
             | Ok response ->
-                return {|
-                        Items = response.Items |> Seq.map (fun item -> item.ToEntity ())
-                        NextCursor = response.NextCursor
-                    |}
+                let items = response.Items |> Seq.map (fun item -> item.ToEntity ())
+                let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
+                return { Items = items; NextCursor = cursor }
             | Error error ->
                 let err = error2Exception error
                 return raise err

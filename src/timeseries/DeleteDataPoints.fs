@@ -27,7 +27,7 @@ module Delete =
         /// Id of timeseries to delete from
         Id : Identity
     } with
-        static member FromPoco (item : DataPointsDelete) : DeleteRequestDto =
+        static member FromDelete (item : DataPointsDelete) : DeleteRequestDto =
             {
                 InclusiveBegin = item.InclusiveBegin
                 ExclusiveEnd = if item.ExclusiveEnd = 0L then None else Some item.ExclusiveEnd
@@ -95,7 +95,7 @@ type DeleteDataPointsClientExtensions =
     [<Extension>]
     static member DeleteAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
         async {
-            let items' = items |> Seq.map Delete.DeleteRequestDto.FromPoco
+            let items' = items |> Seq.map Delete.DeleteRequestDto.FromDelete
             let! ctx = Delete.deleteAsync items' this.Ctx
             match ctx.Result with
             | Ok _ -> return ()

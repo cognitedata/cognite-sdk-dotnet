@@ -14,7 +14,7 @@ module Delete =
     [<Literal>]
     let Url = "/timeseries/delete"
 
-    type DeleteRequest = {
+    type private DeleteRequest = {
         Items: seq<Identity>
     } with
         member this.Encoder =

@@ -18,6 +18,7 @@ type DataPointQuery =
     | CaseEnd of string
     | CaseLimit of int32
     | CaseIncludeOutsidePoints of bool
+
     /// Start point as cdf timestamp string
     static member Start start =
         CaseStart start

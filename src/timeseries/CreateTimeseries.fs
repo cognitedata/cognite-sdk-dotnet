@@ -13,7 +13,7 @@ module Create =
     [<Literal>]
     let Url = "/timeseries"
 
-    type TimeseriesRequest = {
+    type private TimeseriesRequest = {
         Items: seq<TimeSeriesWriteDto>
     } with
         member this.Encoder =

@@ -138,7 +138,7 @@ type AggregateQuery =
         CaseLimit limit
 
  [<CLIMutable>]
-type MultipleAggregateQuery = {
+type AggregateMultipleQuery = {
     Id: Identity
     AggregateQuery: AggregateQuery seq
 }
@@ -184,7 +184,7 @@ module Aggregated =
         | CaseGranularity gr -> "granularity", Encode.string (gr.ToString ())
         | CaseLimit limit -> "limit", Encode.int limit
 
-    let renderDataQuery (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) =
+    let renderDataQuery (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
         Encode.object [
             yield "items", Encode.list [
                 for option in options do
@@ -199,7 +199,7 @@ module Aggregated =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let getAggregatedCore (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
@@ -211,7 +211,7 @@ module Aggregated =
         >=> fetch
         >=> decoder
 
-    let getAggregatedProto (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
         let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
@@ -231,7 +231,7 @@ module Aggregated =
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
     let getAggregated (id: Identity) (options: AggregateQuery seq) (next: NextHandler<DataPoints seq,'a>) =
-        let options' : MultipleAggregateQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
+        let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
         getAggregatedCore options' Seq.empty fetch next
 
     /// <summary>
@@ -241,7 +241,7 @@ module Aggregated =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
     let getAggregatedAsync (id: Identity) (options: AggregateQuery seq) =
-        let options' : MultipleAggregateQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
+        let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
         getAggregatedCore options' Seq.empty fetch Async.single
 
     /// <summary>
@@ -251,7 +251,7 @@ module Aggregated =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedDataPointsProto (id: Identity) (options: AggregateQuery seq) =
-        let options' : MultipleAggregateQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
+        let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
         getAggregatedProto options' Seq.empty fetch Async.single
 
     /// <summary>
@@ -262,7 +262,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedMultiple (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) (next: NextHandler<DataPoints seq,'a>) =
+    let getAggregatedMultiple (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (next: NextHandler<DataPoints seq,'a>) =
         getAggregatedCore options defaultOptions fetch next
 
     /// <summary>
@@ -272,7 +272,7 @@ module Aggregated =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedMultipleAsync (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) =
+    let getAggregatedMultipleAsync (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
         getAggregatedCore options defaultOptions fetch Async.single
 
     /// <summary>
@@ -282,7 +282,7 @@ module Aggregated =
     /// <param name="defaultOptions">Parameters describing a query for multiple datapoints. If fields in individual
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
-    let getAggregatedMultipleProto (options: MultipleAggregateQuery seq) (defaultOptions: AggregateQuery seq) =
+    let getAggregatedMultipleProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
         getAggregatedProto options defaultOptions fetch Async.single
 
 namespace CogniteSdk
@@ -326,7 +326,7 @@ type AggregatedClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: MultipleAggregateQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: AggregateMultipleQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = Aggregated.getAggregatedMultipleProto options defaultOptions this.Ctx
             match ctx.Result with
