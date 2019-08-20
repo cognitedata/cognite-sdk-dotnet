@@ -65,7 +65,7 @@ type DeleteEventExtensions =
     /// <param name="ids">The list of events to delete</param>
     /// <param name="token">Propagates notification that operations should be canceled</param>
     [<Extension>]
-    static member DeleteAsync(this: EventsClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync(this: ClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Events.Delete.deleteAsync (ids) this.Ctx
             match ctx.Result with

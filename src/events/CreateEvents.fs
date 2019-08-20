@@ -15,22 +15,22 @@ module Create =
     let Url = "/events"
 
     type Request = {
-        Items: WriteDto seq
+        Items: EventWriteDto seq
     } with
          member this.Encoder =
             Encode.object [
-                yield "items", Seq.map (fun (it: WriteDto) -> it.Encoder) this.Items |> Encode.seq
+                yield "items", Seq.map (fun (it: EventWriteDto) -> it.Encoder) this.Items |> Encode.seq
             ]
 
     type EventResponse = {
-        Items: ReadDto seq
+        Items: EventReadDto seq
     } with
          static member Decoder : Decoder<EventResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list ReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
             })
 
-    let createCore (events: WriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
+    let createCore (events: EventWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
         let decoder = Encode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = events }
 
@@ -47,7 +47,7 @@ module Create =
     /// <param name="events">List of events to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created events.</returns>
-    let create (events: WriteDto seq) (next: NextHandler<ReadDto seq, 'a>) =
+    let create (events: EventWriteDto seq) (next: NextHandler<EventReadDto seq, 'a>) =
         createCore events fetch next
 
     /// <summary>
@@ -55,7 +55,7 @@ module Create =
     /// </summary>
     /// <param name="events">The events to create.</param>
     /// <returns>List of created events.</returns>
-    let createAsync (events: WriteDto seq) =
+    let createAsync (events: EventWriteDto seq) =
         createCore events fetch Async.single
 
 namespace CogniteSdk
@@ -76,9 +76,9 @@ type CreateEventExtensions =
     /// <param name="token">Propagates notification that operations should be canceled</param>
     /// <returns>List of created events.</returns>
     [<Extension>]
-    static member CreateAsync(this: EventsClientExtension, events: Event seq, [<Optional>] token: CancellationToken) : Task<Event seq> =
+    static member CreateAsync(this: ClientExtension, events: EventEntity seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
         async {
-            let events' = events |> Seq.map WriteDto.FromEvent
+            let events' = events |> Seq.map EventWriteDto.FromEvent
             let! ctx = Create.createAsync events' this.Ctx
             match ctx.Result with
             | Ok response ->

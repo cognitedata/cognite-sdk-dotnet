@@ -71,4 +71,4 @@ type Client private (context: HttpContext) =
     /// Client DataPoints extension methods
     member val DataPoints = TimeSeries.DataPointsClientExtension context with get
     /// Client Events extension methods
-    member val Events = Events.EventsClientExtension context with get
+    member val Events = Events.ClientExtension context with get
