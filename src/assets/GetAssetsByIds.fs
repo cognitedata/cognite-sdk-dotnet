@@ -2,6 +2,10 @@ namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
@@ -60,17 +64,6 @@ module Retrieve =
     let getByIdsAsync (ids: Identity seq) =
         getByIdsCore ids fetch Async.single
 
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-
-open Oryx
-open CogniteSdk.Assets
 
 [<Extension>]
 type GetAssetsByIdsClientExtensions =

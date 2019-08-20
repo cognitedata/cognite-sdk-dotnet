@@ -2,11 +2,16 @@ namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+
 
 [<RequireQualifiedAccess>]
 module Create =
@@ -57,16 +62,6 @@ module Create =
     let createAsync (items: seq<TimeSeriesWriteDto>) =
         createCore items fetch Async.single
 
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.TimeSeries
 
 [<Extension>]
 type CreateTimeSeriesClientExtensions =

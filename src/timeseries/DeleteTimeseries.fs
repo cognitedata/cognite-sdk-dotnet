@@ -2,6 +2,10 @@ namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
@@ -46,16 +50,6 @@ module Delete =
     /// <param name="items">List of timeseries ids to delete.</param>
     let deleteAsync (items: Identity seq) =
         deleteCore items fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.TimeSeries
 
 [<Extension>]
 type DeleteTimeSeriesClientExtensions =

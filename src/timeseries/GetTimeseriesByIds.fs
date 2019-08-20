@@ -2,10 +2,16 @@ namespace CogniteSdk.TimeSeries
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Threading.Tasks
+open System.Runtime.InteropServices
+open System.Threading
 
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
+open CogniteSdk.TimeSeries
 
 
 [<RequireQualifiedAccess>]
@@ -64,18 +70,6 @@ module GetByIds =
     /// <returns>The timeseries with the given ids.</returns>
     let getByIdsAsync (ids: seq<Identity>) =
         getByIdsCore ids fetch Async.single
-
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.TimeSeries
-
 
 [<Extension>]
 type GetTimeseriesByIdsClientExtensions =

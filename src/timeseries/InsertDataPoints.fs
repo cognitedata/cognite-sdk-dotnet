@@ -2,11 +2,14 @@ namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading.Tasks
+open System.Threading
 
 open Com.Cognite.V1.Timeseries.Proto
-
-
 open Oryx
+
 open CogniteSdk
 open CogniteSdk.TimeSeries
 
@@ -82,20 +85,6 @@ module Insert =
     /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param>
     let insertAsyncProto (items: DataPointInsertionRequest) =
          insertCore items fetch Async.single
-
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Com.Cognite.V1.Timeseries.Proto
-open Oryx
-open CogniteSdk.DataPoints
-
-
 
 [<Extension>]
 type InsertDataPointsClientExtensions =

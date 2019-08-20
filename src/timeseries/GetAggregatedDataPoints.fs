@@ -2,8 +2,13 @@ namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Com.Cognite.V1.Timeseries.Proto
+
 open Oryx
 open Thoth.Json.Net
 
@@ -284,19 +289,6 @@ module Aggregated =
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedMultipleProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
         getAggregatedProto options defaultOptions fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Com.Cognite.V1.Timeseries.Proto
-
-open Oryx
-open CogniteSdk.DataPoints
-
 
 [<Extension>]
 type AggregatedClientExtensions =

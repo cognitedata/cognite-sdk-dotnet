@@ -2,13 +2,19 @@ namespace CogniteSdk.TimeSeries
 
 open System
 open System.Collections.Generic
-open System.Net.Http
 open System.IO
-
+open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
+open CogniteSdk.TimeSeries
+
 
 type MetaDataChange = {
     Add : Map<string, string> option
@@ -228,19 +234,6 @@ module Update =
     /// <returns>List of updated timeseries.</returns>
     let updateAsync (timeseries: (Identity * (TimeSeriesUpdate list)) list) : HttpContext -> Async<Context<TimeSeriesReadDto seq>> =
         updateCore timeseries fetch Async.single
-
-namespace CogniteSdk
-
-open System
-open System.Threading.Tasks
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk
-open CogniteSdk.TimeSeries
-
 
 [<Extension>]
 type UpdateTimeseriesClientExtensions =

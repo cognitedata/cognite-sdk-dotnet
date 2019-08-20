@@ -34,6 +34,12 @@ type TimeSeriesEntity internal (externalId: string, name: string, description: s
     new (externalId: string, name: string, description: string, unit: string, isStep: bool, isString: bool, metaData: IDictionary<string, string>, securityCategories: int64 seq, assetId: int64, legacyName: string) =
         TimeSeriesEntity(externalId=externalId, name=name, description=description, unit=unit, isStep=isStep, isString=isString, metaData=metaData, securityCategories=securityCategories, id=0L, assetId=assetId, legacyName=legacyName, createdTime=0L, lastUpdatedTime=0L)
 
+[<CLIMutable>]
+type TimeSeriesItems = {
+    Items: TimeSeriesEntity seq
+    NextCursor: string
+}
+
 type NumericDataPointDto = {
     TimeStamp: int64
     Value: float
@@ -84,7 +90,6 @@ type AggregateDataPointReadDto = {
             DiscreteVariance = Some pt.DiscreteVariance
             TotalVariation = Some pt.TotalVariation
         }
-
 
 type TimeSeriesWriteDto = {
     /// Externally provided ID for the time series (optional, but recommended.)

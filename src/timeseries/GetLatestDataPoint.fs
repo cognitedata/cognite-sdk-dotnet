@@ -1,12 +1,16 @@
 ﻿namespace CogniteSdk.DataPoints
 
+open System
 open System.IO
 open System.Net.Http
-
-
-open Thoth.Json.Net
+open System.Runtime.InteropServices
+open System.Runtime.CompilerServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
+open Thoth.Json.Net
+
 open CogniteSdk
 open CogniteSdk.TimeSeries
 
@@ -117,18 +121,6 @@ module Latest =
     let getAsync (queryParams: LatestRequest seq) =
         getCore queryParams fetch Async.single
 
-
-namespace CogniteSdk
-
-open System
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.DataPoints
-open CogniteSdk.Common
 
 [<Extension>]
 type GetLatestDataPointExtensions =
