@@ -1,14 +1,19 @@
 namespace CogniteSdk.Assets
 
+open System
 open System.IO
 open System.Collections.Generic
 open System.Net.Http
-
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+
 
 type MetaDataChange = {
     Add : Map<string, string> option
@@ -181,18 +186,6 @@ module Update =
     /// <returns>List of updated assets.</returns>
     let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
         updateCore assets fetch Async.single
-
-namespace CogniteSdk
-
-open System
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading
-open System.Threading.Tasks
-
-open Oryx
-open CogniteSdk.Assets
-
 
 [<Extension>]
 type UpdateAssetsClientExtensions =

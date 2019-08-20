@@ -1,10 +1,15 @@
 namespace CogniteSdk.Assets
 
+open System
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
 
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
 
 // Get parameters
@@ -148,16 +153,6 @@ module Assets =
     /// <returns>List of assets and optional cursor.</returns>
     let listAsync (options: AssetQuery seq) : HttpContext -> Async<Context<AssetListResponse>> =
         listCore options fetch Async.single
-
-namespace CogniteSdk
-
-open System
-open System.Runtime.CompilerServices
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.Assets
 
 [<Extension>]
 type ListAssetsClientExtension =

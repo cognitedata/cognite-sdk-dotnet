@@ -14,7 +14,6 @@ type AssetEntity internal (externalId: string, name: string, description: string
     member val Description : string = description with get, set
     member val MetaData : IDictionary<string, string> = metaData with get, set
     member val Source : string = source with get, set
-
     member val Id : int64 = id with get
     member val CreatedTime : int64 = createdTime with get
     member val LastUpdatedTime : int64 = lastUpdatedTime with get
@@ -25,10 +24,10 @@ type AssetEntity internal (externalId: string, name: string, description: string
 
     /// Create new empty AssetEntity. Set content using the properties.
     new () =
-        AssetEntity(null, null, null, 0L, null, null, 0L, 0L, 0L, 0L, null)
+        AssetEntity(externalId=null, name=null, description=null, parentId=0L, metaData=null, source=null, id=0L, createdTime=0L, lastUpdatedTime=0L, rootId=0L, parentExternalId=null)
     /// Create new Asset.
     new (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, parentExternalId: string) =
-        AssetEntity(externalId, name, description, parentId, metaData, source, 0L, 0L, 0L, 0L, parentExternalId)
+        AssetEntity(externalId=externalId, name=name, description=description, parentId=parentId, metaData=metaData, source=source, id=0L, createdTime=0L, lastUpdatedTime=0L, rootId=0L, parentExternalId=parentExternalId)
 
 /// Read/write asset type.
 /// Asset type for responses.

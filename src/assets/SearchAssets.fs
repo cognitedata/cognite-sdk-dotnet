@@ -2,8 +2,13 @@
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
+open CogniteSdk.Assets
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -92,17 +97,6 @@ module Search =
     /// <returns>List of assets matching given criteria.</returns>
     let searchAsync (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq): HttpContext -> Async<Context<AssetReadDto seq>> =
         searchCore limit options filters fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.Assets
-
 
 [<Extension>]
 type SearchAssetsClientExtensions =

@@ -3,10 +3,16 @@ namespace CogniteSdk.TimeSeries
 open System
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
+
 
 // Get parameters
 type TimeSeriesQuery =
@@ -91,22 +97,6 @@ module TimeSeries =
     let listAsync (options: TimeSeriesQuery seq) =
         listCore options fetch Async.single
 
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.TimeSeries
-
-[<CLIMutable>]
-type TimeSeriesItems = {
-    Items: TimeSeriesEntity seq
-    NextCursor: string
-}
-
 [<Extension>]
 type ListTimeseriesClientExtensions =
     /// <summary>
@@ -116,7 +106,7 @@ type ListTimeseriesClientExtensions =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
-    static member ListAsync (this: TimeSeriesClientExtension, options: TimeSeries.TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
+    static member ListAsync (this: TimeSeriesClientExtension, options: TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
         async {
             let! ctx = TimeSeries.listAsync options this.Ctx
 

@@ -2,6 +2,10 @@ namespace CogniteSdk.Assets
 
 open System.IO
 open System.Net.Http
+open System.Runtime.InteropServices
+open System.Runtime.CompilerServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
@@ -57,17 +61,6 @@ module Create =
     /// <returns>List of created assets.</returns>
     let createAsync (assets: AssetWriteDto seq) =
         createCore assets fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-
-
-open Oryx
-open CogniteSdk.Assets
 
 [<Extension>]
 type CreateAssetsExtensions =

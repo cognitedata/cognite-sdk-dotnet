@@ -2,6 +2,10 @@
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
@@ -53,15 +57,6 @@ module Delete =
     let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
         deleteCore (assets, recursive) fetch Async.single
 
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-
-open Oryx
-open CogniteSdk.Assets
 
 [<Extension>]
 type DeleteAssetsExtensions =

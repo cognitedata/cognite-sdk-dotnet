@@ -1,12 +1,19 @@
 namespace CogniteSdk.TimeSeries
 
-open System.IO
 open System.Collections.Generic
+open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
 open CogniteSdk
+open CogniteSdk.TimeSeries
+
+
 
 type TimeSeriesSearch =
     private
@@ -137,19 +144,6 @@ module Search =
     /// <returns>Timeseries matching query.</returns>
     let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> Async<Context<TimeSeriesReadDto seq>> =
         searchCore limit options filters fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-
-open Oryx
-open CogniteSdk
-open CogniteSdk.TimeSeries
-
 
 [<Extension>]
 type SearchTimeSeriesClientExtensions =

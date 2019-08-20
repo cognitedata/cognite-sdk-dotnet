@@ -2,10 +2,15 @@ namespace CogniteSdk.DataPoints
 
 open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
 open Oryx
 open Thoth.Json.Net
 open CogniteSdk
+
 
 [<CLIMutable>]
 type DataPointsDelete = {
@@ -73,18 +78,6 @@ module Delete =
     /// <param name = "items">List of delete requests.</param>
     let deleteAsync (items: DeleteRequestDto seq) =
         deleteCore items fetch Async.single
-
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-open System.Threading
-
-open Oryx
-open CogniteSdk.DataPoints
-
 
 [<Extension>]
 type DeleteDataPointsClientExtensions =
