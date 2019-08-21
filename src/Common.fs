@@ -148,7 +148,6 @@ module Handlers =
     let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
 
-
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Async<Context<'c>> =
         let shouldRetry (err: ResponseError) =
             let retryCode =
