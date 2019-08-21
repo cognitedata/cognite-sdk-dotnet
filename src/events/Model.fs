@@ -52,10 +52,10 @@ type EventReadDto = {
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     CreatedTime : int64
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
-    LastUpdatedTime : int64 
+    LastUpdatedTime : int64
 } with
     /// Translates the domain type to a plain old crl object
-    member this.ToEvent () : EventEntity =
+    member this.ToEventEntity () : EventEntity =
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let startTime = if this.StartTime.IsSome then this.StartTime.Value else Unchecked.defaultof<int64>
         let endTime = if this.EndTime.IsSome then this.EndTime.Value else Unchecked.defaultof<int64>
@@ -98,7 +98,7 @@ type EventWriteDto = {
     /// The source of this event.
     Source : string option
 } with
-    static member FromEvent (event: EventEntity) : EventWriteDto =
+    static member FromEventEntity (event: EventEntity) : EventWriteDto =
         let metaData =
             if not (isNull event.MetaData) then
                 event.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq

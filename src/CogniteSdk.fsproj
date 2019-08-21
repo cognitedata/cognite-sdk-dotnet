@@ -15,10 +15,9 @@
     <Compile Include="assets/Json.fs" />
     <Compile Include="assets/CreateAssets.fs" />
     <Compile Include="assets/GetAsset.fs" />
-    <Compile Include="assets/GetAssets.fs" />
+    <Compile Include="assets/ListAssets.fs" />
     <Compile Include="assets/GetAssetsByIds.fs" />
     <Compile Include="assets/DeleteAssets.fs" />
-    <Compile Include="assets/FilterAssets.fs" />
     <Compile Include="assets/SearchAssets.fs" />
     <Compile Include="assets/UpdateAssets.fs" />
     <Compile Include="timeseries/Model.fs" />

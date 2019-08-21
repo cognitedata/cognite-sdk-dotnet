@@ -22,10 +22,10 @@ namespace csharp
         /// <returns>Task</returns>
         static async Task GetAssetsExample(Client client)
         {
-            var query = new List<AssetQuery> {
-                AssetQuery.Name("string3")
+            var filter = new List<AssetFilter> {
+                AssetFilter.Name("string3")
             };
-            var result = await client.Assets.ListAsync(query);
+            var result = await client.Assets.ListAsync(filter);
 
             var asset = result.Items.First();
             Console.WriteLine("{0}", asset.ParentId);

@@ -78,11 +78,11 @@ type CreateEventExtensions =
     [<Extension>]
     static member CreateAsync(this: ClientExtension, events: EventEntity seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
         async {
-            let events' = events |> Seq.map EventWriteDto.FromEvent
+            let events' = events |> Seq.map EventWriteDto.FromEventEntity
             let! ctx = Create.createAsync events' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun event -> event.ToEvent ())
+                return response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

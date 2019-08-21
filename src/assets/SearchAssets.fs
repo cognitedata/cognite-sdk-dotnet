@@ -29,6 +29,7 @@ type AssetSearch =
         | CaseDescription desc -> "description", Encode.string desc
 
 
+/// The functional asset search core moduel
 [<RequireQualifiedAccess>]
 module Search =
     [<Literal>]
@@ -60,7 +61,7 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse Assets.AssetListResponse.Decoder (fun assets -> assets.Items)
+        let decoder = Encode.decodeResponse AssetItemsReadDto.Decoder (fun assets -> assets.Items)
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
@@ -115,7 +116,7 @@ type SearchAssetsClientExtensions =
             let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.ToEntity ())
+                return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

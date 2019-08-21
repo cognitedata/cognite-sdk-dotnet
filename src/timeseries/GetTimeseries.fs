@@ -112,7 +112,7 @@ type ListTimeseriesClientExtensions =
 
             match ctx.Result with
             | Ok response ->
-                let items = response.Items |> Seq.map (fun item -> item.ToEntity ())
+                let items = response.Items |> Seq.map (fun item -> item.ToTimeSeriesEntity ())
                 let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
                 return { Items = items; NextCursor = cursor }
             | Error error ->

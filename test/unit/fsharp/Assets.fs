@@ -22,7 +22,7 @@ let ``Get asset is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Single.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -44,7 +44,7 @@ let ``Get invalid asset is Error`` () = async {
 
 
     // Act
-    let! response = Assets.Single.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isError response.Result @>
@@ -62,7 +62,7 @@ let ``Get asset with extra fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Single.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -81,14 +81,14 @@ let ``Get asset with missing optional fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Single.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
 }
 
 [<Fact>]
-let ``Get assets is Ok`` () = async {
+let ``List assets is Ok`` () = async {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
@@ -97,31 +97,26 @@ let ``Get assets is Ok`` () = async {
         Context.create ()
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
+
     let query = [
-            AssetQuery.Name "string"
-            AssetQuery.Source "source"
-            AssetQuery.Root false
-            AssetQuery.ParentIds [42L; 43L]
-            AssetQuery.Limit 10
-            AssetQuery.Cursor "mycursor"
-        ]
+        AssetQuery.Limit 10
+        AssetQuery.Cursor "mycursor"
+    ]
+
+    let filter = [
+        AssetFilter.Name "string"
+        AssetFilter.Source "source"
+        AssetFilter.Root false
+        AssetFilter.ParentIds [42L; 43L]
+    ]
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||>  Assets.listCore query
+    let! res = (fetch, Async.single, ctx) |||>  Assets.Items.listCore query []
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/assets" @>
-
-    test <@ res.Request.Query = [
-        "name", "string"
-        "source", "source"
-        "root", "false"
-        "parentIds", "[42,43]"
-        "limit", "10"
-        "cursor", "mycursor"
-    ] @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/assets/list" @>
 }
 
 [<Fact>]
@@ -261,14 +256,14 @@ let ``Attempt filtering assets`` () = async {
         Context.create ()
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
-    let options = [
-        AssetFilterQuery.Limit 100
+    let query = [
+        AssetQuery.Limit 100
     ]
     let filter = [
         AssetFilter.Name "string"
     ]
 
-    let! res = (fetch, Async.single, ctx) |||> Assets.Filter.filterCore options filter
+    let! res = (fetch, Async.single, ctx) |||> Assets.Items.listCore query filter
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>

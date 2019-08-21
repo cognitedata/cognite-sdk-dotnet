@@ -14,7 +14,7 @@ open CogniteSdk
 
 
 [<RequireQualifiedAccess>]
-module Single =
+module Entity =
     [<Literal>]
     let Url = "/assets"
 
@@ -55,7 +55,7 @@ type GetAssetClientExtensions =
     [<Extension>]
     static member GetAsync (this: ClientExtension, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
         async {
-            let! ctx = Single.getAsync assetId this.Ctx
+            let! ctx = Entity.getAsync assetId this.Ctx
             match ctx.Result with
             | Ok asset ->
                 return asset

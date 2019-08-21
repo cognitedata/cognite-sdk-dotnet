@@ -249,7 +249,7 @@ type UpdateTimeseriesClientExtensions =
             let! ctx = Update.updateAsync timeseries' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun timeseries -> timeseries.ToEntity ())
+                return response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

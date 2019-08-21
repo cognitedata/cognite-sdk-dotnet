@@ -73,11 +73,11 @@ type CreateTimeSeriesClientExtensions =
     [<Extension>]
     static member CreateAsync (this: TimeSeriesClientExtension, items: seq<TimeSeriesEntity>, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         async {
-            let items' = items |> Seq.map TimeSeriesWriteDto.FromEntity
+            let items' = items |> Seq.map TimeSeriesWriteDto.FromTimeSeriesEntity
             let! ctx = Create.createAsync items' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response.Items |> Seq.map (fun ts -> ts.ToEntity ())
+                return response.Items |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

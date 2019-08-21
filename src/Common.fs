@@ -57,6 +57,8 @@ type Numeric =
     static member Float value =
         CaseFloat value
 
+/// Used to describe a time range.
+[<CLIMutable>]
 type TimeRange = {
     Max: DateTime
     Min: DateTime
@@ -66,6 +68,7 @@ type TimeRange = {
             yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
             yield "min", DateTimeOffset(this.Min).ToUnixTimeMilliseconds() |> Encode.int64
         ]
+
 [<AutoOpen>]
 module Patterns =
     /// Active pattern to permit pattern matching over numeric values.

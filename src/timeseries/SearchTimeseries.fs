@@ -160,7 +160,7 @@ type SearchTimeSeriesClientExtensions =
             let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with
             | Ok tss ->
-                return tss |> Seq.map (fun ts -> ts.ToEntity ())
+                return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

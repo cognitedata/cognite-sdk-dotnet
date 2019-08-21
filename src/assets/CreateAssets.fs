@@ -72,11 +72,11 @@ type CreateAssetsExtensions =
     [<Extension>]
     static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         async {
-            let assets' = assets |> Seq.map AssetWriteDto.FromEntity
+            let assets' = assets |> Seq.map AssetWriteDto.FromAssetEntity
             let! ctx = Create.createAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToEntity ())
+                return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err
