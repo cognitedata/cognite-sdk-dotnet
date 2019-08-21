@@ -80,7 +80,7 @@ type AssetUpdate =
     static member ClearExternalId =
         CaseExternalId None
 
-/// The functional asset update core moduel
+/// The functional asset update core module
 [<RequireQualifiedAccess>]
 module Update =
     [<Literal>]

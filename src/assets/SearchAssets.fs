@@ -32,7 +32,7 @@ type AssetSearch =
         | CaseDescription desc -> "description", Encode.string desc
 
 
-/// The functional asset search core moduel
+/// The functional asset search core module
 [<RequireQualifiedAccess>]
 module Search =
     [<Literal>]
