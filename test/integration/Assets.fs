@@ -13,13 +13,13 @@ open Common
 open Tests
 
 [<Fact>]
-let ``Get assets with limit is Ok`` () = async {
+let ``List assets with limit is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let query = [ AssetQuery.Limit 10 ]
 
     // Act
-    let! res = Assets.listAsync query ctx
+    let! res = Items.listAsync query [] ctx
 
     let len =
         match res.Result with
@@ -29,8 +29,8 @@ let ``Get assets with limit is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/assets" @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/assets/list" @>
 }
 
 [<Fact>]
@@ -40,7 +40,7 @@ let ``Get asset by id is Ok`` () = async {
     let assetId = 130452390632424L
 
     // Act
-    let! res = Assets.Single.getAsync assetId ctx
+    let! res = Assets.Entity.getAsync assetId ctx
 
     let resId =
         match res.Result with
@@ -61,7 +61,7 @@ let ``Get asset by missing id is Error`` () = async {
     let assetId = 0L
 
     // Act
-    let! res = Assets.Single.getAsync assetId ctx
+    let! res = Assets.Entity.getAsync assetId ctx
 
     let err =
         match res.Result with
@@ -125,14 +125,14 @@ let ``Filter assets is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        AssetFilterQuery.Limit 10
+        AssetQuery.Limit 10
     ]
     let filters = [
         AssetFilter.RootIds [ Identity.Id 6687602007296940L ]
     ]
 
     // Act
-    let! res = Assets.Filter.filterAsync options filters ctx
+    let! res = Assets.Items.listAsync options filters ctx
 
     let len =
         match res.Result with

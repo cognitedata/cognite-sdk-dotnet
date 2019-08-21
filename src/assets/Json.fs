@@ -1,11 +1,13 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Assets
 
 open Oryx
-
 open Thoth.Json.Net
 
 [<AutoOpen>]
-module AssetsExtensions =
+module AssetJsonExtensions =
     type AssetReadDto with
         static member Decoder : Decoder<AssetReadDto> =
             Decode.object (fun get ->
@@ -50,3 +52,9 @@ module AssetsExtensions =
             | CaseRoot root -> "root", Encode.bool root
             | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
 
+    type AssetItemsReadDto with
+        static member Decoder : Decoder<AssetItemsReadDto> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
+            })

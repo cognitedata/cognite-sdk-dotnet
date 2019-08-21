@@ -1,4 +1,7 @@
-﻿namespace CogniteSdk.TimeSeries
+﻿// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk.TimeSeries
 
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
@@ -119,7 +122,7 @@ type TimeSeriesWriteDto = {
     /// Security categories required in order to access this time series.
     SecurityCategories: seq<int64>
 } with
-    static member FromEntity (ts: TimeSeriesEntity) : TimeSeriesWriteDto =
+    static member FromTimeSeriesEntity (ts: TimeSeriesEntity) : TimeSeriesWriteDto =
         let metaData =
             if not (isNull ts.MetaData) then
                 ts.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -164,7 +167,7 @@ type TimeSeriesReadDto = {
     /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
     LastUpdatedTime: int64
 } with
-    member this.ToEntity () : TimeSeriesEntity =
+    member this.ToTimeSeriesEntity () : TimeSeriesEntity =
         let name = if this.Name.IsSome then this.Name.Value else null
         let metaData = this.MetaData |> Map.toSeq |> dict
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else null

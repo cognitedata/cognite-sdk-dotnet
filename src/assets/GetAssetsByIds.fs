@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Assets
 
 open System.IO
@@ -80,7 +83,7 @@ type GetAssetsByIdsClientExtensions =
             let! ctx = Retrieve.getByIdsAsync ids this.Ctx
             match ctx.Result with
             | Ok assets ->
-                return assets |> Seq.map (fun asset -> asset.ToEntity ())
+                return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

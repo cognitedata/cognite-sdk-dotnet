@@ -1,30 +1,40 @@
-# Fusion.Net SDK
+# CogniteSdk for .Net
 
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/Fusion.NET/master)](https://jenkins.cognite.ai/job/github-builds/job/Fusion.NET/job/master/)
 [![codecov](https://codecov.io/gh/cognitedata/Fusion.NET/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/Fusion.NET)
 
-A cross platform and asynchronous SDK for accessing the Cognite Data Fusion API (v5) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard), thus it should work for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework). Made as part of the 2019 February 14th hackathon.
+CogniteSdk for .NET is a cross platform asynchronous SDK for accessing the Cognite Data Fusion API (v1) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) that works for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework).
 
-The goal was to learn the Cognite API and experiment with [Domain Modeling](https://pragprog.com/book/swdddf/domain-modeling-made-functional) and Type Driven Development. Thus make the code reflect the specification as much as possible and hopefully be able to significantly reduce the need for unit-testing. That is also why I did't want to auto-generate the code using the OpenAPI tool chain.
+The SDK is written as a dual SDK for both C# and F#.
 
-The SDK is written as a dual domain SDK for both C# and F# with F# as the core domain model.
+- **C# SDK**: The C# SDK is a fluent API using objects and method chaining. Errors will be raised as exceptions. The API is asynchronous and all API methods returns `Task` and is awaitable using `async/await`.
 
-## Getting started
+- **F# SDK**: The F# API is written using plain asynchronous functions returning `Async` built on top of the [Oryx](https://github.com/cognitedata/oryx) HTTP handler library.
 
-Download .NET Core (Mac/Linux/Windows) or .NET Framework (Windows) from https://dotnet.microsoft.com/download.
+## Supported Resources
 
-To build the sources on Linux/Mac:
+- Assets
+- TimeSeries
+- DataPoints
+- Events
 
+## Documentation
+* SDK Documentation. TBW.
+* [API Documentation](https://doc.cognitedata.com/)
+* [API Guide](https://doc.cognitedata.com/guides/api-guide.html)
+
+## Installation
+
+CogniteSdk is available as a [NuGet package](https://www.nuget.org/packages/CogniteSdk/). To install:
+
+Using Package Manager:
 ```sh
-> mono .paket/paket.exe install
-> dotnet build
+Install-Package CogniteSdk -Version 1.0.0
 ```
 
-To build the sources on Windows:
-
+Using .NET CLI
 ```sh
-> .paket\paket.exe install
-> dotnet build
+dotnet add package CogniteSdk --version 1.0.0
 ```
 
 ## Examples
@@ -46,59 +56,15 @@ Dependencies for all projects are handled using [Paket](https://fsprojects.githu
 
 This will install the main dependencies and sub-dependencies. The main dependencies are:
 
-- [FSharp.Data](https://www.nuget.org/packages/FSharp.Data/) - for HTTP Utilities.
-- [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.
+- [Oryx](https://www.nuget.org/packages/Oryx/) - HTTP Handlers.
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.1) - for JSON (de)serialization.
-- [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for protobuf support
+- [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.
+- [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for Protobuf support
 
-## C# API
+# Code of Conduct
 
-The C# API is a fluent API using objects and method chaining that wraps the F# API. Errors will be
-raised as exceptions. The API is asynchronous and all API methods returns `Task` and is thus awaitable using async/await.
+This project follows https://www.contributor-covenant.org, see our [Code of Conduct](https://github.com/cognitedata/oryx/blob/master/CODE_OF_CONDUCT.md).
 
-## F# API
+## License
 
-The F# API is written using plain asynchronous functions returning `Async`, and builds upon the core domain model.
-
-## F# Core Domain
-
-[F#](https://fsharp.org/) is a mature succinct and concise functional language that looks like Python but provides less magic, null safefy, correctness and completeness.
-
-It allows us to [model our domain using types](https://fsharpforfunandprofit.com/ddd/). The code is also exception free and uses expressions at core. What this mean is that:
-
-> If it compiles it's usually correct.
-
-The goal is to reduce the need for unit-tests as incorrect state will be much harder to produce.
-
-The C# API is also implemented in F# but hides F# specific datatypes such as `Options` and `Discriminated Unions`.
-
-## Assets API
-
-- `getAsset` - Get single asset.
-- `getAssets` - Get multiple assets.
-- `getAssetsByIds` - Receive assets by its id. Supports both externalId and id.
-- `deleteAssets` - Delete one or more assets.
-- `updateAssets` - Update one or more assets.
-- `createAssets` - Create one or more assets.
-- `searchAssets` - Search for assets based on relevance.
-- `filterAssets` - Filter assets.
-
-## Time Series API
-
-- `getTimeSeries` - Retrieves a list of all time series in a project .
-- `getTimeSeriesByIds` - Get timeseries with the given ids.
-- `createTimeseries` - Create one or more new time series.
-- `updateTimeseries` - Update one or more time series.
-- `deleteTimeseries`- Deletes a time series object given the name of the time series.
-- `searchTimeseries` - Retrieves a list of time series matching the specified criteria.
-
-- `getDataPoints` - Retrieves a list of data points from a single time series in a project
-- `getDataPointsMultiple` - Retrieves a list of data points from multiple time series in a project
-- `getAggregatedDataPoints` - Retrieves a list of aggregated data points from time series in a project
-- `getLatestDataPoint` - Retrieves the single latest data point in a time series.
-- `insertDataPoints` - Insert datapoints into one or more time series.
-- `deleteDataPoints` - Delete datapoints from one or more time series.
-
-## Sequences API
-
-In development ...
+Apache v2, see [LICENSE](https://github.com/cognitedata/oryx/blob/master/LICENSE).

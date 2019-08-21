@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.TimeSeries
 
 open System.IO
@@ -87,7 +90,7 @@ type GetTimeseriesByIdsClientExtensions =
 
             match ctx.Result with
             | Ok tss ->
-                return tss |> Seq.map (fun ts -> ts.ToEntity ())
+                return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

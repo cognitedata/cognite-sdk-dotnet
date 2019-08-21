@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Assets
 
 open System
@@ -77,7 +80,7 @@ type AssetUpdate =
     static member ClearExternalId =
         CaseExternalId None
 
-
+/// The functional asset update core module
 [<RequireQualifiedAccess>]
 module Update =
     [<Literal>]
@@ -201,7 +204,7 @@ type UpdateAssetsClientExtensions =
             let! ctx = Update.updateAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToEntity ())
+                return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 let err = error2Exception error
                 return raise err

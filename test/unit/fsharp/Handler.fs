@@ -53,7 +53,7 @@ let ``Get asset with fusion return expression is Ok``() = async {
 
     // Act
     let req = oryx {
-        let! result = Assets.Single.get 42L
+        let! result = Assets.Entity.get 42L
         return result
     }
 
@@ -91,7 +91,7 @@ let ``Get asset with fusion returnFrom expression is Ok``() = async {
 
     // Act
     let req = oryx {
-        return! Assets.Single.get 42L
+        return! Assets.Entity.get 42L
     }
 
     let! result = runHandler req ctx
@@ -127,7 +127,7 @@ let ``Get asset with retry is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Single.get 42L |> retry 0<ms> 5
+    let req = Assets.Entity.get 42L |> retry 0<ms> 5
     let! result = runHandler req ctx
     let retries' = retries
 
@@ -161,7 +161,7 @@ let ``Get asset with retries on server internal error``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Single.get 42L |> retry 0<ms> 5
+    let req = Assets.Entity.get 42L |> retry 0<ms> 5
     let! result = runHandler req ctx
     let retries' = retries
 
@@ -192,7 +192,7 @@ let ``Get asset without http client throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Single.get 42L |> retry 0<ms> 5
+    let req = Assets.Entity.get 42L |> retry 0<ms> 5
     let! result = async {
         try
             let! result = runHandler req ctx
@@ -227,7 +227,7 @@ let ``Get asset without appId throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Single.get 42L |> retry 0<ms> 5
+    let req = Assets.Entity.get 42L |> retry 0<ms> 5
     let! result = async {
         try
             let! result = runHandler req ctx

@@ -19,7 +19,7 @@ namespace Tests
     public class AssetTests
     {
         [Fact]
-        public async Task TestGetAssets()
+        public async Task TestListAssets()
         {
             // Arrenge
             HttpRequestMessage request = null;
@@ -54,23 +54,22 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<AssetQuery> {
-                AssetQuery.Name("string3"),
-                AssetQuery.ExternalIdPrefix("prefix"),
-                AssetQuery.Root(false),
-                AssetQuery.Source("source"),
-                AssetQuery.ParentIds(new List<long> {42L, 43L })
+            var filter = new List<AssetFilter> {
+                AssetFilter.Name("string3"),
+                AssetFilter.ExternalIdPrefix("prefix"),
+                AssetFilter.Root(false),
+                AssetFilter.Source("source"),
+                AssetFilter.ParentIds(new List<long> {42L, 43L })
             };
 
             // Act
-            var result = await client.Assets.ListAsync(options);
+            var result = await client.Assets.ListAsync(new List<AssetQuery>(), filter);
 
             // Assert
             Assert.Single(result.Items);
-            Assert.Equal(HttpMethod.Get, request.Method);
+            Assert.Equal(HttpMethod.Post, request.Method);
             Assert.Equal("api.cognitedata.com", request.RequestUri.Host);
-            Assert.Equal("?name=string3&externalIdPrefix=prefix&root=false&source=source&parentIds=%5b42%2c43%5d", request.RequestUri.Query);
-            Assert.Equal("/api/v1/projects/project/assets", request.RequestUri.AbsolutePath);
+            Assert.Equal("/api/v1/projects/project/assets/list", request.RequestUri.AbsolutePath);
         }
 
         [Fact]
@@ -101,12 +100,12 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<AssetQuery> {
-                AssetQuery.Name("string3")
+            var filters = new List<AssetFilter> {
+                AssetFilter.Name("string3")
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(options));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filters));
         }
 
         [Fact]
@@ -137,14 +136,14 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var query = new List<AssetQuery> {
-                AssetQuery.Name("string3"),
-                AssetQuery.Source("source"),
-                AssetQuery.Root(true)
+            var filter = new List<AssetFilter> {
+                AssetFilter.Name("string3"),
+                AssetFilter.Source("source"),
+                AssetFilter.Root(true)
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(query));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filter));
         }
 
         [Fact]
@@ -419,15 +418,15 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<AssetFilterQuery> {
-                AssetFilterQuery.Limit(100)
+            var options = new List<AssetQuery> {
+                AssetQuery.Limit(100)
             };
             var filters = new List<AssetFilter> {
                 AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
                 AssetFilter.Name("string")
             };
 
-            var result = await client.Assets.FilterAsync(options, filters);
+            var result = await client.Assets.ListAsync(options, filters);
 
             Assert.NotNull(result);
             Assert.NotEmpty(result.Items);
@@ -459,9 +458,9 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<AssetFilterQuery> {
-                AssetFilterQuery.Limit(100),
-                AssetFilterQuery.Cursor("cursor")
+            var options = new List<AssetQuery> {
+                AssetQuery.Limit(100),
+                AssetQuery.Cursor("cursor")
             };
 
             var filters = new List<AssetFilter> {
@@ -470,8 +469,8 @@ namespace Tests
                 AssetFilter.ParentIds(new List<long> { 1234, 12345 })
             };
 
-            var result = await client.Assets.FilterAsync(options, filters);
-            var refRequest = Encode.toString(0, new Filter.Request(filters, options).Encoder);
+            var result = await client.Assets.ListAsync(options, filters);
+            var refRequest = Encode.toString(0, new Items.Request(filters, options).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]
@@ -514,7 +513,7 @@ namespace Tests
             }
 
             var result = await client.Assets.CreateAsync(createAssets);
-            var refRequest = Encode.toString(0, new Create.Request(createAssets.Select(AssetWriteDto.FromEntity)).Encoder);
+            var refRequest = Encode.toString(0, new Create.Request(createAssets.Select(AssetWriteDto.FromAssetEntity)).Encoder);
             Assert.Equal(refRequest, requestJson);
         }
         [Fact]
@@ -543,8 +542,8 @@ namespace Tests
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
 
-            var options = new List<AssetFilterQuery> {
-                AssetFilterQuery.Limit(100)
+            var query = new List<AssetQuery> {
+                AssetQuery.Limit(100)
             };
             var filters = new List<AssetFilter> {
                 AssetFilter.CreatedTime(new TimeRange(DateTime.Now.Subtract(TimeSpan.FromHours(1)), DateTime.Now.Subtract(TimeSpan.FromHours(1)))),
@@ -555,7 +554,7 @@ namespace Tests
                 src.Cancel();
                 try
                 {
-                    var result = await client.Assets.FilterAsync(options, filters, src.Token);
+                    var result = await client.Assets.ListAsync(query, filters, src.Token);
                     Assert.NotNull(result);
                     Assert.NotEmpty(result.Items);
                 }

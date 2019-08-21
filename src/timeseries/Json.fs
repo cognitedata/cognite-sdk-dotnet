@@ -1,8 +1,10 @@
-﻿namespace CogniteSdk.TimeSeries
+﻿// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk.TimeSeries
 
 open Thoth.Json.Net
 open Oryx
-open CogniteSdk
 
 
 [<AutoOpen>]

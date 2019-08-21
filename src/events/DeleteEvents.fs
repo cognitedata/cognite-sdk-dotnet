@@ -1,4 +1,7 @@
-﻿namespace CogniteSdk.Events
+﻿// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk.Events
 
 open System.IO
 open System.Net.Http

@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Events
 
 open System.IO
@@ -12,7 +15,7 @@ open CogniteSdk
 
 
 [<RequireQualifiedAccess>]
-module Single =
+module Entity =
     [<Literal>]
     let Url = "/events"
 
@@ -54,7 +57,7 @@ type GetEventClientExtensions =
     [<Extension>]
     static member GetAsync (this: ClientExtension, eventId: int64, [<Optional>] token: CancellationToken) : Task<EventReadDto> =
         async {
-            let! ctx = Single.getAsync eventId this.Ctx
+            let! ctx = Entity.getAsync eventId this.Ctx
             match ctx.Result with
             | Ok event ->
                 return event

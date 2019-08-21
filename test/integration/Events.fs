@@ -60,7 +60,7 @@ let ``Get event by id is Ok`` () = async {
     let eventId = 19442413705355L
 
     // Act
-    let! res = Events.Single.getAsync eventId ctx
+    let! res = Events.Entity.getAsync eventId ctx
 
     let resId =
         match res.Result with
@@ -81,7 +81,7 @@ let ``Get event by missing id is Error`` () = async {
     let eventId = 0L
 
     // Act
-    let! res = Events.Single.getAsync eventId ctx
+    let! res = Events.Entity.getAsync eventId ctx
 
     let err =
         match res.Result with

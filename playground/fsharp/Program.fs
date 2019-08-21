@@ -37,7 +37,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
 }
 
 let getAssetsExample (ctx : HttpContext) = async {
-    let! rsp = Assets.listAsync [ AssetQuery.Limit 2 ] ctx
+    let! rsp = Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res
