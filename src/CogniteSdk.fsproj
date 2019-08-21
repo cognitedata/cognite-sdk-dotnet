@@ -3,6 +3,7 @@
     <Description>.NET SDK for Cognite Data Fusion (CDF)</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <PackageId>Fusion.NET</PackageId>
     <Author>Cognite AS</Author>
     <Company>Cognite AS</Company>
