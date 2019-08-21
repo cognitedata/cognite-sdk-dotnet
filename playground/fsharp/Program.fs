@@ -7,6 +7,8 @@ open FsConfig
 open Com.Cognite.V1.Timeseries.Proto
 
 open Oryx
+open Oryx.Retry
+
 open CogniteSdk
 open CogniteSdk.Assets
 open CogniteSdk.TimeSeries

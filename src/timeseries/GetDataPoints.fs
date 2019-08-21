@@ -133,7 +133,7 @@ module DataPoints =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
-    let list (id: int64) (options: DataPointQuery seq) (next: NextHandler<DataPoints seq,'a>) =
+    let list (id: int64) (options: DataPointQuery seq) (next: NextFunc<DataPoints seq,'a>) =
         let options' : DataPointMultipleQuery seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
         listCore options' Seq.empty fetch next
 
@@ -165,7 +165,7 @@ module DataPoints =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
-    let listMultiple (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (next: NextHandler<DataPoints seq,'a>) =
+    let listMultiple (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (next: NextFunc<DataPoints seq,'a>) =
         listCore options defaultOptions fetch next
 
     /// <summary>

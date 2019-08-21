@@ -238,7 +238,7 @@ module Aggregated =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregated (id: Identity) (options: AggregateQuery seq) (next: NextHandler<DataPoints seq,'a>) =
+    let getAggregated (id: Identity) (options: AggregateQuery seq) (next: NextFunc<DataPoints seq,'a>) =
         let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
         getAggregatedCore options' Seq.empty fetch next
 
@@ -270,7 +270,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of aggregated data points.</returns>
-    let getAggregatedMultiple (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (next: NextHandler<DataPoints seq,'a>) =
+    let getAggregatedMultiple (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (next: NextFunc<DataPoints seq,'a>) =
         getAggregatedCore options defaultOptions fetch next
 
     /// <summary>

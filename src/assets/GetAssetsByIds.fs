@@ -54,7 +54,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Assets with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         getByIdsCore ids fetch next
 
     /// <summary>

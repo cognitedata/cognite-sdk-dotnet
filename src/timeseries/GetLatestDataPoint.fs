@@ -113,7 +113,7 @@ module Latest =
     /// <param name="options">List of requests.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
-    let get (queryParams: LatestRequest seq) (next: NextHandler<DataPointsDto seq,'a>) =
+    let get (queryParams: LatestRequest seq) (next: NextFunc<DataPointsDto seq,'a>) =
         getCore queryParams fetch next
 
     /// <summary>

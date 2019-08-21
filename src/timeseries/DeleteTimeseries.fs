@@ -44,7 +44,7 @@ module Delete =
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     /// <param name="next">Async handler to use.</param>
-    let delete (items: Identity seq) (next: NextHandler<unit, unit>) =
+    let delete (items: Identity seq) (next: NextFunc<unit, unit>) =
         deleteCore items fetch next
 
     /// <summary>

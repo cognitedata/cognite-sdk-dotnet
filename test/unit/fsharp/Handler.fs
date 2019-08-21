@@ -15,6 +15,8 @@ open FSharp.Control.Tasks.V2
 
 
 open Oryx
+open Oryx.Retry
+
 open CogniteSdk
 
     type HttpMessageHandlerStub (sendAsync: Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>) =

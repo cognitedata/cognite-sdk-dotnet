@@ -50,7 +50,7 @@ module Create =
     /// <param name="events">List of events to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created events.</returns>
-    let create (events: EventWriteDto seq) (next: NextHandler<EventReadDto seq, 'a>) =
+    let create (events: EventWriteDto seq) (next: NextFunc<EventReadDto seq, 'a>) =
         createCore events fetch next
 
     /// <summary>
