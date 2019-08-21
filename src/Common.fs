@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 /// Common types for the SDK.
 namespace CogniteSdk
 

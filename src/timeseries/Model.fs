@@ -1,4 +1,7 @@
-﻿namespace CogniteSdk.TimeSeries
+﻿// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk.TimeSeries
 
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
