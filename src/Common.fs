@@ -121,9 +121,9 @@ module Context =
 
         sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
 
-    let private version =
-        let version = Assembly.GetExecutingAssembly().GetName().Version
-        {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
+    //let private version =
+    //    let version = Assembly.GetExecutingAssembly().GetName().Version
+    //    {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
 
     /// Set the project to connect to.
     let setProject (project: string) (context: HttpContext) =
