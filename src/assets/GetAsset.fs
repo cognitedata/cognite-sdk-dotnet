@@ -37,7 +37,7 @@ module Entity =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Asset with the given id.</returns>
-    let get (assetId: int64) (next: NextHandler<AssetReadDto,'a>) : HttpContext -> Async<Context<'a>> =
+    let get (assetId: int64) (next: NextFunc<AssetReadDto,'a>) : HttpContext -> Async<Context<'a>> =
         getCore assetId fetch next
 
     /// <summary>

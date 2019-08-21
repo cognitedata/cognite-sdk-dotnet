@@ -40,7 +40,7 @@ module Delete =
     /// </summary>
     /// <param name="events">The list of events to delete.</param>
     /// <param name="next">Async handler to use</param>
-    let delete (events: Identity seq) (next: NextHandler<unit,'a>) =
+    let delete (events: Identity seq) (next: NextFunc<unit,'a>) =
         deleteCore events fetch next
 
     /// <summary>

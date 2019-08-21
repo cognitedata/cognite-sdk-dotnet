@@ -88,7 +88,7 @@ module TimeSeries =
     /// <param name="options">Timeseries lookup options.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let list (options: TimeSeriesQuery seq) (next: NextHandler<TimeSeriesItemsDto,'a>) : HttpContext -> Async<Context<'a>> =
+    let list (options: TimeSeriesQuery seq) (next: NextFunc<TimeSeriesItemsDto,'a>) : HttpContext -> Async<Context<'a>> =
         listCore options fetch next
 
     /// <summary>

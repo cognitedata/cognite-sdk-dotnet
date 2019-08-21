@@ -72,7 +72,7 @@ module Insert =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let insert (items: DataPoints list) (next: NextHandler<unit, unit>) =
+    let insert (items: DataPoints list) (next: NextFunc<unit, unit>) =
         insertCore (dataPointsToProtobuf items) fetch next
 
     /// <summary>

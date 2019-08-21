@@ -9,6 +9,7 @@ open System.Text.RegularExpressions
 open System.Reflection
 
 open Oryx
+open Oryx.Retry
 open Thoth.Json.Net
 
 type ApiVersion =
@@ -141,9 +142,42 @@ module Context =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handlers =
-    let setResource (resource: string) (next: NextHandler<_,_>) (context: HttpContext) =
+    let setResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", resource) } }
 
-    let setVersion (version: ApiVersion) (next: NextHandler<_,_>) (context: HttpContext) =
+    let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
 
+
+    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Async<Context<'c>> =
+        let shouldRetry (err: ResponseError) =
+            let retryCode =
+                match err.Code with
+                // Rate limiting
+                | 429 -> true
+                // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
+                // we lose connection to db, so 401 can be transient
+                | 401 -> true
+                // 500 is hard to say, but we should avoid having those in the api
+                | 500 ->
+                  true // we get random and transient 500 responses often enough that it's worth retrying them.
+                // 502 and 503 are usually transient.
+                | 502 -> true
+                | 503 -> true
+                // do not retry other responses.
+                | _ -> false
+
+            let retryEx =
+                if err.InnerException.IsSome then
+                    match err.InnerException.Value with
+                    | :? Net.Http.HttpRequestException
+                    | :? System.Net.WebException -> true
+                    // do not retry other exceptions.
+                    | _ -> false
+                else
+                    false
+
+            // Retry if retriable code or retryable exception
+            retryCode || retryEx
+
+        retry shouldRetry initialDelay maxRetries handler next ctx

@@ -72,7 +72,7 @@ module Delete =
     /// </summary>
     /// <param name="items">List of delete requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let delete (items: DeleteRequestDto seq) (next: NextHandler<unit, unit>) =
+    let delete (items: DeleteRequestDto seq) (next: NextFunc<unit, unit>) =
         deleteCore items fetch next
 
     /// <summary>

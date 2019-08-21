@@ -353,6 +353,11 @@ let ``Delete datapoints is Ok`` () = async {
     // Act
     let request =
         oryx {
+            (*
+            let! tss = TimeSeries.GetByIds.getByIds [ Identity.ExternalId externalIdString ]
+            if not (Seq.empty tss) then
+                do! TimeSeries.Delete.delete [ externalId ]
+            *)
             let! _ = TimeSeries.Create.create [ dto ]
             do! DataPoints.Insert.insert [ datapoints ]
             let! res = DataPoints.Delete.delete [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]

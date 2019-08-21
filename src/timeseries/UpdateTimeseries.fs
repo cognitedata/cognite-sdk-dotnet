@@ -227,7 +227,7 @@ module Update =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated timeseries.</returns>
-    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextHandler<TimeSeriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
+    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextFunc<TimeSeriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
         updateCore timeseries fetch next
 
     /// <summary>

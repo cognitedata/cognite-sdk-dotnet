@@ -35,7 +35,7 @@ module Entity =
     /// <param name="assetId">The id of the event to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Event with the given id.</returns>
-    let get (eventId: int64) (next: NextHandler<EventReadDto,'a>) : HttpContext -> Async<Context<'a>> =
+    let get (eventId: int64) (next: NextFunc<EventReadDto,'a>) : HttpContext -> Async<Context<'a>> =
         getCore eventId fetch next
 
     /// <summary>

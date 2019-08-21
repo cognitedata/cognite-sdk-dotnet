@@ -135,7 +135,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Timeseries matching query.</returns>>
-    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextHandler<TimeSeriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         searchCore limit options filters fetch next
 
     /// <summary>

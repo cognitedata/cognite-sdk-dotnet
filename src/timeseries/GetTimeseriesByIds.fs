@@ -61,7 +61,7 @@ module GetByIds =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given ids.</returns>
-    let getByIds (ids: seq<Identity>) (next: NextHandler<TimeSeriesReadDto seq,'a>)=
+    let getByIds (ids: seq<Identity>) (next: NextFunc<TimeSeriesReadDto seq,'a>)=
         getByIdsCore ids fetch next
 
     /// <summary>

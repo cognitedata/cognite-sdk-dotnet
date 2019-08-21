@@ -17,7 +17,7 @@ module Result =
 
 module Fetch =
 
-    let fromJson (json: string) (next: NextHandler<Stream,_>) (ctx: HttpContext) =
+    let fromJson (json: string) (next: NextFunc<Stream,_>) (ctx: HttpContext) =
         let byteArray = Encoding.ASCII.GetBytes( json )
         let stream = new MemoryStream( byteArray ) :> Stream
         next { Request = ctx.Request; Result = Ok stream }

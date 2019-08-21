@@ -87,7 +87,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextHandler<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
         searchCore limit options filters fetch next
 
     /// <summary>
