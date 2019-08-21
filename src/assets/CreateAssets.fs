@@ -54,7 +54,7 @@ module Create =
     /// <param name="assets">The assets to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created assets.</returns>
-    let create (assets: AssetWriteDto seq) (next: NextHandler<AssetReadDto seq, 'a>) =
+    let create (assets: AssetWriteDto seq) (next: NextFunc<AssetReadDto seq, 'a>) =
         createCore assets fetch next
 
     /// <summary>

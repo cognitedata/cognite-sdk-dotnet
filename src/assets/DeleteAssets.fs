@@ -49,7 +49,7 @@ module Delete =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     /// <param name="next">Async handler to use</param>
-    let delete (assets: Identity seq, recursive: bool) (next: NextHandler<unit,'a>) =
+    let delete (assets: Identity seq, recursive: bool) (next: NextFunc<unit,'a>) =
         deleteCore (assets, recursive) fetch next
 
     /// <summary>

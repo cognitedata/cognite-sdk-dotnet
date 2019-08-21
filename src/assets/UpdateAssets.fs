@@ -179,7 +179,7 @@ module Update =
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextHandler<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
         updateCore assets fetch next
 
     /// <summary>

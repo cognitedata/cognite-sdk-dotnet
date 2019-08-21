@@ -72,7 +72,7 @@ module Items =
     /// <param name="filters">Search filters</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (options: AssetQuery seq) (filters: AssetFilter seq) (next: NextHandler<AssetItemsReadDto,'a>)
+    let list (options: AssetQuery seq) (filters: AssetFilter seq) (next: NextFunc<AssetItemsReadDto,'a>)
         : HttpContext -> Async<Context<'a>> =
             listCore options filters fetch next
 

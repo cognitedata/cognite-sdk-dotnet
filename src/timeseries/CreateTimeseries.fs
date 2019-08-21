@@ -54,7 +54,7 @@ module Create =
     /// <param name="items">The list of timeseries to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created timeseries.</returns>
-    let create (items: TimeSeriesWriteDto list) (next: NextHandler<TimeseriesResponse,'a>) =
+    let create (items: TimeSeriesWriteDto list) (next: NextFunc<TimeseriesResponse,'a>) =
         createCore items fetch next
 
     /// <summary>
