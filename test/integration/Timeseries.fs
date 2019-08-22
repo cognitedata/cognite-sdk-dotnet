@@ -17,7 +17,7 @@ let ``Get timeseries is Ok`` () = async {
     let options = [ TimeSeriesQuery.Limit 10 ]
 
     // Act
-    let! res = TimeSeries.TimeSeries.listAsync options ctx
+    let! res = TimeSeries.Items.listAsync options ctx
 
     let len =
         match res.Result with
@@ -38,7 +38,7 @@ let ``Get timeseries by ids is Ok`` () = async {
     let id = Identity.Id 613312137748079L
 
     // Act
-    let! res = TimeSeries.GetByIds.getByIdsAsync [ id ] ctx
+    let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
 
     let resId =
         match res.Result with
@@ -71,7 +71,7 @@ let ``Get timeseries by missing id is Error`` () = async {
     let id = Identity.Id 0L
 
     // Act
-    let! res = TimeSeries.GetByIds.getByIdsAsync [ id ] ctx
+    let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
 
     let err =
         match res.Result with
@@ -190,7 +190,7 @@ let ``Update timeseries is Ok`` () = async {
                 TimeSeriesUpdate.SetUnit (Some "unit")
             ])
         ] wctx
-    let! getRes = TimeSeries.GetByIds.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+    let! getRes = TimeSeries.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
     let! deleteRes = TimeSeries.Delete.deleteAsync [ Identity.ExternalId newExternalId ] wctx
     let resExternalId, resMetaData, resDescription =
         match getRes.Result with

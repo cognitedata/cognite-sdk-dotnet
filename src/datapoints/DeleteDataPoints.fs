@@ -89,7 +89,7 @@ type DeleteDataPointsClientExtensions =
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     [<Extension>]
-    static member DeleteAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteAsync (this: ClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
         async {
             let items' = items |> Seq.map Delete.DeleteRequestDto.FromDelete
             let! ctx = Delete.deleteAsync items' this.Ctx

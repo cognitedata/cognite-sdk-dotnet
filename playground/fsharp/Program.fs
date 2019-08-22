@@ -23,7 +23,7 @@ type Config = {
 
 let getDatapointsExample (ctx : HttpContext) = async {
     let! rsp =
-        DataPoints.listMultipleAsync [
+        DataPoints.Items.listMultipleAsync [
             {
                 Id = Identity.Id 20713436708L
                 QueryOptions = [
@@ -39,7 +39,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
 }
 
 let getAssetsExample (ctx : HttpContext) = async {
-    let! rsp = Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
+    let! rsp = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
 
     match rsp.Result with
     | Ok res -> printfn "%A" res

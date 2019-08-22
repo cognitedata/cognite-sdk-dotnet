@@ -117,7 +117,7 @@ module Search =
         ]
 
     let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = Encode.decodeResponse TimeSeries.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
+        let decoder = Encode.decodeResponse Items.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -158,7 +158,7 @@ type SearchTimeSeriesClientExtensions =
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
-    static member SearchAsync (this: TimeSeriesClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member SearchAsync (this: ClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         async {
             let! ctx = Search.searchAsync limit options filters this.Ctx
             match ctx.Result with

@@ -48,8 +48,8 @@ podTemplate(
 ) {
     properties([buildDiscarder(logRotator(daysToKeepStr: '30', numToKeepStr: '20'))])
     node(label) {
-        def gitCommit
-        def buildDirectory
+        def version
+
         container('jnlp') {
             stage('Checkout') {
                 checkout([$class: 'GitSCM',
@@ -66,7 +66,6 @@ podTemplate(
                   userRemoteConfigs: scm.userRemoteConfigs
                 ])
 
-                gitCommit = sh(returnStdout: true, script: 'git rev-parse --short=12 HEAD').trim()
                 version = sh(returnStdout: true, script: "git describe --tags HEAD || true").trim()
                 version = version.replaceFirst(/-(\d+)-.*/, '-build.$1')
                 print version

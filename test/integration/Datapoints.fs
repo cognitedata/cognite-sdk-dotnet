@@ -17,13 +17,13 @@ let ``Get datapoints by id with options is Ok`` () = async {
     // Arrange
     let ctx = readCtx ()
     let options = [
-        DataPointQuery.Start "1563175800000"
+        DataPoints.DataPointQuery.Start "1563175800000"
         DataPointQuery.End "1563181200000"
     ]
     let id = 613312137748079L
 
     // Act
-    let! res = DataPoints.listAsync id options ctx
+    let! res = DataPoints.Items.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -65,7 +65,7 @@ let ``Get datapoints by id with limit is Ok`` () = async {
     let id = 613312137748079L
 
     // Act
-    let! res = DataPoints.listAsync id options ctx
+    let! res = DataPoints.Items.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -108,7 +108,7 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
     let id = 613312137748079L
 
     // Act
-    let! res = DataPoints.listAsync id options ctx
+    let! res = DataPoints.Items.listAsync id options ctx
 
     let resId =
         match res.Result with
@@ -157,12 +157,12 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
     let query: DataPointMultipleQuery seq = Seq.ofList [ a; b ]
 
     // Act
-    let! res = DataPoints.listMultipleAsync query [] ctx
+    let! res = DataPoints.Items.listMultipleAsync query [] ctx
 
     let resIds =
         match res.Result with
         | Ok dtos ->
-            Seq.map (fun (d: DataPoints.DataPoints) -> d.Id) dtos
+            Seq.map (fun (d: DataPoints.Items.DataPoints) -> d.Id) dtos
         | Error _ -> Seq.ofList [ 0L ]
         |> Seq.map Identity.Id
 

@@ -14,7 +14,6 @@ open Com.Cognite.V1.Timeseries.Proto
 open Oryx
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 
 [<RequireQualifiedAccess>]
@@ -34,7 +33,7 @@ module Insert =
             | CaseId id -> dpItem.Id <- id
             | CaseExternalId id -> dpItem.ExternalId <- id
             match this.DataPoints with
-            | Numeric dps ->
+            | DataPointSeq.Numeric dps ->
                 dpItem.NumericDatapoints <- NumericDatapoints ()
                 dps |> Seq.map(fun dp ->
                     let pdp = NumericDatapoint ()
@@ -42,7 +41,7 @@ module Insert =
                     pdp.Value <- dp.Value
                     pdp
                 ) |> dpItem.NumericDatapoints.Datapoints.AddRange
-            | String dps ->
+            | DataPointSeq.String dps ->
                 dpItem.StringDatapoints <- StringDatapoints ()
                 dps |> Seq.map(fun dp ->
                     let pdp = StringDatapoint ()
@@ -96,7 +95,7 @@ type InsertDataPointsClientExtensions =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
-    static member InsertAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
+    static member InsertAsync (this: DataPoints.ClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
         async {
             let! ctx = Insert.insertAsyncProto items this.Ctx
             match ctx.Result with
