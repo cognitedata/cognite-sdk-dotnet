@@ -44,7 +44,7 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.GetByIds.getByIdsCore [ Identity.Id 0L ] fetch Async.single ctx
+    let! res = TimeSeries.Retrieve.getByIdsCore [ Identity.Id 0L ] fetch Async.single ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
