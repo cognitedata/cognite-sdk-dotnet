@@ -251,3 +251,40 @@ let ``Filter events is Ok`` () = async {
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/events/list" @>
 }
+let ``Search events is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let externalIdString = "searchEventTest"
+    let dto: Events.EventWriteDto = {
+        ExternalId = Some externalIdString
+        StartTime = Some 1565941329L
+        EndTime = Some 1565941341L
+        Type = Some "dotnet test"
+        SubType = Some "create and delete"
+        Description = Some "dotnet sdk test"
+        MetaData = Map.empty
+        AssetIds = Seq.empty
+        Source = None
+    }
+    let event = Events.Create.createAsync [ dto ] ctx
+
+    let options = [
+        EventSearch.Description "dotnet"
+    ]
+
+    // Act
+
+    let res = Events.Search.searchAsync 10 options [] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let delRes = Events.Delete.deleteAsync ([ Identity.ExternalId externalIdString ]) ctx
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
+}
