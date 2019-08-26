@@ -16,7 +16,6 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 type Aggregate =
     private
@@ -169,7 +168,7 @@ module Aggregated =
                 DataPoints =
                     match data.DatapointTypeCase with
                     | (DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints) ->
-                        data.AggregateDatapoints.Datapoints |> Seq.map (AggregateDataPointReadDto.FromProto)
+                        data.AggregateDatapoints.Datapoints |> Seq.map (AggregateDataPointReadDto.FromProtobuf)
                     | _ ->
                         Seq.empty
             }
@@ -302,7 +301,7 @@ type AggregatedClientExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedAsync (this: TimeSeries.DataPointsClientExtension, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedAsync (this: ClientExtension, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = Aggregated.getAggregatedDataPointsProto id options this.Ctx
             match ctx.Result with
@@ -321,7 +320,7 @@ type AggregatedClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
-    static member GetAggregatedMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: AggregateMultipleQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAggregatedMultipleAsync (this: ClientExtension, options: AggregateMultipleQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
             let! ctx = Aggregated.getAggregatedMultipleProto options defaultOptions this.Ctx
             match ctx.Result with

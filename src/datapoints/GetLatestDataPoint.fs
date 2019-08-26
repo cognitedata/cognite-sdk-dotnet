@@ -15,7 +15,6 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 [<CLIMutable>]
 type DataPointCollection = {
@@ -65,9 +64,13 @@ module Latest =
                 let isString = get.Required.Field "isString" Decode.bool
                 let dataPoints =
                     if isString then
-                        get.Required.Field "datapoints" (Decode.list StringDataPointDto.Decoder) |> List.toSeq |> String
+                        get.Required.Field "datapoints" (Decode.list StringDataPointDto.Decoder)
+                        |> List.toSeq
+                        |> DataPointSeq.String
                     else
-                        get.Required.Field "datapoints" (Decode.list NumericDataPointDto.Decoder) |> List.toSeq |> Numeric
+                        get.Required.Field "datapoints" (Decode.list NumericDataPointDto.Decoder)
+                        |> List.toSeq
+                        |> DataPointSeq.Numeric
                 {
                     Id = get.Required.Field "id" Decode.int64
                     ExternalId = get.Optional.Field "externalId" Decode.string
@@ -77,8 +80,8 @@ module Latest =
         static member ToCollection (item : DataPointsDto) : DataPointCollection =
             let stringDataPoints, numericDataPoints =
                 match item.DataPoints with
-                | String data -> data, Seq.empty
-                | Numeric data -> Seq.empty, data
+                | DataPointSeq.String data -> data, Seq.empty
+                | DataPointSeq.Numeric data -> Seq.empty, data
             {
                 Id = item.Id
                 ExternalId = if item.ExternalId.IsSome then item.ExternalId.Value else Unchecked.defaultof<string>
@@ -111,7 +114,7 @@ module Latest =
     /// Retrieves the single latest data point in a time series.
     /// </summary>
     /// <param name="options">List of requests.</param>
-    /// <param name="next">Async handler to use.</param>
+    /// <param name="next">The next HTTP handler.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     let get (queryParams: LatestRequest seq) (next: NextFunc<DataPointsDto seq,'a>) =
         getCore queryParams fetch next
@@ -133,7 +136,7 @@ type GetLatestDataPointExtensions =
     /// <param name="options">List of tuples (id, beforeString) where beforeString describes the latest point to look for datapoints.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
-    static member GetLatestAsync (this: TimeSeries.DataPointsClientExtension, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<DataPointCollection>> =
+    static member GetLatestAsync (this: ClientExtension, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<DataPointCollection>> =
         async {
             let query = options |> Seq.map (fun struct (id, before) ->
                 { Identity = id;

@@ -15,7 +15,6 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 /// Query parameters
 type DataPointQuery =
@@ -47,7 +46,7 @@ type DataPointMultipleQuery = {
 }
 
 [<RequireQualifiedAccess>]
-module DataPoints =
+module Items =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -67,7 +66,7 @@ module DataPoints =
                     | (DataPointListItem.DatapointTypeOneofCase.StringDatapoints) ->
                         data.StringDatapoints.Datapoints |> Seq.map (StringDataPointDto.FromProto) |> String
                     | (DataPointListItem.DatapointTypeOneofCase.NumericDatapoints) ->
-                        data.NumericDatapoints.Datapoints |> Seq.map (NumericDataPointDto.FromProto) |> Numeric
+                        data.NumericDatapoints.Datapoints |> Seq.map (NumericDataPointDto.FromProtobuf) |> Numeric
                     | _ ->
                         Seq.empty |> Numeric
             }
@@ -199,9 +198,9 @@ type GetDataPointsClientExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
-    static member GetAsync (this: TimeSeries.DataPointsClientExtension, id : int64, options: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member GetAsync (this: ClientExtension, id : int64, options: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = DataPoints.listProtoAsync id options this.Ctx
+            let! ctx = Items.listProtoAsync id options this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response
@@ -218,9 +217,9 @@ type GetDataPointsClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
-    static member ListMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: DataPointMultipleQuery seq, defaultOptions: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+    static member ListMultipleAsync (this: ClientExtension, options: DataPointMultipleQuery seq, defaultOptions: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         async {
-            let! ctx = DataPoints.listMultipleProtoAsync options defaultOptions this.Ctx
+            let! ctx = Items.listMultipleProtoAsync options defaultOptions this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response

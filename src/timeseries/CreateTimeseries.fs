@@ -74,7 +74,7 @@ type CreateTimeSeriesClientExtensions =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
-    static member CreateAsync (this: TimeSeriesClientExtension, items: seq<TimeSeriesEntity>, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
+    static member CreateAsync (this: ClientExtension, items: seq<TimeSeriesEntity>, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         async {
             let items' = items |> Seq.map TimeSeriesWriteDto.FromTimeSeriesEntity
             let! ctx = Create.createAsync items' this.Ctx

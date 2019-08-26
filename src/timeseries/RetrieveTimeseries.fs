@@ -18,7 +18,7 @@ open CogniteSdk.TimeSeries
 
 
 [<RequireQualifiedAccess>]
-module GetByIds =
+module Retrieve =
     [<Literal>]
     let Url = "/timeseries/byids"
 
@@ -84,9 +84,9 @@ type GetTimeseriesByIdsClientExtensions =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
-    static member GetByIdsAsync (this: TimeSeriesClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
+    static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
         async {
-            let! ctx = GetByIds.getByIdsAsync ids this.Ctx
+            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
 
             match ctx.Result with
             | Ok tss ->

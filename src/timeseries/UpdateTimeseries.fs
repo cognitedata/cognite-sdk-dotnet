@@ -246,7 +246,7 @@ type UpdateTimeseriesClientExtensions =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
     [<Extension>]
-    static member UpdateAsync (this: TimeSeriesClientExtension, timeseries: ValueTuple<Identity, TimeSeriesUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
+    static member UpdateAsync (this: ClientExtension, timeseries: ValueTuple<Identity, TimeSeriesUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         async {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync timeseries' this.Ctx

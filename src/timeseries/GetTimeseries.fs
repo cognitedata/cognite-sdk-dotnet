@@ -43,7 +43,7 @@ type TimeSeriesQuery =
         CaseRootAssetIds ids
 
 [<RequireQualifiedAccess>]
-module TimeSeries =
+module Items =
     [<Literal>]
     let Url = "/timeseries"
 
@@ -109,9 +109,9 @@ type ListTimeseriesClientExtensions =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
-    static member ListAsync (this: TimeSeriesClientExtension, options: TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
+    static member ListAsync (this: ClientExtension, options: TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
         async {
-            let! ctx = TimeSeries.listAsync options this.Ctx
+            let! ctx = Items.listAsync options this.Ctx
 
             match ctx.Result with
             | Ok response ->
