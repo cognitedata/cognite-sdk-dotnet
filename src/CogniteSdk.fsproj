@@ -40,6 +40,7 @@
     <Compile Include="events\CreateEvents.fs" />
     <Compile Include="events\DeleteEvents.fs" />
     <Compile Include="events\GetEvent.fs" />
+    <Compile Include="events\GetEventsByIds.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 

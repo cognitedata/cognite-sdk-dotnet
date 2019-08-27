@@ -93,3 +93,26 @@ let ``Get event by missing id is Error`` () = async {
     test <@ err.Code = 400 @>
     test <@ err.Message = "getByInternalId.arg0: must be greater than or equal to 1" @>
 }
+
+[<Fact>]
+let ``Get event by ids is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let eventIds =
+        [ 1995162693488L; 6959277162251L; 13821390033633L ]
+        |> Seq.map Identity.Id
+
+    // Act
+    let! res = Events.Retrieve.getByIdsAsync eventIds ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 3 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/byids" @>
+}
