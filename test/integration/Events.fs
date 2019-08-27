@@ -116,3 +116,91 @@ let ``Get event by ids is Ok`` () = async {
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/events/byids" @>
 }
+
+[<Fact>]
+let ``Update assets is Ok`` () = async {
+    // Arrange
+    let wctx = writeCtx ()
+
+    let externalIdString = "a new event external Id"
+    let newMetadata = ([
+        "key1", "value1"
+        "key2", "value2"
+    ]
+    |> Map.ofList)
+    let dto: EventWriteDto = {
+        ExternalId = Some externalIdString
+        StartTime = Some 1566815994L
+        EndTime = Some 1566816009L
+        Description = Some "dotnet sdk test"
+        MetaData = [
+            "oldkey1", "oldvalue1"
+            "oldkey2", "oldvalue2"
+        ] |> Map.ofList
+        Source = None
+        Type = None
+        SubType = None
+        AssetIds = []
+    }
+    let externalId = Identity.ExternalId externalIdString
+    let newDescription = Some "UpdatedDesc"
+    // Act
+    let! createRes = Events.Create.createAsync [ dto ] wctx
+    let! updateRes =
+        Events.Update.updateAsync [
+            (externalId, [
+                EventUpdate.SetDescription newDescription
+                EventUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+            ])
+        ] wctx
+    let! getRes = Events.Retrieve.getByIdsAsync [ externalId ] wctx
+    let! delRes = Events.Delete.deleteAsync ([ externalId ]) wctx
+
+    let resName, resExternalId, resMetaData =
+        match getRes.Result with
+        | Ok eventssResponses ->
+            let h = Seq.tryHead eventssResponses
+            match h with
+            | Some eventResponse -> eventResponse.Description, eventResponse.ExternalId, eventResponse.MetaData
+            | None -> Some "", Some "", Map.empty
+        | Error _ -> Some "", Some "", Map.empty
+
+    let updateSuccsess =
+        match updateRes.Result with
+        | Ok res -> true
+        | Error _ -> false
+
+    let metaDataOk =
+        resMetaData.ContainsKey "key1"
+        && resMetaData.ContainsKey "key2"
+        && resMetaData.ContainsKey "oldkey2"
+        && not (resMetaData.ContainsKey "oldkey1")
+
+    // Assert create
+    test <@ Result.isOk createRes.Result @>
+    test <@ createRes.Request.Method = HttpMethod.Post @>
+    test <@ createRes.Request.Extra.["resource"] = "/events" @>
+    test <@ createRes.Request.Query.IsEmpty @>
+
+    // Assert update
+    test <@ updateSuccsess @>
+    test <@ Result.isOk updateRes.Result @>
+    test <@ updateRes.Request.Method = HttpMethod.Post @>
+    test <@ updateRes.Request.Extra.["resource"] = "/events/update" @>
+    test <@ updateRes.Request.Query.IsEmpty @>
+
+    // Assert get
+    test <@ Result.isOk getRes.Result @>
+    test <@ getRes.Request.Method = HttpMethod.Post @>
+    test <@ getRes.Request.Extra.["resource"] = "/events/byids" @>
+    test <@ getRes.Request.Query.IsEmpty @>
+    test <@ resExternalId = Some externalIdString @>
+    test <@ resName = newDescription @>
+    test <@ metaDataOk @>
+
+    // Assert delete
+    test <@ Result.isOk delRes.Result @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
+    test <@ delRes.Request.Extra.["resource"] = "/events/delete" @>
+    test <@ delRes.Request.Query.IsEmpty @>
+}
