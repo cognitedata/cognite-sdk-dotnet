@@ -1,6 +1,7 @@
-Microsoft.Extensions.Http
-FSharp.Core
-Taskbuilder.fs
-Thoth.Json.Net
-CogniteSdk.Protobuf
-Oryx
+group Sdk
+    Microsoft.Extensions.Http
+    FSharp.Core
+    Taskbuilder.fs
+    Thoth.Json.Net
+    CogniteSdk.Protobuf
+    Oryx

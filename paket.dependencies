@@ -1,20 +1,34 @@
 source https://www.nuget.org/api/v2
 source https://cognite.jfrog.io/cognite/api/nuget/nuget
-#source https://nuget.pkg.github.com/cogntie/index.json
 storage: none
 
-nuget coverlet.msbuild 2.5.1
-nuget FsConfig 2.0.2
-nuget FSharp.Core 4.7.0
-nuget Microsoft.Extensions.Configuration 2.2.0
-nuget Microsoft.Extensions.Http
-nuget Microsoft.NET.Test.Sdk ~> 16
-nuget CogniteSdk.Protobuf
-nuget Taskbuilder.fs ~> 2.1
-nuget Thoth.Json.Net ~> 3.5
-nuget TypeShape ~> 5
-nuget Unquote ~> 4
-nuget Oryx
-nuget xunit ~> 2
-nuget xunit.runner.visualstudio ~> 2
-nuget Google.Protobuf
+group Sdk
+    source https://www.nuget.org/api/v2
+    source https://cognite.jfrog.io/cognite/api/nuget/nuget
+    storage: none
+
+    nuget FSharp.Core 4.7.0
+    nuget CogniteSdk.Protobuf
+    nuget Taskbuilder.fs ~> 2.1
+    nuget Thoth.Json.Net ~> 3.5
+    nuget Oryx 0.9.3
+    nuget Microsoft.Extensions.Http
+
+group Test
+    source https://www.nuget.org/api/v2
+    storage: none
+
+    nuget FSharp.Core 4.7.0
+    nuget coverlet.msbuild 2.5.1
+    nuget Unquote ~> 4
+    nuget xunit ~> 2
+    nuget xunit.runner.visualstudio ~> 2
+    nuget Microsoft.NET.Test.Sdk ~> 16
+
+group Playground
+    source https://www.nuget.org/api/v2
+    storage: none
+
+    nuget FSharp.Core 4.7.0
+    nuget FsConfig 2.0.2
+    nuget Microsoft.Extensions.Configuration 2.2.0
