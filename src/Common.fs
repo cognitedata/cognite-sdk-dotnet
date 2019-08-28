@@ -123,7 +123,7 @@ module Context =
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
-        {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
+        (version.Major, version.Minor, version.Build)
 
     /// Set the project to connect to.
     let setProject (project: string) (context: HttpContext) =
