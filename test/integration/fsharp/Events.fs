@@ -9,6 +9,7 @@ open CogniteSdk
 open CogniteSdk.Events
 open System.Net.Http
 open Oryx
+open Oryx.Retry
 
 [<Fact>]
 let ``Create and delete events is Ok`` () = async {
@@ -266,25 +267,26 @@ let ``Search events is Ok`` () = async {
         AssetIds = Seq.empty
         Source = None
     }
-    let event = Events.Create.createAsync [ dto ] ctx
+    let! _ = Events.Create.createAsync [ dto ] ctx
 
     let options = [
         EventSearch.Description "dotnet"
     ]
 
     // Act
-
-    let res = Events.Search.searchAsync 10 options [] ctx
+    let retry = retry shouldRetry 100<ms> 15
+    let req = Events.Search.search 10 options [] |> retry
+    let! res = req Async.single ctx
 
     let len =
         match res.Result with
         | Ok dtos -> Seq.length dtos
         | Error _ -> 0
 
-    let delRes = Events.Delete.deleteAsync ([ Identity.ExternalId externalIdString ]) ctx
+    let! _ = Events.Delete.deleteAsync ([ Identity.ExternalId externalIdString ]) ctx
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
+    test <@ res.Request.Extra.["resource"] = "/events/search" @>
 }
