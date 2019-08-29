@@ -124,3 +124,31 @@ type SearchAssetsClientExtensions =
                 let err = error2Exception error
                 return raise err
         } |> fun op -> Async.StartAsTask (op, cancellationToken = token)
+
+
+    /// <summary>
+    /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+    /// </summary>
+    ///
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    ///
+    /// <returns>List of assets matching given criteria.</returns>
+    [<Extension>]
+    static member SearchAsync (this: ClientExtension, limit : int, options: AssetSearch seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        let filter = ResizeArray<AssetFilter>()
+        this.SearchAsync(limit, options, filter, token)
+
+    /// <summary>
+    /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+    /// </summary>
+    ///
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="filters">Search filters.</param>
+    ///
+    /// <returns>List of assets matching given criteria.</returns>
+    [<Extension>]
+    static member SearchAsync (this: ClientExtension, limit : int, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        let options = ResizeArray<AssetSearch>()
+        this.SearchAsync(limit, options, filters, token)
+
