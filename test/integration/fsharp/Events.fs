@@ -252,6 +252,7 @@ let ``Filter events is Ok`` () = async {
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/events/list" @>
 }
+
 let ``Search events is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
