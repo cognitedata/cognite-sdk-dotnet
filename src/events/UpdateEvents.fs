@@ -125,17 +125,15 @@ module Update =
             ]
         | CaseMetaData optMeta ->
             match optMeta with
-            | Some meta ->
-                match meta with
-                | Set data ->
-                    "metadata", Encode.object [
-                        yield "set", Encode.propertyBag data
-                    ]
-                | Change data ->
-                    "metadata", Encode.object [
-                        if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
-                        yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
-                    ]
+            | Some (Set data) ->
+                "metadata", Encode.object [
+                    yield "set", Encode.propertyBag data
+                ]
+            | Some (Change data) ->
+                "metadata", Encode.object [
+                    if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
+                    yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
+                ]
             | None -> "set", Encode.object []
         | CaseEventIds optAssetIds ->
             match optAssetIds with
