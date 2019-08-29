@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Unit", "test\unit\csha
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playground", "playground", "{8C9B6594-D6BC-47A2-8AA9-F0A7035E5D48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "playground\csharp\App.csproj", "{0C33C8B5-4AEB-4164-A6FF-02E452F00F65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App C#", "playground\csharp\App.csproj", "{0C33C8B5-4AEB-4164-A6FF-02E452F00F65}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "playground\fsharp\App.fsproj", "{7DB1936B-CE7A-4449-9853-F0E95001D351}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App F#", "playground\fsharp\App.fsproj", "{7DB1936B-CE7A-4449-9853-F0E95001D351}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{7979817D-C86E-4993-9AE6-E276C93EA0B3}"
 EndProject
