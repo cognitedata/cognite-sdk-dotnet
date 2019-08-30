@@ -204,3 +204,50 @@ let ``Update assets is Ok`` () = async {
     test <@ delRes.Request.Extra.["resource"] = "/events/delete" @>
     test <@ delRes.Request.Query.IsEmpty @>
 }
+
+[<Fact>]
+let ``List events with limit is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let query = [ EventQuery.Limit 10 ]
+
+    // Act
+    let! res = Items.listAsync query [] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.AssetIds [ 4650652196144007L ]
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
