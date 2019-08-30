@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -7,16 +6,16 @@ using CogniteSdk.Assets;
 using System.Threading.Tasks;
 using CogniteSdk;
 using System.Diagnostics;
+using Xunit;
 
 namespace Test.CSharp.Integration {
 
-    [TestClass]
-    public class Assets : TestBase {
+    [Collection("TestBase")]
+    public class Assets : TestFixture {
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Ensures listing Assets returns number of assets equal to 'limit' value")]
 
+        [Fact]
+        [Trait("Description", "Ensures listing Assets returns number of assets equal to 'limit' value")]
         public void ListingAssetsRespectsLimit() {
             // Arrange
             var limit = 10;
@@ -26,28 +25,25 @@ namespace Test.CSharp.Integration {
             var res = ReadClient.Assets.ListAsync(new List<AssetQuery> { option });
 
             // Assert
-            Assert.AreEqual(limit, res.Result.Items.Count(), "Expected the number of assets to be the same as the Limit value");
+            Assert.True(limit == res.Result.Items.Count(), "Expected the number of assets to be the same as the Limit value");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Ensures that getting an asset by ID returns the correct asset")]
+        [Fact]
+        [Trait("Description","Ensures that getting an asset by ID returns the correct asset")]
 
-        public void AssetByIdReturnsCorrectAsset() {
+        public async Task AssetByIdReturnsCorrectAssetAsync() {
             // Arrange
             var assetId = 130452390632424;
 
             // Act
-            var res = ReadClient.Assets.GetAsync(assetId).Result;
+            var res = await ReadClient.Assets.GetAsync(assetId);
 
             // Assert
-            Assert.AreEqual(assetId, res.Id, "The received Asset doesn't match the ID");
+            Assert.True(assetId == res.Id, "The received Asset doesn't match the ID");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Ensures that getting an asset with an invalid Id doesnt return anything")]
-
+        [Fact]
+        [Trait("Description", "Ensures that getting an asset with an invalid Id doesnt return anything")]
         public async Task AssetByInvalidIdReturnsErrorAsync() {
             // Arrange
             var assetId = 0;
@@ -61,13 +57,12 @@ namespace Test.CSharp.Integration {
             }
 
             // Assert
-            Assert.IsTrue(caughtException, "Expected request to fail with 'CogniteSdk.ResponseException' but didnt");
+            Assert.True(caughtException, "Expected request to fail with 'CogniteSdk.ResponseException' but didnt");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Gets multiple Assets with a list of ids and ensures theyre the correct assets")]
-        public void AssetsByIdsRetrivesTheCorrectAssets() {
+        [Fact]
+        [Trait("Description", "Gets multiple Assets with a list of ids and ensures theyre the correct assets")]
+        public async Task AssetsByIdsRetrivesTheCorrectAssetsAsync() {
             // Arrange
             var ids = new List<long>() {
                 130452390632424,
@@ -76,19 +71,18 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            var res = ReadClient.Assets.GetByIdsAsync(ids).Result;
+            var res = await ReadClient.Assets.GetByIdsAsync(ids);
 
             // Assert
             var returnedIds = res.Select(asset => asset.Id);
             var resCount = res.Count();
-            Assert.AreEqual(ids.Count, resCount, $"Expected {ids.Count} assets but got {resCount}");
-            Assert.AreEqual(returnedIds.Intersect(ids).Count(), returnedIds.Count(), "One of the received Assets dont match the requested IDs");
+            Assert.True(ids.Count == resCount, $"Expected {ids.Count} assets but got {resCount}");
+            Assert.True(returnedIds.Intersect(ids).Count() == returnedIds.Count(), "One of the received Assets dont match the requested IDs");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Search Asset returns the correct number of assets")]
-        public void AssetSearchReturnsExpectedNumberOfAssets() {
+        [Fact]
+        [Trait("Description", "Search Asset returns the correct number of assets")]
+        public async Task AssetSearchReturnsExpectedNumberOfAssetsAsync() {
             // Arrange
             var options = new List<AssetSearch>() {
                 AssetSearch.Name("23")
@@ -96,17 +90,16 @@ namespace Test.CSharp.Integration {
             var numOfAssets = 10;
 
             // Act
-            var res = ReadClient.Assets.SearchAsync(numOfAssets, options).Result;
+            var res = await ReadClient.Assets.SearchAsync(numOfAssets, options);
 
             // Assert
             var resCount = res.Count();
-            Assert.AreEqual(numOfAssets, resCount, $"Expected {options.Count} assets but got {resCount}");
+            Assert.True(numOfAssets == resCount, $"Expected {options.Count} assets but got {resCount}");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Listing Assets with filter returns the expected number of assets")]
-        public void FilterAssetsReturnsTheExpectedNumberOfAssets() {
+        [Fact]
+        [Trait("Description", "Listing Assets with filter returns the expected number of assets")]
+        public async Task FilterAssetsReturnsTheExpectedNumberOfAssetsAsync() {
             // Arrange
             var numOfAssets = 10;
             var id = 6687602007296940;
@@ -118,19 +111,18 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            var res = ReadClient.Assets.ListAsync(options, filter).Result;
+            var res = await ReadClient.Assets.ListAsync(options, filter);
 
             // Assert
             var resCount = res.Items.Count();
-            Assert.AreEqual(numOfAssets, resCount, $"Expected {options.Count} assets but got {resCount}");
+            Assert.True(numOfAssets == resCount, $"Expected {options.Count} assets but got {resCount}");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Creating an asset and deletes it works")]
-        public void CreateAndDeleteAssetWorkAsExpected() {
+        [Fact]
+        [Trait("Description", "Creating an asset and deletes it works")]
+        public async Task CreateAndDeleteAssetWorkAsExpectedAsync() {
             // Arrange
-            var externalIdString = "createDeleteTestAssets";
+            var externalIdString = "createDeleteCSharpTestAssets";
             var newAsset = new AssetEntity();
             newAsset.ExternalId = externalIdString;
             newAsset.Name = "Create Assets c# sdk test";
@@ -138,18 +130,17 @@ namespace Test.CSharp.Integration {
 
 
             // Act
-            var res = WriteClient.Assets.CreateAsync(new List<AssetEntity>() { newAsset }).Result;
-            WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString }, false);
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetEntity>() { newAsset });
+            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString }, false);
 
             // Assert
             var resCount = res.Count();
-            Assert.AreEqual(1, resCount, $"Expected 1 created asset but got {resCount}");
-            Assert.AreEqual(externalIdString, res.First().ExternalId, "Created externalId doesnt match expected");
+            Assert.True(1 == resCount, $"Expected 1 created asset but got {resCount}");
+            Assert.True(externalIdString == res.First().ExternalId, "Created externalId doesnt match expected");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Deleting an asset that exist fails with ResponseException")]
+        [Fact]
+        [Trait("Description", "Deleting an asset that exist fails with ResponseException")]
         public async Task AssetDeleteFailsWhenIdIsInvalidAsync() {
             // Arrange
             var id = 0;
@@ -163,15 +154,14 @@ namespace Test.CSharp.Integration {
             }
 
             // Assert
-            Assert.IsTrue(caughtException, "Expected request to fail with 'CogniteSdk.ResponseException' but didnt");
+            Assert.True(caughtException, "Expected request to fail with 'CogniteSdk.ResponseException' but didnt");
         }
 
-        [TestMethod]
-        [TestCategory(Category.Asset)]
-        [Description("Deleting an asset that exist fails with ResponseException")]
+        [Fact]
+        [Trait("Description", "Deleting an asset that exist fails with ResponseException")]
         public async Task UpdatedAssetsPerformsExpectedChangesAsync() {
             // Arrange
-            var externalIdString = "updateAssetTest";
+            var externalIdString = "updateAssetTestCSharp";
             var newAsset = new AssetEntity();
             var newMetadata = new Dictionary<string, string>() {
                 { "key1", "value1" },
@@ -201,15 +191,15 @@ namespace Test.CSharp.Integration {
 
             // Assert
             var resCount = getRes.Count();
-            Assert.IsTrue(resCount == 1, $"Expected a single Asset but got {resCount}");
+            Assert.True(resCount == 1, $"Expected a single Asset but got {resCount}");
             var resAsset = getRes.First();
-            Assert.AreEqual(externalIdString, resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
-            Assert.AreEqual(newName, resAsset.Name, $"Expected the Asset name to update to '{newName}' but was '{resAsset.Name}'");
-            Assert.IsTrue(resAsset.MetaData.ContainsKey("key1") && resAsset.MetaData.ContainsKey("key2"), "Asset wasnt update with new metadata values");
-            Assert.IsTrue(resAsset.MetaData.ContainsKey("oldkey2") && !resAsset.MetaData.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
+            Assert.True(externalIdString == resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
+            Assert.True(newName == resAsset.Name, $"Expected the Asset name to update to '{newName}' but was '{resAsset.Name}'");
+            Assert.True(resAsset.MetaData.ContainsKey("key1") && resAsset.MetaData.ContainsKey("key2"), "Asset wasnt update with new metadata values");
+            Assert.True(resAsset.MetaData.ContainsKey("oldkey2") && !resAsset.MetaData.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
         }
 
 
     }
-    
+
 }
