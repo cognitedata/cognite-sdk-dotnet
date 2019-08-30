@@ -45,3 +45,25 @@ module EventExtensions =
                     yield "assetIds", assetIdString
 
             ]
+
+    type EventFilter with
+        static member Render (this: EventFilter) =
+            match this with
+            | CaseStartTime startTime -> "startTime", startTime.Encoder
+            | CaseEndTime endTime -> "endTime", endTime.Encoder
+            | CaseMetaData md -> "metaData", Encode.propertyBag md
+            | CaseAssetIds ids -> "assetIds", ids |> Encode.int53seq
+            | CaseAssetRootIds rootIds -> "rootAssetIds", rootIds |> Encode.int53seq
+            | CaseSource source -> "source", Encode.string source
+            | CaseType eventType -> "type", Encode.string eventType
+            | CaseSubtype eventSubType -> "subType", Encode.string eventSubType
+            | CaseCreatedTime createdTime -> "createdTime", createdTime.Encoder
+            | CaseLastUpdatedTime updateTime -> "lastUpdatedTime", updateTime.Encoder
+            | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
+
+    type EventItemsReadDto with
+        static member Decoder : Decoder<EventItemsReadDto> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
+            })

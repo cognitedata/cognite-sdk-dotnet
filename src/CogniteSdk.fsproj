@@ -42,6 +42,7 @@
     <Compile Include="events\GetEvent.fs" />
     <Compile Include="events\GetEventsByIds.fs" />
     <Compile Include="events\UpdateEvents.fs" />
+    <Compile Include="events\ListEvents.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 

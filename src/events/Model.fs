@@ -30,6 +30,12 @@ type EventEntity internal (externalId: string, startTime: int64, endTime: int64,
     new (externalId: string, startTime: int64, endTime: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string) =
         EventEntity(externalId=externalId, startTime=startTime, endTime=endTime, eventType=eventType, eventSubType=eventSubType, description=description, metadata=metadata, assetIds=assetIds, source=source, id=0L, createdTime=0L, lastUpdatedTime=0L)
 
+[<CLIMutable>]
+type EventItems = {
+    Items: EventEntity seq
+    NextCursor: string
+}
+
 /// Event type for responses.
 type EventReadDto = {
     /// External Id provided by client. Should be unique within the project
@@ -124,6 +130,52 @@ type EventWriteDto = {
             Source = if isNull event.Source then None else Some event.Source
         }
 
+type EventItemsReadDto = {
+    Items: EventReadDto seq
+    NextCursor : string option
+}
+
+type EventFilter =
+    private
+    | CaseStartTime of CogniteSdk.TimeRange
+    | CaseEndTime of CogniteSdk.TimeRange
+    | CaseMetaData of Map<string, string>
+    | CaseAssetIds of int64 seq
+    | CaseAssetRootIds of int64 seq
+    | CaseSource of string
+    | CaseType of string
+    | CaseSubtype of string
+    | CaseCreatedTime of CogniteSdk.TimeRange
+    | CaseLastUpdatedTime of CogniteSdk.TimeRange
+    | CaseExternalIdPrefix of string
+
+    /// Range between two timestamps.
+    static member StartTime startTime = CaseStartTime startTime
+    /// Range between two timestamps.
+    static member EndTime endTime = CaseEndTime endTime
+    /// Filter on metadata
+    static member MetaData (metaData : IDictionary<string, string>) =
+        metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
+    /// Asset IDs of related equipment that this event relates to.
+    static member AssetIds assetIds = CaseAssetIds assetIds
+    /// The IDs of the root assets that the related assets should be children of.
+    static member RootAssetIds rootAssetIds = CaseAssetRootIds rootAssetIds
+    /// The source of this event.
+    static member Source source = CaseSource source
+    /// The event type
+    static member Type eventType = CaseType eventType
+    /// The event subtype
+    static member Subtype eventSubType = CaseSubtype eventSubType
+    /// Range between two timestamps.
+    static member CreatedTime createdTime = CaseCreatedTime createdTime
+    /// Range between two timestamps.
+    static member LastUpdatedTime updatedTime = CaseLastUpdatedTime updatedTime
+    /// The external ID provided by the client. Must be unique within the project.
+    static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
+
+
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =
         context
+
+        
