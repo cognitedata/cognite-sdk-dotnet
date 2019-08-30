@@ -61,12 +61,6 @@ type AssetUpdate =
                     add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
             Remove = if isNull remove then Seq.empty else remove
         } |> Change |> Some |> CaseMetaData
-    /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
-    static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
-        {
-            Add = add
-            Remove = remove
-        } |> Change |> Some |> CaseMetaData
     /// Set the source of this asset
     static member SetSource source =
         Some source |> CaseSource

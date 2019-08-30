@@ -89,5 +89,26 @@ type GetAssetsByIdsClientExtensions =
                 return raise err
         } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: int64 seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.Id x), token)
+    
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: string seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.ExternalId x), token)
 
 

@@ -115,10 +115,19 @@ type ListAssetsExtensions =
     /// <summary>
     /// Retrieves list of assets matching filter.
     /// </summary>
-    /// <param name="options">Optional limit and cursor</param>
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
     static member ListAsync (this: ClientExtension, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
         let query = ResizeArray<AssetQuery>()
         this.ListAsync(query, filters)
+
+    /// <summary>
+    /// Retrieves list of assets with a cursor if given limit is exceeded.
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <returns>List of assets matching given filters and optional cursor</returns>
+    [<Extension>]
+    static member ListAsync (this: ClientExtension, options: AssetQuery seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
+        let filter = ResizeArray<AssetFilter>()
+        this.ListAsync(options, filter)

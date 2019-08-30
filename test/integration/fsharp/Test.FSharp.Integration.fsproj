@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="../shared/Common.fs" />
+    <Compile Include="../../shared/Common.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Timeseries.fs" />
     <Compile Include="Datapoints.fs" />
@@ -15,9 +15,11 @@
     <Compile Include="Events.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="../../src\CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\..\src\CogniteSdk.fsproj" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="..\..\..\.paket\Paket.Restore.targets" />
+
 </Project>

@@ -79,3 +79,23 @@ type DeleteAssetsExtensions =
                 return raise err
         } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> _
 
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
+    [<Extension>]
+    static member DeleteAsync(this: ClientExtension, ids: int64 seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+        this.DeleteAsync(ids |> Seq.map(fun id -> Identity.Id id), recursive, token)
+
+
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
+    [<Extension>]
+    static member DeleteAsync(this: ClientExtension, ids: string seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+        this.DeleteAsync(ids |> Seq.map(fun id -> Identity.ExternalId id), recursive, token)
+
+
