@@ -9,7 +9,6 @@ open CogniteSdk
 open CogniteSdk.Events
 open System.Net.Http
 open Oryx
-open Oryx.Retry
 
 [<Fact>]
 let ``Create and delete events is Ok`` () = async {
@@ -253,6 +252,7 @@ let ``Filter events is Ok`` () = async {
     test <@ res.Request.Extra.["resource"] = "/events/list" @>
 }
 
+[<Fact>]
 let ``Search events is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
@@ -263,6 +263,8 @@ let ``Search events is Ok`` () = async {
 
     // Act
     let retry = retry shouldRetry 100<ms> 15
+
+    // Event is already created in test/integration/Test.CSharp.Integration/TestBase.cs
     let req = Events.Search.search 10 options [] |> retry
     let! res = req Async.single ctx
 
