@@ -167,9 +167,9 @@ type EventFilter =
     /// The event subtype
     static member Subtype eventSubType = CaseSubtype eventSubType
     /// Range between two timestamps.
-    static member CreatedTime externalIdPrefix = CaseCreatedTime externalIdPrefix
+    static member CreatedTime createdTime = CaseCreatedTime createdTime
     /// Range between two timestamps.
-    static member LastUpdatedTime externalIdPrefix = CaseLastUpdatedTime externalIdPrefix
+    static member LastUpdatedTime updatedTime = CaseLastUpdatedTime updatedTime
     /// The external ID provided by the client. Must be unique within the project.
     static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
 

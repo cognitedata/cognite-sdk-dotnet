@@ -49,8 +49,8 @@ module EventExtensions =
     type EventFilter with
         static member Render (this: EventFilter) =
             match this with
-            | CaseStartTime startTime -> "name", startTime.Encoder
-            | CaseEndTime endTime -> "parentIds", endTime.Encoder
+            | CaseStartTime startTime -> "startTime", startTime.Encoder
+            | CaseEndTime endTime -> "endTime", endTime.Encoder
             | CaseMetaData md -> "metaData", Encode.propertyBag md
             | CaseAssetIds ids -> "assetIds", ids |> Encode.int53seq
             | CaseAssetRootIds rootIds -> "rootAssetIds", rootIds |> Encode.int53seq
