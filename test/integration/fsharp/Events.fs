@@ -251,3 +251,31 @@ let ``Filter events is Ok`` () = async {
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/events/list" @>
 }
+
+[<Fact>]
+let ``Search events is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+
+    let options = [
+        EventSearch.Description "dotnet"
+    ]
+
+    // Act
+    let retry = retry shouldRetry 100<ms> 15
+
+    // Event is already created in test/integration/Test.CSharp.Integration/TestBase.cs
+    let req = Events.Search.search 10 options [] |> retry
+    let! res = req Async.single ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/search" @>
+}

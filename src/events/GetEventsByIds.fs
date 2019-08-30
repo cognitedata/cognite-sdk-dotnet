@@ -89,5 +89,27 @@ type GetEventsByIdsClientExtensions =
                 return raise err
         } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
 
+    /// <summary>
+    /// Retrieves information about multiple events in the same project.
+    /// A maximum of 1000 events IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="eventIds">The ids of the events to get.</param>
+    /// <returns>Events with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: seq<int64>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.Id x), token)
+
+    /// <summary>
+    /// Retrieves information about multiple events in the same project.
+    /// A maximum of 1000 events IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="eventIds">The ids of the events to get.</param>
+    /// <returns>Events with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: seq<string>, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.ExternalId x), token)
+
 
 
