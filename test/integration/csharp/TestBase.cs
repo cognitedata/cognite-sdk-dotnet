@@ -38,7 +38,7 @@ namespace Test.CSharp.Integration {
         private async Task PopulateDataAsync() {
             try {
                 TestEvent = (await WriteClient.Events.GetByIdsAsync(new List<string>() { "TestEvent" })).FirstOrDefault();
-            } catch (AggregateException) {
+            } catch (ResponseException) {
                 TestEvent = await CreateTestEventAsync();
             }
         }
