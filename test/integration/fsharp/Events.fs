@@ -256,19 +256,6 @@ let ``Filter events is Ok`` () = async {
 let ``Search events is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "searchEventTest"
-    let dto: Events.EventWriteDto = {
-        ExternalId = Some externalIdString
-        StartTime = Some 1565941329L
-        EndTime = Some 1565941341L
-        Type = Some "dotnet test"
-        SubType = Some "create and delete"
-        Description = Some "dotnet sdk test"
-        MetaData = Map.empty
-        AssetIds = Seq.empty
-        Source = None
-    }
-    let! _ = Events.Create.createAsync [ dto ] ctx
 
     let options = [
         EventSearch.Description "dotnet"
@@ -284,7 +271,6 @@ let ``Search events is Ok`` () = async {
         | Ok dtos -> Seq.length dtos
         | Error _ -> 0
 
-    let! _ = Events.Delete.deleteAsync ([ Identity.ExternalId externalIdString ]) ctx
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
