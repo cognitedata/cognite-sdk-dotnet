@@ -19,7 +19,7 @@ namespace Test.CSharp.Integration {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
             WriteClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
 
-            PopulateDataAsync().Wait();
+            PopulateDataAsync();
 
         }
 
@@ -35,15 +35,15 @@ namespace Test.CSharp.Integration {
                 .SetServiceUrl(url);
         }
 
-        private async Task PopulateDataAsync() {
+        private void PopulateDataAsync() {
             try {
-                TestEvent = (await WriteClient.Events.GetByIdsAsync(new List<string>() { "TestEvent" })).FirstOrDefault();
+                TestEvent = WriteClient.Events.GetByIdsAsync(new List<string>() { "TestEvent" }).Result.FirstOrDefault();
             } catch (ResponseException) {
-                TestEvent = await CreateTestEventAsync();
+                TestEvent = CreateTestEventAsync();
             }
         }
 
-        private async Task<EventEntity> CreateTestEventAsync() {
+        private EventEntity CreateTestEventAsync() {
             var newEvent = new EventEntity();
             newEvent.ExternalId = "TestEvent";
             newEvent.StartTime = 1565941329;
@@ -52,7 +52,7 @@ namespace Test.CSharp.Integration {
             newEvent.SubType = "Dummy Event";
             newEvent.Description = "To be use for dotnet Test testing";
 
-            return (await WriteClient.Events.CreateAsync(new List<EventEntity>() { newEvent })).FirstOrDefault();
+            return WriteClient.Events.CreateAsync(new List<EventEntity>() { newEvent }).Result.FirstOrDefault();
         }
     }
 
