@@ -3,6 +3,7 @@
 
 namespace CogniteSdk.DataPoints
 
+open System
 open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
 open Oryx
@@ -50,7 +51,7 @@ type AggregateDataPointReadDto = {
             Average = Some pt.Average
             Max = Some pt.Max
             Min = Some pt.Min
-            Count = Some (int pt.Count)
+            Count = if Double.IsNaN pt.Count then None else Some (int pt.Count)
             Sum = Some pt.Sum
             Interpolation = Some pt.Interpolation
             StepInterpolation = Some pt.StepInterpolation
