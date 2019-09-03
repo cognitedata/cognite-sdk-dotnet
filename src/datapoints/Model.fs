@@ -48,16 +48,16 @@ type AggregateDataPointReadDto = {
     static member FromProtobuf (pt: AggregateDatapoint) =
         {
             TimeStamp = pt.Timestamp
-            Average = Some pt.Average
-            Max = Some pt.Max
-            Min = Some pt.Min
+            Average = if Double.IsNaN pt.Average then None else Some pt.Average
+            Max = if Double.IsNaN pt.Max then None else Some pt.Max
+            Min = if Double.IsNaN pt.Min then None else Some pt.Min
             Count = if Double.IsNaN pt.Count then None else Some (int pt.Count)
-            Sum = Some pt.Sum
-            Interpolation = Some pt.Interpolation
-            StepInterpolation = Some pt.StepInterpolation
-            ContinuousVariance = Some pt.ContinuousVariance
-            DiscreteVariance = Some pt.DiscreteVariance
-            TotalVariation = Some pt.TotalVariation
+            Sum = if Double.IsNaN pt.Sum then None else Some pt.Sum
+            Interpolation = if Double.IsNaN pt.Interpolation then None else Some pt.Interpolation
+            StepInterpolation = if Double.IsNaN pt.StepInterpolation then None else Some pt.StepInterpolation
+            ContinuousVariance = if Double.IsNaN pt.ContinuousVariance then None else Some pt.ContinuousVariance
+            DiscreteVariance = if Double.IsNaN pt.DiscreteVariance then None else Some pt.DiscreteVariance
+            TotalVariation = if Double.IsNaN pt.TotalVariation then None else Some pt.TotalVariation
         }
 
 type ClientExtension internal (context: HttpContext) =
