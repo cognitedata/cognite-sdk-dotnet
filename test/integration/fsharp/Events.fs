@@ -1,5 +1,6 @@
 module Tests.Integration.Events
 
+open System
 open Xunit
 open Swensen.Unquote
 
@@ -14,7 +15,7 @@ open Oryx
 let ``Create and delete events is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "createDeleteTestEvents"
+    let externalIdString = Guid().ToString()
     let dto: Events.EventWriteDto = {
         ExternalId = Some externalIdString
         StartTime = Some 1565941329L
