@@ -1,6 +1,8 @@
 module Tests.Integration.Timeseries
 
+open System
 open System.Net.Http
+
 open Swensen.Unquote
 open Xunit
 
@@ -145,6 +147,68 @@ let ``Search timeseries is Ok`` () = async {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries is on CreatedTime Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567707299032L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567707299052L)
+    }
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.CreatedTime timerange ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let createdTime =
+        match res.Result with
+        | Ok dtos -> (Seq.head dtos).CreatedTime
+        | Error _ -> 0L
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 2 @>
+    test <@ createdTime = 1567707299042L @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries is on LastUpdatedTime Ok`` () = async {
+
+    // Arrange
+    let ctx = writeCtx ()
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567707299032L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567707299052L)
+    }
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.LastUpdatedTime timerange] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let lastUpdatedTime =
+        match res.Result with
+        | Ok dtos -> (Seq.head dtos).LastUpdatedTime
+        | Error _ -> 0L
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 2 @>
+    test <@ lastUpdatedTime = 1567707299042L @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
 }
