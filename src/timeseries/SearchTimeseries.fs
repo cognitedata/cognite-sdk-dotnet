@@ -52,8 +52,8 @@ type TimeSeriesFilter =
     | CaseAssetIds of int64 seq
     | CaseRootAssetIds of int64 seq
     | CaseExternalIdPrefix of string
-    | CaseCreatedTime of int64
-    | CaseLastUpdatedTime of int64
+    | CaseCreatedTime of CogniteSdk.TimeRange
+    | CaseLastUpdatedTime of CogniteSdk.TimeRange
 
     /// Name of timeseries
     static member Name name = CaseName name
@@ -87,8 +87,8 @@ type TimeSeriesFilter =
                 | CaseAssetIds ids -> yield "assetIds", Encode.int53seq ids
                 | CaseRootAssetIds ids -> yield "rootAssetIds", Encode.int53seq ids
                 | CaseExternalIdPrefix prefix -> yield "externalIdPrefix", Encode.string prefix
-                | CaseCreatedTime time -> yield "createdTime", Encode.int53 time
-                | CaseLastUpdatedTime time -> yield "lastUpdatedTime", Encode.int53 time
+                | CaseCreatedTime time -> yield "createdTime", time.Encoder
+                | CaseLastUpdatedTime time -> yield "lastUpdatedTime", time.Encoder
         ]
 
 

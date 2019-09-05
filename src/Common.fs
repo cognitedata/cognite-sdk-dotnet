@@ -64,13 +64,13 @@ type Numeric =
 /// Used to describe a time range.
 [<CLIMutable>]
 type TimeRange = {
-    Max: DateTime
-    Min: DateTime
+    Max: DateTimeOffset
+    Min: DateTimeOffset
 } with
     member this.Encoder =
         Encode.object [
-            yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
-            yield "min", DateTimeOffset(this.Min).ToUnixTimeMilliseconds() |> Encode.int64
+            yield "max", this.Max.ToUnixTimeMilliseconds() |> Encode.int64
+            yield "min", this.Min.ToUnixTimeMilliseconds() |> Encode.int64
         ]
 
 [<AutoOpen>]
