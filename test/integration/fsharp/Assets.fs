@@ -11,6 +11,7 @@ open CogniteSdk
 open CogniteSdk.Assets
 open Common
 open Tests
+open System
 
 [<Fact>]
 let ``List assets with limit is Ok`` () = async {
@@ -144,6 +145,68 @@ let ``Filter assets is Ok`` () = async {
     test <@ len = 10 @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/assets/list" @>
+}
+
+[<Fact>]
+let ``Search assets on CreatedTime Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567084348460L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567084348480L)
+    }
+
+    // Act
+    let! res =
+        Assets.Search.searchAsync 10 [] [ AssetFilter.CreatedTime timerange ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let createdTime =
+        match res.Result with
+        | Ok dtos -> (Seq.head dtos).CreatedTime
+        | Error _ -> 0L
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ createdTime = 1567084348470L @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
+}
+
+[<Fact>]
+let ``Search assets on LastUpdatedTime Ok`` () = async {
+
+    // Arrange
+    let ctx = writeCtx ()
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567084348460L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567084348480L)
+    }
+    // Act
+    let! res =
+        Assets.Search.searchAsync 10 [] [ AssetFilter.LastUpdatedTime timerange] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let lastUpdatedTime =
+        match res.Result with
+        | Ok dtos -> (Seq.head dtos).LastUpdatedTime
+        | Error _ -> 0L
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ lastUpdatedTime = 1567084348470L @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
 }
 
 [<Fact>]

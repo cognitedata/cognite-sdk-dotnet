@@ -152,7 +152,7 @@ let ``Search timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries is on CreatedTime Ok`` () = async {
+let ``Search timeseries on CreatedTime Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
     let timerange = {
@@ -183,7 +183,7 @@ let ``Search timeseries is on CreatedTime Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries is on LastUpdatedTime Ok`` () = async {
+let ``Search timeseries on LastUpdatedTime Ok`` () = async {
 
     // Arrange
     let ctx = writeCtx ()
