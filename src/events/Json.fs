@@ -56,7 +56,7 @@ module EventExtensions =
             | CaseAssetRootIds rootIds -> "rootAssetIds", rootIds |> Encode.int53seq
             | CaseSource source -> "source", Encode.string source
             | CaseType eventType -> "type", Encode.string eventType
-            | CaseSubtype eventSubType -> "subType", Encode.string eventSubType
+            | CaseSubtype eventSubType -> "subtype", Encode.string eventSubType
             | CaseCreatedTime createdTime -> "createdTime", createdTime.Encoder
             | CaseLastUpdatedTime updateTime -> "lastUpdatedTime", updateTime.Encoder
             | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
