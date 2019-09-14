@@ -288,6 +288,319 @@ let ``Filter events on subtype is Ok`` () = async {
 }
 
 [<Fact>]
+let ``Filter events on AssetIds is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.AssetIds [ 4650652196144007L ]
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let assetIds =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.AssetIds) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ Seq.forall ((=) 4650652196144007L) assetIds @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on CreatedTime is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1554973225688L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1554973225708L)
+    }
+    let filters = [
+        EventFilter.CreatedTime timerange
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let createdTimes =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun t -> t < 1554973225708L && t > 1554973225688L) createdTimes @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on LastUpdatedTime is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1554973225688L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1554973225708L)
+    }
+    let filters = [
+        EventFilter.LastUpdatedTime timerange
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let lastUpdatedTimes =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun t -> t < 1554973225708L && t > 1554973225688L) lastUpdatedTimes @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on StartTime is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1565941319L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1565941339L)
+    }
+    let filters = [
+        EventFilter.StartTime timerange
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let startTimes =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.StartTime |> optionToSeq) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun t -> t < 1565941339L && t > 1565941319L) startTimes @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on EndTime is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let timerange = {
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1565941331L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1565941351L)
+    }
+    let filters = [
+        EventFilter.EndTime timerange
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let endTimes =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.EndTime |> optionToSeq) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun t -> t < 1565941351L && t > 1565941331L) endTimes @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on ExternalIdPrefix is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.ExternalIdPrefix "odata"
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let externalIds =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 2 @>
+    test <@ Seq.forall (fun (e: string) -> e.StartsWith("odata")) externalIds @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on MetaData is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.MetaData (Map.ofList ["sourceId", "2758173488388242"])
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let ms =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun (e: EventReadDto) -> e.MetaData) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun m -> Map.tryFind "sourceId" m = Some "2758173488388242") ms @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on Source is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.Source "akerbp-cdp"
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let sources =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.Source |> optionToSeq) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ Seq.forall ((=) "akerbp-cdp") sources @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
+let ``Filter events on Type is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+    let options = [
+        EventQuery.Limit 10
+    ]
+    let filters = [
+        EventFilter.Type "Monad"
+    ]
+
+    // Act
+    let! res = Events.Items.listAsync options filters ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos.Items
+        | Error _ -> 0
+
+    let types =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun (e: EventReadDto) -> e.Type |> optionToSeq) dtos.Items
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall ((=) "Monad") types @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+}
+
+[<Fact>]
 let ``Search events is Ok`` () = async {
     // Arrange
     let ctx = writeCtx ()
