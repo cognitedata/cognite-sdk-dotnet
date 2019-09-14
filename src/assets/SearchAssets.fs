@@ -31,20 +31,11 @@ type AssetSearch =
         | CaseName name -> "name", Encode.string name
         | CaseDescription desc -> "description", Encode.string desc
 
-
 /// The functional asset search core module
 [<RequireQualifiedAccess>]
 module Search =
     [<Literal>]
     let Url = "/assets/search"
-
-    type Assets = {
-        Items: AssetReadDto seq
-    } with
-        static member Decoder : Decoder<Assets> =
-            Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
-            })
 
     type SearchAssetsRequest = {
         Limit: int

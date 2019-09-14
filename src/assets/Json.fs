@@ -46,7 +46,7 @@ module AssetJsonExtensions =
             | CaseParentIds ids -> "parentIds", Encode.int53seq ids
             | CaseRootIds ids -> "rootIds", ids |> Seq.map(fun id -> id.Encoder) |> Encode.seq
             | CaseSource source -> "source", Encode.string source
-            | CaseMetaData md -> "metaData", Encode.propertyBag md
+            | CaseMetaData md -> "metadata", Encode.propertyBag md
             | CaseCreatedTime time -> "createdTime", time.Encoder
             | CaseLastUpdatedTime time -> "lastUpdatedTime", time.Encoder
             | CaseRoot root -> "root", Encode.bool root

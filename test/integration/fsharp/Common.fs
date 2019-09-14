@@ -20,3 +20,8 @@ let createCtx (key: string) (project: string) (serviceUrl: string) =
 
 let readCtx () = createCtx testApiKeyRead "publicdata" "https://api.cognitedata.com"
 let writeCtx () = createCtx testApiKeyWrite "fusiondotnet-tests" "https://greenfield.cognitedata.com"
+
+let optionToSeq (o: 'a option): 'a seq =
+    match o with
+    | Some a -> Seq.ofList [ a ]
+    | None -> Seq.empty
