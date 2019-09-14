@@ -68,6 +68,8 @@ type TimeSeriesFilter =
         metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
     /// Filter out timeseries without assetId in list
     static member AssetIds ids = CaseAssetIds ids
+    // Filter out timeseries without rootAssetIds in list
+    static member RootAssetIds ids = CaseRootAssetIds ids
     /// Prefix on externalId of timeseries
     static member ExternalIdPrefix prefix = CaseExternalIdPrefix prefix
     /// Filter out assets without this exact createdTime
@@ -83,7 +85,7 @@ type TimeSeriesFilter =
                 | CaseUnit unit -> yield "unit", Encode.string unit
                 | CaseIsStep isStep -> yield "isStep", Encode.bool isStep
                 | CaseIsString isString -> yield "isString", Encode.bool isString
-                | CaseMetaData md -> yield "metaData", Encode.propertyBag md
+                | CaseMetaData md -> yield "metadata", Encode.propertyBag md
                 | CaseAssetIds ids -> yield "assetIds", Encode.int53seq ids
                 | CaseRootAssetIds ids -> yield "rootAssetIds", Encode.int53seq ids
                 | CaseExternalIdPrefix prefix -> yield "externalIdPrefix", Encode.string prefix
