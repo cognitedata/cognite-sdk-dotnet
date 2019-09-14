@@ -51,7 +51,7 @@ module EventExtensions =
             match this with
             | CaseStartTime startTime -> "startTime", startTime.Encoder
             | CaseEndTime endTime -> "endTime", endTime.Encoder
-            | CaseMetaData md -> "metaData", Encode.propertyBag md
+            | CaseMetaData md -> "metadata", Encode.propertyBag md
             | CaseAssetIds ids -> "assetIds", ids |> Encode.int53seq
             | CaseAssetRootIds rootIds -> "rootAssetIds", rootIds |> Encode.int53seq
             | CaseSource source -> "source", Encode.string source
