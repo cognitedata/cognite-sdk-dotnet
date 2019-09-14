@@ -214,6 +214,230 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = async {
 }
 
 [<Fact>]
+let ``Search timeseries on AssetIds is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.AssetIds [4293345866058133L] ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let assetIds =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun d -> d.AssetId) dtos
+        | Error _ -> Seq.ofList [ Some 0L ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall ((=) (Some 4293345866058133L)) assetIds @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries on ExternalIdPrefix is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.ExternalIdPrefix "VAL_45" ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let externalIds =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
+        | Error _ -> Seq.ofList [ "" ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ Seq.forall (fun (e: string) -> e.StartsWith("VAL_45")) externalIds @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries on IsStep is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsStep true ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let isSteps =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun d -> d.IsStep) dtos
+        | Error _ -> Seq.ofList [ false ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 5 @>
+    test <@ Seq.forall id isSteps @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries on IsString is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsString true ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let isStrings =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun d -> d.IsString) dtos
+        | Error _ -> Seq.ofList [ false ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 6 @>
+    test <@ Seq.forall id isStrings @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries on Unit is Ok`` () = async {
+    // Arrange
+    let ctx = writeCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Unit "et" ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let units =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun d -> d.Unit |> optionToSeq) dtos
+        | Error _ -> Seq.ofList [ "" ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall ((=) "et") units @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``Search timeseries on MetaData is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.MetaData (Map.ofList ["pointid", "160909"]) ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let ms =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun d -> d.MetaData) dtos
+        | Error _ -> Seq.ofList [ Map.empty ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun m -> (Map.tryFind "pointid" m) = Some "160909") ms @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``FuzzySearch timeseries on Name is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Name "92529_SILch0" ] [ ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let names =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun d -> d.Name |> optionToSeq) dtos
+        | Error _ -> Seq.ofList [ "" ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 9 @>
+    test <@ Seq.forall (fun (n: string) -> n.Contains("SILch0") || n.Contains("92529")) names @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
+let ``FuzzySearch timeseries on Description is Ok`` () = async {
+    // Arrange
+    let ctx = readCtx ()
+
+    // Act
+    let! res =
+        TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Description "Tube y" ] [ ] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let descriptions =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun d -> d.Description |> optionToSeq) dtos
+        | Error _ -> Seq.ofList [ "" ]
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 10 @>
+    test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+}
+
+[<Fact>]
 let ``Update timeseries is Ok`` () = async {
     // Arrange
     let wctx = writeCtx ()
