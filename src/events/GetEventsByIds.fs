@@ -14,6 +14,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<AutoOpen>]
 module Retrieve =
@@ -35,8 +36,8 @@ module Retrieve =
                 Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
             })
 
-    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse EventResponse.Decoder (fun response -> response.Items)
+    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun response -> response.Items)
         let request : EventRequest = { Items = ids }
 
         POST
@@ -44,7 +45,7 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves information about multiple events in the same project.
@@ -54,7 +55,7 @@ module Retrieve =
     /// <param name="eventIds">The ids of the events to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Events with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -65,7 +66,7 @@ module Retrieve =
     /// <param name="eventIds">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
     let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch Async.single
+        getByIdsCore ids fetch Task.FromResult
 
 
 [<Extension>]
@@ -79,15 +80,15 @@ type GetEventsByIdsClientExtensions =
     /// <returns>Events with given ids.</returns>
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        async {
-            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Retrieve.getByIdsAsync ids ctx
+            match ctx'.Result with
             | Ok events ->
                 return events |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
     /// <summary>
     /// Retrieves information about multiple events in the same project.
@@ -98,7 +99,7 @@ type GetEventsByIdsClientExtensions =
     /// <returns>Events with given ids.</returns>
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<int64>, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.Id x), token)
+        this.GetByIdsAsync(ids |> Seq.map Identity.Id, token)
 
     /// <summary>
     /// Retrieves information about multiple events in the same project.
@@ -109,7 +110,7 @@ type GetEventsByIdsClientExtensions =
     /// <returns>Events with given ids.</returns>
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<string>, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        this.GetByIdsAsync(ids |> Seq.map (fun x -> Identity.ExternalId x), token)
+        this.GetByIdsAsync(ids |> Seq.map Identity.ExternalId, token)
 
 
 

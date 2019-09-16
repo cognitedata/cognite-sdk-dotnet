@@ -527,7 +527,7 @@ namespace Tests
             var httpClient = new HttpClient(new HttpMessageHandlerStub(async (req, cancellationToken) =>
             {
                 request = req;
-
+                cancellationToken.ThrowIfCancellationRequested();
                 var responseMessage = new HttpResponseMessage(HttpStatusCode.OK)
                 {
                     Content = new StringContent(json)
@@ -538,6 +538,7 @@ namespace Tests
 
             var client =
                 Client.Create()
+                .SetAppId("test")
                 .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project);
@@ -558,9 +559,9 @@ namespace Tests
                     Assert.NotNull(result);
                     Assert.NotEmpty(result.Items);
                 }
-                catch (TaskCanceledException e)
+                catch (ResponseException e)
                 {
-                    Assert.IsType<TaskCanceledException>(e);
+                    Assert.IsType<OperationCanceledException>(e.InnerException);
                     return;
                 }
                 Assert.False(true, "Expected task to fail");

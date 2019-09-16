@@ -15,6 +15,7 @@ open Thoth.Json.Net
 
 open CogniteSdk
 open CogniteSdk.TimeSeries
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]
@@ -40,8 +41,8 @@ module Retrieve =
                 Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
             })
 
-    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
+    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesReadRequest = {
             Items = ids
         }
@@ -51,7 +52,7 @@ module Retrieve =
         >=> setResource Url
         >=> setContent (Content.JsonValue request.Encoder)
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
@@ -72,7 +73,7 @@ module Retrieve =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     let getByIdsAsync (ids: seq<Identity>) =
-        getByIdsCore ids fetch Async.single
+        getByIdsCore ids fetch Task.FromResult
 
 [<Extension>]
 type GetTimeseriesByIdsClientExtensions =
@@ -85,16 +86,16 @@ type GetTimeseriesByIdsClientExtensions =
     /// <returns>The timeseries with the given ids.</returns>
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
-        async {
-            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Retrieve.getByIdsAsync ids ctx
 
-            match ctx.Result with
+            match ctx'.Result with
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
 
 

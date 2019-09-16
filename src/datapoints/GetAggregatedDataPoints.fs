@@ -16,6 +16,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 type Aggregate =
     private
@@ -206,8 +207,8 @@ module Aggregated =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+    let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -218,8 +219,8 @@ module Aggregated =
         >=> fetch
         >=> decoder
 
-    let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+    let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -249,7 +250,7 @@ module Aggregated =
     /// <returns>List of aggregated data points.</returns>
     let getAggregatedAsync (id: Identity) (options: AggregateQuery seq) =
         let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
-        getAggregatedCore options' Seq.empty fetch Async.single
+        getAggregatedCore options' Seq.empty fetch Task.FromResult
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
@@ -259,7 +260,7 @@ module Aggregated =
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedDataPointsProto (id: Identity) (options: AggregateQuery seq) =
         let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
-        getAggregatedProto options' Seq.empty fetch Async.single
+        getAggregatedProto options' Seq.empty fetch Task.FromResult
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -280,7 +281,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     let getAggregatedMultipleAsync (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
-        getAggregatedCore options defaultOptions fetch Async.single
+        getAggregatedCore options defaultOptions fetch Task.FromResult
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -290,7 +291,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedMultipleProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
-        getAggregatedProto options defaultOptions fetch Async.single
+        getAggregatedProto options defaultOptions fetch Task.FromResult
 
 [<Extension>]
 type AggregatedClientExtensions =
@@ -302,15 +303,15 @@ type AggregatedClientExtensions =
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
     static member GetAggregatedAsync (this: ClientExtension, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = Aggregated.getAggregatedDataPointsProto id options this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Aggregated.getAggregatedDataPointsProto id options ctx
+            match ctx'.Result with
             | Ok response ->
                 return response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -321,13 +322,13 @@ type AggregatedClientExtensions =
     /// <returns>List of aggregated data points.</returns>
     [<Extension>]
     static member GetAggregatedMultipleAsync (this: ClientExtension, options: AggregateMultipleQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = Aggregated.getAggregatedMultipleProto options defaultOptions this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Aggregated.getAggregatedMultipleProto options defaultOptions ctx
+            match ctx'.Result with
             | Ok response ->
                 return response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 

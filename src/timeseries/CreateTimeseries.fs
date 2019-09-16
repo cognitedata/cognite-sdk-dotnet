@@ -14,6 +14,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]
@@ -37,16 +38,16 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
             })
 
-    let createCore (items: seq<TimeSeriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let createCore (items: seq<TimeSeriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let request : TimeseriesRequest = { Items = items }
-        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder id
+        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder id
 
         POST
         >=> setVersion V10
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Create one or more new timeseries.
@@ -63,7 +64,7 @@ module Create =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
     let createAsync (items: seq<TimeSeriesWriteDto>) =
-        createCore items fetch Async.single
+        createCore items fetch Task.FromResult
 
 
 [<Extension>]
@@ -75,13 +76,13 @@ type CreateTimeSeriesClientExtensions =
     /// <returns>List of created timeseries.</returns>
     [<Extension>]
     static member CreateAsync (this: ClientExtension, items: seq<TimeSeriesEntity>, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
-        async {
+        task {
             let items' = items |> Seq.map TimeSeriesWriteDto.FromTimeSeriesEntity
-            let! ctx = Create.createAsync items' this.Ctx
-            match ctx.Result with
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Create.createAsync items' ctx
+            match ctx'.Result with
             | Ok response ->
                 return response.Items |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

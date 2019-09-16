@@ -14,6 +14,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]
@@ -29,7 +30,8 @@ module Delete =
                 yield ("items", Seq.map (fun (it: Identity) -> it.Encoder) this.Items |> Encode.seq)
             ]
 
-    let deleteCore (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
+    let deleteCore (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage>) =
+        let decodeResponse = Decode.decodeError
         let request : DeleteRequest = { Items = items }
 
         POST
@@ -37,14 +39,14 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> dispose
+        >=> decodeResponse
 
     /// <summary>
     /// Delete one or more timeseries.
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     /// <param name="next">Async handler to use.</param>
-    let delete (items: Identity seq) (next: NextFunc<unit, unit>) =
+    let delete (items: Identity seq) (next: NextFunc<HttpResponseMessage, HttpResponseMessage>) =
         deleteCore items fetch next
 
     /// <summary>
@@ -52,7 +54,7 @@ module Delete =
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     let deleteAsync (items: Identity seq) =
-        deleteCore items fetch Async.single
+        deleteCore items fetch Task.FromResult
 
 [<Extension>]
 type DeleteTimeSeriesClientExtensions =
@@ -62,11 +64,11 @@ type DeleteTimeSeriesClientExtensions =
     /// <param name="items">List of timeseries ids to delete.</param>
     [<Extension>]
     static member DeleteAsync (this: ClientExtension, items: Identity seq, [<Optional>] token: CancellationToken) : Task =
-        async {
-            let! ctx = Delete.deleteAsync items this.Ctx
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx = Delete.deleteAsync items ctx
             match ctx.Result with
             | Ok _ -> return ()
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> Task
+                return raise (error.ToException ())
+        } :> Task

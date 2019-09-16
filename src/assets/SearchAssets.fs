@@ -15,6 +15,7 @@ open CogniteSdk.Assets
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 type AssetSearch =
     private
@@ -54,8 +55,8 @@ module Search =
                     yield "limit", Encode.int this.Limit
             ]
 
-    let searchCore (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse AssetItemsReadDto.Decoder (fun assets -> assets.Items)
+    let searchCore (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse AssetItemsReadDto.Decoder (fun assets -> assets.Items)
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
@@ -67,7 +68,7 @@ module Search =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -78,7 +79,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -90,8 +91,8 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let searchAsync (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq): HttpContext -> Async<Context<AssetReadDto seq>> =
-        searchCore limit options filters fetch Async.single
+    let searchAsync (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq): HttpContext -> Task<Context<AssetReadDto seq>> =
+        searchCore limit options filters fetch Task.FromResult
 
 [<Extension>]
 type SearchAssetsClientExtensions =
@@ -106,15 +107,15 @@ type SearchAssetsClientExtensions =
     /// <returns>List of assets matching given criteria.</returns>
     [<Extension>]
     static member SearchAsync (this: ClientExtension, limit : int, options: AssetSearch seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        async {
-            let! ctx = Search.searchAsync limit options filters this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Search.searchAsync limit options filters ctx
+            match ctx'.Result with
             | Ok assets ->
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask (op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
 
     /// <summary>

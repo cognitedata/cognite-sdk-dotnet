@@ -9,10 +9,12 @@ open Swensen.Unquote
 open Oryx
 open CogniteSdk
 open CogniteSdk.Assets
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.Threading.Tasks
 
 
 [<Fact>]
-let ``Get asset is Ok``() = async {
+let ``Get asset is Ok``() = task {
     // Arrange
     let json = File.ReadAllText "Asset.json"
     let fetch = Fetch.fromJson json
@@ -22,7 +24,7 @@ let ``Get asset is Ok``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
@@ -32,7 +34,7 @@ let ``Get asset is Ok``() = async {
 }
 
 [<Fact>]
-let ``Get invalid asset is Error`` () = async {
+let ``Get invalid asset is Error`` () = task {
     // Arrenge
     let json = File.ReadAllText "InvalidAsset.json"
     let fetch = Fetch.fromJson json
@@ -44,14 +46,14 @@ let ``Get invalid asset is Error`` () = async {
 
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isError response.Result @>
 }
 
 [<Fact>]
-let ``Get asset with extra fields is Ok`` () = async {
+let ``Get asset with extra fields is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "AssetExtra.json"
     let fetch = Fetch.fromJson json
@@ -62,14 +64,14 @@ let ``Get asset with extra fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
 }
 
 [<Fact>]
-let ``Get asset with missing optional fields is Ok`` () = async {
+let ``Get asset with missing optional fields is Ok`` () = task {
     // Arrenge
 
     let json = File.ReadAllText "AssetOptional.json"
@@ -81,14 +83,14 @@ let ``Get asset with missing optional fields is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Async.single ctx
+    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk response.Result @>
 }
 
 [<Fact>]
-let ``List assets is Ok`` () = async {
+let ``List assets is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
@@ -111,7 +113,7 @@ let ``List assets is Ok`` () = async {
     ]
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||>  Assets.Items.listCore query []
+    let! res = (fetch, Task.FromResult, ctx) |||>  Assets.Items.listCore query []
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -120,7 +122,7 @@ let ``List assets is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Create assets empty is Ok`` () = async {
+let ``Create assets empty is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
@@ -131,7 +133,7 @@ let ``Create assets empty is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Assets.Create.createCore [] fetch Async.single ctx
+    let! res = Assets.Create.createCore [] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -141,7 +143,7 @@ let ``Create assets empty is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Create single asset is Ok`` () = async {
+let ``Create single asset is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText("Assets.json")
     let fetch = Fetch.fromJson json
@@ -162,7 +164,7 @@ let ``Create single asset is Ok`` () = async {
     }
 
     // Act
-    let! res = Assets.Create.createCore [ asset ] fetch Async.single ctx
+    let! res = Assets.Create.createCore [ asset ] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -178,7 +180,7 @@ let ``Create single asset is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Update single asset with no updates is Ok`` () = async {
+let ``Update single asset with no updates is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
@@ -189,7 +191,7 @@ let ``Update single asset with no updates is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Assets.Update.updateCore [ Identity.Id 42L, [] ] fetch Async.single ctx
+    let! res = Assets.Update.updateCore [ Identity.Id 42L, [] ] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -199,7 +201,7 @@ let ``Update single asset with no updates is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Update single asset with is Ok`` () = async {
+let ``Update single asset with is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
@@ -210,7 +212,7 @@ let ``Update single asset with is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, Async.single, ctx) |||> Assets.Update.updateCore  [ (Identity.Id 42L, [
+    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Update.updateCore  [ (Identity.Id 42L, [
         AssetUpdate.SetName "New name"
         AssetUpdate.SetDescription (Some "New description")
         AssetUpdate.ClearSource
@@ -224,7 +226,7 @@ let ``Update single asset with is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Attempt searching assets`` () = async {
+let ``Attempt searching assets`` () = task {
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
 
@@ -239,7 +241,7 @@ let ``Attempt searching assets`` () = async {
         AssetFilter.Name "string"
     ]
 
-    let! res = (fetch, Async.single, ctx) |||> Assets.Search.searchCore 100 options filter
+    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Search.searchCore 100 options filter
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>
@@ -248,7 +250,7 @@ let ``Attempt searching assets`` () = async {
 }
 
 [<Fact>]
-let ``Attempt filtering assets`` () = async {
+let ``Attempt filtering assets`` () = task {
     let json = File.ReadAllText "Assets.json"
     let fetch = Fetch.fromJson json
 
@@ -263,7 +265,7 @@ let ``Attempt filtering assets`` () = async {
         AssetFilter.Name "string"
     ]
 
-    let! res = (fetch, Async.single, ctx) |||> Assets.Items.listCore query filter
+    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Items.listCore query filter
 
     test <@ Result.isOk res. Result @>
     test <@ res.Request.Method = HttpMethod.Post @>

@@ -16,6 +16,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 type MetaDataChange = {
@@ -144,8 +145,8 @@ module Update =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+    let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -156,7 +157,7 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -164,7 +165,7 @@ module Update =
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> Task<Context<'a>> =
         updateCore assets fetch next
 
     /// <summary>
@@ -172,8 +173,8 @@ module Update =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
-        updateCore assets fetch Async.single
+    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Task<Context<AssetReadDto seq>> =
+        updateCore assets fetch Task.FromResult
 
 [<Extension>]
 type UpdateAssetsClientExtensions =
@@ -184,13 +185,13 @@ type UpdateAssetsClientExtensions =
     /// <returns>List of updated assets.</returns>
     [<Extension>]
     static member UpdateAsync (this: ClientExtension, assets: ValueTuple<Identity, AssetUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
-        async {
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = Update.updateAsync assets' this.Ctx
-            match ctx.Result with
+            let! ctx' = Update.updateAsync assets' ctx
+            match ctx'.Result with
             | Ok response ->
                 return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken=token)
+                return raise (error.ToException ())
+        }

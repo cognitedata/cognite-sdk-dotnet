@@ -2,17 +2,19 @@ module Tests.Timeseries
 
 open System.IO
 open System.Net.Http
+open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open Swensen.Unquote
 
 open Oryx
+
 open CogniteSdk
-open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
 
 [<Fact>]
-let ``Create timeseries is Ok`` () = async {
+let ``Create timeseries is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json" // FIXME:
     let fetch = Fetch.fromJson json
@@ -23,7 +25,7 @@ let ``Create timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.Create.createCore [] fetch Async.single ctx
+    let! res = TimeSeries.Create.createCore [] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -33,7 +35,7 @@ let ``Create timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get timeseries by ids is Ok`` () = async {
+let ``Get timeseries by ids is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json"
     let fetch = Fetch.fromJson json
@@ -44,7 +46,7 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.Retrieve.getByIdsCore [ Identity.Id 0L ] fetch Async.single ctx
+    let! res = TimeSeries.Retrieve.getByIdsCore [ Identity.Id 0L ] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>
@@ -54,7 +56,7 @@ let ``Get timeseries by ids is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Delete timeseries is Ok`` () = async {
+let ``Delete timeseries is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json"
     let fetch = Fetch.fromJson json
@@ -65,7 +67,7 @@ let ``Delete timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.Delete.deleteCore [ Identity.Id 42L] fetch Async.single ctx
+    let! res = TimeSeries.Delete.deleteCore [ Identity.Id 42L] fetch Task.FromResult ctx
 
     // Assert
     test <@ Result.isOk res.Result @>

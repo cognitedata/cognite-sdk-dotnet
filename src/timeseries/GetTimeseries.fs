@@ -15,6 +15,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 // Get parameters
@@ -70,8 +71,8 @@ module Items =
             let list = ids |> Seq.map (fun a -> a.ToString ()) |> seq<string>
             "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
-    let listCore (query: TimeSeriesQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse<TimeSeriesItemsDto, TimeSeriesItemsDto, 'a> TimeSeriesItemsDto.Decoder id
+    let listCore (query: TimeSeriesQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse<TimeSeriesItemsDto, TimeSeriesItemsDto, 'a> TimeSeriesItemsDto.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
         GET
@@ -79,7 +80,7 @@ module Items =
         >=> setResource Url
         >=> addQuery query
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
@@ -88,7 +89,7 @@ module Items =
     /// <param name="options">Timeseries lookup options.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let list (options: TimeSeriesQuery seq) (next: NextFunc<TimeSeriesItemsDto,'a>) : HttpContext -> Async<Context<'a>> =
+    let list (options: TimeSeriesQuery seq) (next: NextFunc<TimeSeriesItemsDto,'a>) : HttpContext -> Task<Context<'a>> =
         listCore options fetch next
 
     /// <summary>
@@ -98,7 +99,7 @@ module Items =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     let listAsync (options: TimeSeriesQuery seq) =
-        listCore options fetch Async.single
+        listCore options fetch Task.FromResult
 
 [<Extension>]
 type ListTimeseriesClientExtensions =
@@ -110,8 +111,9 @@ type ListTimeseriesClientExtensions =
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     [<Extension>]
     static member ListAsync (this: ClientExtension, options: TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
-        async {
-            let! ctx = Items.listAsync options this.Ctx
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx = Items.listAsync options ctx
 
             match ctx.Result with
             | Ok response ->
@@ -119,6 +121,5 @@ type ListTimeseriesClientExtensions =
                 let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
                 return { Items = items; NextCursor = cursor }
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
