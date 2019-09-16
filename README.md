@@ -1,3 +1,7 @@
+<a href="https://cognite.com/">
+    <img src="./cognite_logo.png" alt="Cognite logo" title="Cognite" align="right" height="80" />
+</a>
+
 # CogniteSdk for .Net
 
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-sdk-dotnet/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-dotnet/job/master/)
@@ -32,19 +36,49 @@ Using Package Manager:
 Install-Package CogniteSdk -Version 1.0.0
 ```
 
-Using .NET CLI
+Using .NET CLI:
 ```sh
 dotnet add package CogniteSdk --version 1.0.0
 ```
 
-## Examples
+Or [directly in Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
 
- There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDF project and API key as environment variables in the shell.
+## Quickstart
 
+The SDK supports authentication through api-keys. The best way to use the SDK is by setting authentication values to environment values:
+
+Using Windows Commands:
+```cmd
+setx PROJECT=myprojet
+setx API_KEY=mysecretkey
+```
+
+Using Shell:
 ```sh
 export PROJECT=myprojet
 export API_KEY=mysecretkey
 ```
+
+All SDK methods are called with a `Client` object. A valid client requires the API Key, Project Name, App ID and an HTTP Client:
+```c#
+var apiKey = Environment.GetEnvironmentVariable("API_KEY");
+var project = Environment.GetEnvironmentVariable("PROJECT");
+
+using (var httpClient = new HttpClient()) {
+    var client =
+        Client.Create()
+        .SetAppId("your_app_id")
+        .SetHttpClient(httpClient)
+        .SetApiKey(apiKey)
+        .SetProject(project);
+    
+    // your logic using the client
+}
+```
+
+## Examples
+
+There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDF project and API key as environment variables.
 
 ## Dependencies
 
