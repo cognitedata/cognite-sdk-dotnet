@@ -7,7 +7,7 @@
 [![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-sdk-dotnet/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-dotnet/job/master/)
 [![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet)
 
-CogniteSdk for .NET is a cross platform asynchronous SDK for accessing the Cognite Data Fusion API (v1) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) that works for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework).
+CogniteSdk for .NET is a cross platform asynchronous SDK for accessing the [Cognite Data Fusion](https://docs.cognite.com/) [API (v1)](https://docs.cognite.com/api/v1/) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) that works for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework).
 
 The SDK is written as a dual SDK for both C# and F#.
 
@@ -17,10 +17,9 @@ The SDK is written as a dual SDK for both C# and F#.
 
 ## Supported Resources
 
-- Assets
-- TimeSeries
-- DataPoints
-- Events
+- [Assets](https://docs.cognite.com/api/v1/#tag/Assets)
+- [TimeSeries & DataPoints](https://docs.cognite.com/api/v1/#tag/Time-series)
+- [Events](https://docs.cognite.com/api/v1/#tag/Events)
 
 ## Documentation
 * SDK Documentation. TBW.
