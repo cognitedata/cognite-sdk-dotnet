@@ -44,7 +44,6 @@
     <Compile Include="events\UpdateEvents.fs" />
     <Compile Include="events\ListEvents.fs" />
     <Compile Include="events\SearchEvents.fs" />
-    <Compile Include="login\Redirect.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 
