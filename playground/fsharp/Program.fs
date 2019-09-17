@@ -137,8 +137,7 @@ let insertDataPointsProtoStyle ctx = task {
 
 }
 
-[<EntryPoint>]
-let main argv =
+let asyncMain argv =task {
     printfn "F# Client"
 
     let config =
@@ -154,8 +153,13 @@ let main argv =
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> Context.setProject (Uri.EscapeDataString config.Project)
 
-    task {
-        do! insertDataPointsProtoStyle ctx
-    } |> Async.AwaitTask |> Async.RunSynchronously
+    do! insertDataPointsProtoStyle ctx
+}
+
+[<EntryPoint>]
+let main argv =
+    printfn "F# Client"
+
+    asyncMain().GetAwaiter().GetResult()
 
     0 // return an integer exit code
