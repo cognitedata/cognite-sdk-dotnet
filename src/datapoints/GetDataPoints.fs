@@ -11,11 +11,11 @@ open System.Threading
 open System.Threading.Tasks
 
 open Com.Cognite.V1.Timeseries.Proto
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 /// Query parameters
 type DataPointQuery =

@@ -139,13 +139,13 @@ type GetLatestDataPointExtensions =
     static member GetLatestAsync (this: ClientExtension, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<DataPointCollection>> =
         task {
             let query = options |> Seq.map (fun struct (id, before) ->
+                let before' = if (isNull before) then None else Some before
                 { Identity = id;
-                  Before = if (isNull before) then None else Some before
-                  } : Latest.LatestRequest)
+                  Before = before' } : Latest.LatestRequest)
 
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Latest.getAsync query ctx
-            match ctx.Result with
+            let! ctx' = Latest.getAsync query ctx
+            match ctx'.Result with
             | Ok response ->
                 return response |> Seq.map (Latest.DataPointsDto.ToCollection)
             | Error error ->

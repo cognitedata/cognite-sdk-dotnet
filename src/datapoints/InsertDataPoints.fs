@@ -3,7 +3,6 @@
 
 namespace CogniteSdk.DataPoints
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -11,10 +10,10 @@ open System.Threading.Tasks
 open System.Threading
 
 open Com.Cognite.V1.Timeseries.Proto
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 
 open CogniteSdk
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]

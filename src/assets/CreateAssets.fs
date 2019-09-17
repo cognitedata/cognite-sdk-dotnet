@@ -3,7 +3,6 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices

@@ -3,18 +3,17 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
-open Oryx
-open CogniteSdk.Assets
-
-open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open Oryx
+
+open CogniteSdk.Assets
+open CogniteSdk
 
 
 [<RequireQualifiedAccess>]

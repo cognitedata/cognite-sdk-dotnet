@@ -3,19 +3,18 @@
 
 namespace CogniteSdk.Events
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
-open CogniteSdk.Events
 open Thoth.Json.Net
 
+open CogniteSdk.Events
 open CogniteSdk
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 type EventSearch =
     private

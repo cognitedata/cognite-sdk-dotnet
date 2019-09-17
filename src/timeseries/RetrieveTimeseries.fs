@@ -3,19 +3,18 @@
 
 namespace CogniteSdk.TimeSeries
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Threading.Tasks
 open System.Runtime.InteropServices
 open System.Threading
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
 open CogniteSdk.TimeSeries
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]
