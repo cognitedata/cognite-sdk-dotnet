@@ -103,7 +103,7 @@ module Items =
         ]
 
     let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderRequest options defaultOptions
 
         POST
@@ -112,10 +112,10 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderRequest options defaultOptions
 
         POST
@@ -124,7 +124,7 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.

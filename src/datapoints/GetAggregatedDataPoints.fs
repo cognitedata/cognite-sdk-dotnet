@@ -206,7 +206,7 @@ module Aggregated =
         ]
 
     let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -215,10 +215,10 @@ module Aggregated =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -227,7 +227,7 @@ module Aggregated =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
