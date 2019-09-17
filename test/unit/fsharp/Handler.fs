@@ -28,9 +28,8 @@ open CogniteSdk
                 return! sendAsync.Invoke(request, cancellationToken)
             }
 
-
 [<Fact>]
-let ``Get asset with fusion return expression is Ok``() = async {
+let ``Get asset with fusion return expression is Ok``() = task {
     // Arrange
     let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
@@ -68,7 +67,7 @@ let ``Get asset with fusion return expression is Ok``() = async {
 }
 
 [<Fact>]
-let ``Get asset with fusion returnFrom expression is Ok``() = async {
+let ``Get asset with fusion returnFrom expression is Ok``() = task {
     // Arrange
     let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
@@ -105,7 +104,7 @@ let ``Get asset with fusion returnFrom expression is Ok``() = async {
 }
 
 [<Fact>]
-let ``Get asset with retry is Ok``() = async {
+let ``Get asset with retry is Ok``() = task {
     // Arrange
     let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
@@ -139,7 +138,7 @@ let ``Get asset with retry is Ok``() = async {
 }
 
 [<Fact>]
-let ``Get asset with retries on server internal error``() = async {
+let ``Get asset with retries on server internal error``() = task {
     // Arrange
     let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
@@ -173,9 +172,8 @@ let ``Get asset with retries on server internal error``() = async {
 }
 
 [<Fact>]
-let ``Get asset without http client throws exception``() = async {
+let ``Get asset without http client throws exception``() = task {
     // Arrange
-    let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
     let stub =
         Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
@@ -194,8 +192,8 @@ let ``Get asset without http client throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Entity.get 42L |> retry 0<ms> 5
-    let! result = async {
+    let req = Assets.Entity.get 42L
+    let! result = task {
         try
             let! result = runHandler req ctx
             return false
@@ -208,9 +206,8 @@ let ``Get asset without http client throws exception``() = async {
 }
 
 [<Fact>]
-let ``Get asset without appId throws exception``() = async {
+let ``Get asset without appId throws exception``() = task {
     // Arrange
-    let mutable retries = 0
     let json = File.ReadAllText "Asset.json"
     let stub =
         Func<HttpRequestMessage,CancellationToken,Task<HttpResponseMessage>>(fun request token ->
@@ -229,12 +226,12 @@ let ``Get asset without appId throws exception``() = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Entity.get 42L |> retry 0<ms> 5
-    let! result = async {
-        try
-            let! result = runHandler req ctx
+    let req = Assets.Entity.get 42L
+    let! result = task {
+        let! result = runHandler req ctx
+        match result with
+        | Ok _ ->
             return false
-        with
         | _ -> return true
     }
 

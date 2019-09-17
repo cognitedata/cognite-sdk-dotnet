@@ -1,18 +1,23 @@
 module Tests.Integration.Events
 
 open System
+open System.Net.Http
+open System.Threading.Tasks
+
 open Xunit
 open Swensen.Unquote
 
 open Tests
 open Common
+open Oryx
+open Oryx.Retry
+open FSharp.Control.Tasks.V2.ContextInsensitive
+
 open CogniteSdk
 open CogniteSdk.Events
-open System.Net.Http
-open Oryx
 
 [<Fact>]
-let ``Create and delete events is Ok`` () = async {
+let ``Create and delete events is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = Guid().ToString()
@@ -55,7 +60,7 @@ let ``Create and delete events is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get event by id is Ok`` () = async {
+let ``Get event by id is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let eventId = 19442413705355L
@@ -76,7 +81,7 @@ let ``Get event by id is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get event by missing id is Error`` () = async {
+let ``Get event by missing id is Error`` () = task {
     // Arrange
     let ctx = readCtx ()
     let eventId = 0L
@@ -96,7 +101,7 @@ let ``Get event by missing id is Error`` () = async {
 }
 
 [<Fact>]
-let ``Get event by ids is Ok`` () = async {
+let ``Get event by ids is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let eventIds =
@@ -119,7 +124,7 @@ let ``Get event by ids is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Update assets is Ok`` () = async {
+let ``Update assets is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 
@@ -207,7 +212,7 @@ let ``Update assets is Ok`` () = async {
 }
 
 [<Fact>]
-let ``List events with limit is Ok`` () = async {
+let ``List events with limit is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let query = [ EventQuery.Limit 10 ]
@@ -228,7 +233,7 @@ let ``List events with limit is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events is Ok`` () = async {
+let ``Filter events is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -254,7 +259,7 @@ let ``Filter events is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on subtype is Ok`` () = async {
+let ``Filter events on subtype is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -288,7 +293,7 @@ let ``Filter events on subtype is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on AssetIds is Ok`` () = async {
+let ``Filter events on AssetIds is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -321,7 +326,7 @@ let ``Filter events on AssetIds is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on CreatedTime is Ok`` () = async {
+let ``Filter events on CreatedTime is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -358,7 +363,7 @@ let ``Filter events on CreatedTime is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on LastUpdatedTime is Ok`` () = async {
+let ``Filter events on LastUpdatedTime is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -395,7 +400,7 @@ let ``Filter events on LastUpdatedTime is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on StartTime is Ok`` () = async {
+let ``Filter events on StartTime is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -432,7 +437,7 @@ let ``Filter events on StartTime is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on EndTime is Ok`` () = async {
+let ``Filter events on EndTime is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -469,7 +474,7 @@ let ``Filter events on EndTime is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on ExternalIdPrefix is Ok`` () = async {
+let ``Filter events on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -502,7 +507,7 @@ let ``Filter events on ExternalIdPrefix is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on MetaData is Ok`` () = async {
+let ``Filter events on MetaData is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -535,7 +540,7 @@ let ``Filter events on MetaData is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on Source is Ok`` () = async {
+let ``Filter events on Source is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -568,7 +573,7 @@ let ``Filter events on Source is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter events on Type is Ok`` () = async {
+let ``Filter events on Type is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -601,7 +606,7 @@ let ``Filter events on Type is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search events is Ok`` () = async {
+let ``Search events is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
 
@@ -610,11 +615,11 @@ let ``Search events is Ok`` () = async {
     ]
 
     // Act
-    let retry = retry shouldRetry 100<ms> 15
+    let retry = retry 100<ms> 15
 
     // Event is already created in test/integration/Test.CSharp.Integration/TestBase.cs
     let req = Events.Search.search 10 options [] |> retry
-    let! res = req Async.single ctx
+    let! res = req Task.FromResult ctx
 
     let len =
         match res.Result with

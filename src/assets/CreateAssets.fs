@@ -3,13 +3,13 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -37,8 +37,8 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let createCore (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
-        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+    let createCore (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
+        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = assets }
 
         POST
@@ -46,7 +46,7 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Create new assets in the given project.
@@ -63,7 +63,7 @@ module Create =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     let createAsync (assets: AssetWriteDto seq) =
-        createCore assets fetch Async.single
+        createCore assets fetch Task.FromResult
 
 [<Extension>]
 type CreateAssetsExtensions =
@@ -74,13 +74,12 @@ type CreateAssetsExtensions =
     /// <returns>List of created assets.</returns>
     [<Extension>]
     static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
-        async {
+        task {
             let assets' = assets |> Seq.map AssetWriteDto.FromAssetEntity
             let! ctx = Create.createAsync assets' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

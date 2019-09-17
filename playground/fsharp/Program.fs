@@ -13,6 +13,7 @@ open CogniteSdk
 open CogniteSdk.Assets
 open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -21,7 +22,7 @@ type Config = {
     Project: string
 }
 
-let getDatapointsExample (ctx : HttpContext) = async {
+let getDatapointsExample (ctx : HttpContext) = task {
     let! rsp =
         DataPoints.Items.listMultipleAsync [
             {
@@ -38,7 +39,7 @@ let getDatapointsExample (ctx : HttpContext) = async {
     | Error err -> printfn "Error: %A" err
 }
 
-let getAssetsExample (ctx : HttpContext) = async {
+let getAssetsExample (ctx : HttpContext) = task {
     let! rsp = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
 
     match rsp.Result with
@@ -46,21 +47,21 @@ let getAssetsExample (ctx : HttpContext) = async {
     | Error err -> printfn "Error: %A" err
 }
 
-let updateAssetsExample (ctx : HttpContext) = async {
+let updateAssetsExample (ctx : HttpContext) = task {
     let! rsp = Assets.Update.updateAsync [ (Identity.Id 84025677715833721L, [ AssetUpdate.SetName "string3" ] )]  ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
-let searchAssetsExample (ctx : HttpContext) = async {
+let searchAssetsExample (ctx : HttpContext) = task {
 
     let! rsp = Assets.Search.searchAsync 10 [ AssetSearch.Name "VAL" ] [] ctx
     match rsp.Result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
-let createAssetsExample ctx = async {
+let createAssetsExample ctx = task {
 
     let assets = [{
         Name = "My new asset"
@@ -94,7 +95,7 @@ let createAssetsExample ctx = async {
     | Error err -> printfn "Error: %A" err
 }
 
-let insertDataPointsOldWay ctx = async {
+let insertDataPointsOldWay ctx = task {
 
     let dataPoints : NumericDataPointDto seq = seq {
         for i in 0L..100L do
@@ -114,7 +115,7 @@ let insertDataPointsOldWay ctx = async {
     | Error err -> printfn "Error: %A" err
 }
 
-let insertDataPointsProtoStyle ctx = async {
+let insertDataPointsProtoStyle ctx = task {
     let request = DataPointInsertionRequest ()
     let dataPoints = seq {
         for i in 0L..100L do
@@ -136,8 +137,7 @@ let insertDataPointsProtoStyle ctx = async {
 
 }
 
-[<EntryPoint>]
-let main argv =
+let asyncMain argv =task {
     printfn "F# Client"
 
     let config =
@@ -153,8 +153,13 @@ let main argv =
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> Context.setProject (Uri.EscapeDataString config.Project)
 
-    async {
-        do! insertDataPointsProtoStyle ctx
-    } |> Async.RunSynchronously
+    do! insertDataPointsProtoStyle ctx
+}
+
+[<EntryPoint>]
+let main argv =
+    printfn "F# Client"
+
+    asyncMain().GetAwaiter().GetResult()
 
     0 // return an integer exit code

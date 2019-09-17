@@ -11,9 +11,10 @@ open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
 open Common
 open Tests
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Fact>]
-let ``Get datapoints by id with options is Ok`` () = async {
+let ``Get datapoints by id with options is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -56,7 +57,7 @@ let ``Get datapoints by id with options is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get datapoints by id with limit is Ok`` () = async {
+let ``Get datapoints by id with limit is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -98,7 +99,7 @@ let ``Get datapoints by id with limit is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get datapoints by id with limit and timerange is Ok`` () = async {
+let ``Get datapoints by id with limit and timerange is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -142,7 +143,7 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = async {
 
 
 [<Fact>]
-let ``Get datapoints by multiple id with limit is Ok`` () = async {
+let ``Get datapoints by multiple id with limit is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -187,7 +188,7 @@ let ``Get datapoints by multiple id with limit is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get datapoints by id with aggregate is Ok`` () = async {
+let ``Get datapoints by id with aggregate is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -241,7 +242,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = async {
 
 
 [<Fact>]
-let ``Retrieve latest datapoints by id is Ok`` () = async {
+let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let latestDataPointRequest: DataPoints.Latest.LatestRequest = {
@@ -285,7 +286,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Insert datapoints is Ok`` () = async {
+let ``Insert datapoints is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "insertDatapointsTest"
@@ -322,7 +323,7 @@ let ``Insert datapoints is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Delete datapoints is Ok`` () = async {
+let ``Delete datapoints is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "deleteDatapointsTest"
@@ -359,9 +360,9 @@ let ``Delete datapoints is Ok`` () = async {
                 do! TimeSeries.Delete.delete [ externalId ]
             *)
             let! _ = TimeSeries.Create.create [ dto ]
-            do! DataPoints.Insert.insert [ datapoints ]
+            let! _ = DataPoints.Insert.insert [ datapoints ]
             let! res = DataPoints.Delete.delete [{ InclusiveBegin = startTimestamp; ExclusiveEnd = Some endDeleteTimestamp; Id = externalId }]
-            do! TimeSeries.Delete.delete [ externalId ]
+            let! _ = TimeSeries.Delete.delete [ externalId ]
             return res
         }
     let! res = runHandler request ctx

@@ -5,13 +5,13 @@ namespace CogniteSdk.TimeSeries
 
 open System
 open System.Collections.Generic
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -206,8 +206,8 @@ module Update =
                 Items = get.Required.Field "items" (Decode.list TimeSeriesReadDto.Decoder)
             })
 
-    let updateCore (args: (Identity * TimeSeriesUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
+    let updateCore (args: (Identity * TimeSeriesUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesUpdateRequests = {
            Items = [
                yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -219,7 +219,7 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Updates multiple timeseries within the same project.
@@ -227,7 +227,7 @@ module Update =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated timeseries.</returns>
-    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextFunc<TimeSeriesReadDto seq, 'a>) : HttpContext -> Async<Context<'a>> =
+    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextFunc<TimeSeriesReadDto seq, 'a>) : HttpContext -> Task<Context<'a>> =
         updateCore timeseries fetch next
 
     /// <summary>
@@ -235,8 +235,8 @@ module Update =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
-    let updateAsync (timeseries: (Identity * (TimeSeriesUpdate list)) list) : HttpContext -> Async<Context<TimeSeriesReadDto seq>> =
-        updateCore timeseries fetch Async.single
+    let updateAsync (timeseries: (Identity * (TimeSeriesUpdate list)) list) : HttpContext -> Task<Context<TimeSeriesReadDto seq>> =
+        updateCore timeseries fetch Task.FromResult
 
 [<Extension>]
 type UpdateTimeseriesClientExtensions =
@@ -247,13 +247,12 @@ type UpdateTimeseriesClientExtensions =
     /// <returns>List of updated timeseries.</returns>
     [<Extension>]
     static member UpdateAsync (this: ClientExtension, timeseries: ValueTuple<Identity, TimeSeriesUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
-        async {
+        task {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync timeseries' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

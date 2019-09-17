@@ -4,18 +4,18 @@
 namespace CogniteSdk.TimeSeries
 
 open System.Collections.Generic
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
 open CogniteSdk.TimeSeries
-
 
 
 type TimeSeriesSearch =
@@ -118,8 +118,8 @@ module Search =
                 yield "search", TimeSeriesSearch.Encode options
         ]
 
-    let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = Encode.decodeResponse Items.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
+    let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,'a>) =
+        let decodeResponse = Decode.decodeResponse Items.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -127,7 +127,7 @@ module Search =
         >=> setContent (Content.JsonValue body)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
@@ -137,7 +137,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Timeseries matching query.</returns>>
-    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -147,8 +147,8 @@ module Search =
     /// <param name="options">Search options.</param>
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
-    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> Async<Context<TimeSeriesReadDto seq>> =
-        searchCore limit options filters fetch Async.single
+    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> Task<Context<TimeSeriesReadDto seq>> =
+        searchCore limit options filters fetch Task.FromResult
 
 [<Extension>]
 type SearchTimeSeriesClientExtensions =
@@ -161,12 +161,12 @@ type SearchTimeSeriesClientExtensions =
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
     static member SearchAsync (this: ClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        async {
-            let! ctx = Search.searchAsync limit options filters this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Search.searchAsync limit options filters ctx
+            match ctx'.Result with
             | Ok tss ->
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

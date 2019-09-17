@@ -3,13 +3,18 @@
 
 namespace CogniteSdk.Events
 
-open System.IO
 open System.Net.Http
+open System.Runtime.CompilerServices
+open System.Runtime.InteropServices
+open System.Threading
+open System.Threading.Tasks
 
-open Thoth.Json.Net
-open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Thoth.Json.Net
 
+open CogniteSdk
+open CogniteSdk.Events
 
 
 [<RequireQualifiedAccess>]
@@ -33,8 +38,8 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
             })
 
-    let createCore (events: EventWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,Stream,'a>)  =
-        let decoder = Encode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
+    let createCore (events: EventWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,'a>)  =
+        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = events }
 
         POST
@@ -42,7 +47,7 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Create one or more events.
@@ -59,16 +64,7 @@ module Create =
     /// <param name="events">The events to create.</param>
     /// <returns>List of created events.</returns>
     let createAsync (events: EventWriteDto seq) =
-        createCore events fetch Async.single
-
-namespace CogniteSdk
-
-open System.Runtime.CompilerServices
-open System.Threading.Tasks
-open System.Runtime.InteropServices
-
-open CogniteSdk.Events
-open System.Threading
+        createCore events fetch Task.FromResult
 
 [<Extension>]
 type CreateEventExtensions =
@@ -80,13 +76,13 @@ type CreateEventExtensions =
     /// <returns>List of created events.</returns>
     [<Extension>]
     static member CreateAsync(this: ClientExtension, events: EventEntity seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
-        async {
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
             let events' = events |> Seq.map EventWriteDto.FromEventEntity
-            let! ctx = Create.createAsync events' this.Ctx
-            match ctx.Result with
+            let! ctx' = Create.createAsync events' ctx
+            match ctx'.Result with
             | Ok response ->
                 return response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

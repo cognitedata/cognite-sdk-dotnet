@@ -11,6 +11,7 @@ open System.Reflection
 open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
+open System.Threading.Tasks
 
 type ApiVersion =
     | V05
@@ -148,7 +149,10 @@ module Handlers =
     let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
 
-    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Async<Context<'c>> =
+    let setUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
+        next { context with Request = { context.Request with UrlBuilder = (fun _ -> url) } }
+
+    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Task<Context<'c>> =
         let shouldRetry (err: ResponseError) =
             let retryCode =
                 match err.Code with
@@ -159,7 +163,7 @@ module Handlers =
                 | 401 -> true
                 // 500 is hard to say, but we should avoid having those in the api
                 | 500 ->
-                  true // we get random and transient 500 responses often enough that it's worth retrying them.
+                    true // we get random and transient 500 responses often enough that it's worth retrying them.
                 // 502 and 503 are usually transient.
                 | 502 -> true
                 | 503 -> true
@@ -167,6 +171,7 @@ module Handlers =
                 | _ -> false
 
             let retryEx =
+
                 if err.InnerException.IsSome then
                     match err.InnerException.Value with
                     | :? Net.Http.HttpRequestException
@@ -180,3 +185,4 @@ module Handlers =
             retryCode || retryEx
 
         retry shouldRetry initialDelay maxRetries handler next ctx
+

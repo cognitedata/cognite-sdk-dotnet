@@ -9,8 +9,8 @@
     <Copyright>Cognite AS</Copyright>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Common.fs" />
     <Compile Include="Error.fs" />
+    <Compile Include="Common.fs" />
     <Compile Include="assets/Model.fs" />
     <Compile Include="assets/Json.fs" />
     <Compile Include="assets/CreateAssets.fs" />

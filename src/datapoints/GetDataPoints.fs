@@ -11,6 +11,7 @@ open System.Threading
 open System.Threading.Tasks
 
 open Com.Cognite.V1.Timeseries.Proto
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -101,8 +102,8 @@ module Items =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+    let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderRequest options defaultOptions
 
         POST
@@ -111,10 +112,10 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
-    let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+    let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderRequest options defaultOptions
 
         POST
@@ -123,7 +124,7 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -144,7 +145,7 @@ module Items =
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     let listAsync (id: int64) (options: DataPointQuery seq) =
         let options' : DataPointMultipleQuery seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        listCore options' Seq.empty fetch Async.single
+        listCore options' Seq.empty fetch Task.FromResult
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -154,7 +155,7 @@ module Items =
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     let listProtoAsync (id: int64) (options: DataPointQuery seq) =
         let options' : DataPointMultipleQuery seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        listProto options' Seq.empty fetch Async.single
+        listProto options' Seq.empty fetch Task.FromResult
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -175,7 +176,7 @@ module Items =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     let listMultipleAsync (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) =
-        listCore options defaultOptions fetch Async.single
+        listCore options defaultOptions fetch Task.FromResult
 
 
     /// <summary>
@@ -186,7 +187,7 @@ module Items =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries as c# protobuf object.</returns>
     let listMultipleProtoAsync (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) =
-        listProto options defaultOptions fetch Async.single
+        listProto options defaultOptions fetch Task.FromResult
 
 [<Extension>]
 type GetDataPointsClientExtensions =
@@ -199,15 +200,15 @@ type GetDataPointsClientExtensions =
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
     static member GetAsync (this: ClientExtension, id : int64, options: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = Items.listProtoAsync id options this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Items.listProtoAsync id options ctx
+            match ctx'.Result with
             | Ok response ->
                 return response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -218,13 +219,13 @@ type GetDataPointsClientExtensions =
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
     static member ListMultipleAsync (this: ClientExtension, options: DataPointMultipleQuery seq, defaultOptions: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = Items.listMultipleProtoAsync options defaultOptions this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Items.listMultipleProtoAsync options defaultOptions ctx
+            match ctx'.Result with
             | Ok response ->
                 return response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 

@@ -4,7 +4,6 @@
 namespace CogniteSdk.Events
 
 open System
-open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -12,6 +11,7 @@ open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -200,8 +200,8 @@ module Update =
                 Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
             })
 
-    let updateCore (args: (Identity * EventUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
+    let updateCore (args: (Identity * EventUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : EventsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (eventId, args) -> { Id = eventId; Params = args })
@@ -213,7 +213,7 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -221,7 +221,7 @@ module Update =
     /// <param name="events">The list of events to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated events.</returns>
-    let update (events: (Identity * (EventUpdate list)) list) (next: NextFunc<EventReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+    let update (events: (Identity * (EventUpdate list)) list) (next: NextFunc<EventReadDto seq,'a>)  : HttpContext -> Task<Context<'a>> =
         updateCore events fetch next
 
     /// <summary>
@@ -229,8 +229,8 @@ module Update =
     /// </summary>
     /// <param name="events">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let updateAsync (events: (Identity * EventUpdate list) list) : HttpContext -> Async<Context<EventReadDto seq>> =
-        updateCore events fetch Async.single
+    let updateAsync (events: (Identity * EventUpdate list) list) : HttpContext -> Task<Context<EventReadDto seq>> =
+        updateCore events fetch Task.FromResult
 
 [<Extension>]
 type UpdateEventsClientExtensions =
@@ -241,13 +241,12 @@ type UpdateEventsClientExtensions =
     /// <returns>List of updated events.</returns>
     [<Extension>]
     static member UpdateAsync (this: ClientExtension, events: ValueTuple<Identity, EventUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
-        async {
+        task {
             let events' = events |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
             let! ctx = Update.updateAsync events' this.Ctx
             match ctx.Result with
             | Ok response ->
                 return response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken=token)
+                return raise (error.ToException ())
+        }

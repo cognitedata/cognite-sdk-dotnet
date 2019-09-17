@@ -8,15 +8,9 @@ open System.Collections.Generic
 
 open Oryx
 
-type ResponseException (message : string) =
-    inherit Exception(message)
+type ErrorValue () = do ()
 
-    member val Code = 400 with get, set
-    member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
-    member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
-    member val InnerException : Exception = null with get, set
-
-and IntegerValue (value: int) =
+type IntegerValue (value: int) =
     inherit ErrorValue ()
     member val Integer = value with get, set
 
@@ -36,33 +30,31 @@ and StringValue (value) =
     override this.ToString () =
         sprintf "%s" this.String
 
+type ResponseException (message: string) =
+    inherit Exception(message)
+
+    member val Code = 400 with get, set
+    member val Missing : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val Duplicated : IEnumerable<IDictionary<string, ErrorValue>> = Seq.empty with get, set
+    member val InnerException : Exception = null with get, set
+
 [<AutoOpen>]
 module Error =
+    type ResponseError with
+        member this.ToException () =
+            let convertTypes (_: string) (value: Oryx.ErrorValue) =
+                match value with
+                | IntegerValue value -> IntegerValue value :> ErrorValue
+                | FloatValue value -> FloatValue value :> _
+                | StringValue value -> StringValue value :> _
+
+            let ex = ResponseException this.Message
+            ex.Code <- this.Code
+            ex.Duplicated <- this.Duplicated |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
+            ex.Missing <- this.Missing |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
+            ex.InnerException <- if this.InnerException.IsSome then this.InnerException.Value else null
+            ex
+
     [<Literal>]
     let MaxLimitSize = 1000
 
-    /// Convert Oryx types to CogniteSdk types for convenience to avoid having to open the Oryx namespace.
-    let convertTypes (_: string) (value: ErrorValue) =
-        match value with
-        | :? Oryx.IntegerValue as value -> IntegerValue value.Integer :> ErrorValue
-        | :? Oryx.FloatValue  as value -> FloatValue value.Float :> _
-        | :? Oryx.StringValue  as value -> StringValue value.String :> _
-        | _ -> failwith "Unknown type"
-
-    /// **Description**
-    ///
-    /// Translate response error to exception that we can raise for the
-    /// C# API.
-    ///
-    /// **Parameters**
-    ///   * `error` - parameter of type `ResponseError`
-    ///
-    /// **Output Type**
-    ///   * `exn`
-    let error2Exception error =
-        let ex = ResponseException error.Message
-        ex.Code <- error.Code
-        ex.Duplicated <- error.Duplicated |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
-        ex.Missing <- error.Missing |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
-        ex.InnerException <- if error.InnerException.IsSome then error.InnerException.Value else null
-        ex :> Exception

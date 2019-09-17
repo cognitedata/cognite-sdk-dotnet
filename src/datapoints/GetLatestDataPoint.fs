@@ -4,13 +4,13 @@
 namespace CogniteSdk.DataPoints
 
 open System
-open System.IO
 open System.Net.Http
 open System.Runtime.InteropServices
 open System.Runtime.CompilerServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -99,8 +99,8 @@ module Latest =
                     Items = get.Required.Field "items" (Decode.list DataPointsDto.Decoder)
                 })
 
-    let getCore (options: LatestRequest seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse DataResponse.Decoder (fun res -> res.Items)
+    let getCore (options: LatestRequest seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decoder = Decode.decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
 
         POST
@@ -125,7 +125,7 @@ module Latest =
     /// <param name="options">List of requests.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     let getAsync (queryParams: LatestRequest seq) =
-        getCore queryParams fetch Async.single
+        getCore queryParams fetch Task.FromResult
 
 
 [<Extension>]
@@ -137,17 +137,18 @@ type GetLatestDataPointExtensions =
     /// <returns>List of results containing the latest datapoint and ids.</returns>
     [<Extension>]
     static member GetLatestAsync (this: ClientExtension, options: ValueTuple<Identity, string> seq, [<Optional>] token: CancellationToken) : Task<seq<DataPointCollection>> =
-        async {
+        task {
             let query = options |> Seq.map (fun struct (id, before) ->
+                let before' = if (isNull before) then None else Some before
                 { Identity = id;
-                  Before = if (isNull before) then None else Some before
-                  } : Latest.LatestRequest)
-            let! ctx = Latest.getAsync query this.Ctx
-            match ctx.Result with
+                  Before = before' } : Latest.LatestRequest)
+
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx' = Latest.getAsync query ctx
+            match ctx'.Result with
             | Ok response ->
                 return response |> Seq.map (Latest.DataPointsDto.ToCollection)
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 

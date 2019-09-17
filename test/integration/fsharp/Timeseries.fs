@@ -11,9 +11,10 @@ open CogniteSdk
 open CogniteSdk.TimeSeries
 open Tests
 open Common
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Fact>]
-let ``Get timeseries is Ok`` () = async {
+let ``Get timeseries is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [ TimeSeriesQuery.Limit 10 ]
@@ -34,7 +35,7 @@ let ``Get timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get timeseries by ids is Ok`` () = async {
+let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let id = Identity.Id 613312137748079L
@@ -67,7 +68,7 @@ let ``Get timeseries by ids is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get timeseries by missing id is Error`` () = async {
+let ``Get timeseries by missing id is Error`` () = task {
     // Arrange
     let ctx = readCtx ()
     let id = Identity.Id 0L
@@ -87,7 +88,7 @@ let ``Get timeseries by missing id is Error`` () = async {
 }
 
 [<Fact>]
-let ``Create and delete timeseries is Ok`` () = async {
+let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTest"
@@ -131,7 +132,7 @@ let ``Create and delete timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries is Ok`` () = async {
+let ``Search timeseries is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -152,7 +153,7 @@ let ``Search timeseries is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on CreatedTime Ok`` () = async {
+let ``Search timeseries on CreatedTime Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let timerange = {
@@ -183,7 +184,7 @@ let ``Search timeseries on CreatedTime Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on LastUpdatedTime Ok`` () = async {
+let ``Search timeseries on LastUpdatedTime Ok`` () = task {
 
     // Arrange
     let ctx = writeCtx ()
@@ -214,7 +215,7 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on AssetIds is Ok`` () = async {
+let ``Search timeseries on AssetIds is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -242,7 +243,7 @@ let ``Search timeseries on AssetIds is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on ExternalIdPrefix is Ok`` () = async {
+let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -270,7 +271,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on IsStep is Ok`` () = async {
+let ``Search timeseries on IsStep is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -298,7 +299,7 @@ let ``Search timeseries on IsStep is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on IsString is Ok`` () = async {
+let ``Search timeseries on IsString is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -326,7 +327,7 @@ let ``Search timeseries on IsString is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on Unit is Ok`` () = async {
+let ``Search timeseries on Unit is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
 
@@ -354,7 +355,7 @@ let ``Search timeseries on Unit is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search timeseries on MetaData is Ok`` () = async {
+let ``Search timeseries on MetaData is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -382,7 +383,7 @@ let ``Search timeseries on MetaData is Ok`` () = async {
 }
 
 [<Fact>]
-let ``FuzzySearch timeseries on Name is Ok`` () = async {
+let ``FuzzySearch timeseries on Name is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -410,7 +411,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () = async {
 }
 
 [<Fact>]
-let ``FuzzySearch timeseries on Description is Ok`` () = async {
+let ``FuzzySearch timeseries on Description is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -438,7 +439,7 @@ let ``FuzzySearch timeseries on Description is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Update timeseries is Ok`` () = async {
+let ``Update timeseries is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 

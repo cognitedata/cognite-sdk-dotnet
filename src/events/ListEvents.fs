@@ -3,17 +3,17 @@
 
 namespace CogniteSdk.Events
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
+open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open System.Threading.Tasks
 
 
 type EventQuery =
@@ -51,8 +51,8 @@ module Items =
                 yield! this.Options |> Seq.map EventQuery.Render
             ]
 
-    let listCore (options: EventQuery seq) (filters: EventFilter seq)(fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse EventItemsReadDto.Decoder id
+    let listCore (options: EventQuery seq) (filters: EventFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse EventItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -63,7 +63,7 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves list of events matching filter, and a cursor if given limit is exceeded
@@ -73,7 +73,7 @@ module Items =
     /// <param name="next">Async handler to use</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let list (options: EventQuery seq) (filters: EventFilter seq) (next: NextFunc<EventItemsReadDto,'a>)
-        : HttpContext -> Async<Context<'a>> =
+        : HttpContext -> Task<Context<'a>> =
             listCore options filters fetch next
 
     /// <summary>
@@ -83,8 +83,8 @@ module Items =
     /// <param name="filters">Search filters</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let listAsync (options: EventQuery seq) (filters: EventFilter seq)
-        : HttpContext -> Async<Context<EventItemsReadDto>> =
-            listCore options filters fetch Async.single
+        : HttpContext -> Task<Context<EventItemsReadDto>> =
+            listCore options filters fetch Task.FromResult
 
 
 [<Extension>]
@@ -97,8 +97,9 @@ type ListEventsExtensions =
     /// <returns>List of events matching given filters and optional cursor</returns>
     [<Extension>]
     static member ListAsync (this: ClientExtension, options: EventQuery seq, filters: EventFilter seq, [<Optional>] token: CancellationToken) : Task<EventItems> =
-        async {
-            let! ctx = Items.listAsync options filters this.Ctx
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx = Items.listAsync options filters ctx
             match ctx.Result with
             | Ok events ->
                 let cursor = if events.NextCursor.IsSome then events.NextCursor.Value else Unchecked.defaultof<string>
@@ -108,9 +109,8 @@ type ListEventsExtensions =
                     }
                 return items
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
     /// <summary>
     /// Retrieves list of events matching filter.

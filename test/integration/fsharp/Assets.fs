@@ -12,9 +12,10 @@ open CogniteSdk.Assets
 
 open Common
 open Tests
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Fact>]
-let ``List assets with limit is Ok`` () = async {
+let ``List assets with limit is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let query = [ AssetQuery.Limit 10 ]
@@ -35,7 +36,7 @@ let ``List assets with limit is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get asset by id is Ok`` () = async {
+let ``Get asset by id is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let assetId = 130452390632424L
@@ -56,7 +57,7 @@ let ``Get asset by id is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Get asset by missing id is Error`` () = async {
+let ``Get asset by missing id is Error`` () = task {
     // Arrange
     let ctx = readCtx ()
     let assetId = 0L
@@ -76,7 +77,7 @@ let ``Get asset by missing id is Error`` () = async {
 }
 
 [<Fact>]
-let ``Get asset by ids is Ok`` () = async {
+let ``Get asset by ids is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let assetIds =
@@ -100,7 +101,7 @@ let ``Get asset by ids is Ok`` () = async {
 
 
 [<Fact>]
-let ``Filter assets is Ok`` () = async {
+let ``Filter assets is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -126,7 +127,7 @@ let ``Filter assets is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on Name is Ok`` () = async {
+let ``Filter assets on Name is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -158,7 +159,7 @@ let ``Filter assets on Name is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on ExternalIdPrefix is Ok`` () = async {
+let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -192,7 +193,7 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on MetaData is Ok`` () = async {
+let ``Filter assets on MetaData is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -224,7 +225,7 @@ let ``Filter assets on MetaData is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on ParentIds is Ok`` () = async {
+let ``Filter assets on ParentIds is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -258,7 +259,7 @@ let ``Filter assets on ParentIds is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on Root is Ok`` () = async {
+let ``Filter assets on Root is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -284,7 +285,7 @@ let ``Filter assets on Root is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on RootIds is Ok`` () = async {
+let ``Filter assets on RootIds is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -318,7 +319,7 @@ let ``Filter assets on RootIds is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Filter assets on Source is Ok`` () = async {
+let ``Filter assets on Source is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let options = [
@@ -352,7 +353,7 @@ let ``Filter assets on Source is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search assets is Ok`` () = async {
+let ``Search assets is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
     let options = [
@@ -375,7 +376,7 @@ let ``Search assets is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search assets on CreatedTime Ok`` () = async {
+let ``Search assets on CreatedTime Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let timerange = {
@@ -406,7 +407,7 @@ let ``Search assets on CreatedTime Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search assets on LastUpdatedTime Ok`` () = async {
+let ``Search assets on LastUpdatedTime Ok`` () = task {
 
     // Arrange
     let ctx = writeCtx ()
@@ -437,7 +438,7 @@ let ``Search assets on LastUpdatedTime Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search assets on Description is Ok`` () = async {
+let ``Search assets on Description is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -469,7 +470,7 @@ let ``Search assets on Description is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Search assets on Name is Ok`` () = async {
+let ``Search assets on Name is Ok`` () = task {
     // Arrange
     let ctx = readCtx ()
 
@@ -501,7 +502,7 @@ let ``Search assets on Name is Ok`` () = async {
 }
 
 [<Fact>]
-let ``Create and delete assets is Ok`` () = async {
+let ``Create and delete assets is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = "createDeleteTestAssets"
@@ -543,7 +544,7 @@ let ``Create and delete assets is Ok`` () = async {
 
 [<Trait("a", "a")>]
 [<Fact>]
-let ``Update assets is Ok`` () = async {
+let ``Update assets is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 

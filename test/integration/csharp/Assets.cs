@@ -140,7 +140,7 @@ namespace Test.CSharp.Integration {
         }
 
         [Fact]
-        [Trait("Description", "Deleting an asset that exist fails with ResponseException")]
+        [Trait("Description", "Deleting an asset that does not exist fails with ResponseException")]
         public async Task AssetDeleteFailsWhenIdIsInvalidAsync() {
             // Arrange
             var id = 0;
