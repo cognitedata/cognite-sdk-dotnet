@@ -32,12 +32,12 @@ CogniteSdk is available as a [NuGet package](https://www.nuget.org/packages/Cogn
 
 Using Package Manager:
 ```sh
-Install-Package CogniteSdk -Version 1.0.0
+Install-Package CogniteSdk
 ```
 
 Using .NET CLI:
 ```sh
-dotnet add package CogniteSdk --version 1.0.0
+dotnet add package CogniteSdk
 ```
 
 Or [directly in Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).
@@ -58,21 +58,27 @@ export PROJECT=myprojet
 export API_KEY=mysecretkey
 ```
 
-All SDK methods are called with a `Client` object. A valid client requires the API Key, Project Name, App ID and an HTTP Client:
+All SDK methods are called with a `Client` object. A valid client requires:
+- `API Key` - key used for authentication with CDF
+- `Project Name` - the name of your CDF project
+- `App ID` - a unique identifier for your application
+- `HTTP Client` - client that will be used for the remote connection
 ```c#
 var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 var project = Environment.GetEnvironmentVariable("PROJECT");
 
-using (var httpClient = new HttpClient()) {
-    var client =
-        Client.Create()
-        .SetAppId("your_app_id")
-        .SetHttpClient(httpClient)
-        .SetApiKey(apiKey)
-        .SetProject(project);
-    
-    // your logic using the client
-}
+var httpClient = new HttpClient();
+// define policies for the client (using Polly for example)
+// or use a something like HttpClientFactory to manage the clients
+
+var client =
+    Client.Create()
+    .SetAppId("your_app_id")
+    .SetHttpClient(httpClient)
+    .SetApiKey(apiKey)
+    .SetProject(project);
+
+// your logic using the client
 ```
 
 ## Examples
