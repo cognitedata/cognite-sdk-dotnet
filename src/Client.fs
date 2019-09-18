@@ -75,3 +75,5 @@ type Client private (context: HttpContext) =
     member val DataPoints = DataPoints.ClientExtension context with get
     /// Client Events extension methods
     member val Events = Events.ClientExtension context with get
+    /// Client Login extension methods
+    member val Login = Login.ClientExtension context with get
