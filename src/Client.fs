@@ -61,11 +61,8 @@ type Client private (context: HttpContext) =
     /// Creates a Client for accessing the API.
     /// </summary>
     static member Create () =
-        let context =
-            Context.create ()
-            |> Context.setUrlBuilder Context.urlBuilder
-
-        Client context
+        Context.create ()
+        |> Client
 
     /// Client Assets extension methods
     member val Assets = Assets.ClientExtension context with get

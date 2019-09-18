@@ -137,8 +137,10 @@ module Context =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", serviceUrl) } }
 
     let create () =
+        let major, minor, build = version
         Context.defaultContext
         |> Context.setUrlBuilder urlBuilder
+        |> Context.addHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
