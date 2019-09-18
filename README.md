@@ -61,7 +61,7 @@ export API_KEY=mysecretkey
 All SDK methods are called with a `Client` object. A valid client requires:
 - `API Key` - key used for authentication with CDF
 - `Project Name` - the name of your CDF project
-- `App ID` - a unique identifier for your application
+- `App ID` - an identifier for your application. It is a free text string. Example: `asset-hierarchy-extractor`
 - `HTTP Client` - client that will be used for the remote connection
 ```c#
 var apiKey = Environment.GetEnvironmentVariable("API_KEY");
