@@ -152,7 +152,18 @@ module Handlers =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
 
     let setUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with UrlBuilder = (fun _ -> url) } }
+        let urlBuilder (request: HttpRequest) =
+            let extra = request.Extra
+            let serviceUrl =
+                if Map.containsKey "serviceUrl" extra
+                then extra.["serviceUrl"]
+                else "https://api.cognitedata.com"
+
+            if not (Map.containsKey "hasAppId" extra)
+            then failwith "Client must set the Application ID (appId)"
+
+            sprintf "%s%s" serviceUrl url
+        next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Task<Context<'c>> =
         let shouldRetry (err: ResponseError) =

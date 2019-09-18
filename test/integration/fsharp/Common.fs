@@ -10,7 +10,9 @@ let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
 let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"
 
 let createCtx (key: string) (project: string) (serviceUrl: string) =
-    let client = new HttpClient ()
+    let handler = new HttpClientHandler(AllowAutoRedirect = false)
+    let client = new HttpClient (handler)
+
     Context.create ()
     |> Context.setAppId "test"
     |> Context.setHttpClient client
