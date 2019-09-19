@@ -69,12 +69,13 @@ type EventReadDto = {
         let startTime = if this.StartTime.IsSome then this.StartTime.Value else Unchecked.defaultof<int64>
         let endTime = if this.EndTime.IsSome then this.EndTime.Value else Unchecked.defaultof<int64>
         let eventType = if this.Type.IsSome then this.Type.Value else Unchecked.defaultof<string>
-        let eventSubType =if this.SubType.IsSome then this.SubType.Value else Unchecked.defaultof<string>
+        let eventSubType = if this.SubType.IsSome then this.SubType.Value else Unchecked.defaultof<string>
         let description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
         let metadata = this.MetaData |> Map.toSeq |> dict
         let assetIds = this.AssetIds |> List.ofSeq
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         EventEntity(
+            id = this.Id,
             externalId = externalId,
             startTime = startTime,
             endTime = endTime,
@@ -83,7 +84,9 @@ type EventReadDto = {
             description = description,
             metadata = metadata,
             assetIds = assetIds,
-            source = source
+            source = source,
+            createdTime = this.CreatedTime,
+            lastUpdatedTime = this.LastUpdatedTime
         )
 
 /// Event type for create requests.
@@ -177,5 +180,3 @@ type EventFilter =
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =
         context
-
-        
