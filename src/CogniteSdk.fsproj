@@ -45,7 +45,9 @@
     <Compile Include="events\ListEvents.fs" />
     <Compile Include="events\SearchEvents.fs" />
     <Compile Include="login\Model.fs" />
+    <Compile Include="login\Json.fs" />
     <Compile Include="login\Redirect.fs" />
+    <Compile Include="login\Status.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
 
