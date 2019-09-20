@@ -505,7 +505,7 @@ let ``Search assets on Name is Ok`` () = task {
 let ``Create and delete assets is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "createDeleteTestAssets"
+    let externalIdString = Guid.NewGuid().ToString();
     let dto: AssetWriteDto = {
         ExternalId = Some externalIdString
         Name = "Create Assets sdk test"
@@ -548,7 +548,7 @@ let ``Update assets is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 
-    let externalIdString = "createDeleteTestAssets"
+    let externalIdString = Guid.NewGuid().ToString();
     let newMetadata = ([
         "key1", "value1"
         "key2", "value2"

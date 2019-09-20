@@ -110,7 +110,11 @@ module Context =
     let urlBuilder (request: HttpRequest) =
         let extra = request.Extra
         let version = extra.["apiVersion"]
-        let project = extra.["project"]
+        let project =
+            if Map.containsKey "project" extra
+            then extra.["project"]
+            else failwith "Client must set project."
+
         let resource = extra.["resource"]
         let serviceUrl =
             if Map.containsKey "serviceUrl" extra
@@ -118,7 +122,7 @@ module Context =
             else "https://api.cognitedata.com"
 
         if not (Map.containsKey "hasAppId" extra)
-        then failwith "Client must set the Application ID (appId)"
+        then failwith "Client must set the Application ID (appId)."
 
         sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
 
