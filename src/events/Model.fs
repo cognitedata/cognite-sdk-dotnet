@@ -63,7 +63,7 @@ type EventReadDto = {
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     LastUpdatedTime : int64
 } with
-    /// Translates the domain type to a plain old crl object
+    /// Translates the domain type to a plain old CLR object
     member this.ToEventEntity () : EventEntity =
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let startTime = if this.StartTime.IsSome then this.StartTime.Value else Unchecked.defaultof<int64>

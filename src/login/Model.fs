@@ -24,7 +24,7 @@ type LoginStatusDto = {
     ProjectId: int64
     ApiKeyId: int64 option
 } with
-    /// Translates the domain type to a plain old crl object
+    /// Translates the domain type to a plain old CLR object
     member this.ToLoginStatusEntity () : LoginStatusEntity =
         let apiKeyId = if this.ApiKeyId.IsSome then this.ApiKeyId.Value else 0L
 
