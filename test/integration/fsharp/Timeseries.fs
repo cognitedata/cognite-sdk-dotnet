@@ -91,7 +91,7 @@ let ``Get timeseries by missing id is Error`` () = task {
 let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "createDeleteTest"
+    let externalIdString = Guid.NewGuid().ToString();
     let dto: TimeSeries.TimeSeriesWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Timeseries sdk test"

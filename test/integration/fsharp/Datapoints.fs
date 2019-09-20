@@ -1,5 +1,6 @@
 module Tests.Integration.Datapoints
 
+open System
 open System.Net.Http
 
 open Xunit
@@ -289,7 +290,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 let ``Insert datapoints is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "insertDatapointsTest"
+    let externalIdString = Guid.NewGuid().ToString();
     let dto: TimeSeriesWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Insert datapoints test"
@@ -326,7 +327,7 @@ let ``Insert datapoints is Ok`` () = task {
 let ``Delete datapoints is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = "deleteDatapointsTest"
+    let externalIdString = Guid.NewGuid().ToString();
     let dto: TimeSeriesWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Delete datapoints test"

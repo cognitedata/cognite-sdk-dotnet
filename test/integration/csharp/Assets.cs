@@ -122,7 +122,7 @@ namespace Test.CSharp.Integration {
         [Trait("Description", "Creating an asset and deletes it works")]
         public async Task CreateAndDeleteAssetWorkAsExpectedAsync() {
             // Arrange
-            var externalIdString = "createDeleteCSharpTestAssets";
+            var externalIdString = Guid.NewGuid().ToString();
             var newAsset = new AssetEntity();
             newAsset.ExternalId = externalIdString;
             newAsset.Name = "Create Assets c# sdk test";
@@ -161,7 +161,7 @@ namespace Test.CSharp.Integration {
         [Trait("Description", "Deleting an asset that exist fails with ResponseException")]
         public async Task UpdatedAssetsPerformsExpectedChangesAsync() {
             // Arrange
-            var externalIdString = "updateAssetTestCSharp";
+            var externalIdString = Guid.NewGuid().ToString();
             var newAsset = new AssetEntity();
             var newMetadata = new Dictionary<string, string>() {
                 { "key1", "value1" },

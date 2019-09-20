@@ -20,7 +20,7 @@ open CogniteSdk.Events
 let ``Create and delete events is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
-    let externalIdString = Guid().ToString()
+    let externalIdString = Guid.NewGuid().ToString()
     let dto: Events.EventWriteDto = {
         ExternalId = Some externalIdString
         StartTime = Some 1565941329L
@@ -128,7 +128,7 @@ let ``Update assets is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 
-    let externalIdString = "a new event external Id"
+    let externalIdString = Guid.NewGuid().ToString();
     let newMetadata = ([
         "key1", "value1"
         "key2", "value2"
