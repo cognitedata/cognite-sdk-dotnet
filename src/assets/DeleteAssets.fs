@@ -61,7 +61,6 @@ module Delete =
     let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Task<Context<HttpResponseMessage>> =
         deleteCore (assets, recursive) fetch Task.FromResult
 
-
 [<Extension>]
 type DeleteAssetsExtensions =
     /// <summary>

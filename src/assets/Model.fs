@@ -72,7 +72,7 @@ type AssetReadDto = {
     /// InternalId of the root object
     RootId: int64
 } with
-    /// Translates the domain type to a plain old crl object
+    /// Translates the domain type to a plain old CLR object
     member this.ToAssetEntity () : AssetEntity =
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         let metaData = this.MetaData |> Map.toSeq |> dict
