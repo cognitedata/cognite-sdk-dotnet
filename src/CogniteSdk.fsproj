@@ -47,6 +47,8 @@
     <Compile Include="files\Model.fs" />
     <Compile Include="files\Json.fs" />
     <Compile Include="files\ListFiles.fs" />
+    <Compile Include="files\RetrieveFiles.fs" />
+    <Compile Include="files\GetFile.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
     <Compile Include="login\Redirect.fs" />
