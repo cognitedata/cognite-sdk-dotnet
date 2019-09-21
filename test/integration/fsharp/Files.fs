@@ -101,7 +101,7 @@ let ``Get files by ids is Ok`` () = task {
     let ids =
         match res.Result with
         | Ok dtos ->
-            Seq.map (fun d -> d.Id) dtos
+            Seq.map (fun (d: FileReadDto) -> d.Id) dtos
         | Error _ -> Seq.empty
 
     // Assert
@@ -132,7 +132,7 @@ let ``Get files by externalIds is Ok`` () = task {
     let ids =
         match res.Result with
         | Ok dtos ->
-            Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
+            Seq.collect (fun (d: FileReadDto) -> d.ExternalId |> optionToSeq) dtos
         | Error _ -> Seq.empty
 
     // Assert
@@ -600,4 +600,43 @@ let ``Search Files on Name is Ok`` () = task {
     test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/search" @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Create and delete files is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let externalIdString = Guid.NewGuid().ToString()
+    let dto: Files.FileWriteDto = {
+        Name = "testFile"
+        ExternalId = Some externalIdString
+        MimeType = None
+        MetaData = Map.empty
+        AssetIds = Seq.empty
+        Source = None
+        SourceCreatedTime = Some 999L
+        SourceModifiedTime = Some 888L
+    }
+    let externalId = Identity.ExternalId externalIdString
+
+    // Act
+    let! res = Files.Create.createAsync dto ctx
+    let! delRes = Files.Delete.deleteAsync ([ externalId ]) ctx
+    let resExternalId =
+        match res.Result with
+        | Ok filesResponse -> filesResponse.ExternalId
+        | Error _ -> None
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ resExternalId = Some externalIdString @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/files" @>
+    test <@ res.Request.Query.IsEmpty @>
+
+    test <@ Result.isOk delRes.Result @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
+    test <@ delRes.Request.Extra.["resource"] = "/files/delete" @>
+    test <@ delRes.Request.Query.IsEmpty @>
 }

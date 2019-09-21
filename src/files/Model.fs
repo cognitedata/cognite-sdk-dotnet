@@ -6,7 +6,7 @@ namespace CogniteSdk.Files
 open System.Collections.Generic
 open Oryx
 
-type FileEntity internal (id: int64, externalId: string, name: string, mimeType: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, createdTime: int64, lastUpdatedTime: int64, uploadedTime: int64, sourceCreatedTime: int64, sourceModifiedTime: int64, uploaded: bool) =
+type FileEntity internal (id: int64, externalId: string, name: string, mimeType: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, createdTime: int64, lastUpdatedTime: int64, uploadedTime: int64, sourceCreatedTime: int64, sourceModifiedTime: int64, uploaded: bool, uploadUrl: string) =
 
     member val ExternalId : string = externalId with get, set
     member val MimeType : string = mimeType with get, set
@@ -14,7 +14,7 @@ type FileEntity internal (id: int64, externalId: string, name: string, mimeType:
     member val AssetIds : IEnumerable<int64> = assetIds with get, set
     member val Source : string = source with get, set
     member val SourceCreatedTime : int64 = sourceCreatedTime with get, set
-    member val sourceModifiedTime : int64 = sourceModifiedTime with get, set
+    member val SourceModifiedTime : int64 = sourceModifiedTime with get, set
     member val UploadedTime : int64 = uploadedTime with get, set
 
     member val Name : string = name with get
@@ -22,6 +22,7 @@ type FileEntity internal (id: int64, externalId: string, name: string, mimeType:
     member val CreatedTime : int64 = createdTime with get
     member val LastUpdatedTime : int64 = lastUpdatedTime with get
     member val Uploaded : bool = uploaded with get
+    member val UploadUrl : string = uploadUrl with get
 
     new () =
         FileEntity(
@@ -37,7 +38,8 @@ type FileEntity internal (id: int64, externalId: string, name: string, mimeType:
             lastUpdatedTime=0L,
             sourceCreatedTime=0L,
             sourceModifiedTime=0L,
-            uploaded=false
+            uploaded=false,
+            uploadUrl=null
         )
 
     new (
@@ -63,7 +65,8 @@ type FileEntity internal (id: int64, externalId: string, name: string, mimeType:
             lastUpdatedTime=0L,
             sourceCreatedTime=sourceCreatedTime,
             sourceModifiedTime=sourceModifiedTime,
-            uploaded=false
+            uploaded=false,
+            uploadUrl=null
         )
 
 [<CLIMutable>]
@@ -109,13 +112,89 @@ type FileReadDto = {
             sourceModifiedTime = sourceModifiedTime,
             createdTime = this.CreatedTime,
             lastUpdatedTime = this.LastUpdatedTime,
-            uploaded = this.Uploaded
+            uploaded = this.Uploaded,
+            uploadUrl=null
         )
 
 type FileItemsReadDto = {
     Items : FileReadDto seq
     NextCursor : string option
 }
+
+type FileWriteDto = {
+    ExternalId: string option
+    Name: string
+    Source: string option
+    MimeType: string option
+    MetaData: Map<string, string>
+    AssetIds: int64 seq
+    SourceCreatedTime: int64 option
+    SourceModifiedTime: int64 option
+} with
+    static member FromFileEntity (file: FileEntity) : FileWriteDto =
+        let metaData =
+            if not (isNull file.MetaData) then
+                file.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
+            else
+                Map.empty
+        let assetIds =
+            if not (isNull file.AssetIds) then
+                file.AssetIds |> Seq.toList
+            else
+                List.Empty
+        {
+            Name = file.Name
+            ExternalId = if isNull file.ExternalId then None else Some file.ExternalId
+            Source = if isNull file.Source then None else Some file.Source
+            MimeType = if isNull file.MimeType then None else Some file.MimeType
+            MetaData = metaData
+            AssetIds = assetIds
+            SourceCreatedTime = if file.SourceCreatedTime = 0L then None else Some file.SourceCreatedTime
+            SourceModifiedTime = if file.SourceModifiedTime = 0L then None else Some file.SourceModifiedTime
+        }
+
+type FileCreatedDto = {
+    Id : int64
+    ExternalId : string option
+    Name : string
+    MimeType : string option
+    MetaData : Map<string, string>
+    AssetIds : int64 list
+    Source : string option
+    SourceCreatedTime : int64 option
+    SourceModifiedTime : int64 option
+    UploadedTime : int64 option
+    CreatedTime : int64
+    LastUpdatedTime : int64
+    UploadUrl : string
+    Uploaded : bool
+} with
+    member this.ToFileEntity () : FileEntity =
+        let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
+        let mimeType = Option.defaultValue Unchecked.defaultof<string> this.MimeType
+        let metadata = this.MetaData |> Map.toSeq |> dict
+        let assetIds = this.AssetIds |> List.ofSeq
+        let source = Option.defaultValue Unchecked.defaultof<string> this.Source
+        let uploadedTime = Option.defaultValue Unchecked.defaultof<int64> this.UploadedTime
+        let sourceCreatedTime = Option.defaultValue Unchecked.defaultof<int64> this.SourceCreatedTime
+        let sourceModifiedTime = Option.defaultValue Unchecked.defaultof<int64> this.SourceModifiedTime
+        FileEntity(
+            id = this.Id,
+            externalId = externalId,
+            name = this.Name,
+            mimeType = mimeType,
+            metadata = metadata,
+            assetIds = assetIds,
+            source = source,
+            uploadedTime = uploadedTime,
+            sourceCreatedTime = sourceCreatedTime,
+            sourceModifiedTime = sourceModifiedTime,
+            createdTime = this.CreatedTime,
+            lastUpdatedTime = this.LastUpdatedTime,
+            uploaded = this.Uploaded,
+            uploadUrl = this.UploadUrl
+        )
+
 
 type FileFilter =
     private
