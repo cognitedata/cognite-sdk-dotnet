@@ -570,3 +570,34 @@ let ``Filter Files on Uploaded is Ok`` () = task {
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/list" @>
 }
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Search Files on Name is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let searches = [
+        FileSearch.Name "test"
+    ]
+
+    // Act
+    let! res = Files.Search.searchAsync 10 searches [] ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let names =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun (e: FileReadDto) -> e.Name) dtos
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/files/search" @>
+}
