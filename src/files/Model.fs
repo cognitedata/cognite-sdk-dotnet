@@ -5,6 +5,7 @@ namespace CogniteSdk.Files
 
 open System.Collections.Generic
 open Oryx
+open CogniteSdk
 
 type FileEntity internal (id: int64, externalId: string, name: string, mimeType: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string, createdTime: int64, lastUpdatedTime: int64, uploadedTime: int64, sourceCreatedTime: int64, sourceModifiedTime: int64, uploaded: bool, uploadUrl: string) =
 
@@ -68,6 +69,15 @@ type FileEntity internal (id: int64, externalId: string, name: string, mimeType:
             uploaded=false,
             uploadUrl=null
         )
+
+type DownloadResponseEntity internal (id: int64, externalId: string, downloadUrl: string) =
+
+    member val Id : int64 = id
+    member val ExternalId : string = externalId
+    member val DownloadUrl : string = downloadUrl
+
+    new () =
+        DownloadResponseEntity(id = 0L, externalId = null, downloadUrl = null)
 
 [<CLIMutable>]
 type FileItems = {

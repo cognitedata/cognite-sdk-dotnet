@@ -110,6 +110,3 @@ type GetFilesByIdsClientExtensions =
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<string>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         this.GetByIdsAsync(ids |> Seq.map Identity.ExternalId, token)
-
-
-
