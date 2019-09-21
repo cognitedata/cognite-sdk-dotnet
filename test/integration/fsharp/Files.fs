@@ -40,6 +40,111 @@ let ``List Files with limit is Ok`` () = task {
 
 [<Trait("resource", "files")>]
 [<Fact>]
+let ``Get file by id is Ok`` () = task {
+    // Arrange
+    let ctx = readCtx ()
+    let fileId = 2013333184649590L
+
+    // Act
+    let! res = Files.Entity.getAsync fileId ctx
+
+    let resId =
+        match res.Result with
+        | Ok dto -> dto.Id
+        | Error _ -> 0L
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ resId = fileId @>
+    test <@ res.Request.Method = HttpMethod.Get @>
+    test <@ res.Request.Extra.["resource"] = "/files/2013333184649590" @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Get file by missing id is Error`` () = task {
+    // Arrange
+    let ctx = readCtx ()
+    let eventId = 0L
+
+    // Act
+    let! res = Files.Entity.getAsync eventId ctx
+
+    let err =
+        match res.Result with
+        | Ok _ -> ResponseError.empty
+        | Error err -> err
+
+    // Assert
+    test <@ Result.isError res.Result @>
+    test <@ err.Code = 400 @>
+    test <@ err.Message = "getSingleFile.arg0: must be greater than or equal to 1" @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Get files by ids is Ok`` () = task {
+    // Arrange
+    let ctx = readCtx ()
+    let fileIds =
+        [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
+        |> Seq.map Identity.Id
+
+    // Act
+    let! res = Files.Retrieve.getByIdsAsync fileIds ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let ids =
+        match res.Result with
+        | Ok dtos ->
+            Seq.map (fun d -> d.Id) dtos
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 3 @>
+    test <@ Seq.forall (fun i -> Seq.contains (Identity.Id i) fileIds) ids @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/files/byids" @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Get files by externalIds is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let fileIds =
+        [ "dotnet external" ]
+        |> Seq.map Identity.ExternalId
+
+    // Act
+    let! res = Files.Retrieve.getByIdsAsync fileIds ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    let ids =
+        match res.Result with
+        | Ok dtos ->
+            Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
+        | Error _ -> Seq.empty
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len = 1 @>
+    test <@ Seq.forall ((=) "dotnet external") ids @>
+    test <@ res.Request.Method = HttpMethod.Post @>
+    test <@ res.Request.Extra.["resource"] = "/files/byids" @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
 let ``Filter Files on AssetIds is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
