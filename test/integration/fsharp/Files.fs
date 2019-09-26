@@ -627,7 +627,7 @@ let ``Search Files on Name is Ok`` () = task {
 
     // Assert
     test <@ Result.isOk res.Result @>
-    test <@ len = 1 @>
+    test <@ len > 0 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/search" @>
@@ -666,6 +666,182 @@ let ``Create and delete files is Ok`` () = task {
     test <@ res.Request.Extra.["resource"] = "/files" @>
     test <@ res.Request.Query.IsEmpty @>
 
+    test <@ Result.isOk delRes.Result @>
+    test <@ delRes.Request.Method = HttpMethod.Post @>
+    test <@ delRes.Request.Extra.["resource"] = "/files/delete" @>
+    test <@ delRes.Request.Query.IsEmpty @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
+let ``Update files is Ok`` () = task {
+    // Arrange
+    let wctx = writeCtx ()
+
+    let externalIdString = Guid.NewGuid().ToString();
+    let newMetadata = ([
+        "key1", "value1"
+        "key2", "value2"
+    ]
+    |> Map.ofList)
+    let dto: FileWriteDto = {
+        ExternalId = Some externalIdString
+        Source = None
+        Name = "testName"
+        MimeType = None
+        AssetIds = []
+        SourceCreatedTime = Some 123L
+        SourceModifiedTime = Some 456L
+        MetaData = [
+            "oldkey1", "oldvalue1"
+            "oldkey2", "oldvalue2"
+        ] |> Map.ofList
+    }
+    let externalId = Identity.ExternalId externalIdString
+    let newSource = "UpdatedSource"
+    let newExternalId = "updatedExternalId"
+    let newAssetId = 5409900891232494L
+
+    // Act
+    let! createRes = Files.Create.createAsync dto wctx
+    let! updateRes =
+        Files.Update.updateAsync [
+            (externalId, [
+                FileUpdate.SetSource newSource
+                FileUpdate.SetAssetIds [ newAssetId ]
+                FileUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                FileUpdate.SetExternalId (Some newExternalId)
+                FileUpdate.SetSourceCreatedTime 321L
+                FileUpdate.SetSourceModifiedTime 654L
+            ])
+        ] wctx
+    let! getRes = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+
+    let resSource, resExternalId, resMetaData, resSourceCreatedTime, resSourceModifiedTime, resAssetIds =
+        match getRes.Result with
+        | Ok filesResponses ->
+            let h = Seq.tryHead filesResponses
+            match h with
+            | Some fileResponse ->
+                fileResponse.Source,
+                fileResponse.ExternalId,
+                fileResponse.MetaData,
+                fileResponse.SourceCreatedTime,
+                fileResponse.SourceModifiedTime,
+                fileResponse.AssetIds
+            | None -> None, Some "", Map.empty, None, None, [0L]
+        | Error _ -> None, Some "", Map.empty, None, None, [0L]
+
+    let updateSuccsess =
+        match updateRes.Result with
+        | Ok res -> true
+        | Error _ -> false
+
+    let metaDataOk =
+        (Map.tryFind "key1" resMetaData) = Some "value1"
+        && (Map.tryFind "key2" resMetaData) = Some "value2"
+        && resMetaData.ContainsKey "oldkey2"
+        && not (resMetaData.ContainsKey "oldkey1")
+
+    // Assert create
+    test <@ Result.isOk createRes.Result @>
+    test <@ createRes.Request.Method = HttpMethod.Post @>
+    test <@ createRes.Request.Extra.["resource"] = "/files" @>
+    test <@ createRes.Request.Query.IsEmpty @>
+
+    // Assert update
+    test <@ updateSuccsess @>
+    test <@ Result.isOk updateRes.Result @>
+    test <@ updateRes.Request.Method = HttpMethod.Post @>
+    test <@ updateRes.Request.Extra.["resource"] = "/files/update" @>
+    test <@ updateRes.Request.Query.IsEmpty @>
+
+    // Assert get
+    test <@ Result.isOk getRes.Result @>
+    test <@ getRes.Request.Method = HttpMethod.Post @>
+    test <@ getRes.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getRes.Request.Query.IsEmpty @>
+    test <@ resExternalId = Some "updatedExternalId" @>
+    test <@ resSource = Some newSource @>
+    test <@ resSourceCreatedTime = Some 321L @>
+    test <@ resSourceModifiedTime = Some 654L @>
+    test <@ List.head resAssetIds = newAssetId  @>
+    test <@ metaDataOk @>
+
+    let newAssetId2 = 7366035474714226L
+
+    let! updateRes2 =
+        Files.Update.updateAsync [
+            (Identity.ExternalId newExternalId, [
+                FileUpdate.SetMetaData (Map.ofList ["newKey", "newValue"])
+                FileUpdate.ChangeAssetIds ([newAssetId2], [newAssetId])
+            ])
+        ] wctx
+
+    let! getRes2 = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+
+    let resMetaData2, resAssetIds2, identity =
+        match getRes2.Result with
+        | Ok filesResponses ->
+            let h = Seq.tryHead filesResponses
+            match h with
+            | Some fileResponse ->
+                fileResponse.MetaData, fileResponse.AssetIds, fileResponse.Id
+            | None -> Map.empty, [0L], 0L
+        | Error _ -> Map.empty, [0L], 0L
+
+    // Assert get2
+    test <@ Result.isOk getRes2.Result @>
+    test <@ getRes2.Request.Method = HttpMethod.Post @>
+    test <@ getRes2.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getRes2.Request.Query.IsEmpty @>
+    test <@ Seq.head resAssetIds2 = 7366035474714226L @>
+    test <@ (Map.tryFind "newKey" resMetaData2) = Some "newValue" @>
+
+    let! updateRes3 =
+        Files.Update.updateAsync [
+            (Identity.Id identity, [
+                FileUpdate.ClearMetaData
+                FileUpdate.ClearExternalId
+                FileUpdate.ClearSource
+                FileUpdate.ClearSourceCreatedTime
+                FileUpdate.ClearSourceModifiedTime
+                FileUpdate.ClearAssetIds
+            ])
+        ] wctx
+
+    let! getRes3 = Files.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
+    let! delRes = Files.Delete.deleteAsync ([ Identity.Id identity]) wctx
+
+    let resExternalId2, resSource2, resMetaData3, resAssetIds3, resSourceCreatedTime2, resSourceModifiedTime2 =
+        match getRes3.Result with
+        | Ok filesResponses ->
+            let h = Seq.tryHead filesResponses
+            match h with
+            | Some fileResponse ->
+                fileResponse.ExternalId,
+                fileResponse.Source,
+                fileResponse.MetaData,
+                fileResponse.AssetIds,
+                fileResponse.SourceCreatedTime,
+                fileResponse.SourceModifiedTime
+            | None -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
+        | Error _ -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
+
+    // Assert get2
+    test <@ Result.isOk getRes2.Result @>
+    test <@ Result.isOk updateRes3.Result  @>
+    test <@ getRes2.Request.Method = HttpMethod.Post @>
+    test <@ getRes2.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getRes2.Request.Query.IsEmpty @>
+    test <@ resExternalId2 = None @>
+    test <@ resSource2 = None @>
+    test <@ resSourceCreatedTime2 = None @>
+    test <@ resSourceModifiedTime2 = None @>
+    test <@ List.isEmpty resAssetIds3 @>
+    test <@ Map.isEmpty resMetaData3 @>
+
+    // Assert delete
     test <@ Result.isOk delRes.Result @>
     test <@ delRes.Request.Method = HttpMethod.Post @>
     test <@ delRes.Request.Extra.["resource"] = "/files/delete" @>

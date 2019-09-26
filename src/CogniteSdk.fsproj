@@ -52,6 +52,7 @@
     <Compile Include="files\SearchFiles.fs" />
     <Compile Include="files\UploadFile.fs" />
     <Compile Include="files\DeleteFile.fs" />
+    <Compile Include="files\UpdateFiles.fs" />
     <Compile Include="files\DownloadFiles.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
