@@ -144,7 +144,7 @@ module Update =
                     | MetaDataUpdate.Change data ->
                         if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
                         yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
-                | None -> ()
+                | None -> yield "set", Encode.object []
             ]
         | CaseUnit unt ->
             "unit", Encode.object [
