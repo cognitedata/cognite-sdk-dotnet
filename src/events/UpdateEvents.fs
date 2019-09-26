@@ -124,17 +124,15 @@ module Update =
                 | None -> yield "setNull", Encode.bool true
             ]
         | CaseMetaData optMeta ->
-            match optMeta with
-            | Some (Set data) ->
-                "metadata", Encode.object [
+            "metadata", Encode.object [
+                match optMeta with
+                | Some (Set data) ->
                     yield "set", Encode.propertyBag data
-                ]
-            | Some (Change data) ->
-                "metadata", Encode.object [
+                | Some (Change data) ->
                     if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
                     yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
-                ]
-            | None -> "set", Encode.object []
+                | None -> yield "set", Encode.object []
+            ]
         | CaseEventIds optAssetIds ->
             match optAssetIds with
             | Some ids ->
