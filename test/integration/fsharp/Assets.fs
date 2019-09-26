@@ -542,7 +542,6 @@ let ``Create and delete assets is Ok`` () = task {
     test <@ delRes.Request.Query.IsEmpty @>
 }
 
-[<Trait("a", "a")>]
 [<Fact>]
 let ``Update assets is Ok`` () = task {
     // Arrange
