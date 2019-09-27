@@ -149,7 +149,7 @@ let ``Get files by externalIds is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let fileIds =
-        [ "dotnet external" ]
+        [ "dotnet sdk test" ]
         |> Seq.map Identity.ExternalId
 
     // Act
@@ -169,7 +169,7 @@ let ``Get files by externalIds is Ok`` () = task {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ Seq.forall ((=) "dotnet external") ids @>
+    test <@ Seq.forall ((=) "dotnet sdk test") ids @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/byids" @>
 }
@@ -217,8 +217,8 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
         FileQuery.Limit 10
     ]
     let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1568905871300L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1568905871315L)
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1569571903761L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1569571903781L)
     }
     let filters = [
         FileFilter.CreatedTime timerange
@@ -241,7 +241,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1568905871315L && t > 1568905871300L) createdTimes @>
+    test <@ Seq.forall (fun t -> t < 1569571903781L && t > 1569571903761L) createdTimes @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/list" @>
 }
@@ -255,8 +255,8 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
         FileQuery.Limit 10
     ]
     let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1568905871300L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1568905871315L)
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1569571903761L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1569571903781L)
     }
     let filters = [
         FileFilter.LastUpdatedTime timerange
@@ -279,7 +279,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1568905871315L && t > 1568905871300L) lastUpdatedTimes @>
+    test <@ Seq.forall (fun t -> t < 1569571903781L && t > 1569571903761L) lastUpdatedTimes @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/list" @>
 }
