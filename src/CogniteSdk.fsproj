@@ -7,6 +7,7 @@
     <Author>Cognite AS</Author>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Error.fs" />
@@ -60,6 +61,8 @@
     <Compile Include="login\Status.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+  </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
