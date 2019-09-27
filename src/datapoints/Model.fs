@@ -4,7 +4,6 @@
 namespace CogniteSdk.DataPoints
 
 open System
-open System.Collections.Generic
 open Com.Cognite.V1.Timeseries.Proto
 open Oryx
 
