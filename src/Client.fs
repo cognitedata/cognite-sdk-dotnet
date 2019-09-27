@@ -27,7 +27,8 @@ type Client private (context: HttpContext) =
     /// <summary>
     /// Add header for accessing the API.
     /// </summary>
-    /// <param name="project">Name of project.</param>
+    /// <param name="name">Name of the header</param>
+    /// <param name="value">Value of the header</param>
     member this.AddHeader (name: string, value: string) =
         context
         |> Context.addHeader (name, value)
@@ -42,6 +43,10 @@ type Client private (context: HttpContext) =
         |> Context.setProject project
         |> Client
 
+    /// <summary>
+    /// Set unique app identifier
+    /// </summary>
+    /// <param name="appId">ID for the app</param>
     member this.SetAppId (appId: string) =
         context
         |> Context.setAppId appId
@@ -56,6 +61,13 @@ type Client private (context: HttpContext) =
         context
         |> Context.setServiceUrl serviceUrl
         |> Client
+
+    /// <summary>
+    /// Add authentication API Key
+    /// </summary>
+    /// <param name="apiKey">API key</param>
+    member this.SetApiKey (apiKey: string) =
+        this.AddHeader("api-key", apiKey)
 
     /// <summary>
     /// Creates a Client for accessing the API.
