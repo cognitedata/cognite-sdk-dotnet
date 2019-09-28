@@ -15,7 +15,7 @@ The SDK is written as a dual SDK for both C# and F#.
 
 - **C# SDK**: The C# SDK is a fluent API using objects and method chaining. Errors will be raised as exceptions. The API is asynchronous and all API methods returns `Task` and is awaitable using `async/await`.
 
-- **F# SDK**: The F# API is written using plain asynchronous functions returning `Async` built on top of the [Oryx](https://github.com/cognitedata/oryx) HTTP handler library.
+- **F# SDK**: The F# API is written using plain asynchronous functions returning `Task` built on top of the [Oryx](https://github.com/cognitedata/oryx) HTTP handler library.
 
 ## Supported Resources
 

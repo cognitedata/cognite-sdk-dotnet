@@ -97,7 +97,7 @@ let ``Get event by missing id is Error`` () = task {
     // Assert
     test <@ Result.isError res.Result @>
     test <@ err.Code = 400 @>
-    test <@ err.Message = "getByInternalId.arg0: must be greater than or equal to 1" @>
+    test <@ err.Message.Contains "constraint violations" @>
 }
 
 [<Fact>]

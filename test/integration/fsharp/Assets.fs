@@ -73,7 +73,7 @@ let ``Get asset by missing id is Error`` () = task {
     // Assert
     test <@ Result.isError res.Result @>
     test <@ err.Code = 400 @>
-    test <@ err.Message = "getAsset.arg0: must be greater than or equal to 1" @>
+    test <@ err.Message.Contains "violations" @>
 }
 
 [<Fact>]
