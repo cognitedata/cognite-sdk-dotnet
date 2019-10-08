@@ -212,13 +212,13 @@ let ``Filter Files on AssetIds is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on CreatedTime is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
+    let ctx = readCtx ()
     let options = [
         FileQuery.Limit 10
     ]
     let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1569571903761L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1569571903781L)
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1533213749083L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1533213749099L)
     }
     let filters = [
         FileFilter.CreatedTime timerange
@@ -241,7 +241,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1569571903781L && t > 1569571903761L) createdTimes @>
+    test <@ Seq.forall (fun t -> t < 1533213749099L && t > 1533213749083L) createdTimes @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/list" @>
 }
@@ -250,13 +250,13 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
+    let ctx = readCtx ()
     let options = [
         FileQuery.Limit 10
     ]
     let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1569571903761L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1569571903781L)
+        Min = DateTimeOffset.FromUnixTimeMilliseconds(1533213795975L)
+        Max = DateTimeOffset.FromUnixTimeMilliseconds(1533213795995L)
     }
     let filters = [
         FileFilter.LastUpdatedTime timerange
@@ -273,13 +273,13 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     let lastUpdatedTimes =
         match res.Result with
         | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.CreatedTime) dtos.Items
+            Seq.map (fun (e: FileReadDto) -> e.LastUpdatedTime) dtos.Items
         | Error _ -> Seq.empty
 
     // Assert
     test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1569571903781L && t > 1569571903761L) lastUpdatedTimes @>
+    test <@ Seq.forall (fun t -> t < 1533213795995L && t > 1533213795975L) lastUpdatedTimes @>
     test <@ res.Request.Method = HttpMethod.Post @>
     test <@ res.Request.Extra.["resource"] = "/files/list" @>
 }
