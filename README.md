@@ -4,7 +4,7 @@
 
 # CogniteSdk for .Net
 
-[![build](https://webhooks.dev.cognite.ai/build/buildStatus/icon?job=github-builds/cognite-sdk-dotnet/master)](https://jenkins.cognite.ai/job/github-builds/job/cognite-sdk-dotnet/job/master/)
+[![Build Status](https://travis-ci.org/cognitedata/cognite-sdk-dotnet.svg?branch=master)](https://travis-ci.org/cognitedata/cognite-sdk-dotnet)
 [![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet)
 
 _**Under development**, not recommended for production use cases_
