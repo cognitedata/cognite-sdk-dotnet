@@ -21,3 +21,17 @@ module RawJsonExtensions =
                 Items = get.Required.Field "items" (Decode.list DatabaseReadDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
+
+    type TableReadDto with
+        static member Decoder : Decoder<TableReadDto> =
+            Decode.object (fun get ->
+                {
+                    Name = get.Required.Field "name" Decode.string
+                })
+
+    type TableItemsReadDto with
+        static member Decoder : Decoder<TableItemsReadDto> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list TableReadDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
+            })

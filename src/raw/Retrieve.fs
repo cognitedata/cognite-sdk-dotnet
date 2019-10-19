@@ -3,6 +3,7 @@
 
 namespace CogniteSdk.Raw
 
+open System.Web
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -20,24 +21,6 @@ module Retrieve =
     [<Literal>]
     let Url = "/raw/dbs"
 
-    type DatabaseQuery =
-        private
-        | CaseLimit of int
-        | CaseCursor of string
-
-        /// Max number of results to return
-        static member Limit limit =
-            if limit > MaxLimitSize || limit < 1 then
-                failwith "Limit must be set to 1000 or less"
-            CaseLimit limit
-        /// Cursor return from previous request
-        static member Cursor cursor = CaseCursor cursor
-
-        static member Render (this: DatabaseQuery) =
-            match this with
-            | CaseLimit limit -> "limit", limit.ToString()
-            | CaseCursor cursor -> "cursor", cursor.ToString()
-
     type DatabaseResponse = {
         Items: DatabaseReadDto seq
     } with
@@ -45,6 +28,26 @@ module Retrieve =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list DatabaseReadDto.Decoder |> Decode.map seq)
             })
+
+    type TableResponse = {
+        Items: TableReadDto seq
+    } with
+         static member Decoder : Decoder<TableResponse> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list TableReadDto.Decoder |> Decode.map seq)
+            })
+
+    let tablesCore (database: string) (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse TableResponse.Decoder (fun response -> response.Items)
+        let queries = queryParameters |> Seq.map DatabaseQuery.Render |> List.ofSeq
+        let encodedDbName = HttpUtility.UrlEncode database
+
+        GET
+        >=> setVersion V10
+        >=> setResource (Url + "/" + encodedDbName + "/tables")
+        >=> addQuery queries
+        >=> fetch
+        >=> decodeResponse
 
     let databasesCore (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let decodeResponse = Decode.decodeResponse DatabaseResponse.Decoder (fun response -> response.Items)
@@ -78,6 +81,27 @@ module Retrieve =
     let databasesAsync (queryParameters: DatabaseQuery seq) =
         databasesCore queryParameters fetch Task.FromResult
 
+    /// <summary>
+    /// Retrieves information about multiple tables in the same project.
+    /// A maximum of 1000 tables IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="queryParameters">Limit and nextCursor</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>tables in project.</returns>
+    let tables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+        tablesCore database queryParameters fetch next
+
+    /// <summary>
+    /// Retrieves information about multiple tables in the same project.
+    /// A maximum of 1000 tables IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="queryParameters">Limit and nextCursor</param>
+    /// <returns>tables in project.</returns>
+    let tablesAsync (database: string) (queryParameters: DatabaseQuery seq) =
+        tablesCore database queryParameters fetch Task.FromResult
+
 
 [<Extension>]
 type GetdatabasesByIdsClientExtensions =
@@ -110,5 +134,31 @@ type GetdatabasesByIdsClientExtensions =
     static member DatabasesAsync (this: ClientExtension, [<Optional>] token: CancellationToken) : Task<_ seq> =
         this.DatabasesAsync(Seq.empty, token)
 
+    /// <summary>
+    /// Retrieves information about multiple tables in the same project.
+    /// A maximum of 1000 tables IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="queryParameters">Limit and nextCursor</param>
+    /// <returns>tables in project.</returns>
+    [<Extension>]
+    static member TablesAsync (this: ClientExtension, database: string, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! ctx = Retrieve.tablesAsync database queryParameters this.Ctx
+            match ctx.Result with
+            | Ok tables ->
+                return tables |> Seq.map (fun table -> table.ToTableEntity ())
+            | Error error ->
+                return raise (error.ToException ())
+        }
 
-
+    /// <summary>
+    /// Retrieves information about multiple tables in the same project.
+    /// A maximum of 1000 tables IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <returns>tables in project.</returns>
+    [<Extension>]
+    static member TablesAsync (this: ClientExtension,  database: string, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.TablesAsync(database, Seq.empty, token)

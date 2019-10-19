@@ -37,3 +37,25 @@ let ``List Databases with limit is Ok`` () = task {
     test <@ res.Request.Method = HttpMethod.Get @>
     test <@ res.Request.Extra.["resource"] = "/raw/dbs" @>
 }
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``List Tables with limit is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let query = [ DatabaseQuery.Limit 10 ]
+
+    // Act
+    let! res = Retrieve.tablesAsync "sdk-test-database" query ctx
+
+    let len =
+        match res.Result with
+        | Ok dtos -> Seq.length dtos
+        | Error _ -> 0
+
+    // Assert
+    test <@ Result.isOk res.Result @>
+    test <@ len > 0 @>
+    test <@ res.Request.Method = HttpMethod.Get @>
+    test <@ res.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables" @>
+}
