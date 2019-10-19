@@ -55,6 +55,9 @@
     <Compile Include="files\DeleteFile.fs" />
     <Compile Include="files\UpdateFiles.fs" />
     <Compile Include="files\DownloadFiles.fs" />
+    <Compile Include="raw\Model.fs" />
+    <Compile Include="raw\Json.fs" />
+    <Compile Include="raw\RetrieveDatabases.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
     <Compile Include="login\Redirect.fs" />
