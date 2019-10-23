@@ -37,26 +37,33 @@ let ``Create and delete events is Ok`` () = task {
     // Act
     let! res = Events.Create.createAsync [ dto ] ctx
     let! delRes = Events.Delete.deleteAsync ([ externalId ]) ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     let resExternalId =
-        match res.Result with
-        | Ok eventsResponses ->
-            let h = Seq.tryHead eventsResponses
-            match h with
-            | Some eventsResponse -> eventsResponse.ExternalId
-            | None -> None
-        | Error _ -> None
+        let eventsResponses = ctx'.Response
+        let h = Seq.tryHead eventsResponses
+        match h with
+        | Some eventsResponse -> eventsResponse.ExternalId
+        | None -> None
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 
-    test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Extra.["resource"] = "/events/delete" @>
-    test <@ delRes.Request.Query.IsEmpty @>
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/events/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -68,16 +75,18 @@ let ``Get event by id is Ok`` () = task {
     // Act
     let! res = Events.Entity.getAsync eventId ctx
 
-    let resId =
-        match res.Result with
-        | Ok dto -> dto.Id
-        | Error _ -> 0L
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dto = ctx'.Response
+    let resId = dto.Id
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = eventId @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/events/19442413705355" @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/19442413705355" @>
 }
 
 [<Fact>]
@@ -90,12 +99,12 @@ let ``Get event by missing id is Error`` () = task {
     let! res = Events.Entity.getAsync eventId ctx
 
     let err =
-        match res.Result with
+        match res with
         | Ok _ -> ResponseError.empty
         | Error err -> err
 
     // Assert
-    test <@ Result.isError res.Result @>
+    test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "constraint violations" @>
 }
@@ -111,16 +120,18 @@ let ``Get event by ids is Ok`` () = task {
     // Act
     let! res = Events.Retrieve.getByIdsAsync eventIds ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 3 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/byids" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/byids" @>
 }
 
 [<Fact>]
@@ -162,19 +173,24 @@ let ``Update assets is Ok`` () = task {
     let! getRes = Events.Retrieve.getByIdsAsync [ externalId ] wctx
     let! delRes = Events.Delete.deleteAsync ([ externalId ]) wctx
 
-    let resName, resExternalId, resMetaData =
-        match getRes.Result with
-        | Ok eventssResponses ->
-            let h = Seq.tryHead eventssResponses
-            match h with
-            | Some eventResponse -> eventResponse.Description, eventResponse.ExternalId, eventResponse.MetaData
-            | None -> Some "", Some "", Map.empty
-        | Error _ -> Some "", Some "", Map.empty
+    let getCtx' =
+        match getRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let updateSuccsess =
-        match updateRes.Result with
-        | Ok res -> true
-        | Error _ -> false
+    let resName, resExternalId, resMetaData =
+        let eventssResponses = getCtx'.Response
+        let h = Seq.tryHead eventssResponses
+        match h with
+        | Some eventResponse -> eventResponse.Description, eventResponse.ExternalId, eventResponse.MetaData
+        | None -> Some "", Some "", Map.empty
+
+    let updateCtx' =
+        match updateRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let updateSuccsess = Result.isOk updateRes
 
     let metaDataOk =
         resMetaData.ContainsKey "key1"
@@ -182,33 +198,39 @@ let ``Update assets is Ok`` () = task {
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
+    let createCtx' =
+        match createRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     // Assert create
-    test <@ Result.isOk createRes.Result @>
-    test <@ createRes.Request.Method = HttpMethod.Post @>
-    test <@ createRes.Request.Extra.["resource"] = "/events" @>
-    test <@ createRes.Request.Query.IsEmpty @>
+    test <@ createCtx'.Request.Method = HttpMethod.Post @>
+    test <@ createCtx'.Request.Extra.["resource"] = "/events" @>
+    test <@ createCtx'.Request.Query.IsEmpty @>
 
     // Assert update
     test <@ updateSuccsess @>
-    test <@ Result.isOk updateRes.Result @>
-    test <@ updateRes.Request.Method = HttpMethod.Post @>
-    test <@ updateRes.Request.Extra.["resource"] = "/events/update" @>
-    test <@ updateRes.Request.Query.IsEmpty @>
+    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
+    test <@ updateCtx'.Request.Extra.["resource"] = "/events/update" @>
+    test <@ updateCtx'.Request.Query.IsEmpty @>
 
     // Assert get
-    test <@ Result.isOk getRes.Result @>
-    test <@ getRes.Request.Method = HttpMethod.Post @>
-    test <@ getRes.Request.Extra.["resource"] = "/events/byids" @>
-    test <@ getRes.Request.Query.IsEmpty @>
+    test <@ getCtx'.Request.Method = HttpMethod.Post @>
+    test <@ getCtx'.Request.Extra.["resource"] = "/events/byids" @>
+    test <@ getCtx'.Request.Query.IsEmpty @>
     test <@ resExternalId = Some externalIdString @>
     test <@ resName = newDescription @>
     test <@ metaDataOk @>
 
     // Assert delete
-    test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Extra.["resource"] = "/events/delete" @>
-    test <@ delRes.Request.Query.IsEmpty @>
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/events/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -220,16 +242,18 @@ let ``List events with limit is Ok`` () = task {
     // Act
     let! res = Items.listAsync query [] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -246,16 +270,18 @@ let ``Filter events is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -272,24 +298,21 @@ let ``Filter events on subtype is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let subType =
-        match res.Result with
-        | Ok dtos ->
-            Seq.head dtos.Items
-            |> fun a -> a.SubType
-        | Error _ -> None
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let subType = Seq.head dtos.Items |> fun a -> a.SubType
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ subType = Some "VAL" @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -306,23 +329,21 @@ let ``Filter events on AssetIds is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let assetIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.AssetIds) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let assetIds = Seq.collect (fun (e: EventReadDto) -> e.AssetIds) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall ((=) 4650652196144007L) assetIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -343,23 +364,21 @@ let ``Filter events on CreatedTime is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let createdTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let createdTimes = Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1554973225708L && t > 1554973225688L) createdTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -380,23 +399,21 @@ let ``Filter events on LastUpdatedTime is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let lastUpdatedTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let lastUpdatedTimes = Seq.map (fun (e: EventReadDto) -> e.CreatedTime) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1554973225708L && t > 1554973225688L) lastUpdatedTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -417,23 +434,21 @@ let ``Filter events on StartTime is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let startTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.StartTime |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let startTimes = Seq.collect (fun (e: EventReadDto) -> e.StartTime |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1565941339L && t > 1565941319L) startTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -454,23 +469,21 @@ let ``Filter events on EndTime is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let endTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.EndTime |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let endTimes = Seq.collect (fun (e: EventReadDto) -> e.EndTime |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1565941351L && t > 1565941331L) endTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -487,23 +500,21 @@ let ``Filter events on ExternalIdPrefix is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let externalIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let externalIds = Seq.collect (fun (e: EventReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 2 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("odata")) externalIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -520,23 +531,21 @@ let ``Filter events on MetaData is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ms =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: EventReadDto) -> e.MetaData) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let ms = Seq.map (fun (e: EventReadDto) -> e.MetaData) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun m -> Map.tryFind "sourceId" m = Some "2758173488388242") ms @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -553,23 +562,21 @@ let ``Filter events on Source is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let sources =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.Source |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let sources = Seq.collect (fun (e: EventReadDto) -> e.Source |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall ((=) "akerbp-cdp") sources @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -586,23 +593,21 @@ let ``Filter events on Type is Ok`` () = task {
     // Act
     let! res = Events.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let types =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: EventReadDto) -> e.Type |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let types = Seq.collect (fun (e: EventReadDto) -> e.Type |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "Monad") types @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/list" @>
 }
 
 [<Fact>]
@@ -619,16 +624,18 @@ let ``Search events is Ok`` () = task {
 
     // Event is already created in test/integration/Test.CSharp.Integration/TestBase.cs
     let req = Events.Search.search 10 options [] |> retry
-    let! res = req Task.FromResult ctx
+    let! res = req finishEarly ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/events/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/events/search" @>
 }

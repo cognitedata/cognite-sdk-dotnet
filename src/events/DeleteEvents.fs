@@ -54,8 +54,8 @@ module Delete =
     /// Delete multiple events in the same project
     /// </summary>
     /// <param name="events">The list of events to delete.</param>
-    let deleteAsync<'a> (events: Identity seq) : HttpContext -> Task<Context<HttpResponseMessage>> =
-        deleteCore events fetch Task.FromResult
+    let deleteAsync<'a> (events: Identity seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        deleteCore events fetch finishEarly
 
 [<Extension>]
 type DeleteEventExtensions =
@@ -68,8 +68,8 @@ type DeleteEventExtensions =
     static member DeleteAsync(this: ClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Delete.deleteAsync (ids) this.Ctx
-            match ctx.Result with
+            let! result = Delete.deleteAsync (ids) this.Ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())

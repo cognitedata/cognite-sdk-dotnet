@@ -23,6 +23,6 @@ module Fetch =
         let stream = new MemoryStream( byteArray ) :> Stream
         let streamContent = new StreamContent(stream)
         let response = new HttpResponseMessage(Content=streamContent)
-        next { Request = ctx.Request; Result = Ok response }
+        next { Request = ctx.Request; Response = response }
 
 

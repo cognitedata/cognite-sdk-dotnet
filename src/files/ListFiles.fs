@@ -72,7 +72,7 @@ module Items =
     /// <param name="next">Async handler to use</param>
     /// <returns>List of files matching given filters and optional cursor</returns>
     let list (options: FileQuery seq) (filters: FileFilter seq) (next: NextFunc<FileItemsReadDto,'a>)
-        : HttpContext -> Task<Context<'a>> =
+        : HttpContext -> HttpFuncResult<'a> =
             listCore options filters fetch next
 
     /// <summary>
@@ -82,8 +82,8 @@ module Items =
     /// <param name="filters">Search filters</param>
     /// <returns>List of files matching given filters and optional cursor</returns>
     let listAsync (options: FileQuery seq) (filters: FileFilter seq)
-        : HttpContext -> Task<Context<FileItemsReadDto>> =
-            listCore options filters fetch Task.FromResult
+        : HttpContext -> HttpFuncResult<FileItemsReadDto> =
+            listCore options filters fetch finishEarly
 
 
 [<Extension>]
@@ -98,9 +98,10 @@ type ListFilesExtensions =
     static member ListAsync (this: ClientExtension, options: FileQuery seq, filters: FileFilter seq, [<Optional>] token: CancellationToken) : Task<FileItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Items.listAsync options filters ctx
-            match ctx.Result with
-            | Ok files ->
+            let! result = Items.listAsync options filters ctx
+            match result with
+            | Ok ctx ->
+                let files = ctx.Response
                 let cursor = if files.NextCursor.IsSome then files.NextCursor.Value else Unchecked.defaultof<string>
                 let items : FileItems = {
                         NextCursor = cursor

@@ -164,7 +164,7 @@ module Update =
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> Task<Context<'a>> =
+    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> HttpFuncResult<'a> =
         updateCore assets fetch next
 
     /// <summary>
@@ -172,8 +172,8 @@ module Update =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Task<Context<AssetReadDto seq>> =
-        updateCore assets fetch Task.FromResult
+    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> HttpFuncResult<AssetReadDto seq> =
+        updateCore assets fetch finishEarly
 
 [<Extension>]
 type UpdateAssetsClientExtensions =
@@ -187,10 +187,10 @@ type UpdateAssetsClientExtensions =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx' = Update.updateAsync assets' ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
+            let! result = Update.updateAsync assets' ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

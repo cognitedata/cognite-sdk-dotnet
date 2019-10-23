@@ -78,7 +78,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -90,8 +90,8 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let searchAsync (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq): HttpContext -> Task<Context<AssetReadDto seq>> =
-        searchCore limit options filters fetch Task.FromResult
+    let searchAsync (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq): HttpContext -> HttpFuncResult<AssetReadDto seq> =
+        searchCore limit options filters fetch finishEarly
 
 [<Extension>]
 type SearchAssetsClientExtensions =
@@ -108,9 +108,10 @@ type SearchAssetsClientExtensions =
     static member SearchAsync (this: ClientExtension, limit : int, options: AssetSearch seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Search.searchAsync limit options filters ctx
-            match ctx'.Result with
-            | Ok assets ->
+            let! result = Search.searchAsync limit options filters ctx
+            match result with
+            | Ok ctx ->
+                let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 return raise (error.ToException ())

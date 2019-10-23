@@ -137,7 +137,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Timeseries matching query.</returns>>
-    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -147,8 +147,8 @@ module Search =
     /// <param name="options">Search options.</param>
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
-    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> Task<Context<TimeSeriesReadDto seq>> =
-        searchCore limit options filters fetch Task.FromResult
+    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> HttpFuncResult<TimeSeriesReadDto seq> =
+        searchCore limit options filters fetch finishEarly
 
 [<Extension>]
 type SearchTimeSeriesClientExtensions =
@@ -163,9 +163,10 @@ type SearchTimeSeriesClientExtensions =
     static member SearchAsync (this: ClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Search.searchAsync limit options filters ctx
-            match ctx'.Result with
-            | Ok tss ->
+            let! result = Search.searchAsync limit options filters ctx
+            match result with
+            | Ok ctx ->
+                let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 return raise (error.ToException ())

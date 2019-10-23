@@ -88,7 +88,7 @@ module Items =
     /// <param name="options">Timeseries lookup options.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
-    let list (options: TimeSeriesQuery seq) (next: NextFunc<TimeSeriesItemsDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let list (options: TimeSeriesQuery seq) (next: NextFunc<TimeSeriesItemsDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         listCore options fetch next
 
     /// <summary>
@@ -98,7 +98,7 @@ module Items =
     /// <param name="options">Timeseries lookup options.</param>
     /// <returns>The timeseries with the given id and an optional cursor.</returns>
     let listAsync (options: TimeSeriesQuery seq) =
-        listCore options fetch Task.FromResult
+        listCore options fetch finishEarly
 
 [<Extension>]
 type ListTimeseriesClientExtensions =
@@ -112,10 +112,11 @@ type ListTimeseriesClientExtensions =
     static member ListAsync (this: ClientExtension, options: TimeSeriesQuery seq, [<Optional>] token: CancellationToken) : Task<_> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Items.listAsync options ctx
+            let! result = Items.listAsync options ctx
 
-            match ctx.Result with
-            | Ok response ->
+            match result with
+            | Ok ctx ->
+                let response = ctx.Response
                 let items = response.Items |> Seq.map (fun item -> item.ToTimeSeriesEntity ())
                 let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
                 return { Items = items; NextCursor = cursor }

@@ -219,7 +219,7 @@ module Update =
     /// <param name="events">The list of events to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated events.</returns>
-    let update (events: (Identity * (EventUpdate list)) list) (next: NextFunc<EventReadDto seq,'a>)  : HttpContext -> Task<Context<'a>> =
+    let update (events: (Identity * (EventUpdate list)) list) (next: NextFunc<EventReadDto seq,'a>)  : HttpContext -> HttpFuncResult<'a> =
         updateCore events fetch next
 
     /// <summary>
@@ -227,8 +227,8 @@ module Update =
     /// </summary>
     /// <param name="events">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let updateAsync (events: (Identity * EventUpdate list) list) : HttpContext -> Task<Context<EventReadDto seq>> =
-        updateCore events fetch Task.FromResult
+    let updateAsync (events: (Identity * EventUpdate list) list) : HttpContext -> HttpFuncResult<EventReadDto seq> =
+        updateCore events fetch finishEarly
 
 [<Extension>]
 type UpdateEventsClientExtensions =
@@ -241,10 +241,10 @@ type UpdateEventsClientExtensions =
     static member UpdateAsync (this: ClientExtension, events: ValueTuple<Identity, EventUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
         task {
             let events' = events |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = Update.updateAsync events' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response |> Seq.map (fun event -> event.ToEventEntity ())
+            let! result = Update.updateAsync events' this.Ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

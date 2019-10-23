@@ -35,7 +35,7 @@ module Entity =
     /// <param name="assetId">The id of the file to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>File with the given id.</returns>
-    let get (fileId: int64) (next: NextFunc<FileReadDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let get (fileId: int64) (next: NextFunc<FileReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         getCore fileId fetch next
 
     /// <summary>
@@ -43,8 +43,8 @@ module Entity =
     /// </summary>
     /// <param name="assetId">The id of the file to get.</param>
     /// <returns>File with the given id.</returns>
-    let getAsync (fileId: int64) : HttpContext -> Task<Context<FileReadDto>> =
-        getCore fileId fetch Task.FromResult
+    let getAsync (fileId: int64) : HttpContext -> HttpFuncResult<FileReadDto> =
+        getCore fileId fetch finishEarly
 
 [<Extension>]
 type GetFileClientExtensions =
@@ -58,10 +58,10 @@ type GetFileClientExtensions =
     static member GetAsync (this: ClientExtension, fileId: int64, [<Optional>] token: CancellationToken) : Task<FileReadDto> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Entity.getAsync fileId ctx
-            match ctx'.Result with
-            | Ok file ->
-                return file
+            let! result = Entity.getAsync fileId ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
                 return raise (error.ToException ())
         }

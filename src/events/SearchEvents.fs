@@ -83,7 +83,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of events matching given criteria.</returns>
-    let search (limit: int) (options: EventSearch seq) (filters: EventFilter seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let search (limit: int) (options: EventSearch seq) (filters: EventFilter seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -95,8 +95,8 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of events matching given criteria.</returns>
-    let searchAsync (limit: int) (options: EventSearch seq) (filters: EventFilter seq): HttpContext -> Task<Context<EventReadDto seq>> =
-        searchCore limit options filters fetch Task.FromResult
+    let searchAsync (limit: int) (options: EventSearch seq) (filters: EventFilter seq): HttpContext -> HttpFuncResult<EventReadDto seq> =
+        searchCore limit options filters fetch finishEarly
 
 [<Extension>]
 type SearchEventsClientExtensions =
@@ -113,10 +113,10 @@ type SearchEventsClientExtensions =
     static member SearchAsync (this: ClientExtension, limit : int, options: EventSearch seq, filters: EventFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Search.searchAsync limit options filters ctx
-            match ctx.Result with
-            | Ok events ->
-                return events |> Seq.map (fun event -> event.ToEventEntity ())
+            let! result = Search.searchAsync limit options filters ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

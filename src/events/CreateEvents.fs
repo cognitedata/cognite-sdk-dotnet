@@ -64,7 +64,7 @@ module Create =
     /// <param name="events">The events to create.</param>
     /// <returns>List of created events.</returns>
     let createAsync (events: EventWriteDto seq) =
-        createCore events fetch Task.FromResult
+        createCore events fetch finishEarly
 
 [<Extension>]
 type CreateEventExtensions =
@@ -79,10 +79,10 @@ type CreateEventExtensions =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let events' = events |> Seq.map EventWriteDto.FromEventEntity
-            let! ctx' = Create.createAsync events' ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response |> Seq.map (fun event -> event.ToEventEntity ())
+            let! result = Create.createAsync events' ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

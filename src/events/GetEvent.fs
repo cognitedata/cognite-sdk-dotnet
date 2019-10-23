@@ -36,7 +36,7 @@ module Entity =
     /// <param name="assetId">The id of the event to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Event with the given id.</returns>
-    let get (eventId: int64) (next: NextFunc<EventReadDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let get (eventId: int64) (next: NextFunc<EventReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         getCore eventId fetch next
 
     /// <summary>
@@ -44,8 +44,8 @@ module Entity =
     /// </summary>
     /// <param name="assetId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
-    let getAsync (eventId: int64) : HttpContext -> Task<Context<EventReadDto>> =
-        getCore eventId fetch Task.FromResult
+    let getAsync (eventId: int64) : HttpContext -> HttpFuncResult<EventReadDto> =
+        getCore eventId fetch finishEarly
 
 [<Extension>]
 type GetEventClientExtensions =
@@ -59,10 +59,10 @@ type GetEventClientExtensions =
     static member GetAsync (this: ClientExtension, eventId: int64, [<Optional>] token: CancellationToken) : Task<EventReadDto> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Entity.getAsync eventId ctx
-            match ctx'.Result with
-            | Ok event ->
-                return event
+            let! result = Entity.getAsync eventId ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
                 return raise (error.ToException ())
         }

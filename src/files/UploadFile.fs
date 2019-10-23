@@ -47,7 +47,7 @@ module Create =
     /// <param name="file">The file to create.</param>
     /// <returns>File result with upload url</returns>
     let createAsync (file: FileWriteDto) =
-        createCore file fetch Task.FromResult
+        createCore file fetch finishEarly
 
 [<Extension>]
 type CreateFilesExtensions =
@@ -60,10 +60,10 @@ type CreateFilesExtensions =
     static member CreateAsync (this: ClientExtension, file: FileEntity, [<Optional>] token: CancellationToken) : Task<FileEntity> =
         task {
             let file' = FileWriteDto.FromFileEntity file
-            let! ctx = Create.createAsync file' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response.ToFileEntity ()
+            let! result = Create.createAsync file' this.Ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response.ToFileEntity ()
             | Error error ->
                 return raise (error.ToException ())
         }

@@ -248,7 +248,7 @@ module Aggregated =
     /// <returns>List of aggregated data points.</returns>
     let getAggregatedAsync (id: Identity) (options: AggregateQuery seq) =
         let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
-        getAggregatedCore options' Seq.empty fetch Task.FromResult
+        getAggregatedCore options' Seq.empty fetch finishEarly
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
@@ -258,7 +258,7 @@ module Aggregated =
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedDataPointsProto (id: Identity) (options: AggregateQuery seq) =
         let options' : AggregateMultipleQuery seq = Seq.singleton { Id = id; AggregateQuery = options }
-        getAggregatedProto options' Seq.empty fetch Task.FromResult
+        getAggregatedProto options' Seq.empty fetch finishEarly
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -279,7 +279,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points.</returns>
     let getAggregatedMultipleAsync (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
-        getAggregatedCore options defaultOptions fetch Task.FromResult
+        getAggregatedCore options defaultOptions fetch finishEarly
 
     /// <summary>
     /// Retrieves a list of aggregated data points from multiple time series in the same project.
@@ -289,7 +289,7 @@ module Aggregated =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of aggregated data points in c# protobuf format.</returns>
     let getAggregatedMultipleProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) =
-        getAggregatedProto options defaultOptions fetch Task.FromResult
+        getAggregatedProto options defaultOptions fetch finishEarly
 
 [<Extension>]
 type AggregatedClientExtensions =
@@ -303,10 +303,10 @@ type AggregatedClientExtensions =
     static member GetAggregatedAsync (this: ClientExtension, id : Identity, options: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Aggregated.getAggregatedDataPointsProto id options ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response
+            let! result = Aggregated.getAggregatedDataPointsProto id options ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
                 return raise (error.ToException ())
         }
@@ -322,10 +322,10 @@ type AggregatedClientExtensions =
     static member GetAggregatedMultipleAsync (this: ClientExtension, options: AggregateMultipleQuery seq, defaultOptions: AggregateQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Aggregated.getAggregatedMultipleProto options defaultOptions ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response
+            let! result = Aggregated.getAggregatedMultipleProto options defaultOptions ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
                 return raise (error.ToException ())
         }

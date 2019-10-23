@@ -54,8 +54,8 @@ module Delete =
     /// Delete multiple files in the same project
     /// </summary>
     /// <param name="files">The list of files to delete.</param>
-    let deleteAsync<'a> (files: Identity seq) : HttpContext -> Task<Context<HttpResponseMessage>> =
-        deleteCore files fetch Task.FromResult
+    let deleteAsync<'a> (files: Identity seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        deleteCore files fetch finishEarly
 
 [<Extension>]
 type DeleteFileExtensions =
@@ -68,8 +68,8 @@ type DeleteFileExtensions =
     static member DeleteAsync(this: ClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Delete.deleteAsync (ids) this.Ctx
-            match ctx.Result with
+            let! result = Delete.deleteAsync (ids) this.Ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())
