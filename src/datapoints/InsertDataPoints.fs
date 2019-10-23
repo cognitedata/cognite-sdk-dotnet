@@ -80,14 +80,14 @@ module Insert =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     let insertAsync (items: seq<DataPoints>) =
-        insertCore (dataPointsToProtobuf items) fetch Task.FromResult
+        insertCore (dataPointsToProtobuf items) fetch finishEarly
 
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param>
     let insertAsyncProto (items: DataPointInsertionRequest) =
-         insertCore items fetch Task.FromResult
+         insertCore items fetch finishEarly
 
 [<Extension>]
 type InsertDataPointsClientExtensions =
@@ -99,8 +99,8 @@ type InsertDataPointsClientExtensions =
     static member InsertAsync (this: DataPoints.ClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Insert.insertAsyncProto items ctx
-            match ctx'.Result with
+            let! result = Insert.insertAsyncProto items ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())

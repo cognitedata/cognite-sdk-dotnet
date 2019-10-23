@@ -124,8 +124,8 @@ module Latest =
     /// </summary>
     /// <param name="options">List of requests.</param>
     /// <returns>List of results containing the latest datapoint and ids.</returns>
-    let getAsync (queryParams: LatestRequest seq) =
-        getCore queryParams fetch Task.FromResult
+    let getAsync (queryParams: LatestRequest seq) : HttpContext -> HttpFuncResult<seq<DataPointsDto>> =
+        getCore queryParams fetch finishEarly
 
 
 [<Extension>]
@@ -144,10 +144,10 @@ type GetLatestDataPointExtensions =
                   Before = before' } : Latest.LatestRequest)
 
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Latest.getAsync query ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response |> Seq.map (Latest.DataPointsDto.ToCollection)
+            let! result = Latest.getAsync query ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (Latest.DataPointsDto.ToCollection)
             | Error error ->
                 return raise (error.ToException ())
         }

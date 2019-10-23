@@ -68,7 +68,7 @@ module Retrieve =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>databases in project.</returns>
-    let databases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let databases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         databasesCore queryParameters fetch next
 
     /// <summary>
@@ -79,7 +79,7 @@ module Retrieve =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     let databasesAsync (queryParameters: DatabaseQuery seq) =
-        databasesCore queryParameters fetch Task.FromResult
+        databasesCore queryParameters fetch finishEarly
 
     /// <summary>
     /// Retrieves information about multiple tables in the same project.
@@ -89,7 +89,7 @@ module Retrieve =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>tables in project.</returns>
-    let tables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let tables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         tablesCore database queryParameters fetch next
 
     /// <summary>
@@ -100,7 +100,7 @@ module Retrieve =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <returns>tables in project.</returns>
     let tablesAsync (database: string) (queryParameters: DatabaseQuery seq) =
-        tablesCore database queryParameters fetch Task.FromResult
+        tablesCore database queryParameters fetch finishEarly
 
 
 [<Extension>]
@@ -116,9 +116,10 @@ type GetdatabasesByIdsClientExtensions =
     static member DatabasesAsync (this: ClientExtension, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Retrieve.databasesAsync queryParameters this.Ctx
-            match ctx.Result with
-            | Ok databases ->
+            let! result = Retrieve.databasesAsync queryParameters this.Ctx
+            match result with
+            | Ok ctx ->
+                let databases = ctx.Response
                 return databases |> Seq.map (fun database -> database.ToDatabaseEntity ())
             | Error error ->
                 return raise (error.ToException ())
@@ -145,9 +146,10 @@ type GetdatabasesByIdsClientExtensions =
     static member TablesAsync (this: ClientExtension, database: string, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Retrieve.tablesAsync database queryParameters this.Ctx
-            match ctx.Result with
-            | Ok tables ->
+            let! result = Retrieve.tablesAsync database queryParameters this.Ctx
+            match result with
+            | Ok ctx ->
+                let tables = ctx.Response
                 return tables |> Seq.map (fun table -> table.ToTableEntity ())
             | Error error ->
                 return raise (error.ToException ())

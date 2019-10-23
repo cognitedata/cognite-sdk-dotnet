@@ -54,7 +54,7 @@ module Retrieve =
     /// <param name="FileIds">The ids of the files to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Files with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<FileReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<FileReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -65,7 +65,7 @@ module Retrieve =
     /// <param name="FileIds">The ids of the files to get.</param>
     /// <returns>Files with given ids.</returns>
     let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch Task.FromResult
+        getByIdsCore ids fetch finishEarly
 
 
 [<Extension>]
@@ -81,9 +81,10 @@ type GetFilesByIdsClientExtensions =
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Retrieve.getByIdsAsync ids ctx
-            match ctx'.Result with
-            | Ok files ->
+            let! result = Retrieve.getByIdsAsync ids ctx
+            match result with
+            | Ok ctx ->
+                let files = ctx.Response
                 return files |> Seq.map (fun file -> file.ToFileEntity ())
             | Error error ->
                 return raise (error.ToException ())

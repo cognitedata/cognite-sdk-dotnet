@@ -227,7 +227,7 @@ module Update =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated timeseries.</returns>
-    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextFunc<TimeSeriesReadDto seq, 'a>) : HttpContext -> Task<Context<'a>> =
+    let update (timeseries: (Identity * (TimeSeriesUpdate list)) list) (next: NextFunc<TimeSeriesReadDto seq, 'a>) : HttpContext -> HttpFuncResult<'a> =
         updateCore timeseries fetch next
 
     /// <summary>
@@ -235,8 +235,8 @@ module Update =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
-    let updateAsync (timeseries: (Identity * (TimeSeriesUpdate list)) list) : HttpContext -> Task<Context<TimeSeriesReadDto seq>> =
-        updateCore timeseries fetch Task.FromResult
+    let updateAsync (timeseries: (Identity * (TimeSeriesUpdate list)) list) : HttpContext -> HttpFuncResult<TimeSeriesReadDto seq> =
+        updateCore timeseries fetch finishEarly
 
 [<Extension>]
 type UpdateTimeseriesClientExtensions =
@@ -249,10 +249,10 @@ type UpdateTimeseriesClientExtensions =
     static member UpdateAsync (this: ClientExtension, timeseries: ValueTuple<Identity, TimeSeriesUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         task {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = Update.updateAsync timeseries' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())
+            let! result = Update.updateAsync timeseries' this.Ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

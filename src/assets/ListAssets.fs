@@ -52,7 +52,7 @@ module Items =
                 yield! this.Options |> Seq.map AssetQuery.Render
             ]
 
-    let listCore (options: AssetQuery seq) (filters: AssetFilter seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
+    let listCore (options: AssetQuery seq) (filters: AssetFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let decodeResponse = Decode.decodeContent AssetItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
@@ -74,7 +74,7 @@ module Items =
     /// <param name="filters">Search filters</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (options: AssetQuery seq) (filters: AssetFilter seq) (next: NextFunc<AssetItemsReadDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let list (options: AssetQuery seq) (filters: AssetFilter seq) (next: NextFunc<AssetItemsReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         listCore options filters fetch next
 
     /// <summary>
@@ -83,8 +83,8 @@ module Items =
     /// <param name="options">Optional limit and cursor</param>
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let listAsync (options: AssetQuery seq) (filters: AssetFilter seq) : HttpContext -> Task<Context<AssetItemsReadDto>> =
-        listCore options filters fetch Task.FromResult
+    let listAsync (options: AssetQuery seq) (filters: AssetFilter seq) : HttpContext -> HttpFuncResult<AssetItemsReadDto> =
+        listCore options filters fetch finishEarly
 
 
 [<Extension>]
@@ -99,9 +99,10 @@ type ListAssetsExtensions =
     static member ListAsync (this: ClientExtension, options: AssetQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Items.listAsync options filters ctx
-            match ctx'.Result with
-            | Ok assets ->
+            let! result = Items.listAsync options filters ctx
+            match result with
+            | Ok ctx ->
+                let assets = ctx.Response
                 let cursor = if assets.NextCursor.IsSome then assets.NextCursor.Value else Unchecked.defaultof<string>
                 let items : AssetItems = {
                     NextCursor = cursor

@@ -74,7 +74,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of Files matching given criteria.</returns>
-    let search (limit: int) (options: FileSearch seq) (filters: FileFilter seq) (next: NextFunc<FileReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let search (limit: int) (options: FileSearch seq) (filters: FileFilter seq) (next: NextFunc<FileReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -86,8 +86,8 @@ module Search =
     /// <param name="filters">Search filters.</param>
     ///
     /// <returns>List of Files matching given criteria.</returns>
-    let searchAsync (limit: int) (options: FileSearch seq) (filters: FileFilter seq): HttpContext -> Task<Context<FileReadDto seq>> =
-        searchCore limit options filters fetch Task.FromResult
+    let searchAsync (limit: int) (options: FileSearch seq) (filters: FileFilter seq): HttpContext -> HttpFuncResult<FileReadDto seq> =
+        searchCore limit options filters fetch finishEarly
 
 [<Extension>]
 type SearchFilesClientExtensions =
@@ -104,9 +104,10 @@ type SearchFilesClientExtensions =
     static member SearchAsync (this: ClientExtension, limit : int, options: FileSearch seq, filters: FileFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Search.searchAsync limit options filters ctx
-            match ctx'.Result with
-            | Ok files ->
+            let! result = Search.searchAsync limit options filters ctx
+            match result with
+            | Ok ctx ->
+                let files = ctx.Response
                 return files |> Seq.map (fun file -> file.ToFileEntity ())
             | Error error ->
                 return raise (error.ToException ())

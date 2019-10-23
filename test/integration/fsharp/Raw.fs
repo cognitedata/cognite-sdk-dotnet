@@ -26,16 +26,18 @@ let ``List Databases with limit is Ok`` () = task {
     // Act
     let! res = Retrieve.databasesAsync query ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len =Seq.length dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len > 0 @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/raw/dbs" @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs" @>
 }
 
 [<Trait("resource", "raw")>]
@@ -48,14 +50,16 @@ let ``List Tables with limit is Ok`` () = task {
     // Act
     let! res = Retrieve.tablesAsync "sdk-test-database" query ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len > 0 @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables" @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables" @>
 }

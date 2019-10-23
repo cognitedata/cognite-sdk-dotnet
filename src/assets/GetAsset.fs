@@ -37,7 +37,7 @@ module Entity =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Asset with the given id.</returns>
-    let get (assetId: int64) (next: NextFunc<AssetReadDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let get (assetId: int64) (next: NextFunc<AssetReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         getCore assetId fetch next
 
     /// <summary>
@@ -45,8 +45,8 @@ module Entity =
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
-    let getAsync (assetId: int64) : HttpContext -> Task<Context<AssetReadDto>> =
-        getCore assetId fetch Task.FromResult
+    let getAsync (assetId: int64) : HttpContext -> HttpFuncResult<AssetReadDto> =
+        getCore assetId fetch finishEarly
 
 [<Extension>]
 type GetAssetClientExtensions =
@@ -59,10 +59,10 @@ type GetAssetClientExtensions =
     static member GetAsync (this: ClientExtension, assetId: int64, [<Optional>] token: CancellationToken) : Task<AssetReadDto> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Entity.getAsync assetId ctx
-            match ctx'.Result with
-            | Ok asset ->
-                return asset
+            let! result = Entity.getAsync assetId ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
                 return raise (error.ToException ())
         }

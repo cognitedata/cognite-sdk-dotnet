@@ -63,7 +63,7 @@ module Create =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     let createAsync (assets: AssetWriteDto seq) =
-        createCore assets fetch Task.FromResult
+        createCore assets fetch finishEarly
 
 [<Extension>]
 type CreateAssetsExtensions =
@@ -76,10 +76,10 @@ type CreateAssetsExtensions =
     static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         task {
             let assets' = assets |> Seq.map AssetWriteDto.FromAssetEntity
-            let! ctx = Create.createAsync assets' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
+            let! result = Create.createAsync assets' this.Ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

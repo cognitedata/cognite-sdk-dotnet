@@ -77,7 +77,7 @@ module DownloadLink =
     /// <param name="fileIds">The ids of the files to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Files downloadUrl.</returns>
-    let getDownloadLinks (ids: Identity seq) (next: NextFunc<DownloadResponse seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let getDownloadLinks (ids: Identity seq) (next: NextFunc<DownloadResponse seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         getDownloadLinksCore ids fetch next
 
     /// <summary>
@@ -88,7 +88,7 @@ module DownloadLink =
     /// <param name="fileIds">The ids of the files to get.</param>
     /// <returns>Files downloadUrl.</returns>
     let getDownloadLinksAsync (ids: Identity seq) =
-        getDownloadLinksCore ids fetch Task.FromResult
+        getDownloadLinksCore ids fetch finishEarly
 
 
 [<Extension>]
@@ -104,10 +104,10 @@ type GetDownloadFilesClientExtensions =
     static member GetDownloadLinksAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = DownloadLink.getDownloadLinksAsync ids ctx
-            match ctx'.Result with
-            | Ok files ->
-                return files |> Seq.map (fun file -> file.ToDownloadResponseEntity ())
+            let! result = DownloadLink.getDownloadLinksAsync ids ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun file -> file.ToDownloadResponseEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

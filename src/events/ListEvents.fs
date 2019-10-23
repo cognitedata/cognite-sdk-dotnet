@@ -73,7 +73,7 @@ module Items =
     /// <param name="next">Async handler to use</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let list (options: EventQuery seq) (filters: EventFilter seq) (next: NextFunc<EventItemsReadDto,'a>)
-        : HttpContext -> Task<Context<'a>> =
+        : HttpContext -> HttpFuncResult<'a> =
             listCore options filters fetch next
 
     /// <summary>
@@ -83,8 +83,8 @@ module Items =
     /// <param name="filters">Search filters</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let listAsync (options: EventQuery seq) (filters: EventFilter seq)
-        : HttpContext -> Task<Context<EventItemsReadDto>> =
-            listCore options filters fetch Task.FromResult
+        : HttpContext -> HttpFuncResult<EventItemsReadDto> =
+            listCore options filters fetch finishEarly
 
 
 [<Extension>]
@@ -99,9 +99,10 @@ type ListEventsExtensions =
     static member ListAsync (this: ClientExtension, options: EventQuery seq, filters: EventFilter seq, [<Optional>] token: CancellationToken) : Task<EventItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Items.listAsync options filters ctx
-            match ctx.Result with
-            | Ok events ->
+            let! result = Items.listAsync options filters ctx
+            match result with
+            | Ok ctx ->
+                let events = ctx.Response
                 let cursor = if events.NextCursor.IsSome then events.NextCursor.Value else Unchecked.defaultof<string>
                 let items : EventItems = {
                         NextCursor = cursor

@@ -22,16 +22,18 @@ let ``Get timeseries is Ok`` () = task {
     // Act
     let! res = TimeSeries.Items.listAsync options ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries" @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries" @>
 }
 
 [<Fact>]
@@ -43,28 +45,26 @@ let ``Get timeseries by ids is Ok`` () = task {
     // Act
     let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
 
-    let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
-        |> Identity.Id
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let resId =
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> Identity.Id dto.Id
+        | None -> Identity.Id 0L
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = id @>
     test <@ len > 0 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/byids" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/byids" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -77,12 +77,12 @@ let ``Get timeseries by missing id is Error`` () = task {
     let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
 
     let err =
-        match res.Result with
+        match res with
         | Ok _ -> ResponseError.empty
         | Error err -> err
 
     // Assert
-    test <@ Result.isError res.Result @>
+    test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message = "timeseries ids not found: (id: 0 | externalId: null)" @>
 }
@@ -109,26 +109,35 @@ let ``Create and delete timeseries is Ok`` () = task {
     // Act
     let! res = TimeSeries.Create.createAsync [ dto ] ctx
     let! delRes = TimeSeries.Delete.deleteAsync [ externalId ] ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     let resExternalId =
-        match res.Result with
-        | Ok timeSereiesResponses ->
-            let h = Seq.tryHead timeSereiesResponses.Items
-            match h with
-            | Some timeSereiesResponse -> timeSereiesResponse.ExternalId
-            | None -> None
-        | Error _ -> None
+        let timeSereiesResponses = ctx'.Response
+        let h = Seq.tryHead timeSereiesResponses.Items
+        match h with
+        | Some timeSereiesResponse -> timeSereiesResponse.ExternalId
+        | None -> None
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 
-    test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Extra.["resource"] = "/timeseries/delete" @>
-    test <@ delRes.Request.Query.IsEmpty @>
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/timeseries/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -140,16 +149,18 @@ let ``Search timeseries is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -165,22 +176,21 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.CreatedTime timerange ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let createdTime =
-        match res.Result with
-        | Ok dtos -> (Seq.head dtos).CreatedTime
-        | Error _ -> 0L
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let createdTime = (Seq.head dtos).CreatedTime
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 2 @>
     test <@ createdTime = 1567707299042L @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -196,22 +206,21 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.LastUpdatedTime timerange] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let lastUpdatedTime =
-        match res.Result with
-        | Ok dtos -> (Seq.head dtos).LastUpdatedTime
-        | Error _ -> 0L
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let lastUpdatedTime = (Seq.head dtos).LastUpdatedTime
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 2 @>
     test <@ lastUpdatedTime = 1567707299042L @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -223,23 +232,21 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.AssetIds [4293345866058133L] ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let assetIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun d -> d.AssetId) dtos
-        | Error _ -> Seq.ofList [ Some 0L ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let assetIds = Seq.map (fun d -> d.AssetId) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall ((=) (Some 4293345866058133L)) assetIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -251,23 +258,21 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.ExternalIdPrefix "VAL_45" ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let externalIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
-        | Error _ -> Seq.ofList [ "" ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let externalIds = Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("VAL_45")) externalIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -279,23 +284,21 @@ let ``Search timeseries on IsStep is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsStep true ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let isSteps =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun d -> d.IsStep) dtos
-        | Error _ -> Seq.ofList [ false ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let isSteps = Seq.map (fun d -> d.IsStep) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 5 @>
     test <@ Seq.forall id isSteps @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -307,23 +310,21 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsString true ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let isStrings =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun d -> d.IsString) dtos
-        | Error _ -> Seq.ofList [ false ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let isStrings = Seq.map (fun d -> d.IsString) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 6 @>
     test <@ Seq.forall id isStrings @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -335,23 +336,21 @@ let ``Search timeseries on Unit is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Unit "et" ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let units =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun d -> d.Unit |> optionToSeq) dtos
-        | Error _ -> Seq.ofList [ "" ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let units = Seq.collect (fun d -> d.Unit |> optionToSeq) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "et") units @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -363,23 +362,21 @@ let ``Search timeseries on MetaData is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.MetaData (Map.ofList ["pointid", "160909"]) ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ms =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun d -> d.MetaData) dtos
-        | Error _ -> Seq.ofList [ Map.empty ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let ms = Seq.map (fun d -> d.MetaData) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun m -> (Map.tryFind "pointid" m) = Some "160909") ms @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -391,23 +388,21 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Name "92529_SILch0" ] [ ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let names =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun d -> d.Name |> optionToSeq) dtos
-        | Error _ -> Seq.ofList [ "" ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let names = Seq.collect (fun d -> d.Name |> optionToSeq) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 9 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("SILch0") || n.Contains("92529")) names @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -419,23 +414,21 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
     let! res =
         TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Description "Tube y" ] [ ] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let descriptions =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun d -> d.Description |> optionToSeq) dtos
-        | Error _ -> Seq.ofList [ "" ]
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let descriptions = Seq.collect (fun d -> d.Description |> optionToSeq) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
@@ -481,14 +474,17 @@ let ``Update timeseries is Ok`` () = task {
         ] wctx
     let! getRes = TimeSeries.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
     let! deleteRes = TimeSeries.Delete.deleteAsync [ Identity.ExternalId newExternalId ] wctx
+
+    let getCtx' =
+        match getRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     let resExternalId, resMetaData, resDescription =
-        match getRes.Result with
-        | Ok resp ->
-            let head = Seq.tryHead resp
-            match head with
-            | Some tsresp -> tsresp.ExternalId, tsresp.MetaData, tsresp.Description
-            | None -> Some "", Map.empty, Some ""
-        | Error _ -> Some "", Map.empty, Some ""
+        let head = Seq.tryHead getCtx'.Response
+        match head with
+        | Some tsresp -> tsresp.ExternalId, tsresp.MetaData, tsresp.Description
+        | None -> Some "", Map.empty, Some ""
 
     let metaDataOk =
         resMetaData.ContainsKey "key1"
@@ -496,31 +492,42 @@ let ``Update timeseries is Ok`` () = task {
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
+    let createCtx' =
+        match createRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let updateCtx' =
+        match updateRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let deleteCtx' =
+        match deleteRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     // Assert create
-    test <@ Result.isOk createRes.Result @>
-    test <@ createRes.Request.Method = HttpMethod.Post @>
-    test <@ createRes.Request.Extra.["resource"] = "/timeseries" @>
-    test <@ createRes.Request.Query.IsEmpty @>
+    test <@ createCtx'.Request.Method = HttpMethod.Post @>
+    test <@ createCtx'.Request.Extra.["resource"] = "/timeseries" @>
+    test <@ createCtx'.Request.Query.IsEmpty @>
 
     // Assert update
-    test <@ Result.isOk updateRes.Result @>
-    test <@ updateRes.Request.Method = HttpMethod.Post @>
-    test <@ updateRes.Request.Extra.["resource"] = "/timeseries/update" @>
-    test <@ updateRes.Request.Query.IsEmpty @>
+    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
+    test <@ updateCtx'.Request.Extra.["resource"] = "/timeseries/update" @>
+    test <@ updateCtx'.Request.Query.IsEmpty @>
 
     // Assert get
-    test <@ Result.isOk getRes.Result @>
-    test <@ getRes.Request.Method = HttpMethod.Post @>
-    test <@ getRes.Request.Extra.["resource"] = "/timeseries/byids" @>
-    test <@ getRes.Request.Query.IsEmpty @>
+    test <@ getCtx'.Request.Method = HttpMethod.Post @>
+    test <@ getCtx'.Request.Extra.["resource"] = "/timeseries/byids" @>
+    test <@ getCtx'.Request.Query.IsEmpty @>
     test <@ resExternalId = Some newExternalId @>
     test <@ resDescription = Some newDescription @>
     test <@ metaDataOk @>
 
     // Assert delete
-    test <@ Result.isOk deleteRes.Result @>
-    test <@ deleteRes.Request.Method = HttpMethod.Post @>
-    test <@ deleteRes.Request.Extra.["resource"] = "/timeseries/delete" @>
-    test <@ deleteRes.Request.Query.IsEmpty @>
+    test <@ deleteCtx'.Request.Method = HttpMethod.Post @>
+    test <@ deleteCtx'.Request.Extra.["resource"] = "/timeseries/delete" @>
+    test <@ deleteCtx'.Request.Query.IsEmpty @>
 
 }

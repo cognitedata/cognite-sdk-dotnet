@@ -72,7 +72,7 @@ module Retrieve =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     let getByIdsAsync (ids: seq<Identity>) =
-        getByIdsCore ids fetch Task.FromResult
+        getByIdsCore ids fetch finishEarly
 
 [<Extension>]
 type GetTimeseriesByIdsClientExtensions =
@@ -87,10 +87,11 @@ type GetTimeseriesByIdsClientExtensions =
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<seq<_>> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Retrieve.getByIdsAsync ids ctx
+            let! result = Retrieve.getByIdsAsync ids ctx
 
-            match ctx'.Result with
-            | Ok tss ->
+            match result with
+            | Ok ctx ->
+                let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 return raise (error.ToException ())

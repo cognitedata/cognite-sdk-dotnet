@@ -82,7 +82,7 @@ module Delete =
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     let deleteAsync (items: DeleteRequestDto seq) =
-        deleteCore items fetch Task.FromResult
+        deleteCore items fetch finishEarly
 
 [<Extension>]
 type DeleteDataPointsClientExtensions =
@@ -95,8 +95,8 @@ type DeleteDataPointsClientExtensions =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let items' = items |> Seq.map Delete.DeleteRequestDto.FromDelete
-            let! ctx' = Delete.deleteAsync items' ctx
-            match ctx'.Result with
+            let! result = Delete.deleteAsync items' ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())

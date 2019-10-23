@@ -63,7 +63,7 @@ module Create =
     /// <param name="items">The list of timeseries to create.</param>
     /// <returns>List of created timeseries.</returns>
     let createAsync (items: seq<TimeSeriesWriteDto>) =
-        createCore items fetch Task.FromResult
+        createCore items fetch finishEarly
 
 
 [<Extension>]
@@ -78,10 +78,10 @@ type CreateTimeSeriesClientExtensions =
         task {
             let items' = items |> Seq.map TimeSeriesWriteDto.FromTimeSeriesEntity
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Create.createAsync items' ctx
-            match ctx'.Result with
-            | Ok response ->
-                return response.Items |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
+            let! result = Create.createAsync items' ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response.Items |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

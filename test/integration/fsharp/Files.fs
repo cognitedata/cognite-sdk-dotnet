@@ -10,7 +10,6 @@ open Swensen.Unquote
 open Tests
 open Common
 open Oryx
-open Oryx.Retry
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
@@ -26,16 +25,18 @@ let ``List Files with limit is Ok`` () = task {
     // Act
     let! res = Items.listAsync query [] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -48,16 +49,17 @@ let ``Get file by id is Ok`` () = task {
     // Act
     let! res = Files.Entity.getAsync fileId ctx
 
-    let resId =
-        match res.Result with
-        | Ok dto -> dto.Id
-        | Error _ -> 0L
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let resId = ctx'.Response.Id
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = fileId @>
-    test <@ res.Request.Method = HttpMethod.Get @>
-    test <@ res.Request.Extra.["resource"] = "/files/2013333184649590" @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/2013333184649590" @>
 }
 
 [<Trait("resource", "files")>]
@@ -71,12 +73,12 @@ let ``Get file by missing id is Error`` () = task {
     let! res = Files.Entity.getAsync eventId ctx
 
     let err =
-        match res.Result with
+        match res with
         | Ok _ -> ResponseError.empty
         | Error err -> err
 
     // Assert
-    test <@ Result.isError res.Result @>
+    test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "violations" @>
 }
@@ -93,23 +95,21 @@ let ``Get files by ids is Ok`` () = task {
     // Act
     let! res = Files.Retrieve.getByIdsAsync fileIds ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ids =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (d: FileReadDto) -> d.Id) dtos
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let ids = Seq.map (fun (d: FileReadDto) -> d.Id) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 3 @>
     test <@ Seq.forall (fun i -> Seq.contains (Identity.Id i) fileIds) ids @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/byids" @>
 }
 
 [<Trait("resource", "files")>]
@@ -124,23 +124,21 @@ let ``Get files downloadLink by ids is Ok`` () = task {
     // Act
     let! res = Files.DownloadLink.getDownloadLinksAsync fileIds ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ids =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (d: DownloadResponse) -> d.Identity) dtos
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let ids = Seq.map (fun (d: DownloadResponse) -> d.Identity) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 3 @>
     test <@ Seq.forall (fun i -> Seq.contains i fileIds) ids @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/downloadlink" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/downloadlink" @>
 }
 
 [<Trait("resource", "files")>]
@@ -155,23 +153,21 @@ let ``Get files by externalIds is Ok`` () = task {
     // Act
     let! res = Files.Retrieve.getByIdsAsync fileIds ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ids =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (d: FileReadDto) -> d.ExternalId |> optionToSeq) dtos
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let ids = Seq.collect (fun (d: FileReadDto) -> d.ExternalId |> optionToSeq) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "dotnet sdk test") ids @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/byids" @>
 }
 
 [<Trait("resource", "files")>]
@@ -189,23 +185,21 @@ let ``Filter Files on AssetIds is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let assetIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.AssetIds) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let assetIds = Seq.collect (fun (e: FileReadDto) -> e.AssetIds) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len > 0 @>
     test <@ Seq.forall ((=) 5409900891232494L) assetIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -227,23 +221,21 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let createdTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.CreatedTime) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let createdTimes = Seq.map (fun (e: FileReadDto) -> e.CreatedTime) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213749099L && t > 1533213749083L) createdTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -265,23 +257,21 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let lastUpdatedTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.LastUpdatedTime) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let lastUpdatedTimes = Seq.map (fun (e: FileReadDto) -> e.LastUpdatedTime) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213795995L && t > 1533213795975L) lastUpdatedTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -299,23 +289,21 @@ let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let externalIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let externalIds = Seq.collect (fun (e: FileReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("dotnet")) externalIds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -333,23 +321,21 @@ let ``Filter Files on MetaData is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let ms =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.MetaData) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let ms = Seq.map (fun (e: FileReadDto) -> e.MetaData) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun m -> Map.tryFind "workmate_id" m = Some "474635") ms @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -367,23 +353,21 @@ let ``Filter Files on Source is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let sources =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.Source |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let sources = Seq.collect (fun (e: FileReadDto) -> e.Source |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall ((=) "Documentum") sources @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -401,23 +385,21 @@ let ``Filter Files on Name is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let names =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.Name) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let names = Seq.map (fun (e: FileReadDto) -> e.Name) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "PH-ME-P-0003-001") names @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -435,23 +417,21 @@ let ``Filter Files on MimeType is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let mimeTypes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.MimeType |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let mimeTypes = Seq.collect (fun (e: FileReadDto) -> e.MimeType |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 7 @>
     test <@ Seq.forall ((=) "pdf") mimeTypes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -473,23 +453,21 @@ let ``Filter Files on UploadedTime is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let uploadedTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.UploadedTime |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let uploadedTimes = Seq.collect (fun (e: FileReadDto) -> e.UploadedTime |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213278689L && t > 1533213278669L) uploadedTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -511,23 +489,21 @@ let ``Filter Files on SourceCreatedTime is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let sourceCreatedTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.SourceCreatedTime |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let sourceCreatedTimes = Seq.collect (fun (e: FileReadDto) -> e.SourceCreatedTime |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 73125450L && t > 73125430L) sourceCreatedTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -549,23 +525,21 @@ let ``Filter Files on SourceModifiedTime is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let sourceModifiedTimes =
-        match res.Result with
-        | Ok dtos ->
-            Seq.collect (fun (e: FileReadDto) -> e.SourceModifiedTime |> optionToSeq) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let sourceModifiedTimes = Seq.collect (fun (e: FileReadDto) -> e.SourceModifiedTime |> optionToSeq) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 99304960L && t > 99304940L) sourceModifiedTimes @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -583,23 +557,21 @@ let ``Filter Files on Uploaded is Ok`` () = task {
     // Act
     let! res = Files.Items.listAsync options filters ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos.Items
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let uploadeds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.Uploaded) dtos.Items
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
+
+    let uploadeds = Seq.map (fun (e: FileReadDto) -> e.Uploaded) dtos.Items
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len = 10 @>
     test <@ Seq.forall id uploadeds @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
@@ -614,23 +586,21 @@ let ``Search Files on Name is Ok`` () = task {
     // Act
     let! res = Files.Search.searchAsync 10 searches [] ctx
 
-    let len =
-        match res.Result with
-        | Ok dtos -> Seq.length dtos
-        | Error _ -> 0
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let names =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (e: FileReadDto) -> e.Name) dtos
-        | Error _ -> Seq.empty
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let names = Seq.map (fun (e: FileReadDto) -> e.Name) dtos
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ len > 0 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files/search" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files/search" @>
 }
 
 [<Trait("resource", "files")>]
@@ -654,22 +624,32 @@ let ``Create and delete files is Ok`` () = task {
     // Act
     let! res = Files.Create.createAsync dto ctx
     let! delRes = Files.Delete.deleteAsync ([ externalId ]) ctx
-    let resExternalId =
-        match res.Result with
-        | Ok filesResponse -> filesResponse.ExternalId
-        | Error _ -> None
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+
+    let filesResponse = ctx'.Response
+    let resExternalId = filesResponse.ExternalId
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resExternalId = Some externalIdString @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/files" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/files" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 
-    test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Extra.["resource"] = "/files/delete" @>
-    test <@ delRes.Request.Query.IsEmpty @>
+    let ctx'' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    test <@ Result.isOk delRes @>
+    test <@ ctx''.Request.Method = HttpMethod.Post @>
+    test <@ ctx''.Request.Extra.["resource"] = "/files/delete" @>
+    test <@ ctx''.Request.Query.IsEmpty @>
 }
 
 [<Trait("resource", "files")>]
@@ -678,7 +658,7 @@ let ``Update files is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 
-    let externalIdString = Guid.NewGuid().ToString();
+    let externalIdString = Guid.NewGuid().ToString()
     let newMetadata = ([
         "key1", "value1"
         "key2", "value2"
@@ -699,7 +679,7 @@ let ``Update files is Ok`` () = task {
     }
     let externalId = Identity.ExternalId externalIdString
     let newSource = "UpdatedSource"
-    let newExternalId = "updatedExternalId"
+    let newExternalId = Guid.NewGuid().ToString()
     let newAssetId = 5409900891232494L
 
     // Act
@@ -717,25 +697,25 @@ let ``Update files is Ok`` () = task {
         ] wctx
     let! getRes = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
 
-    let resSource, resExternalId, resMetaData, resSourceCreatedTime, resSourceModifiedTime, resAssetIds =
-        match getRes.Result with
-        | Ok filesResponses ->
-            let h = Seq.tryHead filesResponses
-            match h with
-            | Some fileResponse ->
-                fileResponse.Source,
-                fileResponse.ExternalId,
-                fileResponse.MetaData,
-                fileResponse.SourceCreatedTime,
-                fileResponse.SourceModifiedTime,
-                fileResponse.AssetIds
-            | None -> None, Some "", Map.empty, None, None, [0L]
-        | Error _ -> None, Some "", Map.empty, None, None, [0L]
+    let getCtx' =
+        match getRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
-    let updateSuccsess =
-        match updateRes.Result with
-        | Ok res -> true
-        | Error _ -> false
+    let resSource, resExternalId, resMetaData, resSourceCreatedTime, resSourceModifiedTime, resAssetIds =
+        let filesResponses = getCtx'.Response
+        let h = Seq.tryHead filesResponses
+        match h with
+        | Some fileResponse ->
+            fileResponse.Source,
+            fileResponse.ExternalId,
+            fileResponse.MetaData,
+            fileResponse.SourceCreatedTime,
+            fileResponse.SourceModifiedTime,
+            fileResponse.AssetIds
+        | None -> None, Some "", Map.empty, None, None, [0L]
+
+    let updateSuccsess = Result.isOk updateRes
 
     let metaDataOk =
         (Map.tryFind "key1" resMetaData) = Some "value1"
@@ -743,25 +723,32 @@ let ``Update files is Ok`` () = task {
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
+    let createCtx' =
+        match createRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let updateCtx' =
+        match updateRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     // Assert create
-    test <@ Result.isOk createRes.Result @>
-    test <@ createRes.Request.Method = HttpMethod.Post @>
-    test <@ createRes.Request.Extra.["resource"] = "/files" @>
-    test <@ createRes.Request.Query.IsEmpty @>
+    test <@ createCtx'.Request.Method = HttpMethod.Post @>
+    test <@ createCtx'.Request.Extra.["resource"] = "/files" @>
+    test <@ createCtx'.Request.Query.IsEmpty @>
 
     // Assert update
     test <@ updateSuccsess @>
-    test <@ Result.isOk updateRes.Result @>
-    test <@ updateRes.Request.Method = HttpMethod.Post @>
-    test <@ updateRes.Request.Extra.["resource"] = "/files/update" @>
-    test <@ updateRes.Request.Query.IsEmpty @>
+    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
+    test <@ updateCtx'.Request.Extra.["resource"] = "/files/update" @>
+    test <@ updateCtx'.Request.Query.IsEmpty @>
 
     // Assert get
-    test <@ Result.isOk getRes.Result @>
-    test <@ getRes.Request.Method = HttpMethod.Post @>
-    test <@ getRes.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getRes.Request.Query.IsEmpty @>
-    test <@ resExternalId = Some "updatedExternalId" @>
+    test <@ getCtx'.Request.Method = HttpMethod.Post @>
+    test <@ getCtx'.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getCtx'.Request.Query.IsEmpty @>
+    test <@ resExternalId = Some newExternalId @>
     test <@ resSource = Some newSource @>
     test <@ resSourceCreatedTime = Some 321L @>
     test <@ resSourceModifiedTime = Some 654L @>
@@ -780,21 +767,23 @@ let ``Update files is Ok`` () = task {
 
     let! getRes2 = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
 
+    let getCtx2' =
+        match getRes2 with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     let resMetaData2, resAssetIds2, identity =
-        match getRes2.Result with
-        | Ok filesResponses ->
-            let h = Seq.tryHead filesResponses
-            match h with
-            | Some fileResponse ->
-                fileResponse.MetaData, fileResponse.AssetIds, fileResponse.Id
-            | None -> Map.empty, [0L], 0L
-        | Error _ -> Map.empty, [0L], 0L
+        let filesResponses = getCtx2'.Response
+        let h = Seq.tryHead filesResponses
+        match h with
+        | Some fileResponse ->
+            fileResponse.MetaData, fileResponse.AssetIds, fileResponse.Id
+        | None -> Map.empty, [0L], 0L
 
     // Assert get2
-    test <@ Result.isOk getRes2.Result @>
-    test <@ getRes2.Request.Method = HttpMethod.Post @>
-    test <@ getRes2.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getRes2.Request.Query.IsEmpty @>
+    test <@ getCtx2'.Request.Method = HttpMethod.Post @>
+    test <@ getCtx2'.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getCtx2'.Request.Query.IsEmpty @>
     test <@ Seq.head resAssetIds2 = 7366035474714226L @>
     test <@ (Map.tryFind "newKey" resMetaData2) = Some "newValue" @>
 
@@ -813,27 +802,33 @@ let ``Update files is Ok`` () = task {
     let! getRes3 = Files.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
     let! delRes = Files.Delete.deleteAsync ([ Identity.Id identity]) wctx
 
+    let getCtx3' =
+        match getRes3 with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     let resExternalId2, resSource2, resMetaData3, resAssetIds3, resSourceCreatedTime2, resSourceModifiedTime2 =
-        match getRes3.Result with
-        | Ok filesResponses ->
-            let h = Seq.tryHead filesResponses
-            match h with
-            | Some fileResponse ->
-                fileResponse.ExternalId,
-                fileResponse.Source,
-                fileResponse.MetaData,
-                fileResponse.AssetIds,
-                fileResponse.SourceCreatedTime,
-                fileResponse.SourceModifiedTime
-            | None -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
-        | Error _ -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
+        let filesResponses = getCtx3'.Response
+        let h = Seq.tryHead filesResponses
+        match h with
+        | Some fileResponse ->
+            fileResponse.ExternalId,
+            fileResponse.Source,
+            fileResponse.MetaData,
+            fileResponse.AssetIds,
+            fileResponse.SourceCreatedTime,
+            fileResponse.SourceModifiedTime
+        | None -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
 
     // Assert get2
-    test <@ Result.isOk getRes2.Result @>
-    test <@ Result.isOk updateRes3.Result  @>
-    test <@ getRes2.Request.Method = HttpMethod.Post @>
-    test <@ getRes2.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getRes2.Request.Query.IsEmpty @>
+    test <@ getCtx3'.Request.Method = HttpMethod.Post @>
+    test <@ getCtx3'.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ getCtx3'.Request.Query.IsEmpty @>
     test <@ resExternalId2 = None @>
     test <@ resSource2 = None @>
     test <@ resSourceCreatedTime2 = None @>
@@ -842,8 +837,7 @@ let ``Update files is Ok`` () = task {
     test <@ Map.isEmpty resMetaData3 @>
 
     // Assert delete
-    test <@ Result.isOk delRes.Result @>
-    test <@ delRes.Request.Method = HttpMethod.Post @>
-    test <@ delRes.Request.Extra.["resource"] = "/files/delete" @>
-    test <@ delRes.Request.Query.IsEmpty @>
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/files/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
 }

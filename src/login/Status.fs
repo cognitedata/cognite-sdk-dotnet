@@ -34,7 +34,7 @@ module Status =
     /// </summary>
     ///
     /// <returns>List of events matching given criteria.</returns>
-    let status (next: NextFunc<LoginStatusDto,'a>) : HttpContext -> Task<Context<'a>> =
+    let status (next: NextFunc<LoginStatusDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         statusCore fetch next
 
     /// <summary>
@@ -42,8 +42,8 @@ module Status =
     /// </summary>
     ///
     /// <returns>List of events matching given criteria.</returns>
-    let statusAsync : HttpContext -> Task<Context<LoginStatusDto>> =
-        statusCore fetch Task.FromResult
+    let statusAsync : HttpContext -> HttpFuncResult<LoginStatusDto> =
+        statusCore fetch finishEarly
 
 [<Extension>]
 type LoginStatusClientExtensions =
@@ -58,9 +58,10 @@ type LoginStatusClientExtensions =
     static member StatusAsync (this: ClientExtension, token: CancellationToken) : Task<LoginStatusEntity> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Status.statusAsync ctx
-            match ctx.Result with
-            | Ok status ->
+            let! result = Status.statusAsync ctx
+            match result with
+            | Ok ctx ->
+                let status = ctx.Response
                 return status.ToLoginStatusEntity ()
             | Error error ->
                 return raise (error.ToException ())

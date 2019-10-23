@@ -53,7 +53,7 @@ module Delete =
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     let deleteAsync (items: Identity seq) =
-        deleteCore items fetch Task.FromResult
+        deleteCore items fetch finishEarly
 
 [<Extension>]
 type DeleteTimeSeriesClientExtensions =
@@ -65,8 +65,8 @@ type DeleteTimeSeriesClientExtensions =
     static member DeleteAsync (this: ClientExtension, items: Identity seq, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Delete.deleteAsync items ctx
-            match ctx.Result with
+            let! result = Delete.deleteAsync items ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())

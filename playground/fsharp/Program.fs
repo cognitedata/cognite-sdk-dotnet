@@ -23,7 +23,7 @@ type Config = {
 }
 
 let getDatapointsExample (ctx : HttpContext) = task {
-    let! rsp =
+    let! res =
         DataPoints.Items.listMultipleAsync [
             {
                 Id = Identity.Id 20713436708L
@@ -34,30 +34,30 @@ let getDatapointsExample (ctx : HttpContext) = task {
             }
         ] [] ctx
 
-    match rsp.Result with
+    match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let getAssetsExample (ctx : HttpContext) = task {
-    let! rsp = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
+    let! res = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
 
-    match rsp.Result with
+    match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let updateAssetsExample (ctx : HttpContext) = task {
-    let! rsp = Assets.Update.updateAsync [ (Identity.Id 84025677715833721L, [ AssetUpdate.SetName "string3" ] )]  ctx
-    match rsp.Result with
+    let! res = Assets.Update.updateAsync [ (Identity.Id 84025677715833721L, [ AssetUpdate.SetName "string3" ] )]  ctx
+    match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let searchAssetsExample (ctx : HttpContext) = task {
 
-    let! rsp = Assets.Search.searchAsync 10 [ AssetSearch.Name "VAL" ] [] ctx
-    match rsp.Result with
+    let! res = Assets.Search.searchAsync 10 [ AssetSearch.Name "VAL" ] [] ctx
+    match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
@@ -110,7 +110,7 @@ let insertDataPointsOldWay ctx = task {
     }
 
     let! result = DataPoints.Insert.insertAsync [ dpInsertion ] ctx
-    match result.Result with
+    match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
@@ -131,7 +131,7 @@ let insertDataPointsProtoStyle ctx = task {
     request.Items.Add(item)
 
     let! result = DataPoints.Insert.insertAsyncProto request ctx
-    match result.Result with
+    match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 

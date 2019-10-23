@@ -58,8 +58,8 @@ module Delete =
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
-    let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Task<Context<HttpResponseMessage>> =
-        deleteCore (assets, recursive) fetch Task.FromResult
+    let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        deleteCore (assets, recursive) fetch finishEarly
 
 [<Extension>]
 type DeleteAssetsExtensions =
@@ -72,8 +72,8 @@ type DeleteAssetsExtensions =
     static member DeleteAsync(this: ClientExtension, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Delete.deleteAsync (ids, recursive) ctx
-            match ctx'.Result with
+            let! result = Delete.deleteAsync (ids, recursive) ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
                 return raise (error.ToException ())

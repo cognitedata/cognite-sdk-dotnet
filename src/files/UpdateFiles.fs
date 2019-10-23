@@ -204,7 +204,7 @@ module Update =
     /// <param name="files">The list of files to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated files.</returns>
-    let update (files: (Identity * (FileUpdate list)) list) (next: NextFunc<FileReadDto seq,'a>)  : HttpContext -> Task<Context<'a>> =
+    let update (files: (Identity * (FileUpdate list)) list) (next: NextFunc<FileReadDto seq,'a>)  : HttpContext -> HttpFuncResult<'a> =
         updateCore files fetch next
 
     /// <summary>
@@ -212,8 +212,8 @@ module Update =
     /// </summary>
     /// <param name="files">The list of files to update.</param>
     /// <returns>List of updated files.</returns>
-    let updateAsync (files: (Identity * FileUpdate list) list) : HttpContext -> Task<Context<FileReadDto seq>> =
-        updateCore files fetch Task.FromResult
+    let updateAsync (files: (Identity * FileUpdate list) list) : HttpContext -> HttpFuncResult<FileReadDto seq> =
+        updateCore files fetch finishEarly
 
 [<Extension>]
 type UpdatefilesClientExtensions =
@@ -226,10 +226,10 @@ type UpdatefilesClientExtensions =
     static member UpdateAsync (this: ClientExtension, files: ValueTuple<Identity, FileUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<FileEntity seq> =
         task {
             let files' = files |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = Update.updateAsync files' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response |> Seq.map (fun file -> file.ToFileEntity ())
+            let! result = Update.updateAsync files' this.Ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun file -> file.ToFileEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

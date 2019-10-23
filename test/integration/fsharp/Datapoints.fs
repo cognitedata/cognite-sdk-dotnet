@@ -27,34 +27,32 @@ let ``Get datapoints by id with options is Ok`` () = task {
     // Act
     let! res = DataPoints.Items.listAsync id options ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
     let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
-        |> Identity.Id
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> Identity.Id dto.Id
+        | None -> Identity.Id 0L
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    match datapointDto.DataPoints with
-                    | Numeric dps -> yield! dps
-                    | String dps -> failwith "Unexpected string datapoints"
-            }
-        | Error _ -> Seq.empty
+        seq {
+            for datapointDto in dtos do
+                match datapointDto.DataPoints with
+                | Numeric dps -> yield! dps
+                | String dps -> failwith "Unexpected string datapoints"
+        }
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 9 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -69,34 +67,32 @@ let ``Get datapoints by id with limit is Ok`` () = task {
     // Act
     let! res = DataPoints.Items.listAsync id options ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
     let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
-        |> Identity.Id
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> Identity.Id dto.Id
+        | None -> Identity.Id 0L
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    match datapointDto.DataPoints with
-                    | Numeric dps -> yield! dps
-                    | String dps -> failwith "Unexpected string datapoints"
-            }
-        | Error _ -> Seq.empty
+        seq {
+            for datapointDto in dtos do
+                match datapointDto.DataPoints with
+                | Numeric dps -> yield! dps
+                | String dps -> failwith "Unexpected string datapoints"
+        }
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 20 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -112,34 +108,33 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = task {
     // Act
     let! res = DataPoints.Items.listAsync id options ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+
     let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
-        |> Identity.Id
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> Identity.Id dto.Id
+        | None -> Identity.Id 0L
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    match datapointDto.DataPoints with
-                    | Numeric dps -> yield! dps
-                    | String dps -> failwith "Unexpected string datapoints"
-            }
-        | Error _ -> Seq.empty
+        seq {
+            for datapointDto in dtos do
+                match datapointDto.DataPoints with
+                | Numeric dps -> yield! dps
+                | String dps -> failwith "Unexpected string datapoints"
+        }
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 100 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 
@@ -161,31 +156,31 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
     // Act
     let! res = DataPoints.Items.listMultipleAsync query [] ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+
     let resIds =
-        match res.Result with
-        | Ok dtos ->
-            Seq.map (fun (d: DataPoints.Items.DataPoints) -> d.Id) dtos
-        | Error _ -> Seq.ofList [ 0L ]
-        |> Seq.map Identity.Id
+        dtos
+        |> Seq.map (fun (d: DataPoints.Items.DataPoints) -> Identity.Id d.Id)
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    match datapointDto.DataPoints with
-                    | Numeric dps -> yield! dps
-                    | String dps -> failwith "Unexpected string datapoints"
-            }
-        | Error _ -> Seq.empty
+        seq {
+            for datapointDto in dtos do
+                match datapointDto.DataPoints with
+                | Numeric dps -> yield! dps
+                | String dps -> failwith "Unexpected string datapoints"
+        }
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ Seq.contains a.Id resIds && Seq.contains b.Id resIds @>
     test <@ Seq.length datapoints = 20 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -207,23 +202,25 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
 
     // Act
     let! res = DataPoints.Aggregated.getAggregatedAsync (Identity.Id id) options ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+
     let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> dto.Id
+        | None -> 0L
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    yield! datapointDto.DataPoints
-            }
-        | Error err -> err |> printfn "%A"; Seq.empty
+        seq {
+            for datapointDto in dtos do
+                yield! datapointDto.DataPoints
+        }
 
     let first = Seq.head datapoints
 
@@ -232,13 +229,12 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
         | None -> false
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = id @>
     test <@ Seq.length datapoints = 25 @>
     test <@ greaterThanZero first.Average && greaterThanZero first.Min && greaterThanZero first.Sum @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 
@@ -256,34 +252,33 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Act
     let! res = DataPoints.Latest.getAsync [ latestDataPointRequest ] ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+
     let resId =
-        match res.Result with
-        | Ok dtos ->
-            let h = Seq.tryHead dtos
-            match h with
-            | Some dto -> dto.Id
-            | None -> 0L
-        | Error _ -> 0L
-        |> Identity.Id
+        let h = Seq.tryHead dtos
+        match h with
+        | Some dto -> Identity.Id dto.Id
+        | None -> Identity.Id 0L
 
     let datapoints =
-        match res.Result with
-        | Ok dtos ->
-            seq {
-                for datapointDto in dtos do
-                    match datapointDto.DataPoints with
-                    | Numeric dps -> yield! dps
-                    | String dps -> failwith "Unexpected string datapoints"
-            }
-        | Error _ -> Seq.empty
+        seq {
+            for datapointDto in dtos do
+                match datapointDto.DataPoints with
+                | Numeric dps -> yield! dps
+                | String dps -> failwith "Unexpected string datapoints"
+        }
 
     // Assert
-    test <@ Result.isOk res.Result @>
     test <@ resId = Identity.Id id @>
     test <@ Seq.length datapoints = 1 @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data/latest" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/latest" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -317,10 +312,15 @@ let ``Insert datapoints is Ok`` () = task {
     let! res = DataPoints.Insert.insertAsync [ datapoints ] ctx
     let! _ = TimeSeries.Delete.deleteAsync [ externalId ] ctx
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/data" @>
+    test <@ Result.isOk res @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data" @>
 }
 
 [<Fact>]

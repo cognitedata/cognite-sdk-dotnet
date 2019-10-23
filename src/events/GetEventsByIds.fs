@@ -54,7 +54,7 @@ module Retrieve =
     /// <param name="eventIds">The ids of the events to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Events with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<EventReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -65,7 +65,7 @@ module Retrieve =
     /// <param name="eventIds">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
     let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch Task.FromResult
+        getByIdsCore ids fetch finishEarly
 
 
 [<Extension>]
@@ -81,10 +81,10 @@ type GetEventsByIdsClientExtensions =
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx' = Retrieve.getByIdsAsync ids ctx
-            match ctx'.Result with
-            | Ok events ->
-                return events |> Seq.map (fun event -> event.ToEventEntity ())
+            let! result = Retrieve.getByIdsAsync ids ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
             | Error error ->
                 return raise (error.ToException ())
         }

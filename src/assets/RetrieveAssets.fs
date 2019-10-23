@@ -54,7 +54,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Assets with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Task<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -65,7 +65,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch Task.FromResult
+        getByIdsCore ids fetch finishEarly
 
 
 [<Extension>]
@@ -81,9 +81,10 @@ type GetAssetsByIdsClientExtensions =
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
-            match ctx.Result with
-            | Ok assets ->
+            let! result = Retrieve.getByIdsAsync ids this.Ctx
+            match result with
+            | Ok ctx ->
+                let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
                 return raise (error.ToException ())

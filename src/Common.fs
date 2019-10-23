@@ -169,7 +169,7 @@ module Handlers =
             sprintf "%s%s" serviceUrl url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
-    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Task<Context<'c>> =
+    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
         let shouldRetry (err: ResponseError) =
             let retryCode =
                 match err.Code with

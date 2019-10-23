@@ -24,13 +24,17 @@ let ``Get asset is Ok``() = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
+    let! res = Assets.Entity.getCore 42L fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk response.Result @>
-    test <@ response.Request.Method = HttpMethod.Get @>
-    test <@ response.Request.Extra.["resource"] = "/assets/42" @>
-    test <@ response.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/42" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -44,12 +48,11 @@ let ``Get invalid asset is Error`` () = task {
         |> Context.setAppId "test"
         |> Context.addHeader ("api-key", "test-key")
 
-
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
+    let! res = Assets.Entity.getCore 42L fetch finishEarly ctx
 
     // Assert
-    test <@ Result.isError response.Result @>
+    test <@ Result.isError res @>
 }
 
 [<Fact>]
@@ -64,10 +67,17 @@ let ``Get asset with extra fields is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
+    let! res = Assets.Entity.getCore 42L fetch finishEarly ctx
 
     // Assert
-    test <@ Result.isOk response.Result @>
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    // Assert
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/42" @>
 }
 
 [<Fact>]
@@ -83,10 +93,10 @@ let ``Get asset with missing optional fields is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! response = Assets.Entity.getCore 42L fetch Task.FromResult ctx
+    let! result = Assets.Entity.getCore 42L fetch finishEarly ctx
 
     // Assert
-    test <@ Result.isOk response.Result @>
+    test <@ Result.isOk result @>
 }
 
 [<Fact>]
@@ -113,12 +123,16 @@ let ``List assets is Ok`` () = task {
     ]
 
     // Act
-    let! res = (fetch, Task.FromResult, ctx) |||>  Assets.Items.listCore query []
+    let! res = (fetch, finishEarly, ctx) |||>  Assets.Items.listCore query []
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/list" @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/list" @>
 }
 
 [<Fact>]
@@ -133,13 +147,17 @@ let ``Create assets empty is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Assets.Create.createCore [] fetch Task.FromResult ctx
+    let! res = Assets.Create.createCore [] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -164,19 +182,20 @@ let ``Create single asset is Ok`` () = task {
     }
 
     // Act
-    let! res = Assets.Create.createCore [ asset ] fetch Task.FromResult ctx
+    let! res = Assets.Create.createCore [ asset ] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 
-    match res.Result with
-    | Ok assets ->
-        test <@ Seq.length assets = 1 @>
-    | Error error ->
-        raise (Sdk.XunitException (error.ToString ()))
+    let assets = ctx'.Response
+    test <@ Seq.length assets = 1 @>
 }
 
 [<Fact>]
@@ -191,13 +210,17 @@ let ``Update single asset with no updates is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Assets.Update.updateCore [ Identity.Id 42L, [] ] fetch Task.FromResult ctx
+    let! res = Assets.Update.updateCore [ Identity.Id 42L, [] ] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/update" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/update" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -212,17 +235,21 @@ let ``Update single asset with is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Update.updateCore  [ (Identity.Id 42L, [
+    let! res = (fetch, finishEarly, ctx) |||> Assets.Update.updateCore  [ (Identity.Id 42L, [
         AssetUpdate.SetName "New name"
         AssetUpdate.SetDescription (Some "New description")
         AssetUpdate.ClearSource
     ])]
 
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/update" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/update" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -241,12 +268,16 @@ let ``Attempt searching assets`` () = task {
         AssetFilter.Name "string"
     ]
 
-    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Search.searchCore 100 options filter
+    let! res = (fetch, finishEarly, ctx) |||> Assets.Search.searchCore 100 options filter
 
-    test <@ Result.isOk res. Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/search" @>
-    test <@ res.Request.Query.IsEmpty @>
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/search" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
@@ -265,10 +296,14 @@ let ``Attempt filtering assets`` () = task {
         AssetFilter.Name "string"
     ]
 
-    let! res = (fetch, Task.FromResult, ctx) |||> Assets.Items.listCore query filter
+    let! res = (fetch, finishEarly, ctx) |||> Assets.Items.listCore query filter
 
-    test <@ Result.isOk res. Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/assets/list" @>
-    test <@ res.Request.Query.IsEmpty @>
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/assets/list" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
