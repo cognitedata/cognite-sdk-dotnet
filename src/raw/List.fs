@@ -22,19 +22,19 @@ module Items =
     let Url = "/raw/dbs"
 
     type DatabaseResponse = {
-        Items: DatabaseReadDto seq
+        Items: DatabaseDto seq
     } with
          static member Decoder : Decoder<DatabaseResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list DatabaseReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list DatabaseDto.Decoder |> Decode.map seq)
             })
 
     type TableResponse = {
-        Items: TableReadDto seq
+        Items: TableDto seq
     } with
          static member Decoder : Decoder<TableResponse> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TableReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list TableDto.Decoder |> Decode.map seq)
             })
 
     type RowResponse = {
@@ -89,7 +89,7 @@ module Items =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>databases in project.</returns>
-    let listDatabases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
+    let listDatabases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         listDatabasesCore queryParameters fetch next
 
     /// <summary>
@@ -110,7 +110,7 @@ module Items =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>tables in project.</returns>
-    let listTables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
+    let listTables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         listTablesCore database queryParameters fetch next
 
     /// <summary>
