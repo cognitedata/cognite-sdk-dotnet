@@ -241,7 +241,8 @@ type UpdateEventsClientExtensions =
     static member UpdateAsync (this: ClientExtension, events: ValueTuple<Identity, EventUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<EventEntity seq> =
         task {
             let events' = events |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! result = Update.updateAsync events' this.Ctx
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Update.updateAsync events' ctx
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())

@@ -187,7 +187,7 @@ type GetdatabasesByIdsClientExtensions =
     static member ListTablesAsync (this: ClientExtension, database: string, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Items.listTablesAsync database queryParameters this.Ctx
+            let! result = Items.listTablesAsync database queryParameters ctx
             match result with
             | Ok ctx ->
                 let tables = ctx.Response
@@ -217,7 +217,7 @@ type GetdatabasesByIdsClientExtensions =
     static member ListRowsAsync (this: ClientExtension, database: string, table: string, queryParameters: DatabaseRowQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Items.listRowsAsync database table queryParameters this.Ctx
+            let! result = Items.listRowsAsync database table queryParameters ctx
             match result with
             | Ok ctx ->
                 let rows = ctx.Response

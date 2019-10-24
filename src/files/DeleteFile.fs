@@ -68,7 +68,7 @@ type DeleteFileExtensions =
     static member DeleteAsync(this: ClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Delete.deleteAsync (ids) this.Ctx
+            let! result = Delete.deleteAsync (ids) ctx
             match result with
             | Ok _ -> return ()
             | Error error ->

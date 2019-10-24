@@ -81,7 +81,7 @@ type GetAssetsByIdsClientExtensions =
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Retrieve.getByIdsAsync ids this.Ctx
+            let! result = Retrieve.getByIdsAsync ids ctx
             match result with
             | Ok ctx ->
                 let assets = ctx.Response
