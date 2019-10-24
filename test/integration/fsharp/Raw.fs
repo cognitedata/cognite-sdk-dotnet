@@ -24,7 +24,7 @@ let ``List Databases with limit is Ok`` () = task {
     let query = [ DatabaseQuery.Limit 10 ]
 
     // Act
-    let! res = Retrieve.databasesAsync query ctx
+    let! res = Items.listDatabasesAsync query ctx
 
     let ctx' =
         match res with
@@ -48,7 +48,7 @@ let ``List Tables with limit is Ok`` () = task {
     let query = [ DatabaseQuery.Limit 10 ]
 
     // Act
-    let! res = Retrieve.tablesAsync "sdk-test-database" query ctx
+    let! res = Items.listTablesAsync "sdk-test-database" query ctx
 
     let ctx' =
         match res with
@@ -62,4 +62,63 @@ let ``List Tables with limit is Ok`` () = task {
     test <@ len > 0 @>
     test <@ ctx'.Request.Method = HttpMethod.Get @>
     test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``List Rows with limit is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let query = [ DatabaseRowQuery.Limit 10 ]
+    let expectedCols = """{
+  "sdk-test-col": "sdk-test-value",
+  "sdk-test-col2": "sdk-test-value2"
+}"""
+
+    // Act
+    let! res = Items.listRowsAsync "sdk-test-database" "sdk-test-table" query ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    // Assert
+    test <@ len > 0 @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Columns.ToString() = expectedCols) @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables/sdk-test-table/rows" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``List Rows with limit and choose columns isOk`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let query = [ DatabaseRowQuery.Limit 10; DatabaseRowQuery.Columns ["sdk-test-col2"] ]
+    let expectedCols = """{
+  "sdk-test-col2": "sdk-test-value2"
+}"""
+
+    // Act
+    let! res = Items.listRowsAsync "sdk-test-database" "sdk-test-table" query ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    // Assert
+    test <@ len > 0 @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Columns.ToString() = expectedCols) @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables/sdk-test-table/rows" @>
 }
