@@ -57,7 +57,7 @@
     <Compile Include="files\DownloadFiles.fs" />
     <Compile Include="raw\Model.fs" />
     <Compile Include="raw\Json.fs" />
-    <Compile Include="raw\Retrieve.fs" />
+    <Compile Include="raw\List.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
     <Compile Include="login\Status.fs" />
