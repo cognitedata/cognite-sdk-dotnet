@@ -249,7 +249,8 @@ type UpdateTimeseriesClientExtensions =
     static member UpdateAsync (this: ClientExtension, timeseries: ValueTuple<Identity, TimeSeriesUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<TimeSeriesEntity seq> =
         task {
             let timeseries' = timeseries |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! result = Update.updateAsync timeseries' this.Ctx
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Update.updateAsync timeseries' ctx
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())

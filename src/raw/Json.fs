@@ -32,6 +32,10 @@ module RawJsonExtensions =
                 {
                     Name = get.Required.Field "name" Decode.string
                 })
+        member this.Encoder =
+            Encode.object [
+                yield "name", Encode.string this.Name
+            ]
 
     type TableItemsReadDto with
         static member Decoder : Decoder<TableItemsReadDto> =

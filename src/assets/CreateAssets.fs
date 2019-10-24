@@ -76,7 +76,8 @@ type CreateAssetsExtensions =
     static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
         task {
             let assets' = assets |> Seq.map AssetWriteDto.FromAssetEntity
-            let! result = Create.createAsync assets' this.Ctx
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Create.createAsync assets' ctx
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())

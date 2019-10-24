@@ -226,7 +226,8 @@ type UpdatefilesClientExtensions =
     static member UpdateAsync (this: ClientExtension, files: ValueTuple<Identity, FileUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<FileEntity seq> =
         task {
             let files' = files |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! result = Update.updateAsync files' this.Ctx
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Update.updateAsync files' ctx
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun file -> file.ToFileEntity ())

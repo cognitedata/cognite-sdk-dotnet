@@ -60,7 +60,8 @@ type CreateFilesExtensions =
     static member CreateAsync (this: ClientExtension, file: FileEntity, [<Optional>] token: CancellationToken) : Task<FileEntity> =
         task {
             let file' = FileWriteDto.FromFileEntity file
-            let! result = Create.createAsync file' this.Ctx
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Create.createAsync file' ctx
             match result with
             | Ok ctx ->
                 return ctx.Response.ToFileEntity ()

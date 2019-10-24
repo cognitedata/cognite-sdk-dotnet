@@ -164,3 +164,47 @@ let ``Create and delete database is Ok`` () = task {
     test <@ deleteCtx.Request.Method = HttpMethod.Post @>
     test <@ deleteCtx.Request.Extra.["resource"] = "/raw/dbs/delete" @>
 }
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``Create and delete table in database is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let dbName = Guid.NewGuid().ToString().[..31]
+    let tableName = Guid.NewGuid().ToString().[..31]
+
+    // Act
+    let! createRes = Create.createTablesAsync dbName [tableName] true ctx
+    let! res = Items.listTablesAsync dbName [] ctx
+    let! deleteRes = Delete.deleteDatabasesAsync [dbName] true ctx
+
+    let createCtx =
+        match createRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let deleteCtx =
+        match deleteRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    // Assert
+    test <@ createCtx.Request.Method = HttpMethod.Post @>
+    test <@ createCtx.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables" @>
+
+    test <@ len > 0 @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Name = tableName) @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables" @>
+
+    test <@ deleteCtx.Request.Method = HttpMethod.Post @>
+    test <@ deleteCtx.Request.Extra.["resource"] = "/raw/dbs/delete" @>
+}
