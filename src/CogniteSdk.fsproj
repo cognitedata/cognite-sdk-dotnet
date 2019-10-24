@@ -58,6 +58,8 @@
     <Compile Include="raw\Model.fs" />
     <Compile Include="raw\Json.fs" />
     <Compile Include="raw\List.fs" />
+    <Compile Include="raw\Create.fs" />
+    <Compile Include="raw\Delete.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
     <Compile Include="login\Status.fs" />

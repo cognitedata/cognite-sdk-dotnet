@@ -8,22 +8,26 @@ open Thoth.Json.Net
 
 [<AutoOpen>]
 module RawJsonExtensions =
-    type DatabaseReadDto with
-        static member Decoder : Decoder<DatabaseReadDto> =
+    type DatabaseDto with
+        static member Decoder : Decoder<DatabaseDto> =
             Decode.object (fun get ->
                 {
                     Name = get.Required.Field "name" Decode.string
                 })
+        member this.Encoder =
+            Encode.object [
+                yield "name", Encode.string this.Name
+            ]
 
-    type DatabaseItemsReadDto with
-        static member Decoder : Decoder<DatabaseItemsReadDto> =
+    type DatabaseItemsDto with
+        static member Decoder : Decoder<DatabaseItemsDto> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list DatabaseReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list DatabaseDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    type TableReadDto with
-        static member Decoder : Decoder<TableReadDto> =
+    type TableDto with
+        static member Decoder : Decoder<TableDto> =
             Decode.object (fun get ->
                 {
                     Name = get.Required.Field "name" Decode.string
@@ -32,7 +36,7 @@ module RawJsonExtensions =
     type TableItemsReadDto with
         static member Decoder : Decoder<TableItemsReadDto> =
             Decode.object (fun get -> {
-                Items = get.Required.Field "items" (Decode.list TableReadDto.Decoder |> Decode.map seq)
+                Items = get.Required.Field "items" (Decode.list TableDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 

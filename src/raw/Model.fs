@@ -15,7 +15,7 @@ type DatabaseEntity internal (name: string) =
 
     new () = DatabaseEntity(name=null)
 
-type DatabaseReadDto = {
+type DatabaseDto = {
     Name: string
 } with
     member this.ToDatabaseEntity () : DatabaseEntity =
@@ -28,8 +28,8 @@ type DatabaseItems = {
     NextCursor: string
 }
 
-type DatabaseItemsReadDto = {
-    Items: DatabaseReadDto seq
+type DatabaseItemsDto = {
+    Items: DatabaseDto seq
     NextCursor : string option
 }
 
@@ -39,7 +39,7 @@ type TableEntity internal (name: string) =
 
     new () = TableEntity(name=null)
 
-type TableReadDto = {
+type TableDto = {
     Name: string
 } with
     member this.ToTableEntity () : TableEntity =
@@ -53,7 +53,7 @@ type TableItems = {
 }
 
 type TableItemsReadDto = {
-    Items: TableReadDto seq
+    Items: TableDto seq
     NextCursor : string option
 }
 
