@@ -86,3 +86,9 @@ type Client private (context: HttpContext) =
     member val Events = Events.ClientExtension context with get
     /// Client Login extension methods
     member val Login = Login.ClientExtension context with get
+    /// Client Files extension methods
+    member val Files = Files.ClientExtension context with get
+    /// Client Raw extension methods
+    member val Raw = Raw.ClientExtension context with get
+    /// Client Sequences extension methods
+    member val Sequences = Sequences.ClientExtension context with get
