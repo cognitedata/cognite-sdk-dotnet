@@ -31,6 +31,22 @@ module Delete =
                 yield "recursive", this.Recursive |> Encode.bool
             ]
 
+    type RowDeleteDto = {
+        Key: string
+    } with
+        member this.Encoder =
+            Encode.object [
+                yield "key", Encode.string this.Key
+            ]
+
+    type RowRequest = {
+        Items: RowDeleteDto seq
+    } with
+        member this.Encoder =
+            Encode.object [
+                yield "items", Seq.map (fun (item: RowDeleteDto) -> item.Encoder) this.Items |> Encode.seq
+            ]
+
     type DatabaseResponse = {
         Items: DatabaseDto seq
     } with
@@ -46,6 +62,20 @@ module Delete =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list TableDto.Decoder |> Decode.map seq)
             })
+
+    let deleteRowsCore (database: string) (table: string) (rows: string seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError
+        let items: RowDeleteDto seq = rows |> Seq.map (fun row -> { Key = row })
+        let request : RowRequest = { Items = items }
+        let encodedDbName = HttpUtility.UrlEncode database
+        let encodedTableName = HttpUtility.UrlEncode table
+
+        POST
+        >=> setVersion V10
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> setResource (Url + "/" + encodedDbName + "/tables/" + encodedTableName + "/rows/delete")
+        >=> fetch
+        >=> decodeResponse
 
     let deleteTablesCore (database: string) (tables: string seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let decodeResponse = Decode.decodeError
@@ -105,10 +135,31 @@ module Delete =
     /// Deletes tables in database in project
     /// </summary>
     /// <param name="database">Database to delete tables from</param>
-    /// <param name="tables">Table names to delete</param>
+    /// <param name="table">Table names to delete</param>
     /// <returns>HttpResponseMessage.</returns>
     let deleteTablesAsync (database: string) (tables: string seq) =
         deleteTablesCore database tables fetch finishEarly
+
+    /// <summary>
+    /// Deletes tables in database in project
+    /// </summary>
+    /// <param name="database">Database to delete rows from</param>
+    /// <param name="table">Table to delete rows from</param>
+    /// <param name="rows">Rows to delete from table</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>HttpResponseMessage.</returns>
+    let deleteRows (database: string) (table: string) (rows: string seq) (next: NextFunc<HttpResponseMessage,'a>) : HttpContext -> HttpFuncResult<'a> =
+        deleteRowsCore database table rows fetch next
+
+    /// <summary>
+    /// Deletes tables in database in project
+    /// </summary>
+    /// <param name="database">Database to delete rows from</param>
+    /// <param name="table">Table to delete rows from</param>
+    /// <param name="rows">Rows to delete from table</param>
+    /// <returns>HttpResponseMessage.</returns>
+    let deleteRowsAsync (database: string) (table: string) (rows: string seq) =
+        deleteRowsCore database table rows fetch finishEarly
 
 [<Extension>]
 type DeleteRawClientExtensions =
@@ -140,6 +191,24 @@ type DeleteRawClientExtensions =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Delete.deleteTablesAsync database tables ctx
+            match result with
+            | Ok _ -> return ()
+            | Error error ->
+                return raise (error.ToException ())
+        } :> _
+
+    /// <summary>
+    /// Deletes Rows from table in database in project
+    /// </summary>
+    /// <param name="database">Database to delete rows from</param>
+    /// <param name="table">Table to delete rows from</param>
+    /// <param name="rows">Rows to delete from table</param>
+    /// <returns>HttpResponseMessage.</returns>
+    [<Extension>]
+    static member DeleteRowsAsync (this: ClientExtension, database: string, table: string, rows: string seq, [<Optional>] token: CancellationToken) : Task =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Delete.deleteRowsAsync database table rows ctx
             match result with
             | Ok _ -> return ()
             | Error error ->

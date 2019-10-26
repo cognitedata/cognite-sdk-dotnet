@@ -45,6 +45,27 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list TableDto.Decoder |> Decode.map seq)
             })
 
+    type RowRequest = {
+        Items: RowWriteDto seq
+    } with
+        member this.Encoder =
+            Encode.object [
+                yield "items", Seq.map (fun (item: RowWriteDto) -> item.Encoder) this.Items |> Encode.seq
+            ]
+
+    let createRowsCore (database: string) (table: string) (rows: RowWriteDto seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError
+        let request : RowRequest = { Items = rows }
+        let encodedDbName = HttpUtility.UrlEncode database
+        let encodedTableName = HttpUtility.UrlEncode table
+
+        POST
+        >=> setVersion V10
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> setResource (Url + "/" + encodedDbName + "/tables/" + encodedTableName + "/rows")
+        >=> fetch
+        >=> decodeResponse
+
     let createTablesCore (database: string) (tables: string seq) (ensureParent: bool) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let decodeResponse = Decode.decodeResponse TableResponse.Decoder (fun response -> response.Items)
         let items: DatabaseDto seq = tables |> Seq.map (fun table -> { Name = table })
@@ -91,21 +112,44 @@ module Create =
     /// <summary>
     /// Creates tables in database in project
     /// </summary>
-    /// <param name="databases">Database names to create</param>
+    /// <param name="databases">Database to create tables in</param>
+    /// <param name="tables">Table names to create</param>
+    /// <param name="ensureParent">Create database if it does not exist</param>
     /// <param name="next">Async handler to use.</param>
-    /// <returns>databases in project.</returns>
+    /// <returns>Tables in database</returns>
     let createTables (database: string) (tables: string seq) (ensureParent: bool) (next: NextFunc<TableDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         createTablesCore database tables ensureParent fetch next
 
     /// <summary>
     /// Creates tables in database in project
     /// </summary>
-    /// <param name="database">Database to create tables in</param>
+    /// <param name="databases">Database to create tables in</param>
     /// <param name="tables">Table names to create</param>
-    /// <param name="ensureParent">Create database if it doesn't exist already</param>
-    /// <returns>databases in project.</returns>
+    /// <param name="ensureParent">Create database if it does not exist</param>
+    /// <returns>Tables in database</returns>
     let createTablesAsync (database: string) (tables: string seq) (ensureParent: bool) =
         createTablesCore database tables ensureParent fetch finishEarly
+
+    /// <summary>
+    /// Creates rows in table in database in project
+    /// </summary>
+    /// <param name="database">Database to create rows in</param>
+    /// <param name="table">Table to create rows in</param>
+    /// <param name="rows">key-value JSON object. Rows to be inserted into the given table</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>HttpResponsMessage</returns>
+    let createRows (database: string) (table: string) (rows: RowWriteDto seq) (next: NextFunc<HttpResponseMessage,'a>) : HttpContext -> HttpFuncResult<'a> =
+        createRowsCore database table rows fetch next
+
+    /// <summary>
+    /// Creates rows in table in database in project
+    /// </summary>
+    /// <param name="database">Database to create rows in</param>
+    /// <param name="table">Table to create rows in</param>
+    /// <param name="rows">key-value JSON object. Rows to be inserted into the given table</param>
+    /// <returns>HttpResponsMessage</returns>
+    let createRowsAsync (database: string) (table: string) (rows: RowWriteDto seq) =
+        createRowsCore database table rows fetch finishEarly
 
 [<Extension>]
 type CreateRawClientExtensions =
@@ -146,3 +190,22 @@ type CreateRawClientExtensions =
             | Error error ->
                 return raise (error.ToException ())
         }
+
+    /// <summary>
+    /// Creates rows in table in database in project
+    /// </summary>
+    /// <param name="database">Database to create rows in</param>
+    /// <param name="table">Table to create rows in</param>
+    /// <param name="rows">key-value JSON object. Rows to be inserted into the given table</param>
+    /// <returns>HttpResponsMessage</returns>
+    [<Extension>]
+    static member CreateRowsAsync (this: ClientExtension, database: string, table: string, rows: RowEntity seq, [<Optional>] token: CancellationToken) : Task =
+        task {
+            let rows' = Seq.map RowWriteDto.FromRowEntity rows
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Create.createRowsAsync database table rows' ctx
+            match result with
+            | Ok _ -> return ()
+            | Error error ->
+                return raise (error.ToException ())
+        } :> _

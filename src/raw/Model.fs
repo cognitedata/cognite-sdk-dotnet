@@ -73,6 +73,15 @@ type RowReadDto = {
     member this.ToRowEntity () : RowEntity =
         RowEntity(this.Key, this.Columns, this.LastUpdatedTime)
 
+type RowWriteDto = {
+    Key: string
+    Columns: JsonValue
+} with
+    member this.ToRowEntity () : RowEntity =
+        RowEntity(this.Key, this.Columns, 0L)
+    static member FromRowEntity (entity: RowEntity) : RowWriteDto =
+        { Key = entity.Key; Columns = entity.Columns }
+
 [<CLIMutable>]
 type RowItems = {
     Items: RowEntity seq

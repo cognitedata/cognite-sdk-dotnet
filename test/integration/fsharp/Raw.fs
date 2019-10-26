@@ -2,19 +2,17 @@ module Tests.Integration.Raw
 
 open System
 open System.Net.Http
-open System.Threading.Tasks
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Xunit
 open Swensen.Unquote
 
-open Tests
-open Common
 open Oryx
-open Oryx.Retry
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open Thoth.Json.Net
 
 open CogniteSdk
 open CogniteSdk.Raw
+open Common
 
 [<Trait("resource", "raw")>]
 [<Fact>]
@@ -204,6 +202,62 @@ let ``Create and delete table in database is Ok`` () = task {
     test <@ dtos |> Seq.exists (fun dto -> dto.Name = tableName) @>
     test <@ ctx'.Request.Method = HttpMethod.Get @>
     test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables" @>
+
+    test <@ deleteCtx.Request.Method = HttpMethod.Post @>
+    test <@ deleteCtx.Request.Extra.["resource"] = "/raw/dbs/delete" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``Create and delete rows from table in database is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let dbName = Guid.NewGuid().ToString().[..31]
+    let tableName = Guid.NewGuid().ToString().[..31]
+    let rowKey = Guid.NewGuid().ToString().[..31]
+    let column = Encode.object [ "test column", Encode.int 42 ]
+    let rowDto = { Key = rowKey; Columns = column}
+
+    // Act
+    let! createTableRes = Create.createTablesAsync dbName [tableName] true ctx
+    let! createRes = Create.createRowsAsync dbName tableName [rowDto] ctx
+    let! res = Items.listRowsAsync dbName tableName [] ctx
+    let! deleteRes = Delete.deleteDatabasesAsync [dbName] true ctx
+
+    let createTableCtx =
+        match createTableRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let createCtx =
+        match createRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let deleteCtx =
+        match deleteRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    // Assert
+    test <@ createTableCtx.Request.Method = HttpMethod.Post @>
+    test <@ createTableCtx.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables" @>
+
+    test <@ createCtx.Request.Method = HttpMethod.Post @>
+    test <@ createCtx.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables/" + tableName + "/rows" @>
+
+    test <@ len > 0 @>
+    test <@ dtos |> Seq.exists (fun dto -> dto.Key = rowKey && dto.Columns.ToString() = column.ToString()) @>
+    test <@ ctx'.Request.Method = HttpMethod.Get @>
+    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables/" + tableName + "/rows" @>
 
     test <@ deleteCtx.Request.Method = HttpMethod.Post @>
     test <@ deleteCtx.Request.Extra.["resource"] = "/raw/dbs/delete" @>
