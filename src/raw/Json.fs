@@ -59,3 +59,10 @@ module RawJsonExtensions =
                 Items = get.Required.Field "items" (Decode.list RowReadDto.Decoder |> Decode.map seq)
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
+
+    type RowWriteDto with
+        member this.Encoder =
+            Encode.object [
+                yield "key", Encode.string this.Key
+                yield "columns", this.Columns
+            ]
