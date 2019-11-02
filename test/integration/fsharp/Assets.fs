@@ -105,7 +105,6 @@ let ``Get asset by ids is Ok`` () = task {
     test <@ ctx'.Request.Extra.["resource"] = "/assets/byids" @>
 }
 
-
 [<Fact>]
 let ``Filter assets is Ok`` () = task {
     // Arrange
