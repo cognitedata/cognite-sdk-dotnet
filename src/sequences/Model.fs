@@ -12,21 +12,25 @@ open CogniteSdk
 open CogniteSdk.Common
 
 type ValueType =
-    | String
-    | Double
-    | Long
+    private
+    | CaseString
+    | CaseDouble
+    | CaseLong
+    static member String = CaseString
+    static member Double = CaseDouble
+    static member Long = CaseLong
     override this.ToString () =
         match this with
-            | String -> "STRING"
-            | Double -> "DOUBLE"
-            | Long -> "LONG"
+            | CaseString -> "STRING"
+            | CaseDouble -> "DOUBLE"
+            | CaseLong -> "LONG"
     static member Decoder: Decoder<ValueType> =
         Decode.string
         |> Decode.andThen (fun s ->
             match s.ToLower() with
-            | "string" -> String |> Decode.succeed
-            | "double" -> Double |> Decode.succeed
-            | "long" -> Long |> Decode.succeed
+            | "string" -> CaseString |> Decode.succeed
+            | "double" -> CaseDouble |> Decode.succeed
+            | "long" -> CaseLong |> Decode.succeed
             | _ -> sprintf "Could not decode valueType %A" s |> Decode.fail
         )
 
@@ -38,9 +42,9 @@ type ColumnEntity internal (name: string, externalId: string, description: strin
     /// The description of the column.
     member val Description : string = description with get, set
     /// The valueType of the column. Enum STRING, DOUBLE, LONG
-    member val ValueType : ValueType = valueType with get
+    member val ValueType : ValueType = valueType with get, set
     /// Custom, application specific metadata. String key -> String value
-    member val MetaDate : IDictionary<string, string> = metadata with get, set
+    member val MetaData : IDictionary<string, string> = metadata with get, set
     /// Time when this column was created in CDF in milliseconds since Jan 1, 1970.
     member val CreatedTime : int64 = createdTime with get
     /// The last time this column was updated in CDF, in milliseconds since Jan 1, 1970.
@@ -48,14 +52,28 @@ type ColumnEntity internal (name: string, externalId: string, description: strin
 
     /// Create new empty ColumnEntity. Set content using the properties.
     new () =
-        ColumnEntity(name=null, externalId=null, description=null, valueType=Double, metadata=null, createdTime=0L, lastUpdatedTime=0L)
+        ColumnEntity(name=null, externalId=null, description=null, valueType=ValueType.Double, metadata=null, createdTime=0L, lastUpdatedTime=0L)
 
 type ColumnCreateDto = {
     Name: string option
-    ExternalId: string option
+    ExternalId: string
     Description: string option
     ValueType: ValueType
-}
+    MetaData: Map<string, string>
+} with
+    static member FromColumnEntity (entity: ColumnEntity) : ColumnCreateDto =
+        let metadata =
+            if not (isNull entity.MetaData) then
+                entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
+            else
+                Map.empty
+        {
+            Name = if isNull entity.Name then None else Some entity.Name
+            ExternalId = entity.ExternalId
+            Description = if isNull entity.Description then None else Some entity.Description
+            ValueType = entity.ValueType
+            MetaData = metadata
+        }
 
 type ColumnReadDto = {
     Name: string option
@@ -71,7 +89,7 @@ type ColumnReadDto = {
         let metadata = this.MetaData |> Map.toSeq |> dict
         let name = this.Name |> Option.defaultValue Unchecked.defaultof<string>
         let externalId = this.ExternalId |> Option.defaultValue Unchecked.defaultof<string>
-        let description = this.ExternalId |> Option.defaultValue Unchecked.defaultof<string>
+        let description = this.Description |> Option.defaultValue Unchecked.defaultof<string>
         ColumnEntity(
             name = name,
             externalId = externalId,
@@ -81,16 +99,6 @@ type ColumnReadDto = {
             createdTime = this.CreatedTime,
             lastUpdatedTime = this.LastUpdatedTime
         )
-
-
-type SequenceCreateDto = {
-    Name: string option
-    Description: string option
-    AssetId: int64 option
-    ExternalId: string option
-    MetaData: Map<string, string>
-    Columns: ColumnCreateDto seq
-}
 
 type SequenceEntity internal (id: int64, name: string, externalId: string, description: string, assetId: int64, metadata: IDictionary<string, string>, columns: ColumnEntity seq, createdTime: int64, lastUpdatedTime: int64) =
     /// The Id of the sequence
@@ -104,7 +112,7 @@ type SequenceEntity internal (id: int64, name: string, externalId: string, descr
     /// The externalId of the sequence. Must be unique within the project.
     member val ExternalId : string = externalId with get, set
     /// Custom, application specific metadata. String key -> String value
-    member val MetaDate : IDictionary<string, string> = metadata with get, set
+    member val MetaData : IDictionary<string, string> = metadata with get, set
     /// Time when this sequence was created in CDF in milliseconds since Jan 1, 1970.
     member val Columns : ColumnEntity seq = columns with get, set
     /// Time when this sequence was created in CDF in milliseconds since Jan 1, 1970.
@@ -115,6 +123,29 @@ type SequenceEntity internal (id: int64, name: string, externalId: string, descr
     /// Create new empty SequenceEntity. Set content using the properties.
     new () =
         SequenceEntity(id=0L, name=null, description=null, assetId=0L, externalId=null, metadata=null, columns=null, createdTime=0L, lastUpdatedTime=0L)
+
+type SequenceCreateDto = {
+    Name: string option
+    Description: string option
+    AssetId: int64 option
+    ExternalId: string option
+    MetaData: Map<string, string>
+    Columns: ColumnCreateDto seq
+} with
+    static member FromSequenceCreateDto (entity: SequenceEntity) : SequenceCreateDto =
+        let metadata =
+            if not (isNull entity.MetaData) then
+                entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
+            else
+                Map.empty
+        {
+            Name = if isNull entity.Name then None else Some entity.Name
+            Description = if isNull entity.Description then None else Some entity.Description
+            AssetId = if entity.AssetId = 0L then None else Some entity.AssetId
+            ExternalId = if isNull entity.ExternalId then None else Some entity.ExternalId
+            MetaData = metadata
+            Columns = Seq.map ColumnCreateDto.FromColumnEntity entity.Columns
+        }
 
 [<CLIMutable>]
 type SequenceItems = {

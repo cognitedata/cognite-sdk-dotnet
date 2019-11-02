@@ -13,6 +13,7 @@ open Thoth.Json.Net
 open CogniteSdk
 open CogniteSdk.Sequences
 open Common
+open System.Threading.Tasks
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
@@ -83,10 +84,70 @@ let ``Get sequences by ids is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    // Assert
     test <@ len = 1 @>
     test <@ ctx'.Request.Method = HttpMethod.Post @>
     test <@ ctx'.Request.Extra.["resource"] = "/sequences/byids" @>
+}
+
+let ``Create and delete assets is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let columnExternalIdString = Guid.NewGuid().ToString()
+    let externalIdString = Guid.NewGuid().ToString()
+    let name = Guid.NewGuid().ToString()
+    let column: ColumnCreateDto = {
+        Name = Some "Create column sdk test"
+        ExternalId = columnExternalIdString
+        Description = Some "dotnet sdk test"
+        ValueType = ValueType.Double
+        MetaData = Map.empty
+    }
+    let dto: Sequences.SequenceCreateDto = {
+        ExternalId = Some externalIdString
+        Name = Some name
+        Description = Some "dotnet sdk test"
+        MetaData = Map.empty
+        AssetId = None
+        Columns = [column]
+    }
+    let externalId = Identity.ExternalId externalIdString
+
+    // Act
+    let! res = Sequences.Create.createAsync [ dto ] ctx
+    let! delRes = Sequences.Delete.deleteAsync [ externalId ] ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dtos = ctx'.Response
+    let len = Seq.length dtos
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let resExternalId =
+        match res with
+        | Ok ctx' ->
+            let assetsResponses = ctx'.Response
+            let h = Seq.tryHead assetsResponses
+            match h with
+            | Some assetsResponse -> assetsResponse.ExternalId
+            | None -> None
+        | Error _ -> None
+
+    // Assert
+    test <@ resExternalId = Some externalIdString @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/sequences" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
+
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/sequences/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
 }
 
 [<Trait("resource", "sequences")>]
