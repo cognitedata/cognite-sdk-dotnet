@@ -175,43 +175,52 @@ let ``Search sequences is Ok`` () = task {
     test <@ ctx'.Request.Extra.["resource"] = "/sequences/search" @>
 }
 
+[<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Update sequences is Ok`` () = task {
     // Arrange
     let wctx = writeCtx ()
 
+    let columnExternalIdString = Guid.NewGuid().ToString();
     let externalIdString = Guid.NewGuid().ToString();
     let newMetadata = ([
         "key1", "value1"
         "key2", "value2"
     ]
     |> Map.ofList)
+    let column: ColumnCreateDto = {
+        Name = Some "Create column sdk test"
+        ExternalId = columnExternalIdString
+        Description = Some "dotnet sdk test"
+        ValueType = ValueType.Double
+        MetaData = Map.empty
+    }
     let dto: Sequences.SequenceCreateDto = {
         ExternalId = Some externalIdString
-        Name = "Create Assets sdk test"
+        Name = Some "Create Assets sdk test"
         Description = Some "dotnet sdk test"
         MetaData = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
         ] |> Map.ofList
-        AssetId = 5409900891232494L
-
+        AssetId = Some 5409900891232494L
+        Columns = [column]
     }
     let externalId = Identity.ExternalId externalIdString
     let newName = "UpdatedName"
-    let newExternalId = "updatedExternalId"
+    let newExternalId = Guid.NewGuid().ToString();
 
     // Act
-    let! createRes = Assets.Create.createAsync [ dto ] wctx
+    let! createRes = Sequences.Create.createAsync [ dto ] wctx
     let! updateRes =
-        Assets.Update.updateAsync [
+        Sequences.Update.updateAsync [
             (externalId, [
-                Assets.AssetUpdate.SetName newName
-                Assets.AssetUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                Assets.AssetUpdate.SetExternalId (Some newExternalId)
+                Sequences.SequenceUpdate.SetName (Some newName)
+                Sequences.SequenceUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
+                Sequences.SequenceUpdate.SetExternalId (Some newExternalId)
             ])
         ] wctx
-    let! getRes = Assets.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+    let! getRes = Sequences.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
 
     let getCtx' =
         match getRes with
@@ -219,11 +228,11 @@ let ``Update sequences is Ok`` () = task {
         | Error err -> raise <| err.ToException ()
 
     let resName, resExternalId, resMetaData =
-        let assetsResponses = getCtx'.Response
-        let h = Seq.tryHead assetsResponses
+        let sequencesResponses = getCtx'.Response
+        let h = Seq.tryHead sequencesResponses
         match h with
-        | Some assetResponse -> assetResponse.Name, assetResponse.ExternalId, assetResponse.MetaData
-        | None -> "", Some "", Map.empty
+        | Some sequenceResponse -> sequenceResponse.Name, sequenceResponse.ExternalId, sequenceResponse.MetaData
+        | None -> Some "", Some "", Map.empty
 
     let updateSuccsess = Result.isOk updateRes
 
@@ -245,82 +254,81 @@ let ``Update sequences is Ok`` () = task {
 
     // Assert create
     test <@ createCtx'.Request.Method = HttpMethod.Post @>
-    test <@ createCtx'.Request.Extra.["resource"] = "/assets" @>
+    test <@ createCtx'.Request.Extra.["resource"] = "/sequences" @>
     test <@ createCtx'.Request.Query.IsEmpty @>
 
     // Assert update
     test <@ updateSuccsess @>
     test <@ updateCtx'.Request.Method = HttpMethod.Post @>
-    test <@ updateCtx'.Request.Extra.["resource"] = "/assets/update" @>
+    test <@ updateCtx'.Request.Extra.["resource"] = "/sequences/update" @>
     test <@ updateCtx'.Request.Query.IsEmpty @>
 
     // Assert get
     test <@ getCtx'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx'.Request.Extra.["resource"] = "/assets/byids" @>
+    test <@ getCtx'.Request.Extra.["resource"] = "/sequences/byids" @>
     test <@ getCtx'.Request.Query.IsEmpty @>
-    test <@ resExternalId = Some "updatedExternalId" @>
-    test <@ resName = newName @>
+    test <@ resExternalId = Some newExternalId @>
+    test <@ resName = Some newName @>
     test <@ metaDataOk @>
 
     let newDescription = "updatedDescription"
-    let newSource = "updatedSource"
 
     let! updateRes2 =
-        Assets.Update.updateAsync [
+        Sequences.Update.updateAsync [
             (Identity.ExternalId newExternalId, [
-                Assets.AssetUpdate.SetMetaData (Map.ofList ["newKey", "newValue"])
-                Assets.AssetUpdate.SetDescription (Some newDescription)
-                Assets.AssetUpdate.SetSource newSource
+                Sequences.SequenceUpdate.SetMetaData (Map.ofList ["newKey", "newValue"])
+                Sequences.SequenceUpdate.SetDescription (Some newDescription)
+                Sequences.SequenceUpdate.SetAssetId (Some 5409900891232494L)
             ])
         ] wctx
 
-    let! getRes2 = Assets.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+    let! getRes2 = Sequences.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
 
     let getCtx2' =
         match getRes2 with
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let resDescription, resSource, resMetaData2, identity =
-        let assetsResponses = getCtx2'.Response
-        let h = Seq.tryHead assetsResponses
+    let resDescription, resAssetId, resMetaData2, identity =
+        let sequencesResponses = getCtx2'.Response
+        let h = Seq.tryHead sequencesResponses
         match h with
-        | Some assetResponse ->
-            assetResponse.Description, assetResponse.Source, assetResponse.MetaData, assetResponse.Id
-        | None -> Some "", Some "", Map.empty, 0L
+        | Some sequenceResponse ->
+            sequenceResponse.Description, sequenceResponse.AssetId, sequenceResponse.MetaData, sequenceResponse.Id
+        | None -> Some "", Some 0L, Map.empty, 0L
 
     // Assert get2
     test <@ getCtx2'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx2'.Request.Extra.["resource"] = "/assets/byids" @>
+    test <@ getCtx2'.Request.Extra.["resource"] = "/sequences/byids" @>
     test <@ getCtx2'.Request.Query.IsEmpty @>
     test <@ resDescription = Some newDescription @>
-    test <@ resSource = Some newSource @>
+    test <@ resAssetId = Some 5409900891232494L @>
     test <@ (Map.tryFind "newKey" resMetaData2) = Some "newValue" @>
 
     let! updateRes3 =
-        Assets.Update.updateAsync [
+        Sequences.Update.updateAsync [
             (Identity.Id identity, [
-                Assets.AssetUpdate.ChangeMetaData (Map.empty, ["newKey"])
-                Assets.AssetUpdate.ClearExternalId
-                Assets.AssetUpdate.ClearSource
+                Sequences.SequenceUpdate.ChangeMetaData (Map.empty, ["newKey"])
+                Sequences.SequenceUpdate.ClearExternalId
+                Sequences.SequenceUpdate.SetAssetId None
             ])
         ] wctx
 
-    let! getRes3 = Assets.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
-    let! delRes = Assets.Delete.deleteAsync ([ Identity.Id identity], false) wctx
+    let! getRes3 = Sequences.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
+    let! delRes = Sequences.Delete.deleteAsync [ Identity.Id identity] wctx
 
     let getCtx3' =
         match getRes3 with
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let resExternalId2, resSource2, resMetaData3 =
-        let assetsResponses = getCtx3'.Response
-        let h = Seq.tryHead assetsResponses
+    let resExternalId2, resAssetId2, resMetaData3 =
+        let sequencesResponses = getCtx3'.Response
+        let h = Seq.tryHead sequencesResponses
         match h with
-        | Some assetResponse ->
-            assetResponse.ExternalId, assetResponse.Source, assetResponse.MetaData
-        | None -> Some "", Some "", Map.empty
+        | Some sequenceResponse ->
+            sequenceResponse.ExternalId, sequenceResponse.AssetId, sequenceResponse.MetaData
+        | None -> Some "", Some 0L, Map.empty
 
     let delCtx =
         match delRes with
@@ -329,14 +337,14 @@ let ``Update sequences is Ok`` () = task {
 
     // Assert get2
     test <@ getCtx2'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx2'.Request.Extra.["resource"] = "/assets/byids" @>
+    test <@ getCtx2'.Request.Extra.["resource"] = "/sequences/byids" @>
     test <@ getCtx2'.Request.Query.IsEmpty @>
     test <@ resExternalId2 = None @>
-    test <@ resSource2 = None @>
+    test <@ resAssetId2 = None @>
     test <@ Map.isEmpty resMetaData3 @>
 
     // Assert delete
     test <@ delCtx.Request.Method = HttpMethod.Post @>
-    test <@ delCtx.Request.Extra.["resource"] = "/assets/delete" @>
+    test <@ delCtx.Request.Extra.["resource"] = "/sequences/delete" @>
     test <@ delCtx.Request.Query.IsEmpty @>
 }
