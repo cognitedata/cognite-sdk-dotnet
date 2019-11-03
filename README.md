@@ -24,6 +24,8 @@ The SDK is written as a dual SDK for both C# and F#.
 - [Events](https://docs.cognite.com/api/v1/#tag/Events)
 - [Files](https://docs.cognite.com/api/v1/#tag/Files)
 - [Login](https://docs.cognite.com/api/v1/#tag/Login) (partial)
+- [Raw](https://docs.cognite.com/api/v1/#tag/Raw)
+- [Sequences](https://docs.cognite.com/api/v1/#tag/Sequences)
 
 ## Documentation
 * SDK Documentation. TBW.

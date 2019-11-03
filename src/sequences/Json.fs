@@ -47,6 +47,31 @@ module SequencesJsonExtensions =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
+    type ColumnCreateDto with
+        member this.Encoder =
+            Encode.object [
+                yield! Encode.optionalProperty "name" Encode.string this.Name
+                yield "externalId", Encode.string this.ExternalId
+                yield! Encode.optionalProperty "description" Encode.string this.Description
+                yield "valueType", Encode.string (this.ValueType.ToString())
+                if not this.MetaData.IsEmpty then
+                    let metaString = Encode.propertyBag this.MetaData
+                    yield "metadata", metaString
+            ]
+
+    type SequenceCreateDto with
+        member this.Encoder =
+            Encode.object [
+                yield! Encode.optionalProperty "name" Encode.string this.Name
+                yield! Encode.optionalProperty "description" Encode.string this.Description
+                yield! Encode.optionalProperty "assetId" Encode.int53 this.AssetId
+                yield! Encode.optionalProperty "externalId" Encode.string this.ExternalId
+                if not this.MetaData.IsEmpty then
+                    let metaString = Encode.propertyBag this.MetaData
+                    yield "metadata", metaString
+                yield "columns", Encode.seq (Seq.map (fun (c: ColumnCreateDto) -> c.Encoder) this.Columns)
+            ]
+
     type SequenceFilter with
         static member Render (this: SequenceFilter) =
             match this with
