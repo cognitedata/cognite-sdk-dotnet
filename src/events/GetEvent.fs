@@ -12,6 +12,7 @@ open System.Threading.Tasks
 
 open Oryx
 open CogniteSdk
+open FSharp.Control.Tasks.V2.ContextInsensitive
 
 
 [<RequireQualifiedAccess>]
@@ -19,15 +20,15 @@ module Entity =
     [<Literal>]
     let Url = "/events"
 
-    let getCore (eventId: int64) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse EventReadDto.Decoder id
+    let getCore (eventId: int64) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse EventReadDto.Decoder id
         let url = Url + sprintf "/%d" eventId
 
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves information about an event given an event id. Expects a next continuation handler.
@@ -35,7 +36,7 @@ module Entity =
     /// <param name="assetId">The id of the event to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Event with the given id.</returns>
-    let get (eventId: int64) (next: NextFunc<EventReadDto,'a>) : HttpContext -> Async<Context<'a>> =
+    let get (eventId: int64) (next: NextFunc<EventReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
         getCore eventId fetch next
 
     /// <summary>
@@ -43,8 +44,8 @@ module Entity =
     /// </summary>
     /// <param name="assetId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
-    let getAsync (eventId: int64) : HttpContext -> Async<Context<EventReadDto>> =
-        getCore eventId fetch Async.single
+    let getAsync (eventId: int64) : HttpContext -> HttpFuncResult<EventReadDto> =
+        getCore eventId fetch finishEarly
 
 [<Extension>]
 type GetEventClientExtensions =
@@ -56,12 +57,12 @@ type GetEventClientExtensions =
     /// <returns>Event with the given id.</returns>
     [<Extension>]
     static member GetAsync (this: ClientExtension, eventId: int64, [<Optional>] token: CancellationToken) : Task<EventReadDto> =
-        async {
-            let! ctx = Entity.getAsync eventId this.Ctx
-            match ctx.Result with
-            | Ok event ->
-                return event
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Entity.getAsync eventId ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

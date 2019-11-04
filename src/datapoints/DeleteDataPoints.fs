@@ -3,15 +3,16 @@
 
 namespace CogniteSdk.DataPoints
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
 
 
@@ -57,7 +58,8 @@ module Delete =
                 yield "items", this.Items |> Seq.map (fun it -> it.Encoder) |> Encode.seq
             ]
 
-    let deleteCore (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
+    let deleteCore (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage>) =
+        let decodeResponse = Decode.decodeError
         let request : DeleteRequest = { Items = items }
 
         POST
@@ -65,14 +67,14 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> dispose
+        >=> decodeResponse
 
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
     /// <param name="items">List of delete requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let delete (items: DeleteRequestDto seq) (next: NextFunc<unit, unit>) =
+    let delete (items: DeleteRequestDto seq) (next: NextFunc<HttpResponseMessage, HttpResponseMessage>) =
         deleteCore items fetch next
 
     /// <summary>
@@ -80,7 +82,7 @@ module Delete =
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     let deleteAsync (items: DeleteRequestDto seq) =
-        deleteCore items fetch Async.single
+        deleteCore items fetch finishEarly
 
 [<Extension>]
 type DeleteDataPointsClientExtensions =
@@ -89,13 +91,13 @@ type DeleteDataPointsClientExtensions =
     /// </summary>
     /// <param name = "items">List of delete requests.</param>
     [<Extension>]
-    static member DeleteAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
-        async {
+    static member DeleteAsync (this: ClientExtension, items: DataPointsDelete seq, [<Optional>] token: CancellationToken) : Task =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
             let items' = items |> Seq.map Delete.DeleteRequestDto.FromDelete
-            let! ctx = Delete.deleteAsync items' this.Ctx
-            match ctx.Result with
+            let! result = Delete.deleteAsync items' ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> Task
+                return raise (error.ToException ())
+        } :> Task

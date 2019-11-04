@@ -30,6 +30,12 @@ type EventEntity internal (externalId: string, startTime: int64, endTime: int64,
     new (externalId: string, startTime: int64, endTime: int64, eventType: string, eventSubType: string, description: string, metadata: IDictionary<string, string>, assetIds: IEnumerable<int64>, source: string) =
         EventEntity(externalId=externalId, startTime=startTime, endTime=endTime, eventType=eventType, eventSubType=eventSubType, description=description, metadata=metadata, assetIds=assetIds, source=source, id=0L, createdTime=0L, lastUpdatedTime=0L)
 
+[<CLIMutable>]
+type EventItems = {
+    Items: EventEntity seq
+    NextCursor: string
+}
+
 /// Event type for responses.
 type EventReadDto = {
     /// External Id provided by client. Should be unique within the project
@@ -57,18 +63,19 @@ type EventReadDto = {
     /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus leap seconds.
     LastUpdatedTime : int64
 } with
-    /// Translates the domain type to a plain old crl object
+    /// Translates the domain type to a plain old CLR object
     member this.ToEventEntity () : EventEntity =
         let externalId = if this.ExternalId.IsSome then this.ExternalId.Value else Unchecked.defaultof<string>
         let startTime = if this.StartTime.IsSome then this.StartTime.Value else Unchecked.defaultof<int64>
         let endTime = if this.EndTime.IsSome then this.EndTime.Value else Unchecked.defaultof<int64>
         let eventType = if this.Type.IsSome then this.Type.Value else Unchecked.defaultof<string>
-        let eventSubType =if this.SubType.IsSome then this.SubType.Value else Unchecked.defaultof<string>
+        let eventSubType = if this.SubType.IsSome then this.SubType.Value else Unchecked.defaultof<string>
         let description = if this.Description.IsSome then this.Description.Value else Unchecked.defaultof<string>
         let metadata = this.MetaData |> Map.toSeq |> dict
         let assetIds = this.AssetIds |> List.ofSeq
         let source = if this.Source.IsSome then this.Source.Value else Unchecked.defaultof<string>
         EventEntity(
+            id = this.Id,
             externalId = externalId,
             startTime = startTime,
             endTime = endTime,
@@ -77,7 +84,9 @@ type EventReadDto = {
             description = description,
             metadata = metadata,
             assetIds = assetIds,
-            source = source
+            source = source,
+            createdTime = this.CreatedTime,
+            lastUpdatedTime = this.LastUpdatedTime
         )
 
 /// Event type for create requests.
@@ -123,6 +132,50 @@ type EventWriteDto = {
             AssetIds = assetIds
             Source = if isNull event.Source then None else Some event.Source
         }
+
+type EventItemsReadDto = {
+    Items: EventReadDto seq
+    NextCursor : string option
+}
+
+type EventFilter =
+    private
+    | CaseStartTime of CogniteSdk.TimeRange
+    | CaseEndTime of CogniteSdk.TimeRange
+    | CaseMetaData of Map<string, string>
+    | CaseAssetIds of int64 seq
+    | CaseAssetRootIds of int64 seq
+    | CaseSource of string
+    | CaseType of string
+    | CaseSubtype of string
+    | CaseCreatedTime of CogniteSdk.TimeRange
+    | CaseLastUpdatedTime of CogniteSdk.TimeRange
+    | CaseExternalIdPrefix of string
+
+    /// Range between two timestamps.
+    static member StartTime startTime = CaseStartTime startTime
+    /// Range between two timestamps.
+    static member EndTime endTime = CaseEndTime endTime
+    /// Filter on metadata
+    static member MetaData (metaData : IDictionary<string, string>) =
+        metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
+    /// Asset IDs of related equipment that this event relates to.
+    static member AssetIds assetIds = CaseAssetIds assetIds
+    /// The IDs of the root assets that the related assets should be children of.
+    static member RootAssetIds rootAssetIds = CaseAssetRootIds rootAssetIds
+    /// The source of this event.
+    static member Source source = CaseSource source
+    /// The event type
+    static member Type eventType = CaseType eventType
+    /// The event subtype
+    static member Subtype eventSubType = CaseSubtype eventSubType
+    /// Range between two timestamps.
+    static member CreatedTime createdTime = CaseCreatedTime createdTime
+    /// Range between two timestamps.
+    static member LastUpdatedTime updatedTime = CaseLastUpdatedTime updatedTime
+    /// The external ID provided by the client. Must be unique within the project.
+    static member ExternalIdPrefix externalIdPrefix = CaseExternalIdPrefix externalIdPrefix
+
 
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =

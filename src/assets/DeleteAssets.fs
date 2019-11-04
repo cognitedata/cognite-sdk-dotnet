@@ -3,13 +3,13 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -30,7 +30,8 @@ module Delete =
                 yield "recursive", Encode.bool this.Recursive
             ]
 
-    let deleteCore (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
+    let deleteCore (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError
         let request : AssetsDeleteRequest = {
             Items = assets
             Recursive = recursive
@@ -41,7 +42,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> dispose
+        >=> decodeResponse
 
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
@@ -49,7 +50,7 @@ module Delete =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     /// <param name="next">Async handler to use</param>
-    let delete (assets: Identity seq, recursive: bool) (next: NextFunc<unit,'a>) =
+    let delete (assets: Identity seq, recursive: bool) (next: NextFunc<HttpResponseMessage,'a>) =
         deleteCore (assets, recursive) fetch next
 
     /// <summary>
@@ -57,9 +58,8 @@ module Delete =
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
-    let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> Async<Context<unit>> =
-        deleteCore (assets, recursive) fetch Async.single
-
+    let deleteAsync<'a> (assets: Identity seq, recursive: bool) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        deleteCore (assets, recursive) fetch finishEarly
 
 [<Extension>]
 type DeleteAssetsExtensions =
@@ -70,12 +70,29 @@ type DeleteAssetsExtensions =
     /// <param name="recursive">If true, delete all children recursively.</param>
     [<Extension>]
     static member DeleteAsync(this: ClientExtension, ids: Identity seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
-        async {
-            let! ctx = Delete.deleteAsync (ids, recursive) this.Ctx
-            match ctx.Result with
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Delete.deleteAsync (ids, recursive) ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token) :> _
+                return raise (error.ToException ())
+        } :> _
 
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
+    [<Extension>]
+    static member DeleteAsync(this: ClientExtension, ids: int64 seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+        this.DeleteAsync(ids |> Seq.map Identity.Id, recursive, token)
+
+    /// <summary>
+    /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+    /// </summary>
+    /// <param name="assets">The list of assets to delete.</param>
+    /// <param name="recursive">If true, delete all children recursively.</param>
+    [<Extension>]
+    static member DeleteAsync(this: ClientExtension, ids: string seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
+        this.DeleteAsync(ids |> Seq.map Identity.ExternalId, recursive, token)

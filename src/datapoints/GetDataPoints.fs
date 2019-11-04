@@ -11,11 +11,11 @@ open System.Threading
 open System.Threading.Tasks
 
 open Com.Cognite.V1.Timeseries.Proto
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 /// Query parameters
 type DataPointQuery =
@@ -47,7 +47,7 @@ type DataPointMultipleQuery = {
 }
 
 [<RequireQualifiedAccess>]
-module DataPoints =
+module Items =
     [<Literal>]
     let Url = "/timeseries/data/list"
 
@@ -67,7 +67,7 @@ module DataPoints =
                     | (DataPointListItem.DatapointTypeOneofCase.StringDatapoints) ->
                         data.StringDatapoints.Datapoints |> Seq.map (StringDataPointDto.FromProto) |> String
                     | (DataPointListItem.DatapointTypeOneofCase.NumericDatapoints) ->
-                        data.NumericDatapoints.Datapoints |> Seq.map (NumericDataPointDto.FromProto) |> Numeric
+                        data.NumericDatapoints.Datapoints |> Seq.map (NumericDataPointDto.FromProtobuf) |> Numeric
                     | _ ->
                         Seq.empty |> Numeric
             }
@@ -102,8 +102,8 @@ module DataPoints =
             yield! defaultOptions |> Seq.map renderQueryOption
         ]
 
-    let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
+    let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderRequest options defaultOptions
 
         POST
@@ -112,10 +112,10 @@ module DataPoints =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
-    let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
+    let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderRequest options defaultOptions
 
         POST
@@ -124,7 +124,7 @@ module DataPoints =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -145,7 +145,7 @@ module DataPoints =
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     let listAsync (id: int64) (options: DataPointQuery seq) =
         let options' : DataPointMultipleQuery seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        listCore options' Seq.empty fetch Async.single
+        listCore options' Seq.empty fetch finishEarly
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -155,7 +155,7 @@ module DataPoints =
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     let listProtoAsync (id: int64) (options: DataPointQuery seq) =
         let options' : DataPointMultipleQuery seq = Seq.singleton { Id = Identity.Id id; QueryOptions = options }
-        listProto options' Seq.empty fetch Async.single
+        listProto options' Seq.empty fetch finishEarly
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -176,7 +176,7 @@ module DataPoints =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     let listMultipleAsync (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) =
-        listCore options defaultOptions fetch Async.single
+        listCore options defaultOptions fetch finishEarly
 
 
     /// <summary>
@@ -187,7 +187,7 @@ module DataPoints =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries as c# protobuf object.</returns>
     let listMultipleProtoAsync (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) =
-        listProto options defaultOptions fetch Async.single
+        listProto options defaultOptions fetch finishEarly
 
 [<Extension>]
 type GetDataPointsClientExtensions =
@@ -199,16 +199,16 @@ type GetDataPointsClientExtensions =
     /// <param name="options">Options describing a query for datapoints.</param>
     /// <returns>A single datapoint response object containing a list of datapoints.</returns>
     [<Extension>]
-    static member GetAsync (this: TimeSeries.DataPointsClientExtension, id : int64, options: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = DataPoints.listProtoAsync id options this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response
+    static member GetAsync (this: ClientExtension, id : int64, options: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Items.listProtoAsync id options ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
     /// <summary>
     /// Retrieves a list of data points from multiple time series in the same project.
@@ -218,14 +218,14 @@ type GetDataPointsClientExtensions =
     /// datapoint query items are omitted, top-level values are used instead.</param>
     /// <returns>List of datapoint responses containing lists of datapoints for each timeseries.</returns>
     [<Extension>]
-    static member ListMultipleAsync (this: TimeSeries.DataPointsClientExtension, options: DataPointMultipleQuery seq, defaultOptions: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
-        async {
-            let! ctx = DataPoints.listMultipleProtoAsync options defaultOptions this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response
+    static member ListMultipleAsync (this: ClientExtension, options: DataPointMultipleQuery seq, defaultOptions: DataPointQuery seq, [<Optional>] token: CancellationToken) : Task<DataPointListResponse> =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Items.listMultipleProtoAsync options defaultOptions ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 

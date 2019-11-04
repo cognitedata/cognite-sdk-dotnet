@@ -9,21 +9,6 @@ open Oryx
 
 [<AutoOpen>]
 module TimeseriesExtensions =
-    type NumericDataPointDto with
-        static member Decoder : Decoder<NumericDataPointDto> =
-            Decode.object (fun get ->
-                {
-                    TimeStamp = get.Required.Field "timestamp" Decode.int64
-                    Value = get.Required.Field "value" Decode.float
-                })
-
-    type StringDataPointDto with
-        static member Decoder : Decoder<StringDataPointDto> =
-            Decode.object (fun get ->
-                {
-                    TimeStamp = get.Required.Field "timestamp" Decode.int64
-                    Value = get.Required.Field "value" Decode.string
-                })
 
     type TimeSeriesWriteDto with
         member this.Encoder =

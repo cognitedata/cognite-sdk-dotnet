@@ -43,5 +43,27 @@ module EventExtensions =
                 if not (Seq.isEmpty this.AssetIds) then
                     let assetIdString = Seq.map Encode.int53 this.AssetIds |> Encode.seq
                     yield "assetIds", assetIdString
-
+                yield! Encode.optionalProperty "source" Encode.string this.Source
             ]
+
+    type EventFilter with
+        static member Render (this: EventFilter) =
+            match this with
+            | CaseStartTime startTime -> "startTime", startTime.Encoder
+            | CaseEndTime endTime -> "endTime", endTime.Encoder
+            | CaseMetaData md -> "metadata", Encode.propertyBag md
+            | CaseAssetIds ids -> "assetIds", ids |> Encode.int53seq
+            | CaseAssetRootIds rootIds -> "rootAssetIds", rootIds |> Encode.int53seq
+            | CaseSource source -> "source", Encode.string source
+            | CaseType eventType -> "type", Encode.string eventType
+            | CaseSubtype eventSubType -> "subtype", Encode.string eventSubType
+            | CaseCreatedTime createdTime -> "createdTime", createdTime.Encoder
+            | CaseLastUpdatedTime updateTime -> "lastUpdatedTime", updateTime.Encoder
+            | CaseExternalIdPrefix prefix -> "externalIdPrefix", Encode.string prefix
+
+    type EventItemsReadDto with
+        static member Decoder : Decoder<EventItemsReadDto> =
+            Decode.object (fun get -> {
+                Items = get.Required.Field "items" (Decode.list EventReadDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
+            })

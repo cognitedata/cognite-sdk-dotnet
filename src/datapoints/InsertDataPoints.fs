@@ -3,7 +3,6 @@
 
 namespace CogniteSdk.DataPoints
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
@@ -11,10 +10,10 @@ open System.Threading.Tasks
 open System.Threading
 
 open Com.Cognite.V1.Timeseries.Proto
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
 
 [<RequireQualifiedAccess>]
@@ -34,7 +33,7 @@ module Insert =
             | CaseId id -> dpItem.Id <- id
             | CaseExternalId id -> dpItem.ExternalId <- id
             match this.DataPoints with
-            | Numeric dps ->
+            | DataPointSeq.Numeric dps ->
                 dpItem.NumericDatapoints <- NumericDatapoints ()
                 dps |> Seq.map(fun dp ->
                     let pdp = NumericDatapoint ()
@@ -42,7 +41,7 @@ module Insert =
                     pdp.Value <- dp.Value
                     pdp
                 ) |> dpItem.NumericDatapoints.Datapoints.AddRange
-            | String dps ->
+            | DataPointSeq.String dps ->
                 dpItem.StringDatapoints <- StringDatapoints ()
                 dps |> Seq.map(fun dp ->
                     let pdp = StringDatapoint ()
@@ -59,20 +58,21 @@ module Insert =
             |> request.Items.AddRange
         request
 
-    let insertCore (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, Stream, unit>) =
+    let insertCore (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage>) =
+        let decodeResponse = Decode.decodeError
         POST
         >=> setVersion V10
         >=> setContent (Content.Protobuf items)
         >=> setResource Url
         >=> fetch
-        >=> dispose
+        >=> decodeResponse
 
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let insert (items: DataPoints list) (next: NextFunc<unit, unit>) =
+    let insert (items: DataPoints list) (next: NextFunc<HttpResponseMessage, HttpResponseMessage>) =
         insertCore (dataPointsToProtobuf items) fetch next
 
     /// <summary>
@@ -80,14 +80,14 @@ module Insert =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     let insertAsync (items: seq<DataPoints>) =
-        insertCore (dataPointsToProtobuf items) fetch Async.single
+        insertCore (dataPointsToProtobuf items) fetch finishEarly
 
     /// <summary>
     /// Insert data into one or more timeseries.
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests as c# protobuf objects.</param>
     let insertAsyncProto (items: DataPointInsertionRequest) =
-         insertCore items fetch Async.single
+         insertCore items fetch finishEarly
 
 [<Extension>]
 type InsertDataPointsClientExtensions =
@@ -96,12 +96,12 @@ type InsertDataPointsClientExtensions =
     /// </summary>
     /// <param name="items">The list of datapoint insertion requests.</param>
     [<Extension>]
-    static member InsertAsync (this: TimeSeries.DataPointsClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
-        async {
-            let! ctx = Insert.insertAsyncProto items this.Ctx
-            match ctx.Result with
+    static member InsertAsync (this: DataPoints.ClientExtension, items: DataPointInsertionRequest, [<Optional>] token: CancellationToken) : Task =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Insert.insertAsyncProto items ctx
+            match result with
             | Ok _ -> return ()
             | Error error ->
-               let err = error2Exception error
-               return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token):> Task
+                return raise (error.ToException ())
+        } :> Task

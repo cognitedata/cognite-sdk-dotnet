@@ -10,7 +10,9 @@ let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
 let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"
 
 let createCtx (key: string) (project: string) (serviceUrl: string) =
-    let client = new HttpClient ()
+    let handler = new HttpClientHandler(AllowAutoRedirect = false)
+    let client = new HttpClient (handler)
+
     Context.create ()
     |> Context.setAppId "test"
     |> Context.setHttpClient client
@@ -20,3 +22,8 @@ let createCtx (key: string) (project: string) (serviceUrl: string) =
 
 let readCtx () = createCtx testApiKeyRead "publicdata" "https://api.cognitedata.com"
 let writeCtx () = createCtx testApiKeyWrite "fusiondotnet-tests" "https://greenfield.cognitedata.com"
+
+let optionToSeq (o: 'a option): 'a seq =
+    match o with
+    | Some a -> Seq.ofList [ a ]
+    | None -> Seq.empty

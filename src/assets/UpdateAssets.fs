@@ -4,7 +4,6 @@
 namespace CogniteSdk.Assets
 
 open System
-open System.IO
 open System.Collections.Generic
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -12,6 +11,7 @@ open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -32,7 +32,7 @@ type AssetUpdate =
     private
     | CaseName of string // Name cannot be null
     | CaseDescription of string option
-    | CaseMetaData of MetaDataUpdate option
+    | CaseMetaData of MetaDataUpdate
     | CaseSource of string option
     | CaseExternalId of string option
 
@@ -44,13 +44,10 @@ type AssetUpdate =
         CaseDescription description
     /// Set metadata of asset. This removes any old metadata.
     static member SetMetaData (md : IDictionary<string, string>) =
-        md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> Some |> CaseMetaData
+        md |> Seq.map (|KeyValue|) |> Map.ofSeq |> Set |> CaseMetaData
     /// Set metadata of asset. This removes any old metadata.
     static member SetMetaData (md : Map<string, string>) =
-        md |> Set |> Some |> CaseMetaData
-    /// Remove all metadata from asset
-    static member ClearMetaData () =
-        CaseMetaData None
+        md |> Set |> CaseMetaData
     /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
     static member ChangeMetaData (add: IDictionary<string, string>, remove: string seq) =
         {
@@ -60,13 +57,7 @@ type AssetUpdate =
                 else
                     add |> Seq.map (|KeyValue|) |> Map.ofSeq |> Some
             Remove = if isNull remove then Seq.empty else remove
-        } |> Change |> Some |> CaseMetaData
-    /// Change metadata of asset by adding new data as given in `add` and removing keys given in `remove`
-    static member ChangeMetaData (add: Map<string, string> option, remove: string seq) =
-        {
-            Add = add
-            Remove = remove
-        } |> Change |> Some |> CaseMetaData
+        } |> Change |> CaseMetaData
     /// Set the source of this asset
     static member SetSource source =
         Some source |> CaseSource
@@ -98,20 +89,17 @@ module Update =
                 | Some desc -> yield "set", Encode.string desc
                 | None -> yield "setNull", Encode.bool true
             ]
-        | CaseMetaData optMeta ->
-            match optMeta with
-            | Some meta ->
-                match meta with
-                | Set data ->
-                    "metadata", Encode.object [
-                        yield "set", Encode.propertyBag data
-                    ]
-                | Change data ->
-                    "metadata", Encode.object [
-                        if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
-                        yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
-                    ]
-            | None -> "set", Encode.object []
+        | CaseMetaData meta ->
+            match meta with
+            | Set data ->
+                "metadata", Encode.object [
+                    yield "set", Encode.propertyBag data
+                ]
+            | Change data ->
+                "metadata", Encode.object [
+                    if data.Add.IsSome then yield "add", Encode.propertyBag data.Add.Value
+                    yield "remove", Encode.seq (Seq.map Encode.string data.Remove)
+                ]
         | CaseSource optSource ->
             "source", Encode.object [
                 match optSource with
@@ -124,8 +112,6 @@ module Update =
                 | Some externalId -> yield "set", Encode.string externalId
                 | None -> yield "setNull", Encode.bool true
             ]
-
-
 
     type private AssetUpdateRequest = {
         Id: Identity
@@ -158,20 +144,19 @@ module Update =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+    let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
             ]
         }
-
         POST
         >=> setVersion V10
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -179,7 +164,7 @@ module Update =
     /// <param name="assets">The list of assets to update.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of updated assets.</returns>
-    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> Async<Context<'a>> =
+    let update (assets: (Identity * (AssetUpdate list)) list) (next: NextFunc<AssetReadDto seq,'a>)  : HttpContext -> HttpFuncResult<'a> =
         updateCore assets fetch next
 
     /// <summary>
@@ -187,8 +172,8 @@ module Update =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> Async<Context<AssetReadDto seq>> =
-        updateCore assets fetch Async.single
+    let updateAsync (assets: (Identity * AssetUpdate list) list) : HttpContext -> HttpFuncResult<AssetReadDto seq> =
+        updateCore assets fetch finishEarly
 
 [<Extension>]
 type UpdateAssetsClientExtensions =
@@ -199,13 +184,13 @@ type UpdateAssetsClientExtensions =
     /// <returns>List of updated assets.</returns>
     [<Extension>]
     static member UpdateAsync (this: ClientExtension, assets: ValueTuple<Identity, AssetUpdate seq> seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
-        async {
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
             let assets' = assets |> Seq.map (fun struct (id, options) -> (id, options |> List.ofSeq)) |> List.ofSeq
-            let! ctx = Update.updateAsync assets' this.Ctx
-            match ctx.Result with
-            | Ok response ->
-                return response |> Seq.map (fun asset -> asset.ToAssetEntity ())
+            let! result = Update.updateAsync assets' ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken=token)
+                return raise (error.ToException ())
+        }

@@ -11,6 +11,7 @@ open System.Reflection
 open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
+open System.Threading.Tasks
 
 type ApiVersion =
     | V05
@@ -64,13 +65,13 @@ type Numeric =
 /// Used to describe a time range.
 [<CLIMutable>]
 type TimeRange = {
-    Max: DateTime
-    Min: DateTime
+    Max: DateTimeOffset
+    Min: DateTimeOffset
 } with
     member this.Encoder =
         Encode.object [
-            yield "max", DateTimeOffset(this.Max).ToUnixTimeMilliseconds() |> Encode.int64
-            yield "min", DateTimeOffset(this.Min).ToUnixTimeMilliseconds() |> Encode.int64
+            yield "max", this.Max.ToUnixTimeMilliseconds() |> Encode.int64
+            yield "min", this.Min.ToUnixTimeMilliseconds() |> Encode.int64
         ]
 
 [<AutoOpen>]
@@ -109,7 +110,11 @@ module Context =
     let urlBuilder (request: HttpRequest) =
         let extra = request.Extra
         let version = extra.["apiVersion"]
-        let project = extra.["project"]
+        let project =
+            if Map.containsKey "project" extra
+            then extra.["project"]
+            else failwith "Client must set project."
+
         let resource = extra.["resource"]
         let serviceUrl =
             if Map.containsKey "serviceUrl" extra
@@ -117,13 +122,13 @@ module Context =
             else "https://api.cognitedata.com"
 
         if not (Map.containsKey "hasAppId" extra)
-        then failwith "Client must set the Application ID (appId)"
+        then failwith "Client must set the Application ID (appId)."
 
         sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
-        {| Major=version.Major; Minor=version.Minor; Build=version.Build |}
+        (version.Major, version.Minor, version.Build)
 
     /// Set the project to connect to.
     let setProject (project: string) (context: HttpContext) =
@@ -136,8 +141,10 @@ module Context =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", serviceUrl) } }
 
     let create () =
+        let major, minor, build = version
         Context.defaultContext
         |> Context.setUrlBuilder urlBuilder
+        |> Context.addHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
@@ -148,8 +155,21 @@ module Handlers =
     let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
 
+    let setUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
+        let urlBuilder (request: HttpRequest) =
+            let extra = request.Extra
+            let serviceUrl =
+                if Map.containsKey "serviceUrl" extra
+                then extra.["serviceUrl"]
+                else "https://api.cognitedata.com"
 
-    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : Async<Context<'c>> =
+            if not (Map.containsKey "hasAppId" extra)
+            then failwith "Client must set the Application ID (appId)"
+
+            sprintf "%s%s" serviceUrl url
+        next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
+
+    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
         let shouldRetry (err: ResponseError) =
             let retryCode =
                 match err.Code with
@@ -160,7 +180,7 @@ module Handlers =
                 | 401 -> true
                 // 500 is hard to say, but we should avoid having those in the api
                 | 500 ->
-                  true // we get random and transient 500 responses often enough that it's worth retrying them.
+                    true // we get random and transient 500 responses often enough that it's worth retrying them.
                 // 502 and 503 are usually transient.
                 | 502 -> true
                 | 503 -> true
@@ -168,6 +188,7 @@ module Handlers =
                 | _ -> false
 
             let retryEx =
+
                 if err.InnerException.IsSome then
                     match err.InnerException.Value with
                     | :? Net.Http.HttpRequestException
@@ -181,3 +202,4 @@ module Handlers =
             retryCode || retryEx
 
         retry shouldRetry initialDelay maxRetries handler next ctx
+

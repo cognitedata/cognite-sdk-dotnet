@@ -4,18 +4,18 @@
 namespace CogniteSdk.TimeSeries
 
 open System.Collections.Generic
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
+
 open CogniteSdk
 open CogniteSdk.TimeSeries
-
 
 
 type TimeSeriesSearch =
@@ -52,8 +52,8 @@ type TimeSeriesFilter =
     | CaseAssetIds of int64 seq
     | CaseRootAssetIds of int64 seq
     | CaseExternalIdPrefix of string
-    | CaseCreatedTime of int64
-    | CaseLastUpdatedTime of int64
+    | CaseCreatedTime of CogniteSdk.TimeRange
+    | CaseLastUpdatedTime of CogniteSdk.TimeRange
 
     /// Name of timeseries
     static member Name name = CaseName name
@@ -68,6 +68,8 @@ type TimeSeriesFilter =
         metaData |> Seq.map (|KeyValue|) |> Map.ofSeq |> CaseMetaData
     /// Filter out timeseries without assetId in list
     static member AssetIds ids = CaseAssetIds ids
+    // Filter out timeseries without rootAssetIds in list
+    static member RootAssetIds ids = CaseRootAssetIds ids
     /// Prefix on externalId of timeseries
     static member ExternalIdPrefix prefix = CaseExternalIdPrefix prefix
     /// Filter out assets without this exact createdTime
@@ -83,12 +85,12 @@ type TimeSeriesFilter =
                 | CaseUnit unit -> yield "unit", Encode.string unit
                 | CaseIsStep isStep -> yield "isStep", Encode.bool isStep
                 | CaseIsString isString -> yield "isString", Encode.bool isString
-                | CaseMetaData md -> yield "metaData", Encode.propertyBag md
+                | CaseMetaData md -> yield "metadata", Encode.propertyBag md
                 | CaseAssetIds ids -> yield "assetIds", Encode.int53seq ids
                 | CaseRootAssetIds ids -> yield "rootAssetIds", Encode.int53seq ids
                 | CaseExternalIdPrefix prefix -> yield "externalIdPrefix", Encode.string prefix
-                | CaseCreatedTime time -> yield "createdTime", Encode.int53 time
-                | CaseLastUpdatedTime time -> yield "lastUpdatedTime", Encode.int53 time
+                | CaseCreatedTime time -> yield "createdTime", time.Encoder
+                | CaseLastUpdatedTime time -> yield "lastUpdatedTime", time.Encoder
         ]
 
 
@@ -116,8 +118,8 @@ module Search =
                 yield "search", TimeSeriesSearch.Encode options
         ]
 
-    let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,Stream, 'a>) =
-        let decoder = Encode.decodeResponse TimeSeries.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
+    let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,'a>) =
+        let decodeResponse = Decode.decodeResponse Items.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -125,7 +127,7 @@ module Search =
         >=> setContent (Content.JsonValue body)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
@@ -135,7 +137,7 @@ module Search =
     /// <param name="filters">Search filters.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Timeseries matching query.</returns>>
-    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let search (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq) (next: NextFunc<TimeSeriesReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         searchCore limit options filters fetch next
 
     /// <summary>
@@ -145,8 +147,8 @@ module Search =
     /// <param name="options">Search options.</param>
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
-    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> Async<Context<TimeSeriesReadDto seq>> =
-        searchCore limit options filters fetch Async.single
+    let searchAsync (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq): HttpContext -> HttpFuncResult<TimeSeriesReadDto seq> =
+        searchCore limit options filters fetch finishEarly
 
 [<Extension>]
 type SearchTimeSeriesClientExtensions =
@@ -158,13 +160,14 @@ type SearchTimeSeriesClientExtensions =
     /// <param name="filters">Search filters.</param>
     /// <returns>Timeseries matching query.</returns>
     [<Extension>]
-    static member SearchAsync (this: TimeSeriesClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        async {
-            let! ctx = Search.searchAsync limit options filters this.Ctx
-            match ctx.Result with
-            | Ok tss ->
+    static member SearchAsync (this: ClientExtension, limit : int, options: TimeSeriesSearch seq, filters: TimeSeriesFilter seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Search.searchAsync limit options filters ctx
+            match result with
+            | Ok ctx ->
+                let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }

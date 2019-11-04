@@ -2,17 +2,19 @@ module Tests.Timeseries
 
 open System.IO
 open System.Net.Http
+open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open Swensen.Unquote
 
 open Oryx
+
 open CogniteSdk
-open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
 
 [<Fact>]
-let ``Create timeseries is Ok`` () = async {
+let ``Create timeseries is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json" // FIXME:
     let fetch = Fetch.fromJson json
@@ -23,17 +25,21 @@ let ``Create timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.Create.createCore [] fetch Async.single ctx
+    let! res = TimeSeries.Create.createCore [] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
-let ``Get timeseries by ids is Ok`` () = async {
+let ``Get timeseries by ids is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json"
     let fetch = Fetch.fromJson json
@@ -44,17 +50,21 @@ let ``Get timeseries by ids is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.GetByIds.getByIdsCore [ Identity.Id 0L ] fetch Async.single ctx
+    let! res = TimeSeries.Retrieve.getByIdsCore [ Identity.Id 0L ] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/byids" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/byids" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
-let ``Delete timeseries is Ok`` () = async {
+let ``Delete timeseries is Ok`` () = task {
     // Arrenge
     let json = File.ReadAllText "Timeseries.json"
     let fetch = Fetch.fromJson json
@@ -65,13 +75,17 @@ let ``Delete timeseries is Ok`` () = async {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = TimeSeries.Delete.deleteCore [ Identity.Id 42L] fetch Async.single ctx
+    let! res = TimeSeries.Delete.deleteCore [ Identity.Id 42L] fetch finishEarly ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
 
     // Assert
-    test <@ Result.isOk res.Result @>
-    test <@ res.Request.Method = HttpMethod.Post @>
-    test <@ res.Request.Extra.["resource"] = "/timeseries/delete" @>
-    test <@ res.Request.Query.IsEmpty @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/delete" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]

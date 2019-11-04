@@ -1,5 +1,5 @@
-FsConfig
-Microsoft.Extensions.Configuration
-TypeShape
-FSharp.Core
+group Playground
+    FsConfig
+    Microsoft.Extensions.Configuration
+    FSharp.Core
 

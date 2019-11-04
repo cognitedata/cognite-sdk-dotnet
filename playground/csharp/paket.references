@@ -1,1 +1,2 @@
-FSharp.Core
+group Playground
+    FSharp.Core

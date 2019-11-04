@@ -3,13 +3,13 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Thoth.Json.Net
 
@@ -35,8 +35,8 @@ module Retrieve =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, Stream, 'a>) =
-        let decoder = Encode.decodeResponse AssetResponse.Decoder (fun response -> response.Items)
+    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
 
         POST
@@ -44,7 +44,7 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decoder
+        >=> decodeResponse
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -54,7 +54,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Assets with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> Async<Context<'a>> =
+    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
         getByIdsCore ids fetch next
 
     /// <summary>
@@ -65,7 +65,7 @@ module Retrieve =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch Async.single
+        getByIdsCore ids fetch finishEarly
 
 
 [<Extension>]
@@ -79,15 +79,37 @@ type GetAssetsByIdsClientExtensions =
     /// <returns>Assets with given ids.</returns>
     [<Extension>]
     static member GetByIdsAsync (this: ClientExtension, ids: seq<Identity>, [<Optional>] token: CancellationToken) : Task<_ seq> =
-        async {
-            let! ctx = Retrieve.getByIdsAsync ids this.Ctx
-            match ctx.Result with
-            | Ok assets ->
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Retrieve.getByIdsAsync ids ctx
+            match result with
+            | Ok ctx ->
+                let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error ->
-                let err = error2Exception error
-                return raise err
-        } |> fun op -> Async.StartAsTask(op, cancellationToken = token)
+                return raise (error.ToException ())
+        }
 
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: int64 seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map Identity.Id, token)
+
+    /// <summary>
+    /// Retrieves information about multiple assets in the same project.
+    /// A maximum of 1000 assets IDs may be listed per request and all
+    /// of them must be unique.
+    /// </summary>
+    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <returns>Assets with given ids.</returns>
+    [<Extension>]
+    static member GetByIdsAsync (this: ClientExtension, ids: string seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+        this.GetByIdsAsync(ids |> Seq.map Identity.ExternalId, token)
 
 
