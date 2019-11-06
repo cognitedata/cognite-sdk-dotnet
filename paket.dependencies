@@ -9,8 +9,8 @@ group Sdk
     nuget FSharp.Core ~> 4.7
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2.1
-    nuget Thoth.Json.Net ~> 3.5
-    nuget Oryx ~> 0.13.0
+    nuget Thoth.Json.Net ~> 3.6
+    nuget Oryx ~> 0.14.0
     nuget Microsoft.Extensions.Http
 
 group Test
