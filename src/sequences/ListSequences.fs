@@ -35,10 +35,47 @@ type SequenceQuery =
         | CaseLimit limit -> "limit", Encode.int limit
         | CaseCursor cursor -> "cursor", Encode.string cursor
 
+type RowQuery =
+    private
+    | CaseStart of int64
+    | CaseEnd of int64
+    | CaseLimit of int32
+    | CaseCursor of string
+    | CaseColumns of string
+    | CaseId of Identity
+
+    /// Lowest row number included
+    static member Start start = CaseStart start
+    /// Get rows up to, but excluding, this row number
+    static member End e = CaseEnd e
+    /// Maximum number of rows returned in one request
+    static member Limit limit =
+        if limit > MaxLimitSize || limit < 1 then
+            failwith "Limit must be set to 1000 or less"
+        CaseLimit limit
+    /// Cursor for pagination returned from a previous request. Apart
+    /// From this cursor, the rest of the request object should be the same as for the original request.
+    static member Cursor cursor = CaseCursor cursor
+    /// Columns to be included. Specified as list of column externalIds. In case this filter is not set, all
+    /// available columns will be returned.
+    static member Columns columns = CaseColumns columns
+    /// A server-generated ID for the object.
+    static member Id identity = CaseId identity
+
+    static member Render (this: RowQuery) =
+        match this with
+        | CaseStart start -> "start", Encode.int53 start
+        | CaseEnd e -> "end", Encode.int53 e
+        | CaseColumns cols -> "columns", Encode.string cols
+        | CaseId identity -> identity.Render
+        | CaseLimit limit -> "limit", Encode.int limit
+        | CaseCursor cursor -> "cursor", Encode.string cursor
+
 [<RequireQualifiedAccess>]
 module Items =
     [<Literal>]
     let Url = "/sequences/list"
+    let dataUrl = "/sequences/data/list"
 
     type Request = {
         Filters : SequenceFilter seq
@@ -51,6 +88,28 @@ module Items =
                 ]
                 yield! this.Options |> Seq.map SequenceQuery.Render
             ]
+
+    type DataRequest = {
+        Options : RowQuery seq
+    } with
+        member this.Encoder =
+            Encode.object [
+                yield! this.Options |> Seq.map RowQuery.Render
+            ]
+
+    let listRowsCore (options: RowQuery seq)  (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+        let decodeResponse = Decode.decodeContent SequenceDataReadDto.Decoder id
+        let request : DataRequest = {
+            Options = options
+        }
+
+        POST
+        >=> setVersion V10
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> setResource dataUrl
+        >=> fetch
+        >=> Decode.decodeError
+        >=> decodeResponse
 
     let listCore (options: SequenceQuery seq) (filters: SequenceFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let decodeResponse = Decode.decodeContent SequenceItemsReadDto.Decoder id
@@ -86,6 +145,22 @@ module Items =
     let listAsync (options: SequenceQuery seq) (filters: SequenceFilter seq) : HttpContext -> HttpFuncResult<SequenceItemsReadDto> =
         listCore options filters fetch finishEarly
 
+    /// <summary>
+    /// Retrieves Sequence data with columns and rows matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <param name="next">Async handler to use</param>
+    /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
+    let listRows (options: RowQuery seq) (next: NextFunc<SequenceDataReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
+        listRowsCore options fetch next
+
+    /// <summary>
+    /// Retrieves Sequence data with columns and rows matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
+    let listRowsAsync (options: RowQuery seq) : HttpContext -> HttpFuncResult<SequenceDataReadDto> =
+        listRowsCore options fetch finishEarly
 
 [<Extension>]
 type ListSequencesExtensions =

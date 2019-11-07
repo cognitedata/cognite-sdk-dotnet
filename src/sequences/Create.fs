@@ -20,6 +20,7 @@ open CogniteSdk
 module Create =
     [<Literal>]
     let Url = "/sequences"
+    let DataUrl = "/sequences/data"
 
     type Request = {
         Items: SequenceCreateDto seq
@@ -37,6 +38,17 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list SequenceReadDto.Decoder |> Decode.map seq)
             })
 
+    let createRowsCore (sequenceData: SequenceDataCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
+        let decodeResponse = Decode.decodeError
+        let request : SequenceDataItemsCreateDto = { Items = sequenceData }
+
+        POST
+        >=> setVersion V10
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> setResource DataUrl
+        >=> fetch
+        >=> decodeResponse
+
     let createCore (sequences: SequenceCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
         let decodeResponse = Decode.decodeResponse SequenceResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = sequences }
@@ -47,6 +59,23 @@ module Create =
         >=> setResource Url
         >=> fetch
         >=> decodeResponse
+
+    /// <summary>
+    /// Create new rows in sequence in the given project.
+    /// </summary>
+    /// <param name="sequenceData">The Sequences to create.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>List of created Sequences.</returns>
+    let createRows (sequenceData: SequenceDataCreateDto seq) (next: NextFunc<HttpResponseMessage, 'a>) =
+        createRowsCore sequenceData fetch next
+
+    /// <summary>
+    /// Create new rows in sequence in the given project.
+    /// </summary>
+    /// <param name="sequenceData">The Sequences to create.</param>
+    /// <returns>List of created Sequences.</returns>
+    let createRowsAsync (sequenceData: SequenceDataCreateDto seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        createRowsCore sequenceData fetch finishEarly
 
     /// <summary>
     /// Create new Sequences in the given project.

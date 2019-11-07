@@ -65,8 +65,8 @@
     <Compile Include="sequences\ListSequences.fs" />
     <Compile Include="sequences\RetrieveSequences.fs" />
     <Compile Include="sequences\SearchSequences.fs" />
-    <Compile Include="sequences\CreateSequences.fs" />
-    <Compile Include="sequences\DeleteSequences.fs" />
+    <Compile Include="sequences\Create.fs" />
+    <Compile Include="sequences\Delete.fs" />
     <Compile Include="sequences\UpdateSequences.fs" />
     <Compile Include="login\Model.fs" />
     <Compile Include="login\Json.fs" />
