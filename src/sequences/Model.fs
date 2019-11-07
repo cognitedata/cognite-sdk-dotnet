@@ -34,6 +34,15 @@ type ValueType =
             | _ -> sprintf "Could not decode valueType %A" s |> Decode.fail
         )
 
+type RowValue =
+    private
+    | CaseString of string
+    | CaseDouble of double
+    | CaseLong of int64
+    static member String str = CaseString str
+    static member Double d = CaseDouble d
+    static member Long l = CaseLong l
+
 type ColumnEntity internal (name: string, externalId: string, description: string, valueType: ValueType, metadata: IDictionary<string, string>, createdTime: int64, lastUpdatedTime: int64) =
     /// The name of the column.
     member val Name : string = name with get, set
@@ -187,6 +196,40 @@ type SequenceReadDto = {
 type SequenceItemsReadDto = {
     Items: SequenceReadDto seq
     NextCursor : string option
+}
+
+type RowDto = {
+    RowNumber:  int64
+    Values: RowValue seq
+}
+
+type SequenceDataCreateDto = {
+    Columns: string seq
+    Rows: RowDto seq
+    Id: Identity
+}
+
+type SequenceDataItemsCreateDto = {
+    Items: SequenceDataCreateDto seq
+}
+
+type ColumnInfoReadDto = {
+    ExternalId: string option
+    Name: string option
+    ValueType: ValueType option
+}
+
+type SequenceDataReadDto = {
+    Id: int64
+    ExternalId: string option
+    Columns: ColumnInfoReadDto seq
+    Rows: RowDto seq
+    NextCursor: string option
+}
+
+type SequenceDataDelete = {
+    Rows: int64 seq
+    Id: Identity
 }
 
 type SequenceFilter =

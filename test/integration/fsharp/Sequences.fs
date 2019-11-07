@@ -89,7 +89,41 @@ let ``Get sequences by ids is Ok`` () = task {
     test <@ ctx'.Request.Extra.["resource"] = "/sequences/byids" @>
 }
 
-let ``Create and delete assets is Ok`` () = task {
+[<Trait("resource", "sequences")>]
+[<Fact>]
+let ``Get sequence rows by ids is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let sequencesId = 5702374195409554L |> Identity.Id
+    let query = [ RowQuery.Id sequencesId ]
+    let expectedRows =
+        [
+            { RowNumber = 1L; Values = [RowValue.String "row1"] }
+            { RowNumber = 2L; Values = [RowValue.String "row2"] }
+        ] |> Seq.ofList
+    // Act
+    let! res = Sequences.Items.listRowsAsync query ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let dto = ctx'.Response
+    let colLength = Seq.length dto.Columns
+    let rowLength = Seq.length dto.Rows
+
+    test <@ rowLength = 2 @>
+    test <@ colLength = 1 @>
+    test <@ dto.Id = 5702374195409554L @>
+    test <@ dto.Rows = expectedRows @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/sequences/data/list" @>
+}
+
+[<Trait("resource", "sequences")>]
+[<Fact>]
+let ``Create and delete sequences is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let columnExternalIdString = Guid.NewGuid().ToString()
@@ -132,10 +166,10 @@ let ``Create and delete assets is Ok`` () = task {
     let resExternalId =
         match res with
         | Ok ctx' ->
-            let assetsResponses = ctx'.Response
-            let h = Seq.tryHead assetsResponses
+            let sequencesResponses = ctx'.Response
+            let h = Seq.tryHead sequencesResponses
             match h with
-            | Some assetsResponse -> assetsResponse.ExternalId
+            | Some sequenceResponse -> sequenceResponse.ExternalId
             | None -> None
         | Error _ -> None
 
@@ -148,6 +182,103 @@ let ``Create and delete assets is Ok`` () = task {
     test <@ delCtx'.Request.Method = HttpMethod.Post @>
     test <@ delCtx'.Request.Extra.["resource"] = "/sequences/delete" @>
     test <@ delCtx'.Request.Query.IsEmpty @>
+}
+
+[<Trait("resource", "sequences")>]
+[<Fact>]
+let ``Create and delete sequences rows is Ok`` () = task {
+    // Arrange
+    let ctx = writeCtx ()
+    let columnExternalIdString = Guid.NewGuid().ToString()
+    let externalIdString = Guid.NewGuid().ToString()
+    let externalId = Identity.ExternalId externalIdString
+    let name = Guid.NewGuid().ToString()
+    let column: ColumnCreateDto = {
+        Name = Some "Create column sdk test"
+        ExternalId = columnExternalIdString
+        Description = Some "dotnet sdk test"
+        ValueType = ValueType.String
+        MetaData = Map.empty
+    }
+    let dto: Sequences.SequenceCreateDto = {
+        ExternalId = Some externalIdString
+        Name = Some name
+        Description = Some "dotnet sdk test"
+        MetaData = Map.empty
+        AssetId = None
+        Columns = [column]
+    }
+    let deleteDto: Sequences.SequenceDataDelete = {
+        Rows = []
+        Id = externalId
+    }
+
+    let rows: RowDto seq =
+        [
+            { RowNumber = 1L; Values = [RowValue.String "row1"] }
+            { RowNumber = 2L; Values = [RowValue.String "row2"] }
+        ] |> Seq.ofList
+    let rowDto: Sequences.SequenceDataCreateDto = {
+        Columns = ["sdk-column"]
+        Rows = rows
+        Id = Identity.Id 5702374195409554L
+    }
+    let externalId = Identity.ExternalId externalIdString
+
+    // Act
+    let! res = Sequences.Create.createAsync [ dto ] ctx
+    let! rowRes = Sequences.Create.createRowsAsync [ rowDto ] ctx
+    let! rowDelRes = Sequences.Delete.deleteRowsAsync [ deleteDto ] ctx
+    let! delRes = Sequences.Delete.deleteAsync [ externalId ] ctx
+
+    let ctx' =
+        match res with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let delCtx' =
+        match delRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let rowCtx' =
+        match rowRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let rowDelCtx' =
+        match rowDelRes with
+        | Ok ctx -> ctx
+        | Error err -> raise <| err.ToException ()
+
+    let resExternalId =
+        match res with
+        | Ok ctx' ->
+            let sequencesResponses = ctx'.Response
+            let h = Seq.tryHead sequencesResponses
+            match h with
+            | Some sequenceResponse -> sequenceResponse.ExternalId
+            | None -> None
+        | Error _ -> None
+
+    // Assert
+    test <@ resExternalId = Some externalIdString @>
+    test <@ ctx'.Request.Method = HttpMethod.Post @>
+    test <@ ctx'.Request.Extra.["resource"] = "/sequences" @>
+    test <@ ctx'.Request.Query.IsEmpty @>
+
+    test <@ delCtx'.Request.Method = HttpMethod.Post @>
+    test <@ delCtx'.Request.Extra.["resource"] = "/sequences/delete" @>
+    test <@ delCtx'.Request.Query.IsEmpty @>
+
+    test <@ resExternalId = Some externalIdString @>
+    test <@ rowCtx'.Request.Method = HttpMethod.Post @>
+    test <@ rowCtx'.Request.Extra.["resource"] = "/sequences/data" @>
+    test <@ rowCtx'.Request.Query.IsEmpty @>
+
+    test <@ rowDelCtx'.Request.Method = HttpMethod.Post @>
+    test <@ rowDelCtx'.Request.Extra.["resource"] = "/sequences/data/delete" @>
+    test <@ rowDelCtx'.Request.Query.IsEmpty @>
 }
 
 [<Trait("resource", "sequences")>]
@@ -197,7 +328,7 @@ let ``Update sequences is Ok`` () = task {
     }
     let dto: Sequences.SequenceCreateDto = {
         ExternalId = Some externalIdString
-        Name = Some "Create Assets sdk test"
+        Name = Some "Create Sequences sdk test"
         Description = Some "dotnet sdk test"
         MetaData = [
             "oldkey1", "oldvalue1"

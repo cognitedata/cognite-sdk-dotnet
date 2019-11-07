@@ -72,6 +72,83 @@ module SequencesJsonExtensions =
                 yield "columns", Encode.seq (Seq.map (fun (c: ColumnCreateDto) -> c.Encoder) this.Columns)
             ]
 
+    type RowValue with
+        member this.Encoder =
+            match this with
+            | CaseString s -> Encode.string s
+            | CaseDouble d -> Encode.float d
+            | CaseLong l -> Encode.int64 l
+        static member Decoder(colType: ValueType) : Decoder<RowValue> =
+            match colType with
+            | ValueType.CaseString -> Decode.string |> Decode.map RowValue.String
+            | ValueType.CaseDouble -> Decode.float |> Decode.map RowValue.Double
+            | ValueType.CaseLong -> Decode.int64 |> Decode.map RowValue.Long
+
+    type RowDto with
+        member this.Encoder =
+            Encode.object [
+                yield "rowNumber", Encode.int64 this.RowNumber
+                yield "values",  this.Values
+                    |> Seq.map (fun (v: RowValue) -> v.Encoder)
+                    |> Encode.seq
+            ]
+        static member Decoder : Decoder<RowDto> =
+            Decode.object (fun get ->
+                let valueDecoders = [
+                    RowValue.Decoder ValueType.String
+                    RowValue.Decoder ValueType.Double
+                    RowValue.Decoder ValueType.Long
+                ]
+                let values = get.Required.Field "values" (Decode.oneOf valueDecoders |> Decode.list)
+                {
+                    RowNumber = get.Required.Field "rowNumber" Decode.int64
+                    Values = values
+                }
+            )
+
+    type ColumnInfoReadDto with
+        static member Decoder : Decoder<ColumnInfoReadDto> =
+            Decode.object (fun get ->
+                {
+                    ExternalId = get.Optional.Field "externalId" Decode.string
+                    Name = get.Optional.Field "name" Decode.string
+                    ValueType = get.Optional.Field "valueType" ValueType.Decoder
+                }
+            )
+
+    type SequenceDataReadDto with
+        static member Decoder : Decoder<SequenceDataReadDto> =
+            Decode.object (fun get ->
+                {
+                    Id = get.Required.Field "id" Decode.int64
+                    ExternalId = get.Optional.Field "externalId" Decode.string
+                    Columns = get.Required.Field "columns" (Decode.list ColumnInfoReadDto.Decoder)
+                    Rows = get.Required.Field "rows" (Decode.list RowDto.Decoder)
+                    NextCursor = get.Optional.Field "nextCursor" Decode.string
+                }
+        )
+
+    type SequenceDataCreateDto with
+        member this.Encoder =
+            Encode.object [
+                yield "columns", Encode.seq (Seq.map Encode.string this.Columns)
+                yield "rows", Encode.seq (Seq.map (fun (row: RowDto) -> row.Encoder) this.Rows)
+                yield this.Id.Render
+            ]
+
+    type SequenceDataItemsCreateDto with
+        member this.Encoder =
+            Encode.object [
+                yield "items", Encode.seq (Seq.map (fun (s: SequenceDataCreateDto) -> s.Encoder) this.Items)
+            ]
+
+    type SequenceDataDelete with
+        member this.Encoder =
+            Encode.object [
+                yield "rows", Encode.seq (Seq.map Encode.int64 this.Rows)
+                yield this.Id.Render
+            ]
+
     type SequenceFilter with
         static member Render (this: SequenceFilter) =
             match this with
