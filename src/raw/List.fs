@@ -23,26 +23,32 @@ module Items =
 
     type DatabaseResponse = {
         Items: DatabaseDto seq
+        NextCursor: string option
     } with
          static member Decoder : Decoder<DatabaseResponse> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list DatabaseDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     type TableResponse = {
         Items: TableDto seq
+        NextCursor: string option
     } with
          static member Decoder : Decoder<TableResponse> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list TableDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     type RowResponse = {
         Items: RowReadDto seq
+        NextCursor: string option
     } with
          static member Decoder : Decoder<RowResponse> =
             Decode.object (fun get -> {
                 Items = get.Required.Field "items" (Decode.list RowReadDto.Decoder |> Decode.map seq)
+                NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
     let listRowsCore (database: string) (table: string) (queryParameters: DatabaseRowQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
