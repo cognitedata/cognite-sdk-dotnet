@@ -52,7 +52,7 @@ module Items =
             })
 
     let listRowsCore (database: string) (table: string) (queryParameters: DatabaseRowQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse RowResponse.Decoder (fun response -> response.Items)
+        let decodeResponse = Decode.decodeResponse RowResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseRowQuery.Render |> List.ofSeq
         let encodedDbName = HttpUtility.UrlEncode database
         let encodedTableName = HttpUtility.UrlEncode table
@@ -65,7 +65,7 @@ module Items =
         >=> decodeResponse
 
     let listTablesCore (database: string) (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse TableResponse.Decoder (fun response -> response.Items)
+        let decodeResponse = Decode.decodeResponse TableResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseQuery.Render |> List.ofSeq
         let encodedDbName = HttpUtility.UrlEncode database
 
@@ -77,7 +77,7 @@ module Items =
         >=> decodeResponse
 
     let listDatabasesCore (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse DatabaseResponse.Decoder (fun response -> response.Items)
+        let decodeResponse = Decode.decodeResponse DatabaseResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseQuery.Render |> List.ofSeq
 
         GET
@@ -95,7 +95,7 @@ module Items =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>databases in project.</returns>
-    let listDatabases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
+    let listDatabases (queryParameters: DatabaseQuery seq) (next: NextFunc<DatabaseResponse,'a>) : HttpContext -> HttpFuncResult<'a> =
         listDatabasesCore queryParameters fetch next
 
     /// <summary>
@@ -116,7 +116,7 @@ module Items =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>tables in project.</returns>
-    let listTables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
+    let listTables (database: string) (queryParameters: DatabaseQuery seq) (next: NextFunc<TableResponse,'a>) : HttpContext -> HttpFuncResult<'a> =
         listTablesCore database queryParameters fetch next
 
     /// <summary>
@@ -137,7 +137,7 @@ module Items =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>rows in table in database.</returns>
-    let listRows (database: string) (table: string) (queryParameters: DatabaseRowQuery seq) (next: NextFunc<RowReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
+    let listRows (database: string) (table: string) (queryParameters: DatabaseRowQuery seq) (next: NextFunc<RowResponse,'a>) : HttpContext -> HttpFuncResult<'a> =
         listRowsCore database table queryParameters fetch next
 
     /// <summary>
@@ -160,14 +160,19 @@ type GetdatabasesByIdsClientExtensions =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     [<Extension>]
-    static member ListDatabasesAsync (this: ClientExtension, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListDatabasesAsync (this: ClientExtension, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<DatabaseItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Items.listDatabasesAsync queryParameters this.Ctx
             match result with
             | Ok ctx ->
                 let databases = ctx.Response
-                return databases |> Seq.map (fun database -> database.ToDatabaseEntity ())
+                let cursor = databases.NextCursor |> Option.defaultValue Unchecked.defaultof<string>
+                let items : DatabaseItems = {
+                    NextCursor = cursor
+                    Items = databases.Items |> Seq.map (fun database -> database.ToDatabaseEntity ())
+                }
+                return items
             | Error error ->
                 return raise (error.ToException ())
         }
@@ -179,7 +184,7 @@ type GetdatabasesByIdsClientExtensions =
     /// </summary>
     /// <returns>databases in project.</returns>
     [<Extension>]
-    static member ListDatabasesAsync (this: ClientExtension, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListDatabasesAsync (this: ClientExtension, [<Optional>] token: CancellationToken) : Task<DatabaseItems> =
         this.ListDatabasesAsync(Seq.empty, token)
 
     /// <summary>
@@ -190,14 +195,18 @@ type GetdatabasesByIdsClientExtensions =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <returns>tables in project.</returns>
     [<Extension>]
-    static member ListTablesAsync (this: ClientExtension, database: string, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListTablesAsync (this: ClientExtension, database: string, queryParameters: DatabaseQuery seq, [<Optional>] token: CancellationToken) : Task<TableItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Items.listTablesAsync database queryParameters ctx
             match result with
             | Ok ctx ->
                 let tables = ctx.Response
-                return tables |> Seq.map (fun table -> table.ToTableEntity ())
+                let cursor = tables.NextCursor |> Option.defaultValue Unchecked.defaultof<string>
+                let items : TableItems = {
+                    NextCursor = cursor
+                    Items = tables.Items |> Seq.map (fun table -> table.ToTableEntity ())
+                }return items
             | Error error ->
                 return raise (error.ToException ())
         }
@@ -209,7 +218,7 @@ type GetdatabasesByIdsClientExtensions =
     /// </summary>
     /// <returns>tables in project.</returns>
     [<Extension>]
-    static member ListTablesAsync (this: ClientExtension,  database: string, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListTablesAsync (this: ClientExtension,  database: string, [<Optional>] token: CancellationToken) : Task<TableItems> =
         this.ListTablesAsync(database, Seq.empty, token)
 
     /// <summary>
@@ -220,14 +229,18 @@ type GetdatabasesByIdsClientExtensions =
     /// <param name="queryParameters">Limit and nextCursor</param>
     /// <returns>Rows in table in database.</returns>
     [<Extension>]
-    static member ListRowsAsync (this: ClientExtension, database: string, table: string, queryParameters: DatabaseRowQuery seq, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListRowsAsync (this: ClientExtension, database: string, table: string, queryParameters: DatabaseRowQuery seq, [<Optional>] token: CancellationToken) : Task<RowItems> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Items.listRowsAsync database table queryParameters ctx
             match result with
             | Ok ctx ->
                 let rows = ctx.Response
-                return rows |> Seq.map (fun row -> row.ToRowEntity ())
+                let cursor = rows.NextCursor |> Option.defaultValue Unchecked.defaultof<string>
+                let items : RowItems = {
+                    NextCursor = cursor
+                    Items = rows.Items |> Seq.map (fun row -> row.ToRowEntity ())
+                }return items
             | Error error ->
                 return raise (error.ToException ())
         }
@@ -239,5 +252,5 @@ type GetdatabasesByIdsClientExtensions =
     /// </summary>
     /// <returns>Rows in table in database.</returns>
     [<Extension>]
-    static member ListRowsAsync (this: ClientExtension,  database: string, table: string, [<Optional>] token: CancellationToken) : Task<_ seq> =
+    static member ListRowsAsync (this: ClientExtension,  database: string, table: string, [<Optional>] token: CancellationToken) : Task<RowItems> =
         this.ListRowsAsync(database, table, Seq.empty, token)

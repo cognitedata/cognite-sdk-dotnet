@@ -29,8 +29,8 @@ let ``List Databases with limit is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
-    let len =Seq.length dtos
+    let dtos = ctx'.Response.Items
+    let len = Seq.length dtos
 
     // Assert
     test <@ len > 0 @>
@@ -53,7 +53,7 @@ let ``List Tables with limit is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
@@ -81,7 +81,7 @@ let ``List Rows with limit is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
@@ -110,7 +110,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
     // Assert
     test <@ len > 0 @>
@@ -147,7 +147,7 @@ let ``Create and delete database is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
@@ -191,7 +191,7 @@ let ``Create and delete table in database is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
@@ -244,7 +244,7 @@ let ``Create and delete rows from table in database is Ok`` () = task {
         | Ok ctx -> ctx
         | Error err -> raise <| err.ToException ()
 
-    let dtos = ctx'.Response
+    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
