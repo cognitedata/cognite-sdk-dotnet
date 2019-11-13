@@ -88,8 +88,7 @@ type GetFilesByIdsClientExtensions =
             | Ok ctx ->
                 let files = ctx.Response
                 return files |> Seq.map (fun file -> file.ToFileEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

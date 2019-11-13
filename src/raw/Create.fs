@@ -168,8 +168,7 @@ type CreateRawClientExtensions =
             | Ok ctx ->
                 let databases = ctx.Response
                 return databases |> Seq.map (fun database -> database.ToDatabaseEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -188,8 +187,7 @@ type CreateRawClientExtensions =
             | Ok ctx ->
                 let createdTables = ctx.Response
                 return createdTables |> Seq.map (fun table -> table.ToTableEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -207,6 +205,5 @@ type CreateRawClientExtensions =
             let! result = Create.createRowsAsync database table rows' ctx
             match result with
             | Ok _ -> return ()
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         } :> _

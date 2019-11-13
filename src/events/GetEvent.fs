@@ -63,6 +63,5 @@ type GetEventClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }

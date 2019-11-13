@@ -173,8 +173,7 @@ type GetdatabasesByIdsClientExtensions =
                     Items = databases.Items |> Seq.map (fun database -> database.ToDatabaseEntity ())
                 }
                 return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -207,8 +206,7 @@ type GetdatabasesByIdsClientExtensions =
                     NextCursor = cursor
                     Items = tables.Items |> Seq.map (fun table -> table.ToTableEntity ())
                 }return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -241,8 +239,7 @@ type GetdatabasesByIdsClientExtensions =
                     NextCursor = cursor
                     Items = rows.Items |> Seq.map (fun row -> row.ToRowEntity ())
                 }return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

@@ -30,7 +30,8 @@ let ``Get datapoints by id with options is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let resId =
@@ -70,7 +71,8 @@ let ``Get datapoints by id with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let resId =
@@ -111,7 +113,8 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
 
@@ -159,7 +162,8 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
 
@@ -206,7 +210,8 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
 
@@ -255,7 +260,8 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
 
@@ -315,7 +321,8 @@ let ``Insert datapoints is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ Result.isOk res @>

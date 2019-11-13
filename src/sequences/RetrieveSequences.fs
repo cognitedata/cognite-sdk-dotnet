@@ -87,8 +87,7 @@ type GetSequencesByIdsClientExtensions =
             | Ok ctx ->
                 let Sequences = ctx.Response
                 return Sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

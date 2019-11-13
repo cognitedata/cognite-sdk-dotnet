@@ -105,7 +105,7 @@ namespace Tests
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filters));
+            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.ListAsync(filters));
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Tests
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filter));
+            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.ListAsync(filter));
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace Tests
                 .SetProject(project);
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.GetAsync(42L));
+            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.GetAsync(42L));
         }
 
         [Fact]
@@ -559,9 +559,8 @@ namespace Tests
                     Assert.NotNull(result);
                     Assert.NotEmpty(result.Items);
                 }
-                catch (ResponseException e)
+                catch (OperationCanceledException)
                 {
-                    Assert.IsType<OperationCanceledException>(e.InnerException);
                     return;
                 }
                 Assert.False(true, "Expected task to fail");

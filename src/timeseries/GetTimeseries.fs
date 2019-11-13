@@ -120,6 +120,5 @@ type ListTimeseriesClientExtensions =
                 let items = response.Items |> Seq.map (fun item -> item.ToTimeSeriesEntity ())
                 let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
                 return { Items = items; NextCursor = cursor }
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }

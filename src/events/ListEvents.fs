@@ -109,8 +109,7 @@ type ListEventsExtensions =
                         Items = events.Items |> Seq.map (fun event -> event.ToEventEntity ())
                     }
                 return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

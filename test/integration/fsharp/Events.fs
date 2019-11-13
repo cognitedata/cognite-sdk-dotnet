@@ -41,12 +41,14 @@ let ``Create and delete events is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId =
         let eventsResponses = ctx'.Response
@@ -78,7 +80,8 @@ let ``Get event by id is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dto = ctx'.Response
     let resId = dto.Id
@@ -123,7 +126,8 @@ let ``Get event by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -176,7 +180,8 @@ let ``Update assets is Ok`` () = task {
     let getCtx' =
         match getRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resName, resExternalId, resMetaData =
         let eventssResponses = getCtx'.Response
@@ -188,7 +193,8 @@ let ``Update assets is Ok`` () = task {
     let updateCtx' =
         match updateRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let updateSuccsess = Result.isOk updateRes
 
@@ -201,12 +207,14 @@ let ``Update assets is Ok`` () = task {
     let createCtx' =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert create
     test <@ createCtx'.Request.Method = HttpMethod.Post @>
@@ -245,7 +253,8 @@ let ``List events with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -273,7 +282,8 @@ let ``Filter events is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -301,7 +311,8 @@ let ``Filter events on subtype is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -332,7 +343,8 @@ let ``Filter events on AssetIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -367,7 +379,8 @@ let ``Filter events on CreatedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -402,7 +415,8 @@ let ``Filter events on LastUpdatedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -437,7 +451,8 @@ let ``Filter events on StartTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -472,7 +487,8 @@ let ``Filter events on EndTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -503,7 +519,8 @@ let ``Filter events on ExternalIdPrefix is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -534,7 +551,8 @@ let ``Filter events on MetaData is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -565,7 +583,8 @@ let ``Filter events on Source is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -596,7 +615,8 @@ let ``Filter events on Type is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -629,7 +649,8 @@ let ``Search events is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos

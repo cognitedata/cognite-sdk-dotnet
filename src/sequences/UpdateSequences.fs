@@ -190,6 +190,5 @@ type UpdateSequencesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }

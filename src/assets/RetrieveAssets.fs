@@ -87,8 +87,7 @@ type GetAssetsByIdsClientExtensions =
             | Ok ctx ->
                 let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

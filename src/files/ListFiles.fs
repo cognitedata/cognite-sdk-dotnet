@@ -108,8 +108,7 @@ type ListFilesExtensions =
                         Items = files.Items |> Seq.map (fun file -> file.ToFileEntity ())
                     }
                 return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>

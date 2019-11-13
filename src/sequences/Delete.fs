@@ -104,8 +104,7 @@ type DeleteSequencesExtensions =
             let! result = Delete.deleteAsync ids ctx
             match result with
             | Ok _ -> return ()
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>

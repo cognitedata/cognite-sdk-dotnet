@@ -94,8 +94,7 @@ type GetTimeseriesByIdsClientExtensions =
             | Ok ctx ->
                 let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
 

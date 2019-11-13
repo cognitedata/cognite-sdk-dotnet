@@ -7,7 +7,7 @@ open System
 open System.Collections.Generic
 open Thoth.Json.Net
 
-open Oryx
+exception JsonDecodeException of string
 
 type ErrorValue =
     | IntegerValue of int

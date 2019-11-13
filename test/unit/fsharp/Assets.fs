@@ -29,7 +29,8 @@ let ``Get asset is Ok``() = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Get @>
@@ -73,7 +74,8 @@ let ``Get asset with extra fields is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Get @>
@@ -128,7 +130,8 @@ let ``List assets is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -152,7 +155,8 @@ let ``Create assets empty is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -187,7 +191,8 @@ let ``Create single asset is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -215,7 +220,8 @@ let ``Update single asset with no updates is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -244,7 +250,8 @@ let ``Update single asset with is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -273,7 +280,8 @@ let ``Attempt searching assets`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     test <@ ctx'.Request.Method = HttpMethod.Post @>
     test <@ ctx'.Request.Extra.["resource"] = "/assets/search" @>
@@ -301,7 +309,8 @@ let ``Attempt filtering assets`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     test <@ ctx'.Request.Method = HttpMethod.Post @>
     test <@ ctx'.Request.Extra.["resource"] = "/assets/list" @>

@@ -173,8 +173,7 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteDatabasesAsync databases recursive ctx
             match result with
             | Ok _ -> return ()
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>
@@ -190,8 +189,7 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteTablesAsync database tables ctx
             match result with
             | Ok _ -> return ()
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>
@@ -208,6 +206,5 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteRowsAsync database table rows ctx
             match result with
             | Ok _ -> return ()
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         } :> _

@@ -15,18 +15,13 @@ open Oryx.Retry
 open Thoth.Json.Net
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+// Shadow types that pins the error type for Oryx to ResponeError
 type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
-
 type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseError>
-
 type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseError>
-
 type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseError> -> Context<'a> -> HttpFuncResult<'r, ResponseError>
-
 type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseError>
-
 type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseError>
-
 type HttpHandler = HttpHandler<HttpResponseMessage, ResponseError>
 
 type ApiVersion =
@@ -185,6 +180,14 @@ module Handlers =
             sprintf "%s%s" serviceUrl url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
+    /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
+    /// need to open the Oryx namespace.
+    let raiseError (error: HandlerError<ResponseError>) =
+        match error with
+        | ApiError error -> raise <| error.ToException ()
+        | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
+        | Panic (err) -> raise err
+
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
         use! stream = response.Content.ReadAsStreamAsync ()
         let decoder = ResponseError.Decoder
@@ -212,13 +215,13 @@ module Handlers =
                 | 503 -> true
                 // do not retry other responses.
                 | _ -> false
-
+            | Panic (Oryx.JsonDecodeException _) -> false
             | Panic err ->
                 match err with
                 | :? Net.Http.HttpRequestException
                 | :? System.Net.WebException -> true
                 // do not retry other exceptions.
-                | _ -> false
+                | _ -> true
 
         retry shouldRetry initialDelay maxRetries handler next ctx
 

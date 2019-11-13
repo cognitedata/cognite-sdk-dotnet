@@ -247,6 +247,5 @@ type UpdateEventsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }

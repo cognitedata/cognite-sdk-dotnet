@@ -85,7 +85,6 @@ module Items =
     let listAsync (options: AssetQuery seq) (filters: AssetFilter seq) : HttpContext -> HttpFuncResult<AssetItemsReadDto> =
         listCore options filters fetch finishEarly
 
-
 [<Extension>]
 type ListAssetsExtensions =
     /// <summary>
@@ -108,8 +107,7 @@ type ListAssetsExtensions =
                     Items = assets.Items |> Seq.map (fun asset -> asset.ToAssetEntity ())
                 }
                 return items
-            | Error (ApiError error) -> return raise (error.ToException ())
-            | Error (Panic error) -> return raise error
+            | Error error -> return raiseError error
         }
 
     /// <summary>
