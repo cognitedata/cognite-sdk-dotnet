@@ -59,13 +59,12 @@ module Insert =
         request
 
     let insertCore (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage>) =
-        let decodeResponse = Decode.decodeError
         POST
         >=> setVersion V10
         >=> setContent (Content.Protobuf items)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Insert data into one or more timeseries.

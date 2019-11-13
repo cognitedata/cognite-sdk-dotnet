@@ -15,7 +15,6 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open Oryx.Decode
 
 type Aggregate =
     private
@@ -207,7 +206,6 @@ module Aggregated =
         ]
 
     let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -216,7 +214,8 @@ module Aggregated =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> protobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
 
     let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let request = renderDataQuery options defaultOptions
@@ -228,9 +227,7 @@ module Aggregated =
         >=> setResponseType Protobuf
         >=> fetch
         >=> withError decodeError
-        >=> protobuf (fun msg ->
-            use stream = msg.Content.ReadAsStreamAsync ()
-            DataPointListResponse.Parser.ParseFrom stream)
+        >=> protobuf DataPointListResponse.Parser.ParseFrom
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.

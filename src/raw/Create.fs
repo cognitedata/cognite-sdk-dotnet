@@ -15,7 +15,6 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
-open Oryx.Decode
 
 [<AutoOpen>]
 module Create =

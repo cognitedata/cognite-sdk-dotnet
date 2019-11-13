@@ -10,7 +10,6 @@ open System.Runtime.InteropServices
 open System.Threading
 
 open Oryx
-open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk

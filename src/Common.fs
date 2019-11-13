@@ -14,7 +14,6 @@ open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Oryx.Decode
 
 type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
 
@@ -196,8 +195,9 @@ module Handlers =
     }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
-        let shouldRetry (err: ResponseError) =
-            let retryCode =
+        let shouldRetry (error: HandlerError<ResponseError>) : bool =
+            match error with
+            | ApiError err ->
                 match err.Code with
                 // Rate limiting
                 | 429 -> true
@@ -213,19 +213,12 @@ module Handlers =
                 // do not retry other responses.
                 | _ -> false
 
-            let retryEx =
-
-                if err.InnerException.IsSome then
-                    match err.InnerException.Value with
-                    | :? Net.Http.HttpRequestException
-                    | :? System.Net.WebException -> true
-                    // do not retry other exceptions.
-                    | _ -> false
-                else
-                    false
-
-            // Retry if retriable code or retryable exception
-            retryCode || retryEx
+            | Panic err ->
+                match err with
+                | :? Net.Http.HttpRequestException
+                | :? System.Net.WebException -> true
+                // do not retry other exceptions.
+                | _ -> false
 
         retry shouldRetry initialDelay maxRetries handler next ctx
 

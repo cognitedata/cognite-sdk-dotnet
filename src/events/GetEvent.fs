@@ -11,7 +11,6 @@ open System.Threading
 open System.Threading.Tasks
 
 open Oryx
-open Oryx.Decode
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
