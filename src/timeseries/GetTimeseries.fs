@@ -12,6 +12,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -71,7 +72,6 @@ module Items =
             "rootAssetIds", sprintf "[%s]" (String.Join (",", list))
 
     let listCore (query: TimeSeriesQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse<TimeSeriesItemsDto, TimeSeriesItemsDto, 'a> TimeSeriesItemsDto.Decoder id
         let query = query |> Seq.map renderOption |> List.ofSeq
 
         GET
@@ -79,7 +79,8 @@ module Items =
         >=> setResource Url
         >=> addQuery query
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TimeSeriesItemsDto.Decoder
 
     /// <summary>
     /// Retrieves a list of all time series in a project. Parameters can be used to select a subset of time series.
@@ -120,6 +121,6 @@ type ListTimeseriesClientExtensions =
                 let items = response.Items |> Seq.map (fun item -> item.ToTimeSeriesEntity ())
                 let cursor = if response.NextCursor.IsSome then response.NextCursor.Value else Unchecked.defaultof<string>
                 return { Items = items; NextCursor = cursor }
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

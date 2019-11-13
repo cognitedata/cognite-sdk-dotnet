@@ -13,6 +13,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -145,7 +146,6 @@ module Update =
             })
 
     let updateCore (args: (Identity * AssetUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
         let request : AssetsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -156,7 +156,9 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json  AssetResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -191,6 +193,6 @@ type UpdateAssetsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

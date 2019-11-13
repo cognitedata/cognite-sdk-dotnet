@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk.Files
@@ -51,7 +52,6 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: FileSearch seq) (filters: FileFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileItemsReadDto.Decoder (fun files -> files.Items)
         let request : SearchFilesRequest = {
             Limit = limit
             Filters = filters
@@ -63,7 +63,10 @@ module Search =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileItemsReadDto.Decoder
+        >=> map (fun files -> files.Items)
+
 
     /// <summary>
     /// Retrieves a list of Files matching the given criteria. This operation does not support pagination.
@@ -109,8 +112,8 @@ type SearchFilesClientExtensions =
             | Ok ctx ->
                 let files = ctx.Response
                 return files |> Seq.map (fun file -> file.ToFileEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
 

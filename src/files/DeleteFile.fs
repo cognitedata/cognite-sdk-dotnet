@@ -30,7 +30,6 @@ module Delete =
             ]
 
     let deleteCore (files: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : FilesDeleteRequest = {
             Items = files
         }
@@ -40,7 +39,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete multiple files in the same project
@@ -71,7 +70,7 @@ type DeleteFileExtensions =
             let! result = Delete.deleteAsync (ids) ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         } :> Task
 

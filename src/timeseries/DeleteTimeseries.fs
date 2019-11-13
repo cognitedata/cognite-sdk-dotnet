@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -30,7 +31,6 @@ module Delete =
             ]
 
     let deleteCore (items: Identity seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage>) =
-        let decodeResponse = Decode.decodeError
         let request : DeleteRequest = { Items = items }
 
         POST
@@ -38,7 +38,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete one or more timeseries.
@@ -68,6 +68,6 @@ type DeleteTimeSeriesClientExtensions =
             let! result = Delete.deleteAsync items ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         } :> Task

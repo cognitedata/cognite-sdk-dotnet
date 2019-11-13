@@ -6,7 +6,7 @@
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\src\CogniteSdk.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 

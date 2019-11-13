@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 
 open CogniteSdk.Assets
 open CogniteSdk
@@ -22,14 +23,14 @@ module Entity =
     let Url = "/assets"
 
     let getCore (assetId: int64) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse AssetReadDto.Decoder id
         let url = Url + sprintf "/%d" assetId
 
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json AssetReadDto.Decoder
 
     /// <summary>
     /// Retrieves information about an asset given an asset id. Expects a next continuation handler.
@@ -61,8 +62,7 @@ type GetAssetClientExtensions =
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Entity.getAsync assetId ctx
             match result with
-            | Ok ctx ->
-                return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Ok ctx -> return ctx.Response
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

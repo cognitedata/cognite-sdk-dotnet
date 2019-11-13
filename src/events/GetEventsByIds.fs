@@ -14,6 +14,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open Oryx.Decode
 
 [<AutoOpen>]
 module Retrieve =
@@ -36,7 +37,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun response -> response.Items)
         let request : EventRequest = { Items = ids }
 
         POST
@@ -44,7 +44,10 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventResponse.Decoder
+        >=> map (fun response -> response.Items)
+
 
     /// <summary>
     /// Retrieves information about multiple events in the same project.
@@ -85,8 +88,8 @@ type GetEventsByIdsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>

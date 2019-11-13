@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk.Events
@@ -60,7 +61,6 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: EventSearch seq) (filters: EventFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse EventItemsReadDto.Decoder (fun events -> events.Items)
         let request : SearchEventsRequest = {
             Limit = limit
             Filters = filters
@@ -72,7 +72,9 @@ module Search =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventItemsReadDto.Decoder
+        >=> map (fun events -> events.Items)
 
     /// <summary>
     /// Retrieves a list of events matching the given criteria. This operation does not support pagination.
@@ -117,6 +119,6 @@ type SearchEventsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

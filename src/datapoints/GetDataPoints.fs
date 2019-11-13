@@ -206,8 +206,8 @@ type GetDataPointsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>
@@ -225,7 +225,7 @@ type GetDataPointsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 

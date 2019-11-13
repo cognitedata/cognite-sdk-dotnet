@@ -49,7 +49,7 @@ module RawJsonExtensions =
             Decode.object (fun get ->
                 {
                     Key = get.Required.Field "key" Decode.string
-                    Columns = get.Required.Field "columns" Decode.value
+                    Columns = get.Required.Field "columns" (Decode.dict Decode.value)
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
                 })
 
@@ -64,5 +64,5 @@ module RawJsonExtensions =
         member this.Encoder =
             Encode.object [
                 yield "key", Encode.string this.Key
-                yield "columns", this.Columns
+                yield "columns", Encode.dict (this.Columns |> Seq.map (|KeyValue|) |> Map.ofSeq)
             ]

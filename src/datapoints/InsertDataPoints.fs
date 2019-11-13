@@ -102,6 +102,6 @@ type InsertDataPointsClientExtensions =
             let! result = Insert.insertAsyncProto items ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         } :> Task

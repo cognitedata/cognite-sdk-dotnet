@@ -5,13 +5,30 @@
 namespace CogniteSdk
 
 open System
+open System.Net.Http
 open System.Text.RegularExpressions
 open System.Reflection
+open System.Threading.Tasks
 
 open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
-open System.Threading.Tasks
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open Oryx.Decode
+
+type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
+
+type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseError>
+
+type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseError>
+
+type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseError> -> Context<'a> -> HttpFuncResult<'r, ResponseError>
+
+type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseError>
+
+type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseError>
+
+type HttpHandler = HttpHandler<HttpResponseMessage, ResponseError>
 
 type ApiVersion =
     | V05
@@ -168,6 +185,15 @@ module Handlers =
 
             sprintf "%s%s" serviceUrl url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
+
+    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
+        use! stream = response.Content.ReadAsStreamAsync ()
+        let decoder = ResponseError.Decoder
+        let! result = decodeStreamAsync decoder stream
+        match result with
+        | Ok err -> return ApiError err
+        | Error reason -> return Panic <| JsonDecodeException reason
+    }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
         let shouldRetry (err: ResponseError) =

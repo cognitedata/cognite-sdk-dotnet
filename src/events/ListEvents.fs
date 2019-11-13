@@ -14,6 +14,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open Oryx.Decode
 
 
 type EventQuery =
@@ -52,7 +53,6 @@ module Items =
             ]
 
     let listCore (options: EventQuery seq) (filters: EventFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse EventItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -63,7 +63,8 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventItemsReadDto.Decoder
 
     /// <summary>
     /// Retrieves list of events matching filter, and a cursor if given limit is exceeded
@@ -109,8 +110,8 @@ type ListEventsExtensions =
                         Items = events.Items |> Seq.map (fun event -> event.ToEventEntity ())
                     }
                 return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>

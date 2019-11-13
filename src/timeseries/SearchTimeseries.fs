@@ -12,6 +12,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -119,7 +120,6 @@ module Search =
         ]
 
     let searchCore (limit: int) (options: TimeSeriesSearch seq) (filters: TimeSeriesFilter seq)(fetch: HttpHandler<HttpResponseMessage,'a>) =
-        let decodeResponse = Decode.decodeResponse Items.TimeSeriesItemsDto.Decoder (fun assets -> assets.Items)
         let body = encodeRequest limit options filters
 
         POST
@@ -127,7 +127,9 @@ module Search =
         >=> setContent (Content.JsonValue body)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json Items.TimeSeriesItemsDto.Decoder
+        >=> map (fun assets -> assets.Items)
 
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
@@ -168,6 +170,6 @@ type SearchTimeSeriesClientExtensions =
             | Ok ctx ->
                 let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

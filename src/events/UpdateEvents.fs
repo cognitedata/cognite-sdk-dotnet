@@ -16,6 +16,7 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open Oryx.Decode
 
 
 type MetaDataChange = {
@@ -199,7 +200,6 @@ module Update =
             })
 
     let updateCore (args: (Identity * EventUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : EventsUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (eventId, args) -> { Id = eventId; Params = args })
@@ -211,7 +211,9 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -246,6 +248,6 @@ type UpdateEventsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

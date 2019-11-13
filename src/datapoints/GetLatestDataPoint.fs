@@ -148,7 +148,7 @@ type GetLatestDataPointExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (Latest.DataPointsDto.ToCollection)
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 

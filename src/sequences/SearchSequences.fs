@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk.Sequences
@@ -61,7 +62,6 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: SequenceSearch seq) (filters: SequenceFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse SequenceItemsReadDto.Decoder (fun sequences -> sequences.Items)
         let request : SearchSequencesRequest = {
             Limit = limit
             Filters = filters
@@ -73,7 +73,9 @@ module Search =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceItemsReadDto.Decoder
+        >=> map (fun sequences -> sequences.Items)
 
     /// <summary>
     /// Retrieves a list of Sequences matching the given criteria. This operation does not support pagination.
@@ -119,8 +121,8 @@ type SearchSequencesClientExtensions =
             | Ok ctx ->
                 let sequences = ctx.Response
                 return sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
 

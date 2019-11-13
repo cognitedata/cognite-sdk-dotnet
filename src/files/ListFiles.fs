@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -51,7 +52,6 @@ module Items =
             ]
 
     let listCore (options: FileQuery seq) (filters: FileFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -62,7 +62,8 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileItemsReadDto.Decoder
 
     /// <summary>
     /// Retrieves list of files matching filter, and a cursor if given limit is exceeded
@@ -108,8 +109,8 @@ type ListFilesExtensions =
                         Items = files.Items |> Seq.map (fun file -> file.ToFileEntity ())
                     }
                 return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>

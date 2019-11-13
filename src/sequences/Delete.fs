@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -38,7 +39,6 @@ module Delete =
             ]
 
     let deleteRowsCore (sequences: SequenceDataDelete seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : SequencesDataDeleteRequest = {
             Items = sequences
         }
@@ -48,10 +48,9 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource DataUrl
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     let deleteCore (sequences: Identity seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : SequencesDeleteRequest = {
             Items = sequences
         }
@@ -61,7 +60,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete multiple sequences rows in the same project
@@ -106,8 +105,8 @@ type DeleteSequencesExtensions =
             let! result = Delete.deleteAsync ids ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         } :> _
 
     /// <summary>

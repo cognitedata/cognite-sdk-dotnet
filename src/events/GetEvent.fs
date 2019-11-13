@@ -11,6 +11,7 @@ open System.Threading
 open System.Threading.Tasks
 
 open Oryx
+open Oryx.Decode
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
@@ -21,14 +22,14 @@ module Entity =
     let Url = "/events"
 
     let getCore (eventId: int64) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse EventReadDto.Decoder id
         let url = Url + sprintf "/%d" eventId
 
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventReadDto.Decoder
 
     /// <summary>
     /// Retrieves information about an event given an event id. Expects a next continuation handler.
@@ -63,6 +64,6 @@ type GetEventClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -39,14 +40,14 @@ module Create =
 
     let createCore (items: seq<TimeSeriesWriteDto>) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let request : TimeseriesRequest = { Items = items }
-        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder id
 
         POST
         >=> setVersion V10
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TimeseriesResponse.Decoder
 
     /// <summary>
     /// Create one or more new timeseries.
@@ -82,6 +83,6 @@ type CreateTimeSeriesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response.Items |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

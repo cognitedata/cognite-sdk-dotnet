@@ -58,16 +58,16 @@ type TableItemsReadDto = {
 }
 
 /// Read raw database table row type.
-type RowEntity internal (key: string, columns: JsonValue, lastUpdatedTime: int64) =
+type RowEntity internal (key: string, columns: IDictionary<string, JsonValue>, lastUpdatedTime: int64) =
     member val Key : string = key with get, set
-    member val Columns : JsonValue = columns with get, set
+    member val Columns : IDictionary<string, JsonValue> = columns with get, set
     member val LastUpdatedTime : int64 = lastUpdatedTime with get, set
 
     new () = RowEntity(key=null, columns=null, lastUpdatedTime=0L)
 
 type RowReadDto = {
     Key: string
-    Columns: JsonValue
+    Columns: IDictionary<string, JsonValue>
     LastUpdatedTime: int64
 } with
     member this.ToRowEntity () : RowEntity =
@@ -75,7 +75,7 @@ type RowReadDto = {
 
 type RowWriteDto = {
     Key: string
-    Columns: JsonValue
+    Columns: IDictionary<string, JsonValue>
 } with
     member this.ToRowEntity () : RowEntity =
         RowEntity(this.Key, this.Columns, 0L)

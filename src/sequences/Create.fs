@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -39,7 +40,6 @@ module Create =
             })
 
     let createRowsCore (sequenceData: SequenceDataCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let decodeResponse = Decode.decodeError
         let request : SequenceDataItemsCreateDto = { Items = sequenceData }
 
         POST
@@ -47,10 +47,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource DataUrl
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     let createCore (sequences: SequenceCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let decodeResponse = Decode.decodeResponse SequenceResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = sequences }
 
         POST
@@ -58,7 +57,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Create new rows in sequence in the given project.
@@ -110,6 +111,6 @@ type CreateSequencesExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

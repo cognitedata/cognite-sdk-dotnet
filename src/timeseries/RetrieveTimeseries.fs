@@ -11,6 +11,7 @@ open System.Threading
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -41,7 +42,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesReadRequest = {
             Items = ids
         }
@@ -51,7 +51,9 @@ module Retrieve =
         >=> setResource Url
         >=> setContent (Content.JsonValue request.Encoder)
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TimeseriesResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
@@ -93,8 +95,8 @@ type GetTimeseriesByIdsClientExtensions =
             | Ok ctx ->
                 let tss = ctx.Response
                 return tss |> Seq.map (fun ts -> ts.ToTimeSeriesEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
 

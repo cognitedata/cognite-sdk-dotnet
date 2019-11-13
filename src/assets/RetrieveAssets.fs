@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -36,7 +37,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
 
         POST
@@ -44,7 +44,9 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json AssetResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -86,8 +88,8 @@ type GetAssetsByIdsClientExtensions =
             | Ok ctx ->
                 let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>

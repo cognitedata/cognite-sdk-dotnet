@@ -11,7 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
-open Thoth.Json.Net
+open Oryx.Decode
 
 open CogniteSdk
 
@@ -22,7 +22,6 @@ module Create =
     let Url = "/files"
 
     let createCore (file: FileWriteDto) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let decodeResponse = Decode.decodeResponse FileCreatedDto.Decoder id
         let request : FileWriteDto = file
 
         POST
@@ -30,7 +29,8 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileCreatedDto.Decoder
 
     /// <summary>
     /// Create new file in the given project.
@@ -65,6 +65,6 @@ type CreateFilesExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response.ToFileEntity ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }

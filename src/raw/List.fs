@@ -12,6 +12,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -52,7 +53,6 @@ module Items =
             })
 
     let listRowsCore (database: string) (table: string) (queryParameters: DatabaseRowQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse RowResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseRowQuery.Render |> List.ofSeq
         let encodedDbName = HttpUtility.UrlEncode database
         let encodedTableName = HttpUtility.UrlEncode table
@@ -62,10 +62,10 @@ module Items =
         >=> setResource (Url + "/" + encodedDbName + "/tables/" + encodedTableName + "/rows")
         >=> addQuery queries
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json RowResponse.Decoder
 
     let listTablesCore (database: string) (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse TableResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseQuery.Render |> List.ofSeq
         let encodedDbName = HttpUtility.UrlEncode database
 
@@ -74,10 +74,10 @@ module Items =
         >=> setResource (Url + "/" + encodedDbName + "/tables")
         >=> addQuery queries
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TableResponse.Decoder
 
     let listDatabasesCore (queryParameters: DatabaseQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse DatabaseResponse.Decoder id
         let queries = queryParameters |> Seq.map DatabaseQuery.Render |> List.ofSeq
 
         GET
@@ -85,7 +85,8 @@ module Items =
         >=> setResource Url
         >=> addQuery queries
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json DatabaseResponse.Decoder
 
     /// <summary>
     /// Lists all databases in the same project.
@@ -173,8 +174,8 @@ type GetdatabasesByIdsClientExtensions =
                     Items = databases.Items |> Seq.map (fun database -> database.ToDatabaseEntity ())
                 }
                 return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>
@@ -207,8 +208,8 @@ type GetdatabasesByIdsClientExtensions =
                     NextCursor = cursor
                     Items = tables.Items |> Seq.map (fun table -> table.ToTableEntity ())
                 }return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>
@@ -241,8 +242,8 @@ type GetdatabasesByIdsClientExtensions =
                     NextCursor = cursor
                     Items = rows.Items |> Seq.map (fun row -> row.ToRowEntity ())
                 }return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
     /// <summary>

@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.Decode
 open Thoth.Json.Net
 
 open CogniteSdk.Assets
@@ -55,7 +56,6 @@ module Search =
             ]
 
     let searchCore (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse AssetItemsReadDto.Decoder (fun assets -> assets.Items)
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
@@ -67,7 +67,9 @@ module Search =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json AssetItemsReadDto.Decoder
+        >=> map (fun assets -> assets.Items)
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -113,8 +115,8 @@ type SearchAssetsClientExtensions =
             | Ok ctx ->
                 let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error (ApiError error) -> return raise (error.ToException ())
+            | Error (Panic error) -> return raise error
         }
 
 
