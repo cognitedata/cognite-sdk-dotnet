@@ -79,7 +79,7 @@ let ``Get file by missing id is Error`` () = task {
     let err =
         match res with
         | Ok _ -> ResponseError.empty
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ApiError error) -> error
         | Error (Panic error) -> raise error
 
 

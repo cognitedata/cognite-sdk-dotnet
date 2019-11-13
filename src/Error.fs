@@ -7,7 +7,9 @@ open System
 open System.Collections.Generic
 open Thoth.Json.Net
 
-exception JsonDecodeException of string
+type JsonDecodeException (message: string) =
+    inherit Exception(message)
+    do ()
 
 type ErrorValue =
     | IntegerValue of int

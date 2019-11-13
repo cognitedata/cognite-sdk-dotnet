@@ -189,12 +189,16 @@ module Handlers =
         | Panic (err) -> raise err
 
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
-        use! stream = response.Content.ReadAsStreamAsync ()
-        let decoder = ResponseError.Decoder
-        let! result = decodeStreamAsync decoder stream
-        match result with
-        | Ok err -> return ApiError err
-        | Error reason -> return Panic <| JsonDecodeException reason
+        if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
+            use! stream = response.Content.ReadAsStreamAsync ()
+            let decoder = ApiResponseError.Decoder
+            let! result = decodeStreamAsync decoder stream
+            match result with
+            | Ok err -> return ApiError err.Error
+            | Error reason -> return Panic <| JsonDecodeException reason
+        else
+            let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
+            return ApiError error
     }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =

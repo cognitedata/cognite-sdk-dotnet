@@ -74,7 +74,8 @@ let ``Get asset by missing id is Error`` () = task {
     let err =
         match res with
         | Ok _ -> ResponseError.empty
-        | Error err -> err
+        | Error (ApiError err) -> err
+        | Error (Panic err) -> raise err
 
     // Assert
     test <@ Result.isError res @>
