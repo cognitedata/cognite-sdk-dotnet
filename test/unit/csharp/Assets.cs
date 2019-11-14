@@ -13,6 +13,7 @@ using Thoth.Json.Net;
 
 using CogniteSdk;
 using CogniteSdk.Assets;
+using System.Net.Http.Headers;
 
 namespace Tests
 {
@@ -105,7 +106,7 @@ namespace Tests
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.ListAsync(filters));
+            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filters));
         }
 
         [Fact]
@@ -320,9 +321,9 @@ namespace Tests
 
                 var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent(json)
+                    Content = new StringContent(json),
                 };
-
+                responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 return await Task.FromResult(responseMessage);
             }));
 
@@ -342,7 +343,7 @@ namespace Tests
                 var result = await client.Assets.GetByIdsAsync(assets);
             } catch (ResponseException ex) {
                 Assert.True(ex.Code == 400);
-
+                Assert.Equal("Asset id not found", ex.Message);
                 var error = ex.Missing.First()["id"];
 
                 Assert.IsType<IntegerValue>(error);

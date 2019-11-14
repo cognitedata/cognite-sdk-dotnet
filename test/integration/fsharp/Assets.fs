@@ -81,6 +81,7 @@ let ``Get asset by missing id is Error`` () = task {
     test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "violations" @>
+    test <@ Option.isSome err.RequestId @>
 }
 
 [<Fact>]

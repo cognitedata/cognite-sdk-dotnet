@@ -29,7 +29,7 @@ type ResponseError = {
     Message : string
     Missing : Map<string, ErrorValue> seq
     Duplicated : Map<string, ErrorValue> seq
-    InnerException : exn option } with
+    RequestId : string option } with
         static member Decoder : Decoder<ResponseError> =
             Decode.object (fun get ->
                 {
@@ -45,7 +45,7 @@ type ResponseError = {
                         match duplicated with
                         | Some duplicated -> duplicated |> Seq.ofArray
                         | None -> Seq.empty
-                    InnerException = None
+                    RequestId = None
                 })
 
         static member empty = {
@@ -53,7 +53,7 @@ type ResponseError = {
            Message = String.Empty
            Missing = Seq.empty
            Duplicated = Seq.empty
-           InnerException = None
+           RequestId = None
        }
 
 type ApiResponseError = {
@@ -94,7 +94,7 @@ type ResponseException (message: string) =
     member val Code = 400 with get, set
     member val Missing : IEnumerable<IDictionary<string, ErrorValueBase>> = Seq.empty with get, set
     member val Duplicated : IEnumerable<IDictionary<string, ErrorValueBase>> = Seq.empty with get, set
-    member val InnerException : Exception = null with get, set
+    member val RequestId : string = null with get, set
 
 [<AutoOpen>]
 module Error =
@@ -110,7 +110,7 @@ module Error =
             ex.Code <- this.Code
             ex.Duplicated <- this.Duplicated |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
             ex.Missing <- this.Missing |> Seq.map (Map.map convertTypes >> Map.toSeq >> dict)
-            ex.InnerException <- if this.InnerException.IsSome then this.InnerException.Value else null
+            ex.RequestId <- if this.RequestId.IsSome then this.RequestId.Value else null
             ex
 
     [<Literal>]

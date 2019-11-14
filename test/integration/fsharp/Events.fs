@@ -111,6 +111,7 @@ let ``Get event by missing id is Error`` () = task {
     test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "constraint violations" @>
+    test <@ Option.isSome err.RequestId @>
 }
 
 [<Fact>]

@@ -194,7 +194,10 @@ module Handlers =
             let decoder = ApiResponseError.Decoder
             let! result = decodeStreamAsync decoder stream
             match result with
-            | Ok err -> return ApiError err.Error
+            | Ok err ->
+                let found, requestId = response.Headers.TryGetValues "x-request-id"
+                if found then return ApiError { err.Error with RequestId = Seq.tryExactlyOne requestId }
+                else return ApiError err.Error
             | Error reason -> return Panic <| JsonDecodeException reason
         else
             let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
