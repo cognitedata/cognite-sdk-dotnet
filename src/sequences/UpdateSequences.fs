@@ -143,7 +143,6 @@ module Update =
             })
 
     let updateCore (args: (Identity * SequenceUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse SequenceResponse.Decoder (fun res -> res.Items)
         let request : SequencesUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (sequenceId, args) -> { Id = sequenceId; Params = args })
@@ -154,7 +153,9 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Update one or more Sequences. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -189,6 +190,5 @@ type UpdateSequencesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

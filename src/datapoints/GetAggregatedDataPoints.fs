@@ -206,7 +206,6 @@ module Aggregated =
         ]
 
     let getAggregatedCore (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -215,10 +214,10 @@ module Aggregated =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> protobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
 
     let getAggregatedProto (options: AggregateMultipleQuery seq) (defaultOptions: AggregateQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderDataQuery options defaultOptions
 
         POST
@@ -227,7 +226,8 @@ module Aggregated =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> protobuf DataPointListResponse.Parser.ParseFrom
 
     /// <summary>
     /// Retrieves a list of aggregated data points from single time series in the same project.
@@ -307,8 +307,7 @@ type AggregatedClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -326,7 +325,6 @@ type AggregatedClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 

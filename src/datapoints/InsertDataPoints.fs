@@ -59,13 +59,12 @@ module Insert =
         request
 
     let insertCore (items: DataPointInsertionRequest) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage>) =
-        let decodeResponse = Decode.decodeError
         POST
         >=> setVersion V10
         >=> setContent (Content.Protobuf items)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Insert data into one or more timeseries.
@@ -102,6 +101,5 @@ type InsertDataPointsClientExtensions =
             let! result = Insert.insertAsyncProto items ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> Task

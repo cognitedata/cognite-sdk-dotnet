@@ -30,7 +30,8 @@ let ``Create timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -55,7 +56,8 @@ let ``Get timeseries by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -80,7 +82,8 @@ let ``Delete timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert
     test <@ ctx'.Request.Method = HttpMethod.Post @>

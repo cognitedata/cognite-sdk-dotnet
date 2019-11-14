@@ -13,6 +13,7 @@ using Thoth.Json.Net;
 
 using CogniteSdk;
 using CogniteSdk.Assets;
+using System.Net.Http.Headers;
 
 namespace Tests
 {
@@ -143,7 +144,7 @@ namespace Tests
             };
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.ListAsync(filter));
+            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.ListAsync(filter));
         }
 
         [Fact]
@@ -214,7 +215,7 @@ namespace Tests
                 .SetProject(project);
 
             // Act/Assert
-            await Assert.ThrowsAsync<ResponseException>(() => client.Assets.GetAsync(42L));
+            await Assert.ThrowsAsync<JsonDecodeException>(() => client.Assets.GetAsync(42L));
         }
 
         [Fact]
@@ -320,9 +321,9 @@ namespace Tests
 
                 var responseMessage = new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    Content = new StringContent(json)
+                    Content = new StringContent(json),
                 };
-
+                responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 return await Task.FromResult(responseMessage);
             }));
 
@@ -342,7 +343,7 @@ namespace Tests
                 var result = await client.Assets.GetByIdsAsync(assets);
             } catch (ResponseException ex) {
                 Assert.True(ex.Code == 400);
-
+                Assert.Equal("Asset id not found", ex.Message);
                 var error = ex.Missing.First()["id"];
 
                 Assert.IsType<IntegerValue>(error);
@@ -559,9 +560,8 @@ namespace Tests
                     Assert.NotNull(result);
                     Assert.NotEmpty(result.Items);
                 }
-                catch (ResponseException e)
+                catch (OperationCanceledException)
                 {
-                    Assert.IsType<OperationCanceledException>(e.InnerException);
                     return;
                 }
                 Assert.False(true, "Expected task to fail");

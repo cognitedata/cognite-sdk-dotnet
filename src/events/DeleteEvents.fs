@@ -30,7 +30,6 @@ module Delete =
             ]
 
     let deleteCore (events: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : EventsDeleteRequest = {
             Items = events
         }
@@ -40,7 +39,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete multiple events in the same project
@@ -71,7 +70,6 @@ type DeleteEventExtensions =
             let! result = Delete.deleteAsync (ids) ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> Task
 

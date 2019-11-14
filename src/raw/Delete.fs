@@ -64,7 +64,6 @@ module Delete =
             })
 
     let deleteRowsCore (database: string) (table: string) (rows: string seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let items: RowDeleteDto seq = rows |> Seq.map (fun row -> { Key = row })
         let request : RowRequest = { Items = items }
         let encodedDbName = HttpUtility.UrlEncode database
@@ -75,10 +74,9 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource (Url + "/" + encodedDbName + "/tables/" + encodedTableName + "/rows/delete")
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     let deleteTablesCore (database: string) (tables: string seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let items: DatabaseDto seq = tables |> Seq.map (fun table -> { Name = table })
         let request : Request = { Items = items }
         let encodedDbName = HttpUtility.UrlEncode database
@@ -88,10 +86,9 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource (Url + "/" + encodedDbName + "/tables/delete")
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     let deleteDatabasesCore (databases: string seq) (recursive: bool) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let items: DatabaseDto seq = databases |> Seq.map (fun database -> { Name = database })
         let request : DatabaseRequest = { Items = items; Recursive = recursive }
 
@@ -100,7 +97,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Deletes databases in project
@@ -176,8 +173,7 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteDatabasesAsync databases recursive ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>
@@ -193,8 +189,7 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteTablesAsync database tables ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>
@@ -211,6 +206,5 @@ type DeleteRawClientExtensions =
             let! result = Delete.deleteRowsAsync database table rows ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> _

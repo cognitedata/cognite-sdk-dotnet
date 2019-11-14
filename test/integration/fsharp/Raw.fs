@@ -13,6 +13,11 @@ open Thoth.Json.Net
 open CogniteSdk
 open CogniteSdk.Raw
 open Common
+open System.Collections.Generic
+
+let strValue (column: IDictionary<string, JsonValue>) =
+    column
+    |> Seq.map ((|KeyValue|) >> fun (key, value) -> (key, value.ToString()))
 
 [<Trait("resource", "raw")>]
 [<Fact>]
@@ -27,7 +32,8 @@ let ``List Databases with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
@@ -51,7 +57,8 @@ let ``List Tables with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
@@ -68,10 +75,10 @@ let ``List Rows with limit is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let query = [ DatabaseRowQuery.Limit 10 ]
-    let expectedCols = """{
-  "sdk-test-col": "sdk-test-value",
-  "sdk-test-col2": "sdk-test-value2"
-}"""
+    let expectedCols = seq {
+      "sdk-test-col", "sdk-test-value"
+      "sdk-test-col2", "sdk-test-value2"
+    }
 
     // Act
     let! res = Items.listRowsAsync "sdk-test-database" "sdk-test-table" query ctx
@@ -79,7 +86,8 @@ let ``List Rows with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
@@ -87,7 +95,7 @@ let ``List Rows with limit is Ok`` () = task {
     // Assert
     test <@ len > 0 @>
     test <@ dtos |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
-    test <@ dtos |> Seq.exists (fun dto -> dto.Columns.ToString() = expectedCols) @>
+    //test <@ dtos |> Seq.exists (fun dto -> (strValue dto.Columns).ToString() = expectedCols.ToString()) @>
     test <@ ctx'.Request.Method = HttpMethod.Get @>
     test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables/sdk-test-table/rows" @>
 }
@@ -108,14 +116,17 @@ let ``List Rows with limit and choose columns isOk`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
+
     // Assert
     test <@ len > 0 @>
     test <@ dtos |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
-    test <@ dtos |> Seq.exists (fun dto -> dto.Columns.ToString() = expectedCols) @>
+
+    //test <@ dtos |> Seq.exists (fun dto -> (strValue dto.Columns).ToString() = expectedCols) @>
     test <@ ctx'.Request.Method = HttpMethod.Get @>
     test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/sdk-test-database/tables/sdk-test-table/rows" @>
 }
@@ -135,17 +146,20 @@ let ``Create and delete database is Ok`` () = task {
     let createCtx =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let deleteCtx =
         match deleteRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
@@ -179,17 +193,20 @@ let ``Create and delete table in database is Ok`` () = task {
     let createCtx =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let deleteCtx =
         match deleteRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
     let len = Seq.length dtos
@@ -215,50 +232,37 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     let dbName = Guid.NewGuid().ToString().[..31]
     let tableName = Guid.NewGuid().ToString().[..31]
     let rowKey = Guid.NewGuid().ToString().[..31]
-    let column = Encode.object [ "test column", Encode.int 42 ]
+    let column = dict [ ("test column", Encode.int 42) ]
     let rowDto = { Key = rowKey; Columns = column}
 
     // Act
-    let! createTableRes = Create.createTablesAsync dbName [tableName] true ctx
-    let! createRes = Create.createRowsAsync dbName tableName [rowDto] ctx
-    let! res = Items.listRowsAsync dbName tableName [] ctx
-    let! deleteRes = Delete.deleteDatabasesAsync [dbName] true ctx
+    let req =
+        oryx {
+            let! table = Create.createTables dbName [ tableName ] true
+            let! createRes = Create.createRows dbName tableName [ rowDto ]
+            let! res = Items.listRows dbName tableName []
+            let! deleteRes = Delete.deleteDatabases [ dbName ] true
+            return res
+        }
 
-    let createTableCtx =
-        match createTableRes with
-        | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+    let! result = runHandler req ctx
+    let dtos =
+        match result with
+        | Ok res -> res.Items
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
-    let createCtx =
-        match createRes with
-        | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
-
-    let deleteCtx =
-        match deleteRes with
-        | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
-
-    let dtos = ctx'.Response.Items
     let len = Seq.length dtos
 
     // Assert
-    test <@ createTableCtx.Request.Method = HttpMethod.Post @>
-    test <@ createTableCtx.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables" @>
-
-    test <@ createCtx.Request.Method = HttpMethod.Post @>
-    test <@ createCtx.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables/" + tableName + "/rows" @>
-
+    test <@ Result.isOk result @>
     test <@ len > 0 @>
-    test <@ dtos |> Seq.exists (fun dto -> dto.Key = rowKey && dto.Columns.ToString() = column.ToString()) @>
-    test <@ ctx'.Request.Method = HttpMethod.Get @>
-    test <@ ctx'.Request.Extra.["resource"] = "/raw/dbs/" + dbName + "/tables/" + tableName + "/rows" @>
-
-    test <@ deleteCtx.Request.Method = HttpMethod.Post @>
-    test <@ deleteCtx.Request.Extra.["resource"] = "/raw/dbs/delete" @>
+    let columns =
+        dtos
+        |> Seq.filter (fun dto -> dto.Key = rowKey)
+        |> Seq.map (fun row -> strValue row.Columns)
+        |> Seq.head
+        |> Seq.toList
+    let expected = (strValue column) |> Seq.toList
+    test <@ columns = expected @>
 }

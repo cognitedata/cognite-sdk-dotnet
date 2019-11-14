@@ -98,7 +98,6 @@ module Items =
             ]
 
     let listRowsCore (options: RowQuery seq)  (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeContent SequenceDataReadDto.Decoder id
         let request : DataRequest = {
             Options = options
         }
@@ -108,11 +107,10 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource dataUrl
         >=> fetch
-        >=> Decode.decodeError
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceDataReadDto.Decoder
 
     let listCore (options: SequenceQuery seq) (filters: SequenceFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeContent SequenceItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -123,8 +121,8 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> Decode.decodeError
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceItemsReadDto.Decoder
 
     /// <summary>
     /// Retrieves list of Sequences matching filter, and a cursor if given limit is exceeded
@@ -184,8 +182,7 @@ type ListSequencesExtensions =
                     Items = sequences.Items |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
                 }
                 return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

@@ -100,7 +100,6 @@ module Latest =
                 })
 
     let getCore (options: LatestRequest seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeResponse DataResponse.Decoder (fun res -> res.Items)
         let request : LatestDataPointsRequest = { Items = options }
 
         POST
@@ -108,7 +107,9 @@ module Latest =
         >=> setResource Url
         >=> setContent (Content.JsonValue request.Encoder)
         >=> fetch
-        >=> decoder
+        >=> withError decodeError
+        >=> json DataResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Retrieves the single latest data point in a time series.
@@ -148,7 +149,6 @@ type GetLatestDataPointExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (Latest.DataPointsDto.ToCollection)
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 

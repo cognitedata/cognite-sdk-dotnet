@@ -103,7 +103,6 @@ module Items =
         ]
 
     let listCore (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
         let request = renderRequest options defaultOptions
 
         POST
@@ -112,10 +111,10 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> protobuf (DataPointListResponse.Parser.ParseFrom >> decodeToDto)
 
     let listProto (options: DataPointMultipleQuery seq) (defaultOptions: DataPointQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError >=> Decode.decodeProtobuf (DataPointListResponse.Parser.ParseFrom)
         let request = renderRequest options defaultOptions
 
         POST
@@ -124,7 +123,8 @@ module Items =
         >=> setContent (Content.JsonValue request)
         >=> setResponseType Protobuf
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> protobuf DataPointListResponse.Parser.ParseFrom
 
     /// <summary>
     /// Retrieves a list of data points from single time series in the same project.
@@ -206,8 +206,7 @@ type GetDataPointsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -225,7 +224,6 @@ type GetDataPointsClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 

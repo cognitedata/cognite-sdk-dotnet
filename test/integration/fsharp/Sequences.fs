@@ -28,7 +28,8 @@ let ``List Sequences with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -53,7 +54,8 @@ let ``List Sequences with limit and filter is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -79,7 +81,8 @@ let ``Get sequences by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -107,7 +110,8 @@ let ``Get sequence rows by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dto = ctx'.Response
     let colLength = Seq.length dto.Columns
@@ -153,7 +157,8 @@ let ``Create and delete sequences is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -161,7 +166,8 @@ let ``Create and delete sequences is Ok`` () = task {
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId =
         match res with
@@ -234,22 +240,26 @@ let ``Create and delete sequences rows is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let rowCtx' =
         match rowRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let rowDelCtx' =
         match rowDelRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId =
         match res with
@@ -295,7 +305,8 @@ let ``Search sequences is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -356,7 +367,8 @@ let ``Update sequences is Ok`` () = task {
     let getCtx' =
         match getRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resName, resExternalId, resMetaData =
         let sequencesResponses = getCtx'.Response
@@ -376,12 +388,14 @@ let ``Update sequences is Ok`` () = task {
     let createCtx' =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let updateCtx' =
         match updateRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert create
     test <@ createCtx'.Request.Method = HttpMethod.Post @>
@@ -418,7 +432,8 @@ let ``Update sequences is Ok`` () = task {
     let getCtx2' =
         match getRes2 with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resDescription, resAssetId, resMetaData2, identity =
         let sequencesResponses = getCtx2'.Response
@@ -451,7 +466,8 @@ let ``Update sequences is Ok`` () = task {
     let getCtx3' =
         match getRes3 with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId2, resAssetId2, resMetaData3 =
         let sequencesResponses = getCtx3'.Response
@@ -464,7 +480,8 @@ let ``Update sequences is Ok`` () = task {
     let delCtx =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert get2
     test <@ getCtx2'.Request.Method = HttpMethod.Post @>

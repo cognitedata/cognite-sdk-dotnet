@@ -25,7 +25,8 @@ let ``Get timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -48,7 +49,8 @@ let ``Get timeseries by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -79,7 +81,8 @@ let ``Get timeseries by missing id is Error`` () = task {
     let err =
         match res with
         | Ok _ -> ResponseError.empty
-        | Error err -> err
+        | Error (ApiError err) -> err
+        | Error (Panic err) -> raise err
 
     // Assert
     test <@ Result.isError res @>
@@ -113,7 +116,8 @@ let ``Create and delete timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId =
         let timeSereiesResponses = ctx'.Response
@@ -125,7 +129,8 @@ let ``Create and delete timeseries is Ok`` () = task {
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
 
@@ -152,7 +157,8 @@ let ``Search timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -179,7 +185,8 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -209,7 +216,8 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -235,7 +243,8 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -261,7 +270,8 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -287,7 +297,8 @@ let ``Search timeseries on IsStep is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -313,7 +324,8 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -339,7 +351,8 @@ let ``Search timeseries on Unit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -365,7 +378,8 @@ let ``Search timeseries on MetaData is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -391,7 +405,8 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -417,7 +432,8 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -478,7 +494,8 @@ let ``Update timeseries is Ok`` () = task {
     let getCtx' =
         match getRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId, resMetaData, resDescription =
         let head = Seq.tryHead getCtx'.Response
@@ -495,17 +512,20 @@ let ``Update timeseries is Ok`` () = task {
     let createCtx' =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let updateCtx' =
         match updateRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let deleteCtx' =
         match deleteRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert create
     test <@ createCtx'.Request.Method = HttpMethod.Post @>

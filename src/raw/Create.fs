@@ -54,7 +54,6 @@ module Create =
             ]
 
     let createRowsCore (database: string) (table: string) (rows: RowWriteDto seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : RowRequest = { Items = rows }
         let encodedDbName = HttpUtility.UrlEncode database
         let encodedTableName = HttpUtility.UrlEncode table
@@ -64,10 +63,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource (Url + "/" + encodedDbName + "/tables/" + encodedTableName + "/rows")
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     let createTablesCore (database: string) (tables: string seq) (ensureParent: bool) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse TableResponse.Decoder (fun response -> response.Items)
         let items: DatabaseDto seq = tables |> Seq.map (fun table -> { Name = table })
         let request : Request = { Items = items }
         let encodedDbName = HttpUtility.UrlEncode database
@@ -78,10 +76,11 @@ module Create =
         >=> setResource (Url + "/" + encodedDbName + "/tables")
         >=> addQuery [("ensureParent", ensureParent.ToString())]
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TableResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     let createDatabasesCore (databases: string seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse DatabaseResponse.Decoder (fun response -> response.Items)
         let items: DatabaseDto seq = databases |> Seq.map (fun database -> { Name = database })
         let request : Request = { Items = items }
 
@@ -90,7 +89,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json DatabaseResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     /// <summary>
     /// Creates databases in project
@@ -167,8 +168,7 @@ type CreateRawClientExtensions =
             | Ok ctx ->
                 let databases = ctx.Response
                 return databases |> Seq.map (fun database -> database.ToDatabaseEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -187,8 +187,7 @@ type CreateRawClientExtensions =
             | Ok ctx ->
                 let createdTables = ctx.Response
                 return createdTables |> Seq.map (fun table -> table.ToTableEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>
@@ -206,6 +205,5 @@ type CreateRawClientExtensions =
             let! result = Create.createRowsAsync database table rows' ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> _

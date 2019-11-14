@@ -36,7 +36,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse SequenceResponse.Decoder (fun response -> response.Items)
         let request : SequenceRequest = { Items = ids }
 
         POST
@@ -44,7 +43,9 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json SequenceResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     /// <summary>
     /// Retrieves information about multiple Sequences in the same project.
@@ -86,8 +87,7 @@ type GetSequencesByIdsClientExtensions =
             | Ok ctx ->
                 let Sequences = ctx.Response
                 return Sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

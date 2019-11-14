@@ -21,13 +21,14 @@ module Status =
     let Url = "/login/status"
 
     let statusCore (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decoder = Decode.decodeResponse LoginStatusItemsDto.Decoder (fun items -> items.Data)
 
         GET
         >=> setVersion V10
         >=> setUrl Url
         >=> fetch
-        >=> decoder
+        >=> withError decodeError
+        >=> json LoginStatusItemsDto.Decoder
+        >=> map (fun items -> items.Data)
 
     /// <summary>
     /// Returns the authentication information about the asking entity.
@@ -63,7 +64,6 @@ type LoginStatusClientExtensions =
             | Ok ctx ->
                 let status = ctx.Response
                 return status.ToLoginStatusEntity ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 

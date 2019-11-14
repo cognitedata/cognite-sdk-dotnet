@@ -184,7 +184,6 @@ module Update =
             })
 
     let updateCore (args: (Identity * FileUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileResponse.Decoder (fun res -> res.Items)
         let request : FilesUpdateRequest = {
             Items = [
                 yield! args |> Seq.map(fun (fileId, args) -> { Id = fileId; Params = args })
@@ -196,7 +195,10 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileResponse.Decoder
+        >=> map (fun res -> res.Items)
+
 
     /// <summary>
     /// Update one or more files. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -231,6 +233,5 @@ type UpdatefilesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun file -> file.ToFileEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

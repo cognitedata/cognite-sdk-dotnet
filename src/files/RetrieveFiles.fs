@@ -36,7 +36,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileResponse.Decoder (fun response -> response.Items)
         let request : FileRequest = { Items = ids }
 
         POST
@@ -44,7 +43,10 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileResponse.Decoder
+        >=> map (fun response -> response.Items)
+
 
     /// <summary>
     /// Retrieves information about multiple files in the same project.
@@ -86,8 +88,7 @@ type GetFilesByIdsClientExtensions =
             | Ok ctx ->
                 let files = ctx.Response
                 return files |> Seq.map (fun file -> file.ToFileEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

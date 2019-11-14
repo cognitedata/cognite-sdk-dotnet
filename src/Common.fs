@@ -5,13 +5,24 @@
 namespace CogniteSdk
 
 open System
+open System.Net.Http
 open System.Text.RegularExpressions
 open System.Reflection
+open System.Threading.Tasks
 
 open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
-open System.Threading.Tasks
+open FSharp.Control.Tasks.V2.ContextInsensitive
+
+// Shadow types that pins the error type for Oryx to ResponeError
+type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
+type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseError>
+type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseError>
+type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseError> -> Context<'a> -> HttpFuncResult<'r, ResponseError>
+type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseError>
+type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseError>
+type HttpHandler = HttpHandler<HttpResponseMessage, ResponseError>
 
 type ApiVersion =
     | V05
@@ -169,9 +180,34 @@ module Handlers =
             sprintf "%s%s" serviceUrl url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
+    /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
+    /// need to open the Oryx namespace.
+    let raiseError (error: HandlerError<ResponseError>) =
+        match error with
+        | ApiError error -> raise <| error.ToException ()
+        | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
+        | Panic (err) -> raise err
+
+    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
+        if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
+            use! stream = response.Content.ReadAsStreamAsync ()
+            let decoder = ApiResponseError.Decoder
+            let! result = decodeStreamAsync decoder stream
+            match result with
+            | Ok err ->
+                let found, requestId = response.Headers.TryGetValues "x-request-id"
+                if found then return ApiError { err.Error with RequestId = Seq.tryExactlyOne requestId }
+                else return ApiError err.Error
+            | Error reason -> return Panic <| JsonDecodeException reason
+        else
+            let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
+            return ApiError error
+    }
+
     let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
-        let shouldRetry (err: ResponseError) =
-            let retryCode =
+        let shouldRetry (error: HandlerError<ResponseError>) : bool =
+            match error with
+            | ApiError err ->
                 match err.Code with
                 // Rate limiting
                 | 429 -> true
@@ -186,20 +222,13 @@ module Handlers =
                 | 503 -> true
                 // do not retry other responses.
                 | _ -> false
-
-            let retryEx =
-
-                if err.InnerException.IsSome then
-                    match err.InnerException.Value with
-                    | :? Net.Http.HttpRequestException
-                    | :? System.Net.WebException -> true
-                    // do not retry other exceptions.
-                    | _ -> false
-                else
-                    false
-
-            // Retry if retriable code or retryable exception
-            retryCode || retryEx
+            | Panic (Oryx.JsonDecodeException _) -> false
+            | Panic err ->
+                match err with
+                | :? Net.Http.HttpRequestException
+                | :? System.Net.WebException -> true
+                // do not retry other exceptions.
+                | _ -> true
 
         retry shouldRetry initialDelay maxRetries handler next ctx
 

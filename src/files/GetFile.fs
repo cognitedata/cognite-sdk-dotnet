@@ -20,14 +20,14 @@ module Entity =
     let Url = "/files"
 
     let getCore (fileId: int64) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileReadDto.Decoder id
         let url = Url + sprintf "/%d" fileId
 
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileReadDto.Decoder
 
     /// <summary>
     /// Retrieves information about an file given an file id. Expects a next continuation handler.
@@ -62,6 +62,5 @@ type GetFileClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

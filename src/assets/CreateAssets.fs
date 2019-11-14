@@ -38,7 +38,7 @@ module Create =
             })
 
     let createCore (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun res -> res.Items)
+        let decoder = AssetResponse.Decoder
         let request : Request = { Items = assets }
 
         POST
@@ -46,7 +46,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Create new assets in the given project.
@@ -81,6 +83,5 @@ type CreateAssetsExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

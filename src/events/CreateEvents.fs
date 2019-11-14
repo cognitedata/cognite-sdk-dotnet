@@ -39,7 +39,6 @@ module Create =
             })
 
     let createCore (events: EventWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,'a>)  =
-        let decodeResponse = Decode.decodeResponse EventResponse.Decoder (fun res -> res.Items)
         let request : Request = { Items = events }
 
         POST
@@ -47,7 +46,9 @@ module Create =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json EventResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Create one or more events.
@@ -83,6 +84,5 @@ type CreateEventExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun event -> event.ToEventEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

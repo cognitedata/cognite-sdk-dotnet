@@ -31,7 +31,6 @@ module Delete =
             ]
 
     let deleteCore (assets: Identity seq, recursive: bool) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeError
         let request : AssetsDeleteRequest = {
             Items = assets
             Recursive = recursive
@@ -42,7 +41,7 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
@@ -50,7 +49,7 @@ module Delete =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     /// <param name="next">Async handler to use</param>
-    let delete (assets: Identity seq, recursive: bool) (next: NextFunc<HttpResponseMessage,'a>) =
+    let delete (assets: Identity seq, recursive: bool) (next: NextFunc<HttpResponseMessage, _>) =
         deleteCore (assets, recursive) fetch next
 
     /// <summary>
@@ -75,8 +74,7 @@ type DeleteAssetsExtensions =
             let! result = Delete.deleteAsync (ids, recursive) ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> _
 
     /// <summary>

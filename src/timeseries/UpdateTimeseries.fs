@@ -207,7 +207,6 @@ module Update =
             })
 
     let updateCore (args: (Identity * TimeSeriesUpdate list) list) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse TimeseriesResponse.Decoder (fun res -> res.Items)
         let request : TimeseriesUpdateRequests = {
            Items = [
                yield! args |> Seq.map(fun (assetId, args) -> { Id = assetId; Params = args })
@@ -219,7 +218,9 @@ module Update =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json TimeseriesResponse.Decoder
+        >=> map (fun res -> res.Items)
 
     /// <summary>
     /// Updates multiple timeseries within the same project.
@@ -254,6 +255,5 @@ type UpdateTimeseriesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun timeseries -> timeseries.ToTimeSeriesEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }

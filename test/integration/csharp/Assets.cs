@@ -198,8 +198,5 @@ namespace Test.CSharp.Integration {
             Assert.True(resAsset.MetaData.ContainsKey("key1") && resAsset.MetaData.ContainsKey("key2"), "Asset wasnt update with new metadata values");
             Assert.True(resAsset.MetaData.ContainsKey("oldkey2") && !resAsset.MetaData.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
         }
-
-
     }
-
 }

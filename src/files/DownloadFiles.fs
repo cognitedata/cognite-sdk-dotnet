@@ -59,7 +59,6 @@ module DownloadLink =
             })
 
     let getDownloadLinksCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse FileDownloadLinkResponse.Decoder (fun response -> response.Items)
         let request : FileRequest = { Items = ids }
 
         POST
@@ -67,7 +66,9 @@ module DownloadLink =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json FileDownloadLinkResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     /// <summary>
     /// Retrieves downloadUrl from multiple files in the same project.
@@ -108,8 +109,7 @@ type GetDownloadFilesClientExtensions =
             match result with
             | Ok ctx ->
                 return ctx.Response |> Seq.map (fun file -> file.ToDownloadResponseEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

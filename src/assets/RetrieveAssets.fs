@@ -36,7 +36,6 @@ module Retrieve =
             })
 
     let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeResponse AssetResponse.Decoder (fun response -> response.Items)
         let request : AssetRequest = { Items = ids }
 
         POST
@@ -44,7 +43,9 @@ module Retrieve =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json AssetResponse.Decoder
+        >=> map (fun response -> response.Items)
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project.
@@ -86,8 +87,7 @@ type GetAssetsByIdsClientExtensions =
             | Ok ctx ->
                 let assets = ctx.Response
                 return assets |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

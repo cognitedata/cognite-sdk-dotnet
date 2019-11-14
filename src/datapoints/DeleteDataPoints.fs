@@ -58,8 +58,7 @@ module Delete =
                 yield "items", this.Items |> Seq.map (fun it -> it.Encoder) |> Encode.seq
             ]
 
-    let deleteCore (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage>) =
-        let decodeResponse = Decode.decodeError
+    let deleteCore (items: DeleteRequestDto seq) (fetch: HttpHandler<HttpResponseMessage, _>) =
         let request : DeleteRequest = { Items = items }
 
         POST
@@ -67,14 +66,14 @@ module Delete =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> decodeResponse
+        >=> withError decodeError
 
     /// <summary>
     /// Delete datapoints from a given start time to an optional end time for multiple timeseries.
     /// </summary>
     /// <param name="items">List of delete requests.</param>
     /// <param name="next">Async handler to use.</param>
-    let delete (items: DeleteRequestDto seq) (next: NextFunc<HttpResponseMessage, HttpResponseMessage>) =
+    let delete (items: DeleteRequestDto seq) (next: NextFunc<HttpResponseMessage, _>) =
         deleteCore items fetch next
 
     /// <summary>
@@ -98,6 +97,5 @@ type DeleteDataPointsClientExtensions =
             let! result = Delete.deleteAsync items' ctx
             match result with
             | Ok _ -> return ()
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         } :> Task

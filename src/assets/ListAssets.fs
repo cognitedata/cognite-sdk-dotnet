@@ -53,7 +53,6 @@ module Items =
             ]
 
     let listCore (options: AssetQuery seq) (filters: AssetFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let decodeResponse = Decode.decodeContent AssetItemsReadDto.Decoder id
         let request : Request = {
             Filters = filters
             Options = options
@@ -64,8 +63,8 @@ module Items =
         >=> setContent (Content.JsonValue request.Encoder)
         >=> setResource Url
         >=> fetch
-        >=> Decode.decodeError
-        >=> decodeResponse
+        >=> withError decodeError
+        >=> json AssetItemsReadDto.Decoder
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -85,7 +84,6 @@ module Items =
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let listAsync (options: AssetQuery seq) (filters: AssetFilter seq) : HttpContext -> HttpFuncResult<AssetItemsReadDto> =
         listCore options filters fetch finishEarly
-
 
 [<Extension>]
 type ListAssetsExtensions =
@@ -109,8 +107,7 @@ type ListAssetsExtensions =
                     Items = assets.Items |> Seq.map (fun asset -> asset.ToAssetEntity ())
                 }
                 return items
-            | Error error ->
-                return raise (error.ToException ())
+            | Error error -> return raiseError error
         }
 
     /// <summary>

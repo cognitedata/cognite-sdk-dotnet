@@ -26,7 +26,8 @@ let ``List assets with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -49,7 +50,8 @@ let ``Get asset by id is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dto = ctx'.Response
     let resId =dto.Id
@@ -72,12 +74,14 @@ let ``Get asset by missing id is Error`` () = task {
     let err =
         match res with
         | Ok _ -> ResponseError.empty
-        | Error err -> err
+        | Error (ApiError err) -> err
+        | Error (Panic err) -> raise err
 
     // Assert
     test <@ Result.isError res @>
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "violations" @>
+    test <@ Option.isSome err.RequestId @>
 }
 
 [<Fact>]
@@ -94,7 +98,8 @@ let ``Get asset by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -122,7 +127,8 @@ let ``Filter assets is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -150,7 +156,8 @@ let ``Filter assets on Name is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -181,7 +188,8 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -214,7 +222,8 @@ let ``Filter assets on MetaData is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -245,7 +254,8 @@ let ``Filter assets on ParentIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -278,7 +288,8 @@ let ``Filter assets on Root is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -306,7 +317,8 @@ let ``Filter assets on RootIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -339,7 +351,8 @@ let ``Filter assets on Source is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
@@ -369,7 +382,8 @@ let ``Search assets is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len =Seq.length dtos
@@ -396,7 +410,8 @@ let ``Search assets on CreatedTime Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -426,7 +441,8 @@ let ``Search assets on LastUpdatedTime Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -455,7 +471,8 @@ let ``Search assets on Description is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -486,7 +503,8 @@ let ``Search assets on Name is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
     let len = Seq.length dtos
@@ -525,12 +543,14 @@ let ``Create and delete assets is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId =
         match res with
@@ -595,7 +615,8 @@ let ``Update assets is Ok`` () = task {
     let getCtx' =
         match getRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resName, resExternalId, resMetaData =
         let assetsResponses = getCtx'.Response
@@ -615,12 +636,14 @@ let ``Update assets is Ok`` () = task {
     let createCtx' =
         match createRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let updateCtx' =
         match updateRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert create
     test <@ createCtx'.Request.Method = HttpMethod.Post @>
@@ -658,7 +681,8 @@ let ``Update assets is Ok`` () = task {
     let getCtx2' =
         match getRes2 with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resDescription, resSource, resMetaData2, identity =
         let assetsResponses = getCtx2'.Response
@@ -691,7 +715,8 @@ let ``Update assets is Ok`` () = task {
     let getCtx3' =
         match getRes3 with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     let resExternalId2, resSource2, resMetaData3 =
         let assetsResponses = getCtx3'.Response
@@ -704,7 +729,8 @@ let ``Update assets is Ok`` () = task {
     let delCtx =
         match delRes with
         | Ok ctx -> ctx
-        | Error err -> raise <| err.ToException ()
+        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (Panic error) -> raise error
 
     // Assert get2
     test <@ getCtx2'.Request.Method = HttpMethod.Post @>
