@@ -66,24 +66,24 @@ type ApiResponseError = {
             }
         )
 
-type ErrorValueBase () = do ()
+type IErrorValue () = do ()
 
 type IntegerValue (value: int) =
-    inherit ErrorValueBase ()
+    inherit IErrorValue ()
     member val Integer = value with get, set
 
     override this.ToString () =
         sprintf "%d" this.Integer
 
 and FloatValue (value) =
-    inherit ErrorValueBase ()
+    inherit IErrorValue ()
 
     member val Float = value with get, set
     override this.ToString () =
         sprintf "%f" this.Float
 
 and StringValue (value) =
-    inherit ErrorValueBase ()
+    inherit IErrorValue ()
     member val String = value with get, set
     override this.ToString () =
         sprintf "%s" this.String
@@ -92,17 +92,17 @@ type ResponseException (message: string) =
     inherit Exception(message)
 
     member val Code = 400 with get, set
-    member val Missing : IEnumerable<IDictionary<string, ErrorValueBase>> = Seq.empty with get, set
-    member val Duplicated : IEnumerable<IDictionary<string, ErrorValueBase>> = Seq.empty with get, set
+    member val Missing : IEnumerable<IDictionary<string, IErrorValue>> = Seq.empty with get, set
+    member val Duplicated : IEnumerable<IDictionary<string, IErrorValue>> = Seq.empty with get, set
     member val RequestId : string = null with get, set
 
 [<AutoOpen>]
 module Error =
     type ResponseError with
         member this.ToException () =
-            let convertTypes (_: string) (value: ErrorValue) =
+            let convertTypes (_: string) (value: ErrorValue) : IErrorValue =
                 match value with
-                | IntegerValue value -> IntegerValue value :> ErrorValueBase
+                | IntegerValue value -> IntegerValue value :> IErrorValue
                 | FloatValue value -> FloatValue value :> _
                 | StringValue value -> StringValue value :> _
 
