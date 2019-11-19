@@ -69,6 +69,7 @@ All SDK methods are called with a `Client` object. A valid client requires:
 - `Project Name` - the name of your CDF project
 - `App ID` - an identifier for your application. It is a free text string. Example: `asset-hierarchy-extractor`
 - `HTTP Client` - client that will be used for the remote connection
+
 ```c#
 var apiKey = Environment.GetEnvironmentVariable("API_KEY");
 var project = Environment.GetEnvironmentVariable("PROJECT");
