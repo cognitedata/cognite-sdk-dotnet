@@ -11,6 +11,7 @@ open System.Threading
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk

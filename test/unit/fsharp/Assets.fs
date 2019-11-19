@@ -29,7 +29,7 @@ let ``Get asset is Ok``() = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -74,7 +74,7 @@ let ``Get asset with extra fields is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -130,7 +130,7 @@ let ``List assets is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -150,12 +150,12 @@ let ``Create assets empty is Ok`` () = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let! res = Assets.Create.createCore [] fetch finishEarly ctx
+    let! res = Assets.Create.createCore fetch [] finishEarly ctx
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -186,12 +186,12 @@ let ``Create single asset is Ok`` () = task {
     }
 
     // Act
-    let! res = Assets.Create.createCore [ asset ] fetch finishEarly ctx
+    let! res = Assets.Create.createCore fetch [ asset ] finishEarly ctx
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -220,7 +220,7 @@ let ``Update single asset with no updates is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -250,7 +250,7 @@ let ``Update single asset with is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -280,7 +280,7 @@ let ``Attempt searching assets`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     test <@ ctx'.Request.Method = HttpMethod.Post @>
@@ -309,7 +309,7 @@ let ``Attempt filtering assets`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     test <@ ctx'.Request.Method = HttpMethod.Post @>

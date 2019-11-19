@@ -30,7 +30,7 @@ let ``Create timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -56,7 +56,7 @@ let ``Get timeseries by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert
@@ -82,7 +82,7 @@ let ``Delete timeseries is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert

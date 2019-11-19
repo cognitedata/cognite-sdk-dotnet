@@ -23,7 +23,7 @@ let ``Login status is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let status = ctx'.Response

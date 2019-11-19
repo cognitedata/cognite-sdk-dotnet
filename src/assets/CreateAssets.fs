@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -37,18 +38,22 @@ module Create =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let createCore (assets: AssetWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let decoder = AssetResponse.Decoder
-        let request : Request = { Items = assets }
-
-        POST
-        >=> setVersion V10
-        >=> setContent (Content.JsonValue request.Encoder)
+    let pipeline fetch =
+        setVersion V10
         >=> setResource Url
         >=> fetch
         >=> withError decodeError
-        >=> json decoder
+        >=> json AssetResponse.Decoder
         >=> map (fun res -> res.Items)
+
+    let pipeline' : HttpHandler<HttpResponseMessage,seq<AssetReadDto>, seq<AssetReadDto>> = pipeline fetch
+
+    let createCore (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>) (assets: AssetWriteDto seq)  =
+        let request : Request = { Items = assets }
+
+        POST
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> pipeline fetch
 
     /// <summary>
     /// Create new assets in the given project.
@@ -56,16 +61,21 @@ module Create =
     /// <param name="assets">The assets to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created assets.</returns>
-    let create (assets: AssetWriteDto seq) (next: NextFunc<AssetReadDto seq, 'a>) =
-        createCore assets fetch next
+    let create (assets: AssetWriteDto seq) =
+        let request : Request = { Items = assets }
 
+        POST
+        >=> setContent (Content.JsonValue request.Encoder)
+        >=> pipeline'
+
+    let createCoreFetch = createCore fetch
     /// <summary>
     /// Create new assets in the given project.
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     let createAsync (assets: AssetWriteDto seq) =
-        createCore assets fetch finishEarly
+        createCoreFetch assets finishEarly
 
 [<Extension>]
 type CreateAssetsExtensions =
@@ -81,7 +91,6 @@ type CreateAssetsExtensions =
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Create.createAsync assets' ctx
             match result with
-            | Ok ctx ->
-                return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
+            | Ok ctx -> return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
             | Error error -> return raiseError error
         }

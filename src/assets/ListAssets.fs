@@ -3,13 +3,13 @@
 
 namespace CogniteSdk.Assets
 
-open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
 
 open Oryx
+open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk

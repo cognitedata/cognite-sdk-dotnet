@@ -58,7 +58,7 @@ let ``Get asset with fusion return expression is Ok``() = task {
         return result
     }
 
-    let! result = runHandler req ctx
+    let! result = runAsync req ctx
     let retries' = retries
 
     // Assert
@@ -95,7 +95,7 @@ let ``Get asset with fusion returnFrom expression is Ok``() = task {
         return! Assets.Entity.get 42L
     }
 
-    let! result = runHandler req ctx
+    let! result = runAsync req ctx
     let retries' = retries
 
     // Assert
@@ -128,8 +128,8 @@ let ``Get asset with retry is Ok``() = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Entity.get 42L |> retry 0<ms> 5
-    let! result = runHandler req ctx
+    let req = retry 0<ms> 5 >=> Assets.Entity.get 42L
+    let! result = runAsync req ctx
     let retries' = retries
 
     // Assert
@@ -162,8 +162,8 @@ let ``Get asset with retries on server internal error``() = task {
         |> Context.addHeader ("api-key", "test-key")
 
     // Act
-    let req = Assets.Entity.get 42L |> retry 0<ms> 5
-    let! result = runHandler req ctx
+    let req =  retry 0<ms> 5 >=> Assets.Entity.get 42L
+    let! result = runAsync req ctx
     let retries' = retries
 
     // Assert
@@ -195,7 +195,7 @@ let ``Get asset without http client throws exception``() = task {
     let req = Assets.Entity.get 42L
     let! result = task {
         try
-            let! result = runHandler req ctx
+            let! result = runAsync req ctx
             return false
         with
         | _ -> return true
@@ -228,7 +228,7 @@ let ``Get asset without appId throws exception``() = task {
     // Act
     let req = Assets.Entity.get 42L
     let! result = task {
-        let! result = runHandler req ctx
+        let! result = runAsync req ctx
         match result with
         | Ok _ ->
             return false
