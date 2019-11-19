@@ -77,7 +77,7 @@ let createAssetsExample ctx = task {
         let! ga = Assets.Create.create assets
 
         let! gb = concurrent [
-            Assets.Create.create assets |> retry 500<ms> 5
+            retry 500<ms> 5 >=> Assets.Create.create assets
         ]
 
         return gb
@@ -86,10 +86,10 @@ let createAssetsExample ctx = task {
     let request = concurrent [
         let chunks = Seq.chunkBySize 10 assets
         for chunk in chunks do
-            yield Assets.Create.create chunk |> retry 500<ms> 5
+            yield retry 500<ms> 5 >=> Assets.Create.create chunk
     ]
 
-    let! result = runHandler request ctx
+    let! result = runAsync request ctx
     match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -153,13 +153,11 @@ let asyncMain argv =task {
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> Context.setProject (Uri.EscapeDataString config.Project)
 
-    do! insertDataPointsProtoStyle ctx
+    do! getAssetsExample ctx
 }
 
 [<EntryPoint>]
 let main argv =
-    printfn "F# Client"
-
     asyncMain().GetAwaiter().GetResult()
 
     0 // return an integer exit code

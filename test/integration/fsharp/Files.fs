@@ -28,7 +28,7 @@ let ``List Files with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -54,7 +54,7 @@ let ``Get file by id is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -79,7 +79,7 @@ let ``Get file by missing id is Error`` () = task {
     let err =
         match res with
         | Ok _ -> ResponseError.empty
-        | Error (ApiError error) -> error
+        | Error (ResponseError error) -> error
         | Error (Panic error) -> raise error
 
 
@@ -104,7 +104,7 @@ let ``Get files by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -135,7 +135,7 @@ let ``Get files downloadLink by ids is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -166,7 +166,7 @@ let ``Get files by externalIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -200,7 +200,7 @@ let ``Filter Files on AssetIds is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -238,7 +238,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -276,7 +276,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
@@ -310,7 +310,7 @@ let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -343,7 +343,7 @@ let ``Filter Files on MetaData is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -376,7 +376,7 @@ let ``Filter Files on Source is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -409,7 +409,7 @@ let ``Filter Files on Name is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -442,7 +442,7 @@ let ``Filter Files on MimeType is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -479,7 +479,7 @@ let ``Filter Files on UploadedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -516,7 +516,7 @@ let ``Filter Files on SourceCreatedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -553,7 +553,7 @@ let ``Filter Files on SourceModifiedTime is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -586,7 +586,7 @@ let ``Filter Files on Uploaded is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -616,7 +616,7 @@ let ``Search Files on Name is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -656,7 +656,7 @@ let ``Create and delete files is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response
@@ -673,7 +673,7 @@ let ``Create and delete files is Ok`` () = task {
     let ctx'' =
         match delRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     test <@ Result.isOk delRes @>
@@ -730,7 +730,7 @@ let ``Update files is Ok`` () = task {
     let getCtx' =
         match getRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let resSource, resExternalId, resMetaData, resSourceCreatedTime, resSourceModifiedTime, resAssetIds =
@@ -757,13 +757,13 @@ let ``Update files is Ok`` () = task {
     let createCtx' =
         match createRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let updateCtx' =
         match updateRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     // Assert create
@@ -803,7 +803,7 @@ let ``Update files is Ok`` () = task {
     let getCtx2' =
         match getRes2 with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let resMetaData2, resAssetIds2, identity =
@@ -839,14 +839,14 @@ let ``Update files is Ok`` () = task {
     let getCtx3' =
         match getRes3 with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 
     let delCtx' =
         match delRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
 

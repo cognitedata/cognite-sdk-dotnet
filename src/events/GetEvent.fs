@@ -11,6 +11,7 @@ open System.Threading
 open System.Threading.Tasks
 
 open Oryx
+open Oryx.ResponseReaders
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
@@ -61,7 +62,6 @@ type GetEventClientExtensions =
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Entity.getAsync eventId ctx
             match result with
-            | Ok ctx ->
-                return ctx.Response
+            | Ok ctx -> return ctx.Response
             | Error error -> return raiseError error
         }

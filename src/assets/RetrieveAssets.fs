@@ -11,6 +11,7 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk
@@ -24,7 +25,7 @@ module Retrieve =
     } with
         member this.Encoder  =
             Encode.object [
-                yield "items", this.Items |> Seq.map(fun id -> id.Encoder) |> Encode.seq
+                "items", this.Items |> Seq.map(fun id -> id.Encoder) |> Encode.seq
             ]
 
     type AssetResponse = {

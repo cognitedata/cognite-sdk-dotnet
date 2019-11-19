@@ -184,7 +184,7 @@ module Handlers =
     /// need to open the Oryx namespace.
     let raiseError (error: HandlerError<ResponseError>) =
         match error with
-        | ApiError error -> raise <| error.ToException ()
+        | ResponseError error -> raise <| error.ToException ()
         | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
         | Panic (err) -> raise err
 
@@ -196,18 +196,18 @@ module Handlers =
             match result with
             | Ok err ->
                 let found, requestId = response.Headers.TryGetValues "x-request-id"
-                if found then return ApiError { err.Error with RequestId = Seq.tryExactlyOne requestId }
-                else return ApiError err.Error
+                if found then return ResponseError { err.Error with RequestId = Seq.tryExactlyOne requestId }
+                else return ResponseError err.Error
             | Error reason -> return Panic <| JsonDecodeException reason
         else
             let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
-            return ApiError error
+            return ResponseError error
     }
 
-    let retry (initialDelay: int<ms>) (maxRetries : int) (handler: HttpHandler<'a,'b,'c>) (next: NextFunc<'b,'c>) (ctx: Context<'a>) : HttpFuncResult<'c> =
+    let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseError>) : bool =
             match error with
-            | ApiError err ->
+            | ResponseError err ->
                 match err.Code with
                 // Rate limiting
                 | 429 -> true
@@ -230,5 +230,5 @@ module Handlers =
                 // do not retry other exceptions.
                 | _ -> true
 
-        retry shouldRetry initialDelay maxRetries handler next ctx
+        retry shouldRetry initialDelay maxRetries next ctx
 

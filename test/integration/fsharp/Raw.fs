@@ -32,7 +32,7 @@ let ``List Databases with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -57,7 +57,7 @@ let ``List Tables with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -86,7 +86,7 @@ let ``List Rows with limit is Ok`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -116,7 +116,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -146,19 +146,19 @@ let ``Create and delete database is Ok`` () = task {
     let createCtx =
         match createRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let deleteCtx =
         match deleteRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -193,19 +193,19 @@ let ``Create and delete table in database is Ok`` () = task {
     let createCtx =
         match createRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let ctx' =
         match res with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let deleteCtx =
         match deleteRes with
         | Ok ctx -> ctx
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let dtos = ctx'.Response.Items
@@ -245,11 +245,11 @@ let ``Create and delete rows from table in database is Ok`` () = task {
             return res
         }
 
-    let! result = runHandler req ctx
+    let! result = runAsync req ctx
     let dtos =
         match result with
         | Ok res -> res.Items
-        | Error (ApiError error) -> raise <| error.ToException ()
+        | Error (ResponseError error) -> raise <| error.ToException ()
         | Error (Panic error) -> raise error
 
     let len = Seq.length dtos
