@@ -37,7 +37,6 @@ type LoginStatusDto = {
         )
 
 
-
 type LoginStatusItemsDto = {
     Data: LoginStatusDto
 }
