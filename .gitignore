@@ -8,3 +8,5 @@
 coverage.lcov
 .ionide
 *.swp
+.config
+.paket
