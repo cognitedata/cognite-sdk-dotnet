@@ -54,7 +54,7 @@ type RowValue =
     static member String str = CaseString str
     static member Double d = CaseDouble d
     static member Long l = CaseLong l
-    member this.ToString() =
+    override this.ToString() =
         match this with
         | CaseString value -> sprintf "STRING %s" value
         | CaseDouble value -> sprintf "DOUBLE %f" value
