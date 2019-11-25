@@ -98,14 +98,13 @@ let ``Get sequence rows by ids is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let sequencesId = 5702374195409554L |> Identity.Id
-    let query = [ RowQuery.Id sequencesId ]
     let expectedRows =
         [
             { RowNumber = 1L; Values = [RowValue.String "row1"] }
             { RowNumber = 2L; Values = [RowValue.String "row2"] }
         ] |> Seq.ofList
     // Act
-    let! res = Sequences.Items.listRowsAsync query ctx
+    let! res = Sequences.Items.listRowsAsync sequencesId [] ctx
 
     let ctx' =
         match res with

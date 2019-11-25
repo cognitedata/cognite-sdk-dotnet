@@ -61,7 +61,7 @@ type RowQuery =
     /// available columns will be returned.
     static member Columns columns = CaseColumns columns
     /// A server-generated ID for the object.
-    static member Id identity = CaseId identity
+    static member internal Id identity = CaseId identity
 
     static member Render (this: RowQuery) =
         match this with
@@ -77,6 +77,11 @@ module Items =
     [<Literal>]
     let Url = "/sequences/list"
     let dataUrl = "/sequences/data/list"
+    
+    let private addIdentity (identity: Identity) (queries: RowQuery seq) =
+        RowQuery.Id identity
+        |> Seq.singleton
+        |> Seq.append queries
 
     type Request = {
         Filters : SequenceFilter seq
@@ -98,9 +103,9 @@ module Items =
                 yield! this.Options |> Seq.map RowQuery.Render
             ]
 
-    let listRowsCore (options: RowQuery seq)  (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+    let listRowsCore (identity: Identity) (options: RowQuery seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
         let request : DataRequest = {
-            Options = options
+            Options = addIdentity identity options 
         }
 
         POST
@@ -150,16 +155,16 @@ module Items =
     /// <param name="options">Optional limit and cursor</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
-    let listRows (options: RowQuery seq) (next: NextFunc<SequenceDataReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
-        listRowsCore options fetch next
+    let listRows (identity: Identity) (options: RowQuery seq) (next: NextFunc<SequenceDataReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
+        listRowsCore identity options fetch next
 
     /// <summary>
     /// Retrieves Sequence data with columns and rows matching filter, and a cursor if given limit is exceeded
     /// </summary>
     /// <param name="options">Optional limit and cursor</param>
     /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
-    let listRowsAsync (options: RowQuery seq) : HttpContext -> HttpFuncResult<SequenceDataReadDto> =
-        listRowsCore options fetch finishEarly
+    let listRowsAsync (identity: Identity) (options: RowQuery seq) : HttpContext -> HttpFuncResult<SequenceDataReadDto> =
+        listRowsCore identity options fetch finishEarly
 
 [<Extension>]
 type ListSequencesExtensions =
@@ -187,6 +192,23 @@ type ListSequencesExtensions =
         }
 
     /// <summary>
+    /// Retrieves Sequence data with columns and rows matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
+    [<Extension>]
+    static member ListRowsAsync (this: ClientExtension, identity: Identity, options: RowQuery seq, [<Optional>] token: CancellationToken) : Task<SequenceDataReadEntity> =
+        task {
+            let ctx = this.Ctx |> Context.setCancellationToken token
+            let! result = Items.listRowsAsync identity options ctx
+            match result with
+            | Ok ctx ->
+                return ctx.Response.ToSequenceDataReadEntity()
+            | Error error -> return raiseError error
+        }
+
+
+    /// <summary>
     /// Retrieves list of Sequences matching filter.
     /// </summary>
     /// <param name="filters">Search filters</param>
@@ -205,3 +227,11 @@ type ListSequencesExtensions =
     static member ListAsync (this: ClientExtension, options: SequenceQuery seq, [<Optional>] token: CancellationToken) : Task<SequenceItems> =
         let filter = ResizeArray<SequenceFilter>()
         this.ListAsync(options, filter, token)
+
+    /// <summary>
+    /// Retrieves Sequence data with columns and rows matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
+    [<Extension>]
+    static member ListRowsAsync (this: ClientExtension, identity: Identity, [<Optional>] token: CancellationToken) : Task<SequenceDataReadEntity> =
+        this.ListRowsAsync(identity, Seq.empty, token)
