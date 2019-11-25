@@ -61,7 +61,8 @@ namespace Test.CSharp.Integration
         }
         [Fact]
         [Trait("Description", "Create and delete sequence sequence is Ok")]
-        public async Task CreateAndDeleteSequenceAsync() {
+        public async Task CreateAndDeleteSequenceAsync()
+        {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
@@ -84,6 +85,23 @@ namespace Test.CSharp.Integration
             var resCount = res.Count();
             Assert.True(1 == resCount, $"Expected 1 created sequence but got {resCount}");
             Assert.True(externalIdString == res.First().ExternalId, "Created externalId doesnt match expected");
+        }
+
+        [Fact]
+        [Trait("Description", "List sequence rows")]
+        public async Task ListRowsAsync()
+        {
+            // Arrange
+            var rowQuery = new List<RowQuery>() { RowQuery.Limit(10) };
+            var externalId = Identity.ExternalId("sdk-test");
+
+            // Act
+            var res = await WriteClient.Sequences.ListRowsAsync(externalId, rowQuery);
+
+            // Assert
+            Assert.True(res.Columns.Count() > 0);
+            Assert.Equal("sdk-test", res.ExternalId);
+            Assert.Equal("sdk-test-column", res.Columns.First().Name);
         }
     }
 }

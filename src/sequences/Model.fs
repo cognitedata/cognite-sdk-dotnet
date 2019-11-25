@@ -24,6 +24,18 @@ type ValueType =
             | CaseString -> "STRING"
             | CaseDouble -> "DOUBLE"
             | CaseLong -> "LONG"
+    member this.IsString () =
+        match this with
+        | CaseString -> true
+        | _ -> false
+    member this.IsDouble () =
+        match this with
+        | CaseDouble -> true
+        | _ -> false
+    member this.IsLong () =
+        match this with
+        | CaseLong -> true
+        | _ -> false
     static member Decoder: Decoder<ValueType> =
         Decode.string
         |> Decode.andThen (fun s ->
@@ -42,6 +54,35 @@ type RowValue =
     static member String str = CaseString str
     static member Double d = CaseDouble d
     static member Long l = CaseLong l
+    member this.ToString() =
+        match this with
+        | CaseString value -> sprintf "STRING %s" value
+        | CaseDouble value -> sprintf "DOUBLE %f" value
+        | CaseLong value -> sprintf "LONG %d" value
+    member this.IsString () =
+        match this with
+        | CaseString _ -> true
+        | _ -> false
+    member this.IsDouble () =
+        match this with
+        | CaseDouble _ -> true
+        | _ -> false
+    member this.IsLong () =
+        match this with
+        | CaseLong _ -> true
+        | _ -> false
+    member this.GetString () =
+        match this with
+        | CaseString value -> value
+        | _ -> raise <| System.InvalidOperationException ("Row does not have STRING value. Is actually " + this.ToString())
+    member this.GetDouble () =
+        match this with
+        | CaseDouble value -> value
+        | _ -> raise <| System.InvalidOperationException ("Row does not have DOUBLE value. Is actually " + this.ToString())
+    member this.GetLong () =
+        match this with
+        | CaseLong value -> value
+        | _ -> raise <| System.InvalidOperationException ("Row does not have LONG value. Is actually " + this.ToString())
 
 type ColumnEntity internal (name: string, externalId: string, description: string, valueType: ValueType, metadata: IDictionary<string, string>, createdTime: int64, lastUpdatedTime: int64) =
     /// The name of the column.
@@ -198,10 +239,15 @@ type SequenceItemsReadDto = {
     NextCursor : string option
 }
 
+type RowEntity (rowNumber: int64, values: RowValue seq) =
+    member val RowNumber : int64 = rowNumber with get, set
+    member val values : RowValue seq = values with get, set
+
 type RowDto = {
-    RowNumber:  int64
+    RowNumber: int64
     Values: RowValue seq
-}
+} with
+    member this.ToRowEntity() = RowEntity(this.RowNumber, this.Values)
 
 type SequenceDataCreateDto = {
     Columns: string seq
@@ -213,11 +259,27 @@ type SequenceDataItemsCreateDto = {
     Items: SequenceDataCreateDto seq
 }
 
+type ColumnInfoReadEntity(externalId: string, name: string, valueType: ValueType) =
+    member val ExternalId : string = externalId with get, set
+    member val Name : string = name with get, set
+    member val ValueType : ValueType = valueType with get, set
+
 type ColumnInfoReadDto = {
     ExternalId: string option
     Name: string option
     ValueType: ValueType option
-}
+} with
+    member this.ToColumnInfoReadEntity() =
+        let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
+        let name = Option.defaultValue Unchecked.defaultof<string> this.Name
+        let valueType = Option.defaultValue Unchecked.defaultof<ValueType> this.ValueType
+        ColumnInfoReadEntity(externalId, name, valueType)
+
+type SequenceDataReadEntity(identity: int64, externalId: string, columns: ColumnInfoReadEntity seq, rows: RowEntity seq, nextCursor: string) =
+    member val Id : int64 = identity with get, set
+    member val ExternalId : string = externalId with get, set
+    member val Columns : ColumnInfoReadEntity seq = columns with get, set
+    member val Rows : RowEntity seq = rows with get, set
 
 type SequenceDataReadDto = {
     Id: int64
@@ -225,7 +287,13 @@ type SequenceDataReadDto = {
     Columns: ColumnInfoReadDto seq
     Rows: RowDto seq
     NextCursor: string option
-}
+} with
+    member this.ToSequenceDataReadEntity() =
+        let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
+        let columns = Seq.map (fun (c: ColumnInfoReadDto) -> c.ToColumnInfoReadEntity()) this.Columns
+        let rows = Seq.map (fun (r: RowDto) -> r.ToRowEntity()) this.Rows
+        let nextCursor = Option.defaultValue Unchecked.defaultof<string> this.NextCursor
+        SequenceDataReadEntity(this.Id, externalId, columns, rows, nextCursor)
 
 type SequenceDataDelete = {
     Rows: int64 seq
