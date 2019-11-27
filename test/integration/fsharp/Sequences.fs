@@ -132,14 +132,14 @@ let ``Create and delete sequences is Ok`` () = task {
     let columnExternalIdString = Guid.NewGuid().ToString()
     let externalIdString = Guid.NewGuid().ToString()
     let name = Guid.NewGuid().ToString()
-    let column: ColumnCreateDto = {
+    let column: ColumnWriteDto = {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
         ValueType = ColumnType.Double
         MetaData = Map.empty
     }
-    let dto: Sequences.SequenceCreateDto = {
+    let dto: Sequences.SequenceWriteDto = {
         ExternalId = Some externalIdString
         Name = Some name
         Description = Some "dotnet sdk test"
@@ -198,14 +198,14 @@ let ``Create and delete sequences rows is Ok`` () = task {
     let externalIdString = Guid.NewGuid().ToString()
     let externalId = Identity.ExternalId externalIdString
     let name = Guid.NewGuid().ToString()
-    let column: ColumnCreateDto = {
+    let column: ColumnWriteDto = {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
         ValueType = ColumnType.String
         MetaData = Map.empty
     }
-    let dto: Sequences.SequenceCreateDto = {
+    let dto: Sequences.SequenceWriteDto = {
         ExternalId = Some externalIdString
         Name = Some name
         Description = Some "dotnet sdk test"
@@ -223,7 +223,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
             { RowNumber = 1L; Values = [RowValue.String "row1"] }
             { RowNumber = 2L; Values = [RowValue.String "row2"] }
         ] |> Seq.ofList
-    let rowDto: Rows.Insert.SequenceDataCreateDto = {
+    let rowDto: Rows.Insert.SequenceDataWriteDto = {
         Columns = ["sdk-column"]
         Rows = rows
         Id = Identity.Id 5702374195409554L
@@ -329,14 +329,14 @@ let ``Update sequences is Ok`` () = task {
         "key2", "value2"
     ]
     |> Map.ofList)
-    let column: ColumnCreateDto = {
+    let column: ColumnWriteDto = {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
         ValueType = ColumnType.Double
         MetaData = Map.empty
     }
-    let dto: Sequences.SequenceCreateDto = {
+    let dto: Sequences.SequenceWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Sequences sdk test"
         Description = Some "dotnet sdk test"

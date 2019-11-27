@@ -21,7 +21,7 @@ module Insert =
     [<Literal>]
     let DataUrl = "/sequences/data"
 
-    type SequenceDataCreateDto = {
+    type SequenceDataWriteDto = {
         Columns: string seq
         Rows: RowDto seq
         Id: Identity
@@ -40,17 +40,17 @@ module Insert =
                 Id = entity.Id
             }
 
-    type SequenceDataItemsCreateDto = {
-        Items: SequenceDataCreateDto seq
+    type SequenceDataItemsWriteDto = {
+        Items: SequenceDataWriteDto seq
     } with
         member this.Encoder =
             Encode.object [
-                yield "items", Encode.seq (Seq.map (fun (s: SequenceDataCreateDto) -> s.Encoder) this.Items)
+                yield "items", Encode.seq (Seq.map (fun (s: SequenceDataWriteDto) -> s.Encoder) this.Items)
             ]
 
 
-    let insertRowsCore (sequenceData: SequenceDataCreateDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
-        let request : SequenceDataItemsCreateDto = { Items = sequenceData }
+    let insertRowsCore (sequenceData: SequenceDataWriteDto seq) (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>)  =
+        let request : SequenceDataItemsWriteDto = { Items = sequenceData }
 
         POST
         >=> setVersion V10
@@ -65,7 +65,7 @@ module Insert =
     /// <param name="sequenceData">The Sequences to create.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created Sequences.</returns>
-    let insertRows (sequenceData: SequenceDataCreateDto seq) (next: NextFunc<HttpResponseMessage, 'a>) =
+    let insertRows (sequenceData: SequenceDataWriteDto seq) (next: NextFunc<HttpResponseMessage, 'a>) =
         insertRowsCore sequenceData fetch next
 
     /// <summary>
@@ -73,7 +73,7 @@ module Insert =
     /// </summary>
     /// <param name="sequenceData">The Sequences to create.</param>
     /// <returns>List of created Sequences.</returns>
-    let insertRowsAsync (sequenceData: SequenceDataCreateDto seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+    let insertRowsAsync (sequenceData: SequenceDataWriteDto seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
         insertRowsCore sequenceData fetch finishEarly
 
 
@@ -82,7 +82,7 @@ type InsertRowsExtensions =
     [<Extension>]
     static member InsertRowsAsync (this: ClientExtension, rows: SequenceDataWriteEntity seq, [<Optional>] token: CancellationToken) : Task =
         task {
-            let sequences' = rows |> Seq.map Insert.SequenceDataCreateDto.FromEntity
+            let sequences' = rows |> Seq.map Insert.SequenceDataWriteDto.FromEntity
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Insert.insertRowsAsync sequences' ctx
             match result with
