@@ -46,7 +46,7 @@ type ColumnCreateDto = {
     ValueType: ColumnType
     MetaData: Map<string, string>
 } with
-    static member FromColumnEntity (entity: ColumnEntity) : ColumnCreateDto =
+    static member FromEntity (entity: ColumnEntity) : ColumnCreateDto =
         let metadata =
             if not (isNull entity.MetaData) then
                 entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -74,7 +74,7 @@ type ColumnReadDto = {
     LastUpdatedTime: int64
 } with
     /// Tranlates the domain type to a plain old CLR object
-    member this.ToColumnEntity () : ColumnEntity =
+    member this.ToEntity () : ColumnEntity =
         let metadata = this.MetaData |> Map.toSeq |> dict
         let name = this.Name |> Option.defaultValue Unchecked.defaultof<string>
         let externalId = this.ExternalId |> Option.defaultValue Unchecked.defaultof<string>
@@ -98,7 +98,7 @@ type SequenceCreateDto = {
     MetaData: Map<string, string>
     Columns: ColumnCreateDto seq
 } with
-    static member FromSequenceCreateDto (entity: SequenceEntity) : SequenceCreateDto =
+    static member FromEntity (entity: SequenceEntity) : SequenceCreateDto =
         let metadata =
             if not (isNull entity.MetaData) then
                 entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -110,7 +110,7 @@ type SequenceCreateDto = {
             AssetId = if entity.AssetId = 0L then None else Some entity.AssetId
             ExternalId = if isNull entity.ExternalId then None else Some entity.ExternalId
             MetaData = metadata
-            Columns = Seq.map ColumnCreateDto.FromColumnEntity entity.Columns
+            Columns = Seq.map ColumnCreateDto.FromEntity entity.Columns
         }
 
 type SequenceReadDto = {
@@ -125,9 +125,9 @@ type SequenceReadDto = {
     LastUpdatedTime: int64
 } with
     /// Translates the domain type to a plain old CLR object
-    member this.ToSequenceEntity () : SequenceEntity =
+    member this.ToEntity () : SequenceEntity =
         let metadata = this.MetaData |> Map.toSeq |> dict
-        let columns = this.Columns |> Seq.map (fun col -> col.ToColumnEntity())
+        let columns = this.Columns |> Seq.map (fun col -> col.ToEntity())
         let name = this.Name |> Option.defaultValue Unchecked.defaultof<string>
         let description = this.Description |> Option.defaultValue Unchecked.defaultof<string>
         let assetId = this.AssetId |> Option.defaultValue 0L
@@ -154,7 +154,12 @@ type RowDto = {
     RowNumber: int64
     Values: RowValue seq
 } with
-    member this.ToRowEntity() = RowEntity(this.RowNumber, this.Values)
+    member this.ToEntity() = RowEntity(this.RowNumber, this.Values)
+    static member FromEntity(entity: RowEntity) =
+        {
+            RowNumber = entity.RowNumber
+            Values = entity.Values
+        }
 
 type ColumnInfoReadDto = {
     ExternalId: string option

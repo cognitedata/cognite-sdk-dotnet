@@ -12,8 +12,8 @@ open Thoth.Json.Net
 
 open CogniteSdk
 open CogniteSdk.Sequences
+
 open Common
-open System.Threading.Tasks
 
 [<Trait("resource", "sequences")>]
 [<Fact>]

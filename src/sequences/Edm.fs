@@ -140,7 +140,7 @@ type SequenceItems = {
 
 type RowEntity (rowNumber: int64, values: RowValue seq) =
     member val RowNumber : int64 = rowNumber with get, set
-    member val values : RowValue seq = values with get, set
+    member val Values : RowValue seq = values with get, set
 
 type ColumnInfoReadEntity(externalId: string, name: string, valueType: ValueType) =
     member val ExternalId : string = externalId with get, set
@@ -157,3 +157,14 @@ type SequenceDataReadEntity(identity: int64, externalId: string, columns: Column
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =
         context
+
+ type SequenceDataEntity (columns: string seq, rows: RowEntity seq, identity: Identity) =
+        member val Columns: string seq = columns
+        member val Rows: RowEntity seq = rows
+        member val Id: Identity = identity
+
+        new (columns, rows, identity: int64) =
+            SequenceDataEntity(columns, rows, Identity.Id identity)
+
+        new (columns: string seq, rows: RowEntity seq, externalId: string) =
+            SequenceDataEntity(columns, rows, Identity.ExternalId externalId)

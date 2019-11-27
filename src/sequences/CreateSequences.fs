@@ -77,11 +77,11 @@ type CreateSequencesExtensions =
     [<Extension>]
     static member CreateAsync (this: ClientExtension, sequences: SequenceEntity seq, [<Optional>] token: CancellationToken) : Task<SequenceEntity seq> =
         task {
-            let sequences' = sequences |> Seq.map SequenceCreateDto.FromSequenceCreateDto
+            let sequences' = sequences |> Seq.map SequenceCreateDto.FromEntity
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Create.createAsync sequences' ctx
             match result with
             | Ok ctx ->
-                return ctx.Response |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
+                return ctx.Response |> Seq.map (fun sequence -> sequence.ToEntity ())
             | Error error -> return raiseError error
         }

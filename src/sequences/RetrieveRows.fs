@@ -28,7 +28,7 @@ type SequenceDataReadDto = {
     member this.ToSequenceDataReadEntity() =
         let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
         let columns = Seq.map (fun (c: ColumnInfoReadDto) -> c.ToColumnInfoReadEntity()) this.Columns
-        let rows = Seq.map (fun (r: RowDto) -> r.ToRowEntity()) this.Rows
+        let rows = Seq.map (fun (r: RowDto) -> r.ToEntity()) this.Rows
         let nextCursor = Option.defaultValue Unchecked.defaultof<string> this.NextCursor
 
         SequenceDataReadEntity(this.Id, externalId, columns, rows, nextCursor)

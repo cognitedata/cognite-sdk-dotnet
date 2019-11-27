@@ -106,7 +106,7 @@ type ListSequencesExtensions =
                 let cursor = sequences.NextCursor |> Option.defaultValue Unchecked.defaultof<string>
                 let items : SequenceItems = {
                     NextCursor = cursor
-                    Items = sequences.Items |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
+                    Items = sequences.Items |> Seq.map (fun sequence -> sequence.ToEntity ())
                 }
                 return items
             | Error error -> return raiseError error
