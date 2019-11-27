@@ -9,6 +9,7 @@ using Xunit;
 
 using CogniteSdk;
 using CogniteSdk.Sequences;
+using CogniteSdk.Sequences.Rows;
 
 namespace Test.CSharp.Integration
 {
@@ -59,26 +60,69 @@ namespace Test.CSharp.Integration
             Assert.True(res.Count() == 1, "Expected one sequence");
             Assert.True(returnedIds.Intersect(id).Count() == returnedIds.Count(), "One of the received Sequence dont match the requested IDs");
         }
+
         [Fact]
-        [Trait("Description", "Create and delete sequence sequence is Ok")]
+        [Trait("Description", "Create and delete sequence is Ok")]
         public async Task CreateAndDeleteSequenceAsync()
         {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
-            var column = new ColumnEntity();
-            column.ExternalId = columnExternalIdString;
-            column.Name = "Create column C# test";
-            column.ValueType = CogniteSdk.Sequences.ValueType.Double;
-            var sequence = new SequenceEntity();
-            sequence.ExternalId = externalIdString;
-            sequence.Name = "Create Sequences c# sdk test";
-            sequence.Description = "Just a test";
-            sequence.Columns = new List<ColumnEntity>() { column };
 
+            var column = new ColumnEntity() {
+                ExternalId = columnExternalIdString,
+                Name = "Create column C# test",
+                ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
+            };
+            var sequence = new SequenceEntity() {
+                ExternalId = externalIdString,
+                Name = "Create Sequences c# sdk test",
+                Description = "Just a test",
+                Columns = new List<ColumnEntity>() { column }
+            };
+            // Act
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceEntity>() { sequence });
+            await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
+
+            // Assert
+            var resCount = res.Count();
+            Assert.True(1 == resCount, $"Expected 1 created sequence but got {resCount}");
+            Assert.True(externalIdString == res.First().ExternalId, "Created externalId doesnt match expected");
+        }
+
+        [Fact]
+        [Trait("Description", "Create and delete rows in sequence is Ok")]
+        public async Task CreateAndDeleteRowsInSequenceAsync()
+        {
+            // Arrange
+            var externalIdString = Guid.NewGuid().ToString();
+            var columnExternalIdString = Guid.NewGuid().ToString();
+
+            var column = new ColumnEntity() {
+                ExternalId = columnExternalIdString,
+                Name = "Create column C# test",
+                ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
+            };
+
+            var sequence = new SequenceEntity() {
+                ExternalId = externalIdString,
+                Name = "Create Sequences c# sdk test",
+                Description = "Just a test",
+                Columns = new List<ColumnEntity>() { column }
+            };
+
+            var data = new SequenceDataWriteEntity() {
+                Columns = new List<string> { columnExternalIdString },
+                Rows = new List<RowEntity> { new RowEntity() { RowNumber=1, Values=new List<RowValue>() { RowValue.Double(42.0) } }},
+                Id = Identity.ExternalId(externalIdString)
+            };
+            var delete = new SequenceDataDeleteEntity() { Id = Identity.ExternalId(externalIdString), Rows = new List<Int64> { 1L } };
 
             // Act
             var res = await WriteClient.Sequences.CreateAsync(new List<SequenceEntity>() { sequence });
+
+            await WriteClient.Sequences.InsertRowsAsync(new List<SequenceDataWriteEntity> { data });
+            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceDataDeleteEntity> { delete });
             await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert

@@ -190,6 +190,6 @@ type UpdateSequencesClientExtensions =
             let! result = Update.updateAsync sequences' ctx
             match result with
             | Ok ctx ->
-                return ctx.Response |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
+                return ctx.Response |> Seq.map (fun sequence -> sequence.ToEntity ())
             | Error error -> return raiseError error
         }

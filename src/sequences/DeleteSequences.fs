@@ -29,26 +29,6 @@ module Delete =
             ]
     let DataUrl = "/sequences/data/delete"
 
-    type SequencesDataDeleteRequest = {
-        Items: SequenceDataDelete seq
-    } with
-        member this.Encoder =
-            Encode.object [
-                yield "items", this.Items |> Seq.map (fun item -> item.Encoder) |> Encode.seq
-            ]
-
-    let deleteRowsCore (sequences: SequenceDataDelete seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
-        let request : SequencesDataDeleteRequest = {
-            Items = sequences
-        }
-
-        POST
-        >=> setVersion V10
-        >=> setContent (Content.JsonValue request.Encoder)
-        >=> setResource DataUrl
-        >=> fetch
-        >=> withError decodeError
-
     let deleteCore (sequences: Identity seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
         let request : SequencesDeleteRequest = {
             Items = sequences
@@ -60,21 +40,6 @@ module Delete =
         >=> setResource Url
         >=> fetch
         >=> withError decodeError
-
-    /// <summary>
-    /// Delete multiple sequences rows in the same project
-    /// </summary>
-    /// <param name="sequenceData">The list of sequences rows to delete.</param>
-    /// <param name="next">Async handler to use</param>
-    let deleteRows (sequenceData: SequenceDataDelete seq) (next: NextFunc<HttpResponseMessage,'a>) =
-        deleteRowsCore sequenceData fetch next
-
-    /// <summary>
-    /// Delete multiple sequences rows in the same project
-    /// </summary>
-    /// <param name="sequenceData">The list of Sequences to delete.</param>
-    let deleteRowsAsync (sequenceData: SequenceDataDelete seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
-        deleteRowsCore sequenceData fetch finishEarly
 
     /// <summary>
     /// Delete multiple Sequences in the same project, along with all their descendants in the Sequence hierarchy if recursive is true.

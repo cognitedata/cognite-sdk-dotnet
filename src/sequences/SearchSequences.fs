@@ -22,6 +22,7 @@ type SequenceSearch =
     | CaseName of string
     | CaseDescription of string
     | CaseQuery of string
+
     /// Fuzzy search on name
     static member Name name = CaseName name
     /// Fuzzy search on description
@@ -120,7 +121,7 @@ type SearchSequencesClientExtensions =
             match result with
             | Ok ctx ->
                 let sequences = ctx.Response
-                return sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
+                return sequences |> Seq.map (fun sequence -> sequence.ToEntity ())
             | Error error -> return raiseError error
         }
 

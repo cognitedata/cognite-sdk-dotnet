@@ -1,13 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>.NET SDK for Cognite Data Fusion (CDF)</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageId>CogniteSdk</PackageId>
-    <Author>Cognite AS</Author>
-    <Company>Cognite AS</Company>
-    <Copyright>Cognite AS</Copyright>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Error.fs" />
@@ -36,45 +29,47 @@
     <Compile Include="datapoints/GetLatestDataPoint.fs" />
     <Compile Include="datapoints/InsertDataPoints.fs" />
     <Compile Include="datapoints/DeleteDataPoints.fs" />
-    <Compile Include="events\Model.fs" />
-    <Compile Include="events\Json.fs" />
-    <Compile Include="events\CreateEvents.fs" />
-    <Compile Include="events\DeleteEvents.fs" />
-    <Compile Include="events\GetEvent.fs" />
-    <Compile Include="events\GetEventsByIds.fs" />
-    <Compile Include="events\UpdateEvents.fs" />
-    <Compile Include="events\ListEvents.fs" />
-    <Compile Include="events\SearchEvents.fs" />
-    <Compile Include="files\Model.fs" />
-    <Compile Include="files\Json.fs" />
-    <Compile Include="files\ListFiles.fs" />
-    <Compile Include="files\RetrieveFiles.fs" />
-    <Compile Include="files\GetFile.fs" />
-    <Compile Include="files\SearchFiles.fs" />
-    <Compile Include="files\UploadFile.fs" />
-    <Compile Include="files\DeleteFile.fs" />
-    <Compile Include="files\UpdateFiles.fs" />
-    <Compile Include="files\DownloadFiles.fs" />
-    <Compile Include="raw\Model.fs" />
-    <Compile Include="raw\Json.fs" />
-    <Compile Include="raw\List.fs" />
-    <Compile Include="raw\Create.fs" />
-    <Compile Include="raw\Delete.fs" />
-    <Compile Include="sequences\Model.fs" />
-    <Compile Include="sequences\Json.fs" />
-    <Compile Include="sequences\ListSequences.fs" />
-    <Compile Include="sequences\RetrieveSequences.fs" />
-    <Compile Include="sequences\SearchSequences.fs" />
-    <Compile Include="sequences\Create.fs" />
-    <Compile Include="sequences\Delete.fs" />
-    <Compile Include="sequences\UpdateSequences.fs" />
-    <Compile Include="login\Model.fs" />
-    <Compile Include="login\Json.fs" />
-    <Compile Include="login\Status.fs" />
+    <Compile Include="events/Model.fs" />
+    <Compile Include="events/Json.fs" />
+    <Compile Include="events/CreateEvents.fs" />
+    <Compile Include="events/DeleteEvents.fs" />
+    <Compile Include="events/GetEvent.fs" />
+    <Compile Include="events/GetEventsByIds.fs" />
+    <Compile Include="events/UpdateEvents.fs" />
+    <Compile Include="events/ListEvents.fs" />
+    <Compile Include="events/SearchEvents.fs" />
+    <Compile Include="files/Model.fs" />
+    <Compile Include="files/Json.fs" />
+    <Compile Include="files/ListFiles.fs" />
+    <Compile Include="files/RetrieveFiles.fs" />
+    <Compile Include="files/GetFile.fs" />
+    <Compile Include="files/SearchFiles.fs" />
+    <Compile Include="files/UploadFile.fs" />
+    <Compile Include="files/DeleteFile.fs" />
+    <Compile Include="files/UpdateFiles.fs" />
+    <Compile Include="files/DownloadFiles.fs" />
+    <Compile Include="raw/Model.fs" />
+    <Compile Include="raw/Json.fs" />
+    <Compile Include="raw/List.fs" />
+    <Compile Include="raw/Create.fs" />
+    <Compile Include="raw/Delete.fs" />
+    <Compile Include="sequences/Edm.fs" />
+    <Compile Include="sequences/Model.fs" />
+    <Compile Include="sequences/Json.fs" />
+    <Compile Include="sequences/ListSequences.fs" />
+    <Compile Include="sequences/RetrieveSequences.fs" />
+    <Compile Include="sequences/RetrieveRows.fs" />
+    <Compile Include="sequences/SearchSequences.fs" />
+    <Compile Include="sequences/CreateSequences.fs" />
+    <Compile Include="sequences/DeleteSequences.fs" />
+    <Compile Include="sequences/DeleteRows.fs" />
+    <Compile Include="sequences/InsertRows.fs" />
+    <Compile Include="sequences/UpdateSequences.fs" />
+    <Compile Include="login/Model.fs" />
+    <Compile Include="login/Json.fs" />
+    <Compile Include="login/Status.fs" />
     <Compile Include="Client.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="../LICENSE" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
 </Project>
