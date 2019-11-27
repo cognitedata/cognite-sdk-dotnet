@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk.Sequences.Rows
 
 open System.Net.Http
 open System.Runtime.InteropServices
@@ -11,10 +11,10 @@ open System.Threading.Tasks
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
-open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk
+open CogniteSdk.Sequences
 
 [<RequireQualifiedAccess>]
 module Insert =

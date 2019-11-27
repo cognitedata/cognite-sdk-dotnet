@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk.Sequences.Rows
 
 open System.Net.Http
 open System.Runtime.CompilerServices
@@ -14,10 +14,11 @@ open Oryx
 open Thoth.Json.Net
 
 open CogniteSdk
+open CogniteSdk.Sequences
 
 
 [<RequireQualifiedAccess>]
-module RowsDelete =
+module Delete =
     [<Literal>]
     let DataUrl = "/sequences/data/delete"
 

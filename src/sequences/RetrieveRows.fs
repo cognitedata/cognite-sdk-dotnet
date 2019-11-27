@@ -1,21 +1,22 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk.Sequences.Rows
 
 open System.IO
 open System.Net.Http
 open System.Runtime.CompilerServices
 open System.Runtime.InteropServices
 open System.Threading
+open System.Threading.Tasks
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk
-open System.Threading.Tasks
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open CogniteSdk.Sequences
 
 type SequenceDataReadDto = {
     Id: int64
@@ -79,7 +80,7 @@ type RowQuery =
         | CaseCursor cursor -> "cursor", Encode.string cursor
 
 [<RequireQualifiedAccess>]
-module RowItems =
+module Items =
     [<Literal>]
     let DataUrl = "/sequences/data/list"
 
@@ -137,7 +138,7 @@ type ListRowsExtensions =
     static member ListRowsAsync (this: ClientExtension, identity: Identity, options: RowQuery seq, [<Optional>] token: CancellationToken) : Task<SequenceDataReadEntity> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = RowItems.listRowsAsync identity options ctx
+            let! result = Items.listRowsAsync identity options ctx
             match result with
             | Ok ctx ->
                 return ctx.Response.ToSequenceDataReadEntity()

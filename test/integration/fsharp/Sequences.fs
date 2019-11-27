@@ -100,11 +100,11 @@ let ``Get sequence rows by ids is Ok`` () = task {
     let sequencesId = 5702374195409554L |> Identity.Id
     let expectedRows =
         [
-            { RowNumber = 1L; Values = [RowValue.String "row1"] }
-            { RowNumber = 2L; Values = [RowValue.String "row2"] }
+            { RowNumber = 1L; Values = [ RowValue.String "row1"] }
+            { RowNumber = 2L; Values = [ RowValue.String "row2"] }
         ] |> Seq.ofList
     // Act
-    let! res = Sequences.Items.listRowsAsync sequencesId [] ctx
+    let! res = Sequences.Rows.Items.listRowsAsync sequencesId [] ctx
 
     let ctx' =
         match res with
@@ -136,7 +136,7 @@ let ``Create and delete sequences is Ok`` () = task {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
-        ValueType = ValueType.Double
+        ValueType = ColumnType.Double
         MetaData = Map.empty
     }
     let dto: Sequences.SequenceCreateDto = {
@@ -202,7 +202,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
-        ValueType = ValueType.String
+        ValueType = ColumnType.String
         MetaData = Map.empty
     }
     let dto: Sequences.SequenceCreateDto = {
@@ -213,7 +213,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
         AssetId = None
         Columns = [column]
     }
-    let deleteDto: Sequences.SequenceDataDelete = {
+    let deleteDto: Sequences.Rows.Delete.SequenceDataDelete = {
         Rows = []
         Id = externalId
     }
@@ -223,7 +223,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
             { RowNumber = 1L; Values = [RowValue.String "row1"] }
             { RowNumber = 2L; Values = [RowValue.String "row2"] }
         ] |> Seq.ofList
-    let rowDto: Sequences.SequenceDataCreateDto = {
+    let rowDto: Rows.Insert.SequenceDataCreateDto = {
         Columns = ["sdk-column"]
         Rows = rows
         Id = Identity.Id 5702374195409554L
@@ -232,8 +232,8 @@ let ``Create and delete sequences rows is Ok`` () = task {
 
     // Act
     let! res = Sequences.Create.createAsync [ dto ] ctx
-    let! rowRes = Sequences.Create.createRowsAsync [ rowDto ] ctx
-    let! rowDelRes = Sequences.Delete.deleteRowsAsync [ deleteDto ] ctx
+    let! rowRes = Sequences.Rows.Insert.insertRowsAsync [ rowDto ] ctx
+    let! rowDelRes = Sequences.Rows.Delete.deleteRowsAsync [ deleteDto ] ctx
     let! delRes = Sequences.Delete.deleteAsync [ externalId ] ctx
 
     let ctx' =
@@ -333,7 +333,7 @@ let ``Update sequences is Ok`` () = task {
         Name = Some "Create column sdk test"
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
-        ValueType = ValueType.Double
+        ValueType = ColumnType.Double
         MetaData = Map.empty
     }
     let dto: Sequences.SequenceCreateDto = {
