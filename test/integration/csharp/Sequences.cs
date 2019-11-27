@@ -69,7 +69,7 @@ namespace Test.CSharp.Integration
             var column = new ColumnEntity();
             column.ExternalId = columnExternalIdString;
             column.Name = "Create column C# test";
-            column.ValueType = CogniteSdk.Sequences.ValueType.Double;
+            column.ValueType = CogniteSdk.Sequences.ValueType.DOUBLE;
             var sequence = new SequenceEntity();
             sequence.ExternalId = externalIdString;
             sequence.Name = "Create Sequences c# sdk test";

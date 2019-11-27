@@ -20,6 +20,7 @@ open CogniteSdk
 module Retrieve =
     [<Literal>]
     let Url = "/sequences/byids"
+
     type SequenceRequest = {
         Items: Identity seq
     } with
@@ -86,8 +87,8 @@ type GetSequencesByIdsClientExtensions =
             let! result = Retrieve.getByIdsAsync ids ctx
             match result with
             | Ok ctx ->
-                let Sequences = ctx.Response
-                return Sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
+                let sequences = ctx.Response
+                return sequences |> Seq.map (fun sequence -> sequence.ToSequenceEntity ())
             | Error error -> return raiseError error
         }
 
