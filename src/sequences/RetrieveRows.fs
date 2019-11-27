@@ -43,42 +43,6 @@ type SequenceDataReadDto = {
                 }
         )
 
-type RowQuery =
-    private
-    | CaseStart of int64
-    | CaseEnd of int64
-    | CaseLimit of int32
-    | CaseCursor of string
-    | CaseColumns of string
-    | CaseId of Identity
-
-    /// Lowest row number included
-    static member Start start = CaseStart start
-    /// Get rows up to, but excluding, this row number
-    static member End e = CaseEnd e
-    /// Maximum number of rows returned in one request
-    static member Limit limit =
-        if limit > MaxLimitSize || limit < 1 then
-            failwith "Limit must be set to 1000 or less"
-        CaseLimit limit
-    /// Cursor for pagination returned from a previous request. Apart
-    /// From this cursor, the rest of the request object should be the same as for the original request.
-    static member Cursor cursor = CaseCursor cursor
-    /// Columns to be included. Specified as list of column externalIds. In case this filter is not set, all
-    /// available columns will be returned.
-    static member Columns columns = CaseColumns columns
-    /// A server-generated ID for the object.
-    static member internal Id identity = CaseId identity
-
-    static member Render (this: RowQuery) =
-        match this with
-        | CaseStart start -> "start", Encode.int53 start
-        | CaseEnd e -> "end", Encode.int53 e
-        | CaseColumns cols -> "columns", Encode.string cols
-        | CaseId identity -> identity.Render
-        | CaseLimit limit -> "limit", Encode.int limit
-        | CaseCursor cursor -> "cursor", Encode.string cursor
-
 [<RequireQualifiedAccess>]
 module Items =
     [<Literal>]
@@ -126,6 +90,7 @@ module Items =
     /// <returns>Sequences data with rows and columns matching given filters and optional cursor</returns>
     let listRowsAsync (identity: Identity) (options: RowQuery seq) : HttpContext -> HttpFuncResult<SequenceDataReadDto> =
         listRowsCore identity options fetch finishEarly
+
 
 [<Extension>]
 type ListRowsExtensions =

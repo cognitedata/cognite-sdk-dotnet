@@ -9,6 +9,7 @@ using Xunit;
 
 using CogniteSdk;
 using CogniteSdk.Sequences;
+using CogniteSdk.Sequences.Rows;
 
 namespace Test.CSharp.Integration
 {
