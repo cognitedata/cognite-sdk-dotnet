@@ -32,6 +32,12 @@ module Delete =
                 yield this.Id.Render
             ]
 
+        static member FromEntity (entity: SequenceDataDeleteEntity) =
+            {
+                Rows = entity.Rows
+                Id = entity.Id
+            }
+
     type SequencesDataDeleteRequest = {
         Items: SequenceDataDelete seq
     } with
@@ -40,9 +46,9 @@ module Delete =
                 yield "items", this.Items |> Seq.map (fun item -> item.Encoder) |> Encode.seq
             ]
 
-    let deleteRowsCore (sequences: SequenceDataDelete seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
+    let deleteRowsCore (rowData: SequenceDataDelete seq) (fetch: HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a>) =
         let request : SequencesDataDeleteRequest = {
-            Items = sequences
+            Items = rowData
         }
 
         POST
@@ -57,45 +63,30 @@ module Delete =
     /// </summary>
     /// <param name="sequenceData">The list of sequences rows to delete.</param>
     /// <param name="next">Async handler to use</param>
-    let deleteRows (sequenceData: SequenceDataDelete seq) (next: NextFunc<HttpResponseMessage,'a>) =
-        deleteRowsCore sequenceData fetch next
+    let deleteRows (rowData: SequenceDataDelete seq) (next: NextFunc<HttpResponseMessage,'a>) =
+        deleteRowsCore rowData fetch next
 
     /// <summary>
     /// Delete multiple sequences rows in the same project
     /// </summary>
-    /// <param name="sequenceData">The list of Sequences to delete.</param>
-    let deleteRowsAsync (sequenceData: SequenceDataDelete seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
-        deleteRowsCore sequenceData fetch finishEarly
+    /// <param name="sequenceData">The list of Sequences and rows to delete.</param>
+    let deleteRowsAsync (rowData: SequenceDataDelete seq) : HttpContext -> HttpFuncResult<HttpResponseMessage> =
+        deleteRowsCore rowData fetch finishEarly
 
 
 [<Extension>]
 type DeleteRowsExtensions =
     /// <summary>
-    /// Delete multiple Sequences in the same project, along with all their descendants in the Sequence hierarchy if recursive is true.
+    /// Delete multiple Rows in the same sequence.
     /// </summary>
-    /// <param name="sequences">The list of Sequences to delete.</param>
+    /// <param name="sequences">The list of rows to delete.</param>
     [<Extension>]
-    static member DeleteRowsAsync(this: ClientExtension, ids: Identity seq, [<Optional>] token: CancellationToken) : Task =
+    static member DeleteRowsAsync(this: ClientExtension, rows: SequenceDataDeleteEntity seq, [<Optional>] token: CancellationToken) : Task =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Delete.deleteAsync ids ctx
+            let rowData = rows |> Seq.map Delete.SequenceDataDelete.FromEntity
+            let! result = Delete.deleteRowsAsync rowData ctx
             match result with
             | Ok _ -> return ()
             | Error error -> return raiseError error
         } :> _
-
-    /// <summary>
-    /// Delete multiple Sequences in the same project, along with all their descendants in the Sequence hierarchy if recursive is true.
-    /// </summary>
-    /// <param name="sequences">The list of Sequences to delete.</param>
-    [<Extension>]
-    static member DeleteRowsAsync(this: ClientExtension, ids: int64 seq, [<Optional>] token: CancellationToken) : Task =
-        this.DeleteAsync(ids |> Seq.map Identity.Id, token)
-
-    /// <summary>
-    /// Delete multiple Sequences in the same project, along with all their descendants in the Sequence hierarchy if recursive is true.
-    /// </summary>
-    /// <param name="sequences">The list of Sequences to delete.</param>
-    [<Extension>]
-    static member DeleteRowsAsync(this: ClientExtension, ids: string seq, [<Optional>] token: CancellationToken) : Task =
-        this.DeleteAsync(ids |> Seq.map Identity.ExternalId, token)

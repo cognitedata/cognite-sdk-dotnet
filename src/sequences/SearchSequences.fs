@@ -22,6 +22,7 @@ type SequenceSearch =
     | CaseName of string
     | CaseDescription of string
     | CaseQuery of string
+
     /// Fuzzy search on name
     static member Name name = CaseName name
     /// Fuzzy search on description

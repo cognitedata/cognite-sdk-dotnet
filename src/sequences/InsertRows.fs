@@ -33,7 +33,7 @@ module Insert =
                 yield this.Id.Render
             ]
 
-        static member FromEntity (entity: SequenceDataEntity) =
+        static member FromEntity (entity: SequenceDataWriteEntity) =
             {
                 Columns = entity.Columns
                 Rows = entity.Rows |> Seq.map RowDto.FromEntity
@@ -80,9 +80,9 @@ module Insert =
 [<Extension>]
 type InsertRowsExtensions =
     [<Extension>]
-    static member InsertRowsAsync (this: ClientExtension, sequences: SequenceDataEntity seq, [<Optional>] token: CancellationToken) : Task =
+    static member InsertRowsAsync (this: ClientExtension, rows: SequenceDataWriteEntity seq, [<Optional>] token: CancellationToken) : Task =
         task {
-            let sequences' = sequences |> Seq.map Insert.SequenceDataCreateDto.FromEntity
+            let sequences' = rows |> Seq.map Insert.SequenceDataCreateDto.FromEntity
             let ctx = this.Ctx |> Context.setCancellationToken token
             let! result = Insert.insertRowsAsync sequences' ctx
             match result with

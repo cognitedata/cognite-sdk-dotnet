@@ -47,7 +47,7 @@ module SequencesJsonExtensions =
                 NextCursor = get.Optional.Field "nextCursor" Decode.string
             })
 
-    type ColumnCreateDto with
+    type ColumnWriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "name" Encode.string this.Name
@@ -59,7 +59,7 @@ module SequencesJsonExtensions =
                     yield "metadata", metaString
             ]
 
-    type SequenceCreateDto with
+    type SequenceWriteDto with
         member this.Encoder =
             Encode.object [
                 yield! Encode.optionalProperty "name" Encode.string this.Name
@@ -69,7 +69,7 @@ module SequencesJsonExtensions =
                 if not this.MetaData.IsEmpty then
                     let metaString = Encode.propertyBag this.MetaData
                     yield "metadata", metaString
-                yield "columns", Encode.seq (Seq.map (fun (c: ColumnCreateDto) -> c.Encoder) this.Columns)
+                yield "columns", Encode.seq (Seq.map (fun (c: ColumnWriteDto) -> c.Encoder) this.Columns)
             ]
 
     type RowValue with

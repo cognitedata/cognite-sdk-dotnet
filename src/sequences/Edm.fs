@@ -142,6 +142,9 @@ type RowEntity (rowNumber: int64, values: RowValue seq) =
     member val RowNumber : int64 = rowNumber with get, set
     member val Values : RowValue seq = values with get, set
 
+    new () =
+        RowEntity(0L, null)
+
 type ColumnInfoReadEntity(externalId: string, name: string, valueType: ValueType) =
     member val ExternalId : string = externalId with get, set
     member val Name : string = name with get, set
@@ -154,17 +157,28 @@ type SequenceDataReadEntity(identity: int64, externalId: string, columns: Column
     member val Columns : ColumnInfoReadEntity seq = columns with get, set
     member val Rows : RowEntity seq = rows with get, set
 
+type SequenceDataWriteEntity(columns: string seq, rows: RowEntity seq, identity: Identity) =
+    member val Columns: string seq = columns with get, set
+    member val Rows: RowEntity seq = rows with get, set
+    member val Id: Identity = identity with get, set
+
+    new (columns, rows, identity: int64) =
+        SequenceDataWriteEntity(columns, rows, Identity.Id identity)
+
+    new (columns: string seq, rows: RowEntity seq, externalId: string) =
+        SequenceDataWriteEntity(columns, rows, Identity.ExternalId externalId)
+    new () =
+        SequenceDataWriteEntity(columns=null, rows=null, externalId=null)
+
+
+type SequenceDataDeleteEntity(id: Identity, rows: int64 seq) =
+    member val Id: Identity = id with get, set
+    member val Rows: int64 seq = rows with get, set
+
+    new () =
+        SequenceDataDeleteEntity(Identity.ExternalId(null), null)
+
 type ClientExtension internal (context: HttpContext) =
     member internal __.Ctx =
         context
 
- type SequenceDataEntity (columns: string seq, rows: RowEntity seq, identity: Identity) =
-        member val Columns: string seq = columns
-        member val Rows: RowEntity seq = rows
-        member val Id: Identity = identity
-
-        new (columns, rows, identity: int64) =
-            SequenceDataEntity(columns, rows, Identity.Id identity)
-
-        new (columns: string seq, rows: RowEntity seq, externalId: string) =
-            SequenceDataEntity(columns, rows, Identity.ExternalId externalId)

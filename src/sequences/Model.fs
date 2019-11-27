@@ -6,7 +6,6 @@ namespace CogniteSdk.Sequences
 open System.Collections.Generic
 open Thoth.Json.Net
 
-open Oryx
 open CogniteSdk
 
 type ColumnType =
@@ -14,6 +13,7 @@ type ColumnType =
     | CaseString
     | CaseDouble
     | CaseLong
+
     static member String = CaseString
     static member Double = CaseDouble
     static member Long = CaseLong
@@ -39,14 +39,14 @@ type ColumnType =
             | _ -> sprintf "Could not decode valueType %A" s |> Decode.fail
         )
 
-type ColumnCreateDto = {
+type ColumnWriteDto = {
     Name: string option
     ExternalId: string
     Description: string option
     ValueType: ColumnType
     MetaData: Map<string, string>
 } with
-    static member FromEntity (entity: ColumnEntity) : ColumnCreateDto =
+    static member FromEntity (entity: ColumnEntity) : ColumnWriteDto =
         let metadata =
             if not (isNull entity.MetaData) then
                 entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -90,15 +90,15 @@ type ColumnReadDto = {
             lastUpdatedTime = this.LastUpdatedTime
         )
 
-type SequenceCreateDto = {
+type SequenceWriteDto = {
     Name: string option
     Description: string option
     AssetId: int64 option
     ExternalId: string option
     MetaData: Map<string, string>
-    Columns: ColumnCreateDto seq
+    Columns: ColumnWriteDto seq
 } with
-    static member FromEntity (entity: SequenceEntity) : SequenceCreateDto =
+    static member FromEntity (entity: SequenceEntity) : SequenceWriteDto =
         let metadata =
             if not (isNull entity.MetaData) then
                 entity.MetaData |> Seq.map (|KeyValue|) |> Map.ofSeq
@@ -110,7 +110,7 @@ type SequenceCreateDto = {
             AssetId = if entity.AssetId = 0L then None else Some entity.AssetId
             ExternalId = if isNull entity.ExternalId then None else Some entity.ExternalId
             MetaData = metadata
-            Columns = Seq.map ColumnCreateDto.FromEntity entity.Columns
+            Columns = Seq.map ColumnWriteDto.FromEntity entity.Columns
         }
 
 type SequenceReadDto = {
@@ -166,7 +166,7 @@ type ColumnInfoReadDto = {
     Name: string option
     ValueType: ColumnType
 } with
-    member this.ToColumnInfoReadEntity() =
+    member this.ToEntity() =
         let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
         let name = Option.defaultValue Unchecked.defaultof<string> this.Name
         let valueType = this.ValueType.GetType ()

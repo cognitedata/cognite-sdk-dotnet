@@ -25,9 +25,9 @@ type SequenceDataReadDto = {
     Rows: RowDto seq
     NextCursor: string option
 } with
-    member this.ToSequenceDataReadEntity() =
+    member this.ToEntity() =
         let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
-        let columns = Seq.map (fun (c: ColumnInfoReadDto) -> c.ToColumnInfoReadEntity()) this.Columns
+        let columns = Seq.map (fun (c: ColumnInfoReadDto) -> c.ToEntity()) this.Columns
         let rows = Seq.map (fun (r: RowDto) -> r.ToEntity()) this.Rows
         let nextCursor = Option.defaultValue Unchecked.defaultof<string> this.NextCursor
 
@@ -106,7 +106,7 @@ type ListRowsExtensions =
             let! result = Items.listRowsAsync identity options ctx
             match result with
             | Ok ctx ->
-                return ctx.Response.ToSequenceDataReadEntity()
+                return ctx.Response.ToEntity()
             | Error error -> return raiseError error
         }
 
