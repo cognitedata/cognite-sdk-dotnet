@@ -8,34 +8,21 @@ open Thoth.Json.Net
 
 open CogniteSdk
 
-type ColumnType =
-    private
-    | CaseString
-    | CaseDouble
-    | CaseLong
+// Enums cannot be extended so we use a module instead.
+[<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
+module ValueType =
 
-    static member String = CaseString
-    static member Double = CaseDouble
-    static member Long = CaseLong
-    override this.ToString () =
-        match this with
-            | CaseString -> "STRING"
-            | CaseDouble -> "DOUBLE"
-            | CaseLong -> "LONG"
+    let String = ValueType.STRING
+    let Double = ValueType.DOUBLE
+    let Long = ValueType.LONG
 
-    member this.GetType () =
-        match this with
-        | CaseString -> ValueType.STRING
-        | CaseDouble -> ValueType.DOUBLE
-        | CaseLong -> ValueType.LONG
-
-    static member Decoder: Decoder<ColumnType> =
+    let Decoder: Decoder<ValueType> =
         Decode.string
         |> Decode.andThen (fun s ->
             match s.ToLower() with
-            | "string" -> CaseString |> Decode.succeed
-            | "double" -> CaseDouble |> Decode.succeed
-            | "long" -> CaseLong |> Decode.succeed
+            | "string" -> ValueType.STRING |> Decode.succeed
+            | "double" -> ValueType.DOUBLE |> Decode.succeed
+            | "long" -> ValueType.LONG |> Decode.succeed
             | _ -> sprintf "Could not decode valueType %A" s |> Decode.fail
         )
 
@@ -43,7 +30,7 @@ type ColumnWriteDto = {
     Name: string option
     ExternalId: string
     Description: string option
-    ValueType: ColumnType
+    ValueType: ValueType
     MetaData: Map<string, string>
 } with
     static member FromEntity (entity: ColumnEntity) : ColumnWriteDto =
@@ -56,11 +43,7 @@ type ColumnWriteDto = {
             Name = if isNull entity.Name then None else Some entity.Name
             ExternalId = entity.ExternalId
             Description = if isNull entity.Description then None else Some entity.Description
-            ValueType =
-                match entity.ValueType with
-                | ValueType.DOUBLE -> ColumnType.Double
-                | ValueType.LONG -> ColumnType.Long
-                | _ -> ColumnType.String
+            ValueType = entity.ValueType
             MetaData = metadata
         }
 
@@ -68,7 +51,7 @@ type ColumnReadDto = {
     Name: string option
     ExternalId: string option
     Description: string option
-    ValueType: ColumnType
+    ValueType: ValueType
     MetaData: Map<string, string>
     CreatedTime: int64
     LastUpdatedTime: int64
@@ -84,7 +67,7 @@ type ColumnReadDto = {
             name = name,
             externalId = externalId,
             description = description,
-            valueType = this.ValueType.GetType (),
+            valueType = this.ValueType,
             metadata = metadata,
             createdTime = this.CreatedTime,
             lastUpdatedTime = this.LastUpdatedTime
@@ -164,12 +147,12 @@ type RowDto = {
 type ColumnInfoReadDto = {
     ExternalId: string option
     Name: string option
-    ValueType: ColumnType
+    ValueType: ValueType
 } with
     member this.ToEntity() =
         let externalId = Option.defaultValue Unchecked.defaultof<string> this.ExternalId
         let name = Option.defaultValue Unchecked.defaultof<string> this.Name
-        let valueType = this.ValueType.GetType ()
+        let valueType = this.ValueType
 
         ColumnInfoReadEntity(externalId, name, valueType)
 
