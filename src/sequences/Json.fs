@@ -16,7 +16,7 @@ module SequencesJsonExtensions =
                     Name = get.Optional.Field "name" Decode.string
                     ExternalId = get.Optional.Field "externalId" Decode.string
                     Description = get.Optional.Field "description" Decode.string
-                    ValueType = get.Required.Field "valueType" ColumnType.Decoder
+                    ValueType = get.Required.Field "valueType" ValueType.Decoder
                     MetaData = metadata |> Option.defaultValue Map.empty
                     CreatedTime = get.Required.Field "createdTime" Decode.int64
                     LastUpdatedTime = get.Required.Field "lastUpdatedTime" Decode.int64
@@ -79,11 +79,11 @@ module SequencesJsonExtensions =
             | RowValue.CaseDouble d -> Encode.float d
             | RowValue.CaseLong l -> Encode.int64 l
 
-        static member Decoder(colType: ColumnType) : Decoder<RowValue> =
+        static member Decoder(colType: ValueType) : Decoder<RowValue> =
             match colType with
-            | CaseString -> Decode.string |> Decode.map RowValue.String
-            | CaseDouble -> Decode.float |> Decode.map RowValue.Double
-            | CaseLong -> Decode.int64 |> Decode.map RowValue.Long
+            | ValueType.STRING -> Decode.string |> Decode.map RowValue.String
+            | ValueType.LONG -> Decode.int64 |> Decode.map RowValue.Long
+            | _ -> Decode.float |> Decode.map RowValue.Double
 
     type RowDto with
         member this.Encoder =
@@ -96,9 +96,9 @@ module SequencesJsonExtensions =
         static member Decoder : Decoder<RowDto> =
             Decode.object (fun get ->
                 let valueDecoders = [
-                    RowValue.Decoder ColumnType.String
-                    RowValue.Decoder ColumnType.Double
-                    RowValue.Decoder ColumnType.Long
+                    RowValue.Decoder ValueType.String
+                    RowValue.Decoder ValueType.Double
+                    RowValue.Decoder ValueType.Long
                 ]
                 let values = get.Required.Field "values" (Decode.oneOf valueDecoders |> Decode.list)
                 {
@@ -113,9 +113,9 @@ module SequencesJsonExtensions =
                 {
                     ExternalId = get.Optional.Field "externalId" Decode.string
                     Name = get.Optional.Field "name" Decode.string
-                    ValueType = match get.Optional.Field "valueType" ColumnType.Decoder with
+                    ValueType = match get.Optional.Field "valueType" ValueType.Decoder with
                                 | Some value -> value
-                                | None -> ColumnType.Double
+                                | None -> ValueType.Double
                 }
             )
 
