@@ -19,7 +19,7 @@ open System.Web
 [<AutoOpen>]
 module Delete =
     [<Literal>]
-    let Url = "/raw/dbs/delete"
+    let Url = "/raw/dbs"
 
     type DatabaseRequest = {
         Items: DatabaseDto seq
@@ -95,7 +95,7 @@ module Delete =
         POST
         >=> setVersion V10
         >=> setContent (Content.JsonValue request.Encoder)
-        >=> setResource Url
+        >=> setResource (Url + "/delete")
         >=> fetch
         >=> withError decodeError
 
