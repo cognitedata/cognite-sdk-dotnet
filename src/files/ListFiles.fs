@@ -22,10 +22,7 @@ type FileQuery =
     | CaseCursor of string
 
     /// Max number of results to return
-    static member Limit limit =
-        if limit > MaxLimitSize || limit < 1 then
-            failwith "Limit must be set to 1000 or less"
-        CaseLimit limit
+    static member Limit limit = CaseLimit limit
     /// Cursor return from previous request
     static member Cursor cursor = CaseCursor cursor
 
