@@ -6,8 +6,6 @@ namespace CogniteSdk.Raw
 open System.Collections.Generic
 open Oryx
 open Thoth.Json.Net
-open CogniteSdk.Common
-open CogniteSdk
 
 /// Read raw database type.
 type DatabaseEntity internal (name: string) =

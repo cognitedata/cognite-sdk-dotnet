@@ -66,10 +66,7 @@ type RowQuery =
     /// Get rows up to, but excluding, this row number
     static member End e = CaseEnd e
     /// Maximum number of rows returned in one request
-    static member Limit limit =
-        if limit > MaxLimitSize || limit < 1 then
-            failwith "Limit must be set to 1000 or less"
-        CaseLimit limit
+    static member Limit limit = CaseLimit limit
     /// Cursor for pagination returned from a previous request. Apart
     /// From this cursor, the rest of the request object should be the same as for the original request.
     static member Cursor cursor = CaseCursor cursor
