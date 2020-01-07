@@ -39,20 +39,20 @@ module Create =
             })
 
     let pipeline fetch =
-        setVersion V10
+        POST
+        >=> setVersion V10
         >=> setResource Url
         >=> fetch
         >=> withError decodeError
         >=> json AssetResponse.Decoder
         >=> map (fun res -> res.Items)
 
-    let pipeline' : HttpHandler<HttpResponseMessage,seq<AssetReadDto>, seq<AssetReadDto>> = pipeline fetch
+    let pipeline' next ctx = pipeline fetch next ctx
 
     let createCore (fetch: HttpHandler<HttpResponseMessage,HttpResponseMessage,'a>) (assets: AssetWriteDto seq)  =
         let request : Request = { Items = assets }
 
-        POST
-        >=> setContent (Content.JsonValue request.Encoder)
+        setContent (Content.JsonValue request.Encoder)
         >=> pipeline fetch
 
     /// <summary>
@@ -64,8 +64,7 @@ module Create =
     let create (assets: AssetWriteDto seq) =
         let request : Request = { Items = assets }
 
-        POST
-        >=> setContent (Content.JsonValue request.Encoder)
+        setContent (Content.JsonValue request.Encoder)
         >=> pipeline'
 
     let createCoreFetch = createCore fetch
@@ -77,20 +76,3 @@ module Create =
     let createAsync (assets: AssetWriteDto seq) =
         createCoreFetch assets finishEarly
 
-[<Extension>]
-type CreateAssetsExtensions =
-    /// <summary>
-    /// Create new assets in the given project.
-    /// </summary>
-    /// <param name="assets">The assets to create.</param>
-    /// <returns>List of created assets.</returns>
-    [<Extension>]
-    static member CreateAsync (this: ClientExtension, assets: AssetEntity seq, [<Optional>] token: CancellationToken) : Task<AssetEntity seq> =
-        task {
-            let assets' = assets |> Seq.map AssetWriteDto.FromAssetEntity
-            let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Create.createAsync assets' ctx
-            match result with
-            | Ok ctx -> return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
-            | Error error -> return raiseError error
-        }

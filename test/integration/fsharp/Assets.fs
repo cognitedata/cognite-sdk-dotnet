@@ -8,7 +8,6 @@ open Xunit
 
 open Oryx
 open CogniteSdk
-//open CogniteSdk.Assets
 
 open Common
 open Tests
@@ -21,7 +20,8 @@ let ``List assets with limit is Ok`` () = task {
     let query = [ Assets.AssetQuery.Limit 10 ]
 
     // Act
-    let! res = Assets.Items.listAsync query [] ctx
+    let req = Assets.Items.list query []
+    let! res = runAsync req ctx
 
     let ctx' =
         match res with

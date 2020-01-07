@@ -276,7 +276,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
             for datapointDto in dtos do
                 match datapointDto.DataPoints with
                 | Numeric dps -> yield! dps
-                | String dps -> failwith "Unexpected string datapoints"
+                | String _ -> failwith "Unexpected string datapoints"
         }
 
     // Assert

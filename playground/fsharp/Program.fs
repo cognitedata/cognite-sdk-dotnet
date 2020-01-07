@@ -40,10 +40,18 @@ let getDatapointsExample (ctx : HttpContext) = task {
 }
 
 let getAssetsExample (ctx : HttpContext) = task {
+    printfn "FIRST **********************************"
     let! res = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
 
     match res with
-    | Ok res -> printfn "%A" res
+    | Ok res -> () //printfn "%A" res
+    | Error err -> printfn "Error: %A" err
+
+    printfn "SECOND **********************************"
+    let! res = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
+
+    match res with
+    | Ok res -> () //printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
@@ -73,7 +81,9 @@ let createAssetsExample ctx = task {
         ParentExternalId = None
     }]
 
-    let request = oryx {
+    let myRetry = retry 500<ms> 5
+
+    let request = myRetry >=> oryx {
         let! ga = Assets.Create.create assets
 
         let! gb = concurrent [
@@ -83,7 +93,7 @@ let createAssetsExample ctx = task {
         return gb
     }
 
-    let request = concurrent [
+    let request = myRetry >=> concurrent [
         let chunks = Seq.chunkBySize 10 assets
         for chunk in chunks do
             yield retry 500<ms> 5 >=> Assets.Create.create chunk
@@ -137,7 +147,7 @@ let insertDataPointsProtoStyle ctx = task {
 
 }
 
-let asyncMain argv =task {
+let asyncMain argv = task {
     printfn "F# Client"
 
     let config =
@@ -151,6 +161,7 @@ let asyncMain argv =task {
         |> Context.setAppId "playground"
         |> Context.setHttpClient client
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+
         |> Context.setProject (Uri.EscapeDataString config.Project)
 
     do! getAssetsExample ctx

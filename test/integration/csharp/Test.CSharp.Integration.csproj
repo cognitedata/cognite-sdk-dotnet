@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\..\src\sdk\CogniteSdk.fsproj" />
   </ItemGroup>
 
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />

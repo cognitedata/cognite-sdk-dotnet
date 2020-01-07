@@ -68,7 +68,6 @@
     <Compile Include="login/Model.fs" />
     <Compile Include="login/Json.fs" />
     <Compile Include="login/Status.fs" />
-    <Compile Include="Client.fs" />
     <None Include="../LICENSE" />
   </ItemGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
