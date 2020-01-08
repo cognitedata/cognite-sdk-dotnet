@@ -6,6 +6,15 @@ group Sdk
     storage: none
     framework: netstandard2.0
 
+    nuget Microsoft.Extensions.Http
+    nuget Oryx
+
+group Core
+    source https://www.nuget.org/api/v2
+    storage: none
+    framework: netstandard2.0
+
+    nuget System.Text.Json
     nuget FSharp.Core ~> 4.7
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2.1

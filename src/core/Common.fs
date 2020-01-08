@@ -9,11 +9,13 @@ open System.Net.Http
 open System.Text.RegularExpressions
 open System.Reflection
 open System.Threading.Tasks
+open System.Text.Json
 
 open Oryx
 open Oryx.Retry
 open Thoth.Json.Net
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.IO
 
 // Shadow types that pins the error type for Oryx to ResponeError
 type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
@@ -232,3 +234,27 @@ module Handlers =
 
         retry shouldRetry initialDelay maxRetries next ctx
 
+    /// TODO: Move to Oryx.
+    let readJson<'a> stream =
+        let options = JsonSerializerOptions(AllowTrailingCommas=true)
+
+        task {
+            try
+                let! a = (JsonSerializer.DeserializeAsync<'a>(stream, options)).AsTask()
+                return Ok a
+            with
+            | e -> return Error (e.ToString())
+        }
+
+    /// TODO: move to Oryx.
+    let jsonReader<'a, 'r, 'err> (reader: Stream -> Task<Result<'a, string>>) (next: NextFunc<'a,'r, 'err>) (context: HttpContext) : HttpFuncResult<'r, 'err> =
+        task {
+            use! stream = context.Response.Content.ReadAsStreamAsync ()
+            let! ret = reader stream
+
+            match ret with
+            | Ok result ->
+                return! next { Request = context.Request; Response = result }
+            | Error error ->
+                return Error (Panic <| JsonDecodeException error)
+        }
