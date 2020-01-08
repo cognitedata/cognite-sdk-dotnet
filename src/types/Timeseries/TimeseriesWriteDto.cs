@@ -4,14 +4,11 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk.Types.Common
 {
     /// <summary>
-    /// Holds several resource items.
+    /// Data items with a next cursor.
     /// </summary>
     /// <typeparam name="T">A resource type that is serializable.</typeparam>
-    public class ResourceItems<T>
+    public class TimeseriesWriteDto
     {
-        /// <summary>
-        /// Resource items of type T.
-        /// </summary>
-        public IEnumerable<T> Items { get; set; }
+
     }
 }
