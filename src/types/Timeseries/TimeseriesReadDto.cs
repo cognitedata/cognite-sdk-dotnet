@@ -28,7 +28,7 @@ namespace CogniteSdk.Types.Timeseries
         /// <summary>
         /// Whether the time series is string valued or not.
         /// </summary>
-        public bool IsString { get; set; }
+        public bool? IsString { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata.
@@ -45,12 +45,12 @@ namespace CogniteSdk.Types.Timeseries
         /// <summary>
         /// AssetId for the asset this timeseries is linked to.
         /// </summary>
-        public long AssetId { get; set; }
+        public long? AssetId { get; set; }
 
         /// <summary>
         /// Whether the time series is a step series or not.
         /// </summary>
-        public bool IsStep { get; set; }
+        public bool? IsStep { get; set; }
 
         /// <summary>
         /// Description of the time series.
@@ -61,15 +61,5 @@ namespace CogniteSdk.Types.Timeseries
         /// The required security categories to access this time series.
         /// </summary>
         public IEnumerable<long> SecurityCategories { get; set; }
-
-        /// <summary>
-        /// Unix UTC timestamp when the timeseries was created.
-        /// </summary>
-        public long CreatedTime { get; set; }
-
-        /// <summary>
-        /// Unix UTC timestamp when the timeseries was last updated.
-        /// </summary>
-        public long LastUpdatedTime { get; set; }
     }
 }
