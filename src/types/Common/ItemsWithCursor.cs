@@ -8,8 +8,8 @@ namespace CogniteSdk.Types.Common
         /// <summary>
         /// Items of type T.
         /// </summary>
-
         public IEnumerable<T> Items { get; set; }
+
         /// <summary>
         /// Cursor to next page of data items.
         /// </summary>
