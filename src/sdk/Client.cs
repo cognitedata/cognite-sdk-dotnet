@@ -64,7 +64,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="name">Name of the header</param>
         /// <param name="value">Value of the header</param>
-        public AddHeader (String name, String value)
+        public Client AddHeader (String name, String value)
         {
             var ctx = Context.addHeader(name, value, this.Ctx);
             return new Client(ctx);
@@ -83,7 +83,7 @@ namespace CogniteSdk
         /// Set project for accessing the API.
         /// </summary>
         /// <param name="project">Name of project.</param>
-        public SetProject(String project)
+        public Client SetProject(String project)
         {
             var ctx = Context.setProject(project, this.Ctx);
             return new Client(ctx);
@@ -93,19 +93,19 @@ namespace CogniteSdk
         /// Set unique app identifier
         /// </summary>
         /// <param name="appId">ID for the app</param>
-        public SetAppId(String appId)
+        public Client SetAppId(String appId)
         {
             var ctx = Context.setAppId(appId, this.Ctx);
             return new Client(ctx);
         }
 
-        public SetHttpClient(HttpClient client)
+        public Client SetHttpClient(HttpClient client)
         {
             var ctx = Context.setHttpClient(client, this.Ctx);
             return new Client(ctx);
         }
 
-        public SetServiceUrl(String serviceUrl)
+        public Client SetServiceUrl(String serviceUrl)
         {
             var ctx = Context.setServiceUrl(serviceUrl, this.Ctx);
             return new Client(ctx);

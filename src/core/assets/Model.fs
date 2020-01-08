@@ -1,54 +1,12 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Assets
+namespace Oryx.Cognite.Assets
 
 open System.Collections.Generic
 open Oryx
 
-/// Read/write asset entity type.
-type AssetEntity internal (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, id: int64, createdTime: int64, lastUpdatedTime: int64, rootId: int64, parentExternalId: string) =
-    let mutable _parentExternalId : string = parentExternalId
 
-    /// External Id provided by client. Must be unique within the project.
-    member val ExternalId : string = externalId with get, set
-    /// The name of the asset.
-    member val Name : string = name with get, set
-    /// The parent ID of the asset.
-    member val ParentId : int64 = parentId with get, set
-    /// The description of the asset.
-    member val Description : string = description with get, set
-    /// Custom, application specific metadata. String key -> String value
-    member val MetaData : IDictionary<string, string> = metaData with get, set
-    /// The source of this asset
-    member val Source : string = source with get, set
-    /// The Id of the asset.
-    member val Id : int64 = id with get
-    /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
-    member val CreatedTime : int64 = createdTime with get
-    /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
-    member val LastUpdatedTime : int64 = lastUpdatedTime with get
-    /// InternalId of the root object
-    member val RootId: int64 = rootId with get
-    /// External Id of parent asset provided by client. Must be unique within the project.
-    member this.ParentExternalId
-        with set (value) = _parentExternalId <- value
-        and internal get () = _parentExternalId
-
-    /// Create new empty AssetEntity. Set content using the properties.
-    new () =
-        AssetEntity(externalId=null, name=null, description=null, parentId=0L, metaData=null, source=null, id=0L, createdTime=0L, lastUpdatedTime=0L, rootId=0L, parentExternalId=null)
-    /// Create new Asset.
-    new (externalId: string, name: string, description: string, parentId: int64, metaData: IDictionary<string, string>, source: string, parentExternalId: string) =
-        AssetEntity(externalId=externalId, name=name, description=description, parentId=parentId, metaData=metaData, source=source, id=0L, createdTime=0L, lastUpdatedTime=0L, rootId=0L, parentExternalId=parentExternalId)
-
-[<CLIMutable>]
-type AssetItems = {
-    Items: AssetEntity seq
-    NextCursor: string
-}
-
-/// Read/write asset type.
 /// Asset type for responses.
 type AssetReadDto = {
     /// External Id provided by client. Must be unique within the project.

@@ -3,29 +3,42 @@ using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Types
 {
-    public class Asset
+    public class AssetWriteDto
     {
+        /// <summary>
         /// External Id provided by client. Must be unique within the project.
+        /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
         /// The name of the asset.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
         /// The parent ID of the asset.
+        /// </summary>
         public long ParentId { get; set; }
+
+        /// <summary>
         /// The description of the asset.
+        /// </summary>
         public string Description { get; set; }
-        /// Custom, application specific metadata. String key -> String value
+
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value.
+        /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
+
+        /// <summary>
         /// The source of this asset
+        /// </summary>
         public string Source { get; set; }
-        /// The Id of the asset.
-        public long Id { get; set; }
-        /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
-        public long CreatedTime { get; set; }
-        /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
-        public long LastUpdatedTime { get; set; }
-        /// InternalId of the root object
-        public long RootId { get; set; }
+
+        /// <summary>
         /// External Id of parent asset provided by client. Must be unique within the project.
+        /// </summary>
         public string ParentExternalId { get; set; }
     }
 }
+
