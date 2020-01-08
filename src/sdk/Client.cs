@@ -87,7 +87,6 @@ namespace CogniteSdk
         {
             var ctx = Context.setProject(project, this.Ctx);
             return new Client(ctx);
-
         }
 
         /// <summary>

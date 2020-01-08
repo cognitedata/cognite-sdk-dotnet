@@ -13,6 +13,12 @@ group Sdk
     nuget Microsoft.Extensions.Http
     nuget Oryx
 
+group Types
+    source https://www.nuget.org/api/v2
+    storage: none
+    framework: netstandard2.0
+    nuget System.Text.Json
+
 group Test
     source https://www.nuget.org/api/v2
     storage: none

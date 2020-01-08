@@ -2,15 +2,21 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using Oryx;
+
+using CogniteSdk.Types;
+using CogniteSdk.Types.Assets;
 
 namespace CogniteSdk
 {
     public class Assets
     {
-        async Task<IEnumerable<AssetEntity>> CreateAsync(IEnumerable<AssetEntity> assets, CancellationToken? token)
+        async Task<IEnumerable<Asset>> CreateAsync(IEnumerable<Asset> assets, CancellationToken? token)
         {
                 var assets = assets.Select(AssetWriteDto.FromAssetEntity);
                 var ctx = Context.setCancellationToken(token, this.Ctx);
