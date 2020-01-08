@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.Types
+namespace CogniteSdk.Types.Files
 {
     public class DownloadResponse
     {

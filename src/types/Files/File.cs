@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types
+namespace CogniteSdk.Types.Files
 {
     public class File
     {

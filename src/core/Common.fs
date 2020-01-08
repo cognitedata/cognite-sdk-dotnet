@@ -236,7 +236,7 @@ module Handlers =
 
     /// TODO: Move to Oryx.
     let readJson<'a> stream =
-        let options = JsonSerializerOptions(AllowTrailingCommas=true)
+        let options = JsonSerializerOptions(AllowTrailingCommas=true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
 
         task {
             try

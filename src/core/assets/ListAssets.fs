@@ -13,6 +13,8 @@ open Oryx.ResponseReaders
 open Thoth.Json.Net
 
 open CogniteSdk
+open CogniteSdk.Types
+
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
@@ -32,6 +34,8 @@ type AssetQuery =
         | CaseLimit limit -> "limit", Encode.int limit
         | CaseCursor cursor -> "cursor", Encode.string cursor
 
+type AssetItemsReadDto = Common.ResourceItemsWithCursor<Assets.AssetReadDto>
+
 [<RequireQualifiedAccess>]
 module Items =
     [<Literal>]
@@ -49,7 +53,14 @@ module Items =
                 yield! this.Options |> Seq.map AssetQuery.Render
             ]
 
-    let listCore (options: AssetQuery seq) (filters: AssetFilter seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
+    /// <summary>
+    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="options">Optional limit and cursor</param>
+    /// <param name="filters">Search filters</param>
+    /// <param name="next">Async handler to use</param>
+    /// <returns>List of assets matching given filters and optional cursor</returns>
+    let list (options: AssetQuery seq) (filters: AssetFilter seq) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
         let request : Request = {
             Filters = filters
             Options = options
@@ -61,26 +72,7 @@ module Items =
         >=> setResource Url
         >=> fetch
         >=> withError decodeError
-        >=> json AssetItemsReadDto.Decoder
-
-    /// <summary>
-    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
-    /// </summary>
-    /// <param name="options">Optional limit and cursor</param>
-    /// <param name="filters">Search filters</param>
-    /// <param name="next">Async handler to use</param>
-    /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (options: AssetQuery seq) (filters: AssetFilter seq) (next: NextFunc<AssetItemsReadDto,'a>) : HttpContext -> HttpFuncResult<'a> =
-        listCore options filters fetch next
-
-    /// <summary>
-    /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
-    /// </summary>
-    /// <param name="options">Optional limit and cursor</param>
-    /// <param name="filters">Search filters</param>
-    /// <returns>List of assets matching given filters and optional cursor</returns>
-    let listAsync (options: AssetQuery seq) (filters: AssetFilter seq) : HttpContext -> HttpFuncResult<AssetItemsReadDto> =
-        listCore options filters fetch finishEarly
+        >=> jsonReader readJson<AssetItemsReadDto>
 
 [<Extension>]
 type ListAssetsExtensions =
@@ -91,19 +83,13 @@ type ListAssetsExtensions =
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member ListAsync (this: ClientExtension, options: AssetQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
+    static member ListAsync (this: ClientExtension, options: AssetQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
         task {
             let ctx = this.Ctx |> Context.setCancellationToken token
-            let! result = Items.listAsync options filters ctx
+            let req = Items.list options filters
+            let! result = runAsync req ctx
             match result with
-            | Ok ctx ->
-                let assets = ctx.Response
-                let cursor = if assets.NextCursor.IsSome then assets.NextCursor.Value else Unchecked.defaultof<string>
-                let items : AssetItems = {
-                    NextCursor = cursor
-                    Items = assets.Items |> Seq.map (fun asset -> asset.ToAssetEntity ())
-                }
-                return items
+            | Ok items -> return items
             | Error error -> return raiseError error
         }
 
@@ -113,7 +99,7 @@ type ListAssetsExtensions =
     /// <param name="filters">Search filters</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member ListAsync (this: ClientExtension, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
+    static member ListAsync (this: ClientExtension, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
         let query = ResizeArray<AssetQuery>()
         this.ListAsync(query, filters, token)
 
@@ -123,6 +109,6 @@ type ListAssetsExtensions =
     /// <param name="options">Optional limit and cursor</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     [<Extension>]
-    static member ListAsync (this: ClientExtension, options: AssetQuery seq, [<Optional>] token: CancellationToken) : Task<AssetItems> =
+    static member ListAsync (this: ClientExtension, options: AssetQuery seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
         let filter = ResizeArray<AssetFilter>()
         this.ListAsync(options, filter, token)
