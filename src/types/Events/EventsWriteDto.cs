@@ -13,12 +13,12 @@ namespace CogniteSdk.Types.Events
         public string ExternalId { get; set; }
 
         /// <summary>
-        /// Start time of event in unix timestamp.
+        /// Start time of event in unix timestamp milliseconds.
         /// </summary>
         public long? startTime { get; set; }
 
         /// <summary>
-        /// End time of event in unix timestamp.
+        /// End time of event in unix timestamp milliseconds.
         /// </summary>
         public long? EndTime { get; set; }
 
