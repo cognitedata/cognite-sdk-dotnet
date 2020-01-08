@@ -13,8 +13,10 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
 open Oryx.ResponseReaders
 
-open CogniteSdk.Assets
-open CogniteSdk
+open Oryx.Cognite.Assets
+open Oryx.Cognite
+
+open CogniteSdk.Types
 
 
 [<RequireQualifiedAccess>]

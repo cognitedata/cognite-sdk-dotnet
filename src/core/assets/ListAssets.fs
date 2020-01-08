@@ -9,15 +9,16 @@ open System.Runtime.InteropServices
 open System.Threading
 
 open Oryx
+open Oryx.Cognite
 open Oryx.ResponseReaders
 open Thoth.Json.Net
 
-open CogniteSdk
 open CogniteSdk.Types
 
 open System.Threading.Tasks
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+type AssetItemsReadDto = Common.ResourceItemsWithCursor<Assets.AssetReadDto>
 
 type AssetQuery =
     private
@@ -33,8 +34,6 @@ type AssetQuery =
         match this with
         | CaseLimit limit -> "limit", Encode.int limit
         | CaseCursor cursor -> "cursor", Encode.string cursor
-
-type AssetItemsReadDto = Common.ResourceItemsWithCursor<Assets.AssetReadDto>
 
 [<RequireQualifiedAccess>]
 module Items =
@@ -76,22 +75,6 @@ module Items =
 
 [<Extension>]
 type ListAssetsExtensions =
-    /// <summary>
-    /// Retrieves list of assets matching query, filter, and a cursor if given limit is exceeded
-    /// </summary>
-    /// <param name="options">Optional limit and cursor</param>
-    /// <param name="filters">Search filters</param>
-    /// <returns>List of assets matching given filters and optional cursor</returns>
-    [<Extension>]
-    static member ListAsync (this: ClientExtension, options: AssetQuery seq, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
-        task {
-            let ctx = this.Ctx |> Context.setCancellationToken token
-            let req = Items.list options filters
-            let! result = runAsync req ctx
-            match result with
-            | Ok items -> return items
-            | Error error -> return raiseError error
-        }
 
     /// <summary>
     /// Retrieves list of assets matching filter.

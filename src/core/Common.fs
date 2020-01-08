@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Common types for the SDK.
-namespace CogniteSdk
+namespace Oryx.Cognite
 
 open System
 open System.Net.Http
@@ -187,7 +187,7 @@ module Handlers =
     let raiseError (error: HandlerError<ResponseError>) =
         match error with
         | ResponseError error -> raise <| error.ToException ()
-        | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
+        | Panic (Oryx.JsonDecodeException err) -> raise <| Oryx.Cognite.JsonDecodeException err
         | Panic (err) -> raise err
 
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
