@@ -6,7 +6,7 @@ using System.Text.Json;
 
 namespace CogniteSdk.Types.Raw
 {
-    public class RowReadDto
+    public class RowKeyDto
     {
         /// <summary>
         /// Row key. Unique in table.
