@@ -7,7 +7,7 @@ group Sdk
     framework: netstandard2.0
 
     nuget Microsoft.Extensions.Http
-    nuget Oryx
+    nuget Oryx prerelease
 
 group Core
     source https://www.nuget.org/api/v2
@@ -20,7 +20,9 @@ group Core
     nuget Taskbuilder.fs ~> 2.1
     nuget Thoth.Json.Net ~> 3.6
     nuget Microsoft.Extensions.Http
-    nuget Oryx
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.System.Text.Json prerelease
 
 group Types
     source https://www.nuget.org/api/v2

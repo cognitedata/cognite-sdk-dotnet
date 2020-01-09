@@ -5,4 +5,6 @@ group Core
     Thoth.Json.Net
     CogniteSdk.Protobuf
     Oryx
+    Oryx.Protobuf
+    Oryx.System.Text.Json
     System.Text.Json
