@@ -5,25 +5,44 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Types.Sequences
 {
-    public class Sequence
+    /// <summary>
+    /// Sequence dto for writing.
+    /// </summary>
+    public class SequenceWriteDto
     {
+        /// <summary>
         /// The Id of the sequence
+        /// </summary>
         public long Id { get; set; }
+
+        /// <summary>
         /// The name of the sequence.
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
         /// The description of the sequence.
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
         /// The valueType of the sequence. Enum STRING, DOUBLE, LONG
+        /// </summary>
         public long AssetId { get; set; }
+
+        /// <summary>
         /// The externalId of the sequence. Must be unique within the project.
+        /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
         /// Custom, application specific metadata. String key -> String value
+        /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
-        /// Time when this sequence was created in CDF in milliseconds since Jan 1, 1970.
+
+        /// <summary>
+        /// List of column definitions.
+        /// </summary>
         public IEnumerable<Column> Columns { get; set; }
-        /// Time when this sequence was created in CDF in milliseconds since Jan 1, 1970.
-        public long CreatedTime { get; set; }
-        /// The last time this sequence was updated in CDF, in milliseconds since Jan 1, 1970.
-        public long LastUpdatedTime { get; set; }
     }
 }
