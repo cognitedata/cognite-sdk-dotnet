@@ -79,7 +79,12 @@ namespace CogniteSdk.Types.Common
         public IEnumerable<IDictionary<string, ErrorValue>> Duplicated;
 
         public string RequestId { get; set; }
+
         public ResponseException(string message) : base(message)
+        {
+        }
+
+        public ResponseException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

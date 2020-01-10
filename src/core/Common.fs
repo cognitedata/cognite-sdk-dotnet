@@ -21,13 +21,13 @@ open Oryx.Retry
 
 
 // Shadow types that pins the error type for Oryx to ResponeError
-type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ApiResponseError>>>
-type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ApiResponseError>
-type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ApiResponseError>
-type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ApiResponseError> -> Context<'a> -> HttpFuncResult<'r, ApiResponseError>
-type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ApiResponseError>
-type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ApiResponseError>
-type HttpHandler = HttpHandler<HttpResponseMessage, ApiResponseError>
+type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseException>>>
+type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
+type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
+type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
+type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseException>
+type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseException>
+type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 
 type ApiVersion =
     | V05
@@ -179,13 +179,13 @@ module Handlers =
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
     /// need to open the Oryx namespace.
-    let raiseError (error: HandlerError<ApiResponseError>) =
+    let raiseError (error: HandlerError<ResponseException>) =
         match error with
-        | ResponseError error -> raise <| error.ToException ()
+        | ResponseError error -> raise error
         | Panic (Oryx.JsonDecodeException err) -> raise <| Oryx.Cognite.JsonDecodeException err
         | Panic (err) -> raise err
 
-    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ApiResponseError>> = task {
+    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseException>> = task {
         if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
             try
@@ -195,22 +195,24 @@ module Handlers =
                 | Some requestId -> error.RequestId <- requestId
                 | None -> ()
 
-                return error |> Oryx.ResponseError
+                return error.ToException () |> ResponseError
             with
             | ex ->
-                let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
-                return ResponseError error
+                let exn = ResponseException(response.ReasonPhrase, ex)
+                exn.Code <- int response.StatusCode
+                return ResponseError exn
         else
-            let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
-            return ResponseError error
+            let exn = ResponseException(response.ReasonPhrase)
+            exn.Code <- int response.StatusCode
+            return ResponseError exn
 
     }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
-        let shouldRetry (error: HandlerError<ApiResponseError>) : bool =
+        let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with
             | ResponseError err ->
-                match err.Error.Code with
+                match err.Code with
                 // Rate limiting
                 | 429 -> true
                 // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
