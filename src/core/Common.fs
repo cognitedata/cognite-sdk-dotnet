@@ -205,7 +205,6 @@ module Handlers =
             let exn = ResponseException(response.ReasonPhrase)
             exn.Code <- int response.StatusCode
             return ResponseError exn
-
     }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
@@ -235,28 +234,3 @@ module Handlers =
                 | _ -> true
 
         retry shouldRetry initialDelay maxRetries next ctx
-
-    /// TODO: Move to Oryx.
-    let readJson<'a> stream =
-        let options = JsonSerializerOptions(AllowTrailingCommas=true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
-
-        task {
-            try
-                let! a = (JsonSerializer.DeserializeAsync<'a>(stream, options)).AsTask()
-                return Ok a
-            with
-            | e -> return Error (e.ToString())
-        }
-
-    /// TODO: move to Oryx.
-    let jsonReader<'a, 'r, 'err> (reader: Stream -> Task<Result<'a, string>>) (next: NextFunc<'a,'r, 'err>) (context: HttpContext) : HttpFuncResult<'r, 'err> =
-        task {
-            use! stream = context.Response.Content.ReadAsStreamAsync ()
-            let! ret = reader stream
-
-            match ret with
-            | Ok result ->
-                return! next { Request = context.Request; Response = result }
-            | Error error ->
-                return Error (Panic <| JsonDecodeException error)
-        }

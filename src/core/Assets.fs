@@ -13,7 +13,9 @@ open Oryx.SystemTextJson
 open CogniteSdk.Types.Assets
 open CogniteSdk.Types
 
-type AssetItemsReadDto = Common.ResourceItemsWithCursor<AssetReadDto>
+type AssetItemsWithCursorReadDto = Common.ResourceItemsWithCursor<AssetReadDto>
+type AssetItemsReadDto = Common.ResourceItems<AssetReadDto>
+type AssetItemsWriteDto = Common.ResourceItems<AssetWriteDto>
 
 [<RequireQualifiedAccess>]
 module Assets =
@@ -43,12 +45,20 @@ module Assets =
     /// <param name="filters">Search filters</param>
     /// <param name="next">Async handler to use</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (options: AssetQuery seq) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
+    let list (options: AssetQuery seq) : HttpHandler<HttpResponseMessage, AssetItemsWithCursorReadDto, 'a> =
         POST
         >=> setVersion V10
         >=> setContent (new JsonPushStreamContent<AssetQuery seq>(options))
         >=> setResource "/assets/list"
         >=> fetch
         >=> withError decodeError
-        >=> json None
+        >=> json (Some jsonOptions)
 
+    let create (assets: AssetItemsWriteDto) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
+        POST
+        >=> setVersion V10
+        >=> setResource Url
+        >=> setContent (new JsonPushStreamContent<AssetItemsWriteDto>(assets))
+        >=> fetch
+        >=> withError decodeError
+        >=> json (Some jsonOptions)
