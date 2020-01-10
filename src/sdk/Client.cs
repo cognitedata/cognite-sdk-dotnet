@@ -4,6 +4,7 @@
 using System;
 using System.Net.Http;
 using Oryx;
+using Oryx.Cognite;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -14,22 +15,22 @@ namespace CogniteSdk
         internal HttpContext Ctx { get; }
 
         /// Client Assets extension methods
-        public Assets.ClientExtension Assets { get; }
+        public Assets Assets { get; }
 
         /// Client TimeSeries extension methods
-        public TimeSeries.ClientExtension TimeSeries { get; }
+        //public TimeSeries.ClientExtension TimeSeries { get; }
         /// Client DataPoints extension methods
-        public DataPoints.ClientExtension DataPoints { get; }
+        //public DataPoints.ClientExtension DataPoints { get; }
         /// Client Events extension methods
-        public Events.ClientExtension Events { get; }
+        //public Events.ClientExtension Events { get; }
         /// Client Login extension methods
-        public Login.ClientExtension Login  { get; }
+        //public Login.ClientExtension Login  { get; }
         /// Client Files extension methods
-        public Files.ClientExtension Files { get; }
+        //public Files.ClientExtension Files { get; }
         /// Client Raw extension methods
-        public Raw.ClientExtension Raw { get; }
+        //public Raw.ClientExtension Raw { get; }
         /// Client Sequences extension methods
-        public Sequences.ClientExtension Sequences  { get; }
+        //public Sequences.ClientExtension Sequences  { get; }
 
         /// <summary>
         /// Client for making requests to the API.
@@ -37,7 +38,6 @@ namespace CogniteSdk
         /// /// <param name="context">Context to use for this session.</param>
         private Client(HttpContext context)
         {
-            Oryx
             Ctx = context;
         }
 
@@ -45,12 +45,11 @@ namespace CogniteSdk
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="client">HTTP client to use for making the actual requests.</param>
-        public Client(HttpClient client)
+        public Client(HttpClient httpClient)
         {
             var ctx = Context.defaultContext;
             ctx = Context.setUrlBuilder(Context.urlBuilder, this.Ctx);
             ctx = Context.setHttpClient(httpClient, ctx);
-            return new Client(ctx);
         }
 
         /// <summary>

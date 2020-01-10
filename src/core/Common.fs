@@ -6,25 +6,28 @@ namespace Oryx.Cognite
 
 open System
 open System.Net.Http
-open System.Text.RegularExpressions
+open System.IO
 open System.Reflection
-open System.Threading.Tasks
 open System.Text.Json
+open System.Text.RegularExpressions
+open System.Threading.Tasks
+
+open CogniteSdk.Types.Common
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open Thoth.Json.Net
 
 open Oryx
 open Oryx.Retry
-open Thoth.Json.Net
-open FSharp.Control.Tasks.V2.ContextInsensitive
-open System.IO
+
 
 // Shadow types that pins the error type for Oryx to ResponeError
-type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseError>>>
-type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseError>
-type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseError>
-type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseError> -> Context<'a> -> HttpFuncResult<'r, ResponseError>
-type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseError>
-type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseError>
-type HttpHandler = HttpHandler<HttpResponseMessage, ResponseError>
+type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ApiResponseError>>>
+type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ApiResponseError>
+type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ApiResponseError>
+type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ApiResponseError> -> Context<'a> -> HttpFuncResult<'r, ApiResponseError>
+type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ApiResponseError>
+type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ApiResponseError>
+type HttpHandler = HttpHandler<HttpResponseMessage, ApiResponseError>
 
 type ApiVersion =
     | V05
@@ -47,18 +50,6 @@ type Identity =
         CaseId id
     static member ExternalId id =
         CaseExternalId id
-
-    member this.Encoder =
-        Encode.object [
-            match this with
-            | CaseId id -> yield "id", Encode.int53 id
-            | CaseExternalId id -> yield "externalId", Encode.string id
-        ]
-
-    member this.Render =
-        match this with
-        | CaseId id -> "id", Encode.int64 id
-        | CaseExternalId id -> "externalId", Encode.string id
 
 type Numeric =
     internal
@@ -117,6 +108,10 @@ module Patterns =
 module Common =
     [<Literal>]
     let MaxLimitSize = 1000
+
+    let (+/) path1 path2 = Path.Combine(path1, path2)
+
+    let jsonOptions = JsonSerializerOptions(AllowTrailingCommas=true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Context =
@@ -184,33 +179,38 @@ module Handlers =
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
     /// need to open the Oryx namespace.
-    let raiseError (error: HandlerError<ResponseError>) =
+    let raiseError (error: HandlerError<ApiResponseError>) =
         match error with
         | ResponseError error -> raise <| error.ToException ()
         | Panic (Oryx.JsonDecodeException err) -> raise <| Oryx.Cognite.JsonDecodeException err
         | Panic (err) -> raise err
 
-    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseError>> = task {
+    let decodeError (response: HttpResponseMessage) : Task<HandlerError<ApiResponseError>> = task {
         if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
-            let decoder = ApiResponseError.Decoder
-            let! result = decodeStreamAsync decoder stream
-            match result with
-            | Ok err ->
+            try
+                let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
                 let found, requestId = response.Headers.TryGetValues "x-request-id"
-                if found then return ResponseError { err.Error with RequestId = Seq.tryExactlyOne requestId }
-                else return ResponseError err.Error
-            | Error reason -> return Panic <| JsonDecodeException reason
+                match Seq.tryExactlyOne requestId with
+                | Some requestId -> error.RequestId <- requestId
+                | None -> ()
+
+                return error |> Oryx.ResponseError
+            with
+            | ex ->
+                let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
+                return ResponseError error
         else
             let error = { ResponseError.empty with Code=int response.StatusCode; Message=response.ReasonPhrase }
             return ResponseError error
+
     }
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
-        let shouldRetry (error: HandlerError<ResponseError>) : bool =
+        let shouldRetry (error: HandlerError<ApiResponseError>) : bool =
             match error with
             | ResponseError err ->
-                match err.Code with
+                match err.Error.Code with
                 // Rate limiting
                 | 429 -> true
                 // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because

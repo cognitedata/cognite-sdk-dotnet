@@ -60,11 +60,12 @@ type AssetFilter =
     private
     | CaseName of string
     | CaseParentIds of int64 seq
-    | CaseRootIds of CogniteSdk.Identity seq
+    | CaseParentExternalIds of string seq
+    | CaseRootIds of Oryx.Cognite.Identity seq
     | CaseMetaData of Map<string, string>
     | CaseSource of string
-    | CaseCreatedTime of CogniteSdk.TimeRange
-    | CaseLastUpdatedTime of CogniteSdk.TimeRange
+    | CaseCreatedTime of Oryx.Cognite.TimeRange
+    | CaseLastUpdatedTime of Oryx.Cognite.TimeRange
     | CaseRoot of bool
     | CaseExternalIdPrefix of string
 

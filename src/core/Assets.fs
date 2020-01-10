@@ -1,4 +1,4 @@
-﻿// Copyright 2019 Cognite AS
+// Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 namespace Oryx.Cognite.Assets
@@ -6,19 +6,35 @@ namespace Oryx.Cognite.Assets
 open System.Net.Http
 
 open Oryx
-open Oryx.SystemTextJson
-open Oryx.Cognite
 open Oryx.SystemTextJson.ResponseReader
+open Oryx.Cognite
+open Oryx.SystemTextJson
 
-open CogniteSdk.Types
 open CogniteSdk.Types.Assets
+open CogniteSdk.Types
 
 type AssetItemsReadDto = Common.ResourceItemsWithCursor<AssetReadDto>
 
 [<RequireQualifiedAccess>]
-module Items =
+module Assets =
     [<Literal>]
-    let Url = "/assets/list"
+    let Url = "/assets"
+
+    /// <summary>
+    /// Retrieves information about an asset given an asset id. Expects a next continuation handler.
+    /// </summary>
+    /// <param name="assetId">The id of the asset to get.</param>
+    /// <param name="next">Async handler to use.</param>
+    /// <returns>Asset with the given id.</returns>
+    let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
+        let url = Url + sprintf "/%d" assetId
+
+        GET
+        >=> setVersion V10
+        >=> setResource url
+        >=> fetch
+        >=> withError decodeError
+        >=> json None
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -31,7 +47,7 @@ module Items =
         POST
         >=> setVersion V10
         >=> setContent (new JsonPushStreamContent<AssetQuery seq>(options))
-        >=> setResource Url
+        >=> setResource "/assets/list"
         >=> fetch
         >=> withError decodeError
         >=> json None
