@@ -2,12 +2,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>CogniteSdk</PackageId>
+    <Author>Cognite AS</Author>
+    <Company>Cognite AS</Company>
+    <Copyright>Cognite AS</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\types\CogniteSdk.Types.csproj" />
-    <ProjectReference Include="..\core\Core.fsproj" />
+    <None Include="../../LICENSE" />
   </ItemGroup>
 
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <ItemGroup>
+    <ProjectReference Include="../types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="../core/Core.fsproj" />
+  </ItemGroup>
+
+  <Import Project="../../.paket/Paket.Restore.targets" />
 </Project>
