@@ -1,0 +1,20 @@
+namespace CogniteSdk.Types.Common
+{
+    /// <summary>
+    /// Range between two timestamps.
+    /// </summary>
+    public class TimeRange
+    {
+        /// <summary>
+        /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
+        /// leap seconds.
+        /// </summary>
+
+        public long Max { get; set; }
+        /// <summary>
+        /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
+        /// leap seconds.
+        /// </summary>
+        public long Min { get; set; }
+    }
+}

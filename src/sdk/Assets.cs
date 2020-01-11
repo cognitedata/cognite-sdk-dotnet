@@ -33,7 +33,7 @@ namespace CogniteSdk
         /// <param name="options">Optional limit and cursor</param>
         /// <param name="filters">Search filters</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<AssetItemsReadDto> ListAsync(IEnumerable<AssetQuery> options, IEnumerable<AssetFilter> filters, CancellationToken token = default(CancellationToken))
+        public async Task<AssetItemsReadDto> ListAsync(IEnumerable<AssetQuery> options, IEnumerable<AssetFilterDto> filters, CancellationToken token = default(CancellationToken))
         {
                 var ctx = Context.setCancellationToken(token, this.ctx);
                 let req = Oryx.Cognite.Assets.list(options, filters);
@@ -48,7 +48,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="filters">Search filters</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        static member ListAsync (this: ClientExtension, filters: AssetFilter seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
+        static member ListAsync (this: ClientExtension, filters: AssetFilterDto seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
             let query = ResizeArray<AssetQuery>()
             this.ListAsync(query, filters, token)
 
@@ -58,7 +58,7 @@ namespace CogniteSdk
         /// <param name="options">Optional limit and cursor</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
         static member ListAsync (: ClientExtension, options: AssetQuery seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
-            let filter = ResizeArray<AssetFilter>()
+            let filter = ResizeArray<AssetFilterDto>()
             this.ListAsync(options, filter, token)
 
 
