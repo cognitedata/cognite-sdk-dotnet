@@ -18,11 +18,14 @@ using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<Cognit
 
 namespace CogniteSdk
 {
+    /// <summary>
+    /// Contains all asset methods.
+    /// </summary>
     public class Assets
     {
         private readonly HttpContext ctx;
 
-        public Assets(HttpContext ctx)
+        internal Assets(HttpContext ctx)
         {
             this.ctx = ctx;
         }

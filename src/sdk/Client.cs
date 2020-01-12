@@ -17,7 +17,9 @@ namespace CogniteSdk
     {
         internal HttpContext Ctx { get; private set; }
 
+        /// <summary>
         /// Client Assets extension methods
+        /// </summary>
         public Assets Assets { get; }
 
         // Client TimeSeries extension methods
