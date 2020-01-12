@@ -36,38 +36,6 @@ module Retrieve =
                 Items = get.Required.Field "items" (Decode.list AssetReadDto.Decoder |> Decode.map seq)
             })
 
-    let getByIdsCore (ids: Identity seq) (fetch: HttpHandler<HttpResponseMessage, 'a>) =
-        let request : AssetRequest = { Items = ids }
-
-        POST
-        >=> setVersion V10
-        >=> setContent (Content.JsonValue request.Encoder)
-        >=> setResource Url
-        >=> fetch
-        >=> withError decodeError
-        >=> json AssetResponse.Decoder
-        >=> map (fun response -> response.Items)
-
-    /// <summary>
-    /// Retrieves information about multiple assets in the same project.
-    /// A maximum of 1000 assets IDs may be listed per request and all
-    /// of them must be unique.
-    /// </summary>
-    /// <param name="assetId">The ids of the assets to get.</param>
-    /// <param name="next">Async handler to use.</param>
-    /// <returns>Assets with given ids.</returns>
-    let getByIds (ids: Identity seq) (next: NextFunc<AssetReadDto seq,'a>) : HttpContext -> HttpFuncResult<'a> =
-        getByIdsCore ids fetch next
-
-    /// <summary>
-    /// Retrieves information about multiple assets in the same project.
-    /// A maximum of 1000 assets IDs may be listed per request and all
-    /// of them must be unique.
-    /// </summary>
-    /// <param name="assetId">The ids of the assets to get.</param>
-    /// <returns>Assets with given ids.</returns>
-    let getByIdsAsync (ids: Identity seq) =
-        getByIdsCore ids fetch finishEarly
 
 
 [<Extension>]

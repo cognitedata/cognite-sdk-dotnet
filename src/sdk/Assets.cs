@@ -9,11 +9,12 @@ using Oryx;
 using Oryx.Cognite;
 
 using CogniteSdk.Types.Assets;
+
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetReadDto>;
 using AssetItemsWriteDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetWriteDto>;
-
 using AssetItemsWithCursorReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
+using AssetItemsUpdateDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Common.UpdateItem<CogniteSdk.Types.Assets.AssetUpdateDto>>;
 
 
 namespace CogniteSdk
@@ -90,6 +91,36 @@ namespace CogniteSdk
             {
                 HandlersModule.raiseError<HttpResponseMessage>(result.ErrorValue);
             }
+        }
+        
+        /// <summary>
+        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public async Task<AssetItemsReadDto> SearchAsync (AssetSearchQueryDto query, CancellationToken token = default )
+        {
+            var ctx = Context.setCancellationToken(token, _ctx);
+            var req = Oryx.Cognite.Assets.search<AssetItemsReadDto>(query);
+
+            var result = await Handler.runAsync(req, ctx);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
+        }
+        
+        /// <summary>
+        /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
+        /// </summary>
+        /// <param name="query">The list of assets to update.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of updated assets.</returns>
+        public async Task<AssetItemsReadDto> UpdateAsync (AssetItemsUpdateDto query, CancellationToken token = default )
+        {
+            var ctx = Context.setCancellationToken(token, _ctx);
+            var req = Oryx.Cognite.Assets.update<AssetItemsReadDto>(query);
+
+            var result = await Handler.runAsync(req, ctx);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
         }
     }
 }

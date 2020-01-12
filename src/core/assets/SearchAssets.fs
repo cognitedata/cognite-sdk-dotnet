@@ -55,7 +55,16 @@ module Search =
                     "limit", Encode.int this.Limit
             ]
 
-    let searchCore (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq)(fetch: HttpHandler<HttpResponseMessage, 'a>) =
+    /// <summary>
+    /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+    /// </summary>
+    ///
+    /// <param name="limit">Limits the maximum number of results to be returned by single request.</param>
+    /// <param name="options">Search options.</param>
+    /// <param name="filters">Search filters.</param>
+    ///
+    /// <returns>List of assets matching given criteria.</returns>
+    let search (limit: int) (options: AssetSearch seq) (filters: AssetFilter seq) =
         let request : SearchAssetsRequest = {
             Limit = limit
             Filters = filters
