@@ -14,7 +14,6 @@ open System.Threading.Tasks
 
 open CogniteSdk.Types.Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Thoth.Json.Net
 
 open Oryx
 open Oryx.Retry
@@ -70,18 +69,6 @@ type Numeric =
 
     static member Float value =
         CaseFloat value
-
-/// Used to describe a time range.
-[<CLIMutable>]
-type TimeRange = {
-    Max: DateTimeOffset
-    Min: DateTimeOffset
-} with
-    member this.Encoder =
-        Encode.object [
-            yield "max", this.Max.ToUnixTimeMilliseconds() |> Encode.int64
-            yield "min", this.Min.ToUnixTimeMilliseconds() |> Encode.int64
-        ]
 
 [<AutoOpen>]
 module Patterns =

@@ -1,10 +1,8 @@
 group Core
+    System.Text.Json
     Microsoft.Extensions.Http
     FSharp.Core
     Taskbuilder.fs
-    Thoth.Json.Net
-    CogniteSdk.Protobuf
     Oryx
     Oryx.Protobuf
     Oryx.System.Text.Json
-    System.Text.Json

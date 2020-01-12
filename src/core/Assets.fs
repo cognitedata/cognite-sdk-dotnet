@@ -44,17 +44,15 @@ module Assets =
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
     /// </summary>
-    /// <param name="options">Optional limit and cursor</param>
-    /// <param name="filters">Search filters</param>
-    /// <param name="next">Async handler to use</param>
+    /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (options: AssetQuery seq) : HttpHandler<HttpResponseMessage, AssetItemsWithCursorReadDto, 'a> =
+    let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, AssetItemsWithCursorReadDto, 'a> =
         let url = Url +/ "list"
 
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<AssetQuery seq>(options))
+        >=> setContent (new JsonPushStreamContent<AssetQuery>(query))
         >=> fetch
         >=> withError decodeError
         >=> json (Some jsonOptions)

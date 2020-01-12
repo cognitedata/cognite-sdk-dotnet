@@ -15,6 +15,8 @@ using CogniteSdk.Types.Assets;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
+using AssetItemsWithCursorReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
+
 
 namespace CogniteSdk
 {
@@ -29,42 +31,31 @@ namespace CogniteSdk
         {
             this.ctx = ctx;
         }
-        /*
-            /// <summary>
-            /// Retrieves list of assets matching query, filter, and a cursor if given limit is exceeded
-            /// </summary>
-            /// <param name="options">Optional limit and cursor</param>
-            /// <param name="filters">Search filters</param>
-            /// <returns>List of assets matching given filters and optional cursor</returns>
-            public async Task<AssetItemsReadDto> ListAsync(IEnumerable<AssetQuery> options, IEnumerable<AssetFilterDto> filters, CancellationToken token = default(CancellationToken))
+
+        /// <summary>
+        /// Retrieves list of assets matching query, filter, and a cursor if given limit is exceeded
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public async Task<AssetItemsReadDto> ListAsync(AssetQuery query, CancellationToken token = default)
+        {
+            var ctx = Context.setCancellationToken(token, this.ctx);
+            var req = Oryx.Cognite.Assets.list<AssetItemsWithCursorReadDto>(query);
+
+            var result = await Handler.runAsync(req, ctx);
+            if (result.IsOk)
             {
-                    var ctx = Context.setCancellationToken(token, this.ctx);
-                    let req = Oryx.Cognite.Assets.list(options, filters);
-                    let! result = await runAsync(req, ctx);
-                    match result with
-                    | Ok items -> return items
-                    | Error error -> return raiseError error
+                return result.ResultValue;
             }
+            else
+            {
+                return HandlersModule.raiseError<AssetItemsWithCursorReadDto>(result.ErrorValue);
+            }
+        }
 
-            /// <summary>
-            /// Retrieves list of assets matching filter.
-            /// </summary>
-            /// <param name="filters">Search filters</param>
-            /// <returns>List of assets matching given filters and optional cursor</returns>
-            static member ListAsync (this: ClientExtension, filters: AssetFilterDto seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
-                let query = ResizeArray<AssetQuery>()
-                this.ListAsync(query, filters, token)
-
-            /// <summary>
-            /// Retrieves list of assets with a cursor if given limit is exceeded.
-            /// </summary>
-            /// <param name="options">Optional limit and cursor</param>
-            /// <returns>List of assets matching given filters and optional cursor</returns>
-            static member ListAsync (: ClientExtension, options: AssetQuery seq, [<Optional>] token: CancellationToken) : Task<AssetItemsReadDto> =
-                let filter = ResizeArray<AssetFilterDto>()
-                this.ListAsync(options, filter, token)
-
-
+        /*
+        
             public async Task<IEnumerable<Asset>> CreateAsync(IEnumerable<Asset> assets, CancellationToken? token)
             {
                     var assets = assets.Select(AssetWriteDto.FromAssetEntity);

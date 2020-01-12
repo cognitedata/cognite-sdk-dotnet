@@ -108,7 +108,6 @@ namespace CogniteSdk
                 return this;
             }
 
-
             /// <summary>
             /// Set unique app identifier
             /// </summary>
