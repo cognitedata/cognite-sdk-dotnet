@@ -74,9 +74,7 @@ namespace CogniteSdk
             /// <summary>
             /// Create builder using default context.
             /// </summary>
-            public Builder()
-            {
-            }
+            public Builder() {}
 
             /// <summary>
             /// Add header for accessing the API.

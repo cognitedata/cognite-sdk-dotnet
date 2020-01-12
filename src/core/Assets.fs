@@ -13,12 +13,12 @@ open Oryx.SystemTextJson
 open CogniteSdk.Types.Assets
 open CogniteSdk.Types
 
-// Various item types
+// Various asset item types
 type AssetItemsWithCursorReadDto = Common.ResourceItemsWithCursor<AssetReadDto>
 type AssetItemsReadDto = Common.ResourceItems<AssetReadDto>
 type AssetItemsWriteDto = Common.ResourceItems<AssetWriteDto>
 type AssetItemsIdentityWriteDto = Common.ResourceItems<Common.Identity>
-type AssetItemsUpdateDto = Common.ResourceItemsWithCursor<Common.UpdateItem<AssetUpdateDto>>
+type AssetItemsUpdateDto = Common.ResourceItems<Common.UpdateItem<AssetUpdateDto>>
 
 [<RequireQualifiedAccess>]
 module Assets =
