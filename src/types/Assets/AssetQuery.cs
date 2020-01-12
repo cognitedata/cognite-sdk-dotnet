@@ -10,24 +10,27 @@ namespace CogniteSdk.Types.Assets
         /// <summary>
         /// Filter on assets with strict matching.
         /// </summary>
-        public AssetFilterDto filter { get; set; }
+        public AssetFilterDto Filter { get; set; }
 
         /// <summary>
         /// Limits the number of results to return.
         /// </summary>
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
 
+        /// <summary>
+        /// Cursor to next result page.
+        /// </summary>
         public string Cursor { get; set; }
 
         /// <summary>
         /// Set of aggregated properties to include.
         /// </summary>
-        public IEnumerable<string> aggregatedProperties { get; set; }
+        public IEnumerable<string> AggregatedProperties { get; set; }
 
         /// <summary>
         /// Splits the data set into N partitions. You need to follow the cursors within each partition in order to
         /// receive all the data. Example: 1/10.
         /// </summary>
-        public string partition { get; set; }
+        public string Partition { get; set; }
     }
 }

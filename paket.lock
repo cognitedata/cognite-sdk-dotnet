@@ -89,6 +89,9 @@ NUGET
       FSharp.Core (>= 4.6.2)
       Newtonsoft.Json (>= 11.0.2)
 
+GROUP FSharp
+STORAGE: NONE
+
 GROUP Playground
 STORAGE: NONE
 NUGET

@@ -1,15 +1,17 @@
-namespace CogniteSdk.Types.Common
-{
+namespace CogniteSdk.Types.Common {
     /// <summary>
     /// Abstract base for Identity case classes.
     /// </summary>
-    public abstract class Identity {}
+    public abstract class Identity { }
 
     /// <summary>
     /// Id case class.
     /// </summary>
-    public class IdentityId : Identity
-    {
+    public class IdentityId : Identity {
+        public IdentityId (long id) {
+            this.Id = id;
+        }
+
         /// <summary>
         /// A server-generated ID for the object.
         /// </summary>
@@ -19,8 +21,11 @@ namespace CogniteSdk.Types.Common
     /// <summary>
     /// ExternalId case class.
     /// </summary>
-    public class IdentityExternalId : Identity
-    {
+    public class IdentityExternalId : Identity {
+        public IdentityExternalId (string externalId) {
+            this.ExternalId = externalId;
+        }
+
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>

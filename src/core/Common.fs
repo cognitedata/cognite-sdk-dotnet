@@ -50,6 +50,11 @@ type Identity =
         CaseId id
     static member ExternalId id =
         CaseExternalId id
+    member this.ToIdentityDto : CogniteSdk.Types.Common.Identity =
+        match this with
+        | CaseId identity -> IdentityId(identity) :> CogniteSdk.Types.Common.Identity
+        | CaseExternalId externalId -> IdentityExternalId(externalId) :> CogniteSdk.Types.Common.Identity
+
 
 type Numeric =
     internal

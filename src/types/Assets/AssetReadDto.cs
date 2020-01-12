@@ -20,7 +20,7 @@ namespace CogniteSdk.Types.Assets
         /// <summary>
         /// The parent ID of the asset.
         /// </summary>
-        public long ParentId { get; set; }
+        public long? ParentId { get; set; }
 
         /// <summary>
         /// The description of the asset.

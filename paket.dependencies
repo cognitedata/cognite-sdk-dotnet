@@ -48,3 +48,7 @@ group Playground
     nuget FSharp.Core ~> 4.7
     nuget FsConfig ~> 2
     nuget Microsoft.Extensions.Configuration ~> 3
+
+group FSharp
+    source https://www.nuget.org/api/v2
+    storage: none

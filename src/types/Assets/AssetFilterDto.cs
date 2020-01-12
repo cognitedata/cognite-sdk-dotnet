@@ -50,13 +50,11 @@ namespace CogniteSdk.Types.Assets
         /// <summary>
         /// Range between two timestamps.
         /// </summary>
-        /// <value></value>
         public TimeRange LastUpdatedTime { get; set; }
 
         /// <summary>
         /// Whether the filtered assets are root assets, or not. Set to True to only list root assets.
         /// </summary>
-        /// <value></value>
         public bool Root { get; set; }
 
         /// <summary>

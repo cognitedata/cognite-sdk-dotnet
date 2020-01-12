@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Oryx.Cognite.Assets
+namespace Oryx.Cognite
 
 open System.Net.Http
 
