@@ -138,6 +138,9 @@ module Context =
         let version = Assembly.GetExecutingAssembly().GetName().Version
         (version.Major, version.Minor, version.Build)
 
+    let setUrlBuilder ctx =
+        Context.setUrlBuilder urlBuilder ctx
+
     /// Set the project to connect to.
     let setProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", project) } }

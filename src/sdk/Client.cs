@@ -8,8 +8,13 @@ using Oryx.Cognite;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
+using static Oryx.Cognite.ContextModule;
+
 namespace CogniteSdk
 {
+    /// <summary>
+    /// Cognite SDK client.
+    /// </summary>
     public class Client
     {
         internal HttpContext Ctx { get; }
@@ -44,11 +49,11 @@ namespace CogniteSdk
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
-        /// <param name="client">HTTP client to use for making the actual requests.</param>
+        /// <param name="httpClient">HTTP client to use for making the actual requests.</param>
         public Client(HttpClient httpClient)
         {
             var ctx = Context.defaultContext;
-            ctx = Context.setUrlBuilder(Context.urlBuilder, this.Ctx);
+            //ctx = Context.setUrlBuilder(urlBuilder, this.Ctx);
             ctx = Context.setHttpClient(httpClient, ctx);
         }
 

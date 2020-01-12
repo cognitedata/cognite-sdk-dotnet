@@ -9,15 +9,12 @@
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="../../LICENSE" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="../types/CogniteSdk.Types.csproj" />
     <ProjectReference Include="../core/Core.fsproj" />
   </ItemGroup>
-
-  <Import Project="../../.paket/Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
