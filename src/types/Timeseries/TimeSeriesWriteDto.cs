@@ -8,7 +8,7 @@ namespace CogniteSdk.Types.Timeseries
     /// <summary>
     /// Timeseries write dto.
     /// </summary>
-    public class TimeseriesWriteDto
+    public class TimeSeriesWriteDto
     {
         /// <summary>
         /// Externally provided ID for the time series (optional, but recommended.)
@@ -48,7 +48,7 @@ namespace CogniteSdk.Types.Timeseries
         public string Unit { get; set; }
 
         /// <summary>
-        /// Asset this timeseries should be related to.
+        /// Asset this time series should be related to.
         /// </summary>
         public long AssetId { get; set; }
 

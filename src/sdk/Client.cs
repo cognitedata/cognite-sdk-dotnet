@@ -15,7 +15,7 @@ namespace CogniteSdk
     /// </summary>
     public class Client
     {
-        internal HttpContext Ctx { get; private set; }
+        private HttpContext Ctx { get; set; }
 
         /// <summary>
         /// Client Assets extension methods
@@ -60,7 +60,7 @@ namespace CogniteSdk
         /// </summary>
         public sealed class Builder
         {
-            private HttpContext context = Context.defaultContext;
+            private HttpContext _context = Context.defaultContext;
 
             /// <summary>
             /// Create builder using HTTP client
@@ -68,7 +68,7 @@ namespace CogniteSdk
             /// <param name="httpClient">The HttpClient to use.</param>
             public Builder(HttpClient httpClient)
             {
-                this.context = Context.setHttpClient(httpClient, context);
+                this._context = Context.setHttpClient(httpClient, _context);
             }
 
             /// <summary>
@@ -83,7 +83,7 @@ namespace CogniteSdk
             /// <param name="value">Value of the header</param>
             public Builder AddHeader(string name, string value)
             {
-                context = Context.addHeader(name, value, context);
+                _context = Context.addHeader(name, value, _context);
                 return this;
             }
 
@@ -102,7 +102,7 @@ namespace CogniteSdk
             /// <param name="project">Name of project.</param>
             public Builder SetProject(string project)
             {
-                context = setProject(project, context);
+                _context = setProject(project, _context);
                 return this;
             }
 
@@ -112,7 +112,7 @@ namespace CogniteSdk
             /// <param name="appId">ID for the app</param>
             public Builder SetAppId(string appId)
             {
-                context = setAppId(appId, context);
+                _context = setAppId(appId, _context);
                 return this;
             }
 
@@ -123,7 +123,7 @@ namespace CogniteSdk
             /// <returns></returns>
             public Builder SetHttpClient(HttpClient client)
             {
-                context = Context.setHttpClient(client, context);
+                _context = Context.setHttpClient(client, _context);
                 return this;
             }
 
@@ -134,7 +134,7 @@ namespace CogniteSdk
             /// <returns></returns>
             public Builder SetServiceUrl(string serviceUrl)
             {
-                context = setServiceUrl(serviceUrl, context);
+                _context = setServiceUrl(serviceUrl, _context);
                 return this;
             }
 
@@ -145,8 +145,8 @@ namespace CogniteSdk
             public Client Build()
             {
                 // Check for optional fields etc here
-                HttpContext ctx = context;
-                context = null; // Builder is invalid after this
+                HttpContext ctx = _context;
+                _context = null; // Builder is invalid after this
                 return new Client(ctx);
             }
         }

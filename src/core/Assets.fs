@@ -124,7 +124,6 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-
     let update (query: AssetItemsUpdateDto) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a>  =
         let url = Url +/ "update"
 

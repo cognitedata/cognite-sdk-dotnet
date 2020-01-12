@@ -13,7 +13,7 @@ namespace CogniteSdk.Types.Assets
         /// <summary>
         /// Limits the number of results to return.
         /// </summary>
-        public long Limit { get; set; }
+        public long? Limit { get; set; }
 
         /// <summary>
         /// Fulltext search for assets.

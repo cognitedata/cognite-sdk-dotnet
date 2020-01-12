@@ -6,15 +6,16 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Linq;
+
 using Oryx;
 using Oryx.Cognite;
 
-using CogniteSdk.Types;
 using CogniteSdk.Types.Assets;
-
+using CogniteSdk.Types.Common;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
-using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
+using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetReadDto>;
+using AssetItemsWriteDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetWriteDto>;
+
 using AssetItemsWithCursorReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
 
 
@@ -25,11 +26,11 @@ namespace CogniteSdk
     /// </summary>
     public class Assets
     {
-        private readonly HttpContext ctx;
+        private readonly HttpContext _ctx;
 
         internal Assets(HttpContext ctx)
         {
-            this.ctx = ctx;
+            _ctx = ctx;
         }
 
         /// <summary>
@@ -38,38 +39,32 @@ namespace CogniteSdk
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<AssetItemsReadDto> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<AssetItemsWithCursorReadDto> ListAsync(AssetQuery query, CancellationToken token = default)
         {
-            var ctx = Context.setCancellationToken(token, this.ctx);
+            var ctx = Context.setCancellationToken(token, this._ctx);
             var req = Oryx.Cognite.Assets.list<AssetItemsWithCursorReadDto>(query);
 
             var result = await Handler.runAsync(req, ctx);
-            if (result.IsOk)
-            {
-                return result.ResultValue;
-            }
-            else
-            {
-                return HandlersModule.raiseError<AssetItemsWithCursorReadDto>(result.ErrorValue);
-            }
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsWithCursorReadDto>(result.ErrorValue);
+        }
+
+        /// <summary>
+        /// Create assets.
+        /// </summary>
+        /// <param name="assets">Assets to create.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns></returns>
+        public async Task<AssetItemsReadDto> CreateAsync(AssetItemsWriteDto assets, CancellationToken token = default)
+        {
+            var ctx = Context.setCancellationToken(token, this._ctx);
+            var req = Oryx.Cognite.Assets.create<AssetItemsReadDto>(assets);
+
+            var result = await Handler.runAsync(req, ctx);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
         }
 
         /*
-        
-            public async Task<IEnumerable<Asset>> CreateAsync(IEnumerable<Asset> assets, CancellationToken? token)
-            {
-                    var assets = assets.Select(AssetWriteDto.FromAssetEntity);
-                    var ctx = Context.setCancellationToken(token, this.Ctx);
-                    var result = await Create.createAsync(assets, ctx);
-
-                    //match result with
-                    //| Ok ctx -> return ctx.Response |> Seq.map (fun asset -> asset.ToAssetEntity ())
-                    //| Error error -> return raiseError error
-                    return null;
-            }
-        }
-
-
+    
         /// <summary>
         /// Retrieves information about an asset given an asset id.
         /// </summary>
@@ -84,9 +79,9 @@ namespace CogniteSdk
                 | Ok ctx -> return ctx.Response
                 | Error error -> return raiseError error
             }
-
+    
     }
-
+    
     [<Extension>]
     type DeleteAssetsExtensions =
         /// <summary>
@@ -103,7 +98,7 @@ namespace CogniteSdk
                 | Ok _ -> return ()
                 | Error error -> return raiseError error
             } :> _
-
+    
         /// <summary>
         /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
         /// </summary>
@@ -112,7 +107,7 @@ namespace CogniteSdk
         [<Extension>]
         static member DeleteAsync(this: ClientExtension, ids: int64 seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
             this.DeleteAsync(ids |> Seq.map Identity.Id, recursive, token)
-
+    
         /// <summary>
         /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
         /// </summary>
@@ -121,7 +116,7 @@ namespace CogniteSdk
         [<Extension>]
         static member DeleteAsync(this: ClientExtension, ids: string seq, recursive: bool, [<Optional>] token: CancellationToken) : Task =
             this.DeleteAsync(ids |> Seq.map Identity.ExternalId, recursive, token)
-
+    
         */
     }
 }

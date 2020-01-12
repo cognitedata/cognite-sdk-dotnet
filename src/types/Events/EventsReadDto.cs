@@ -15,7 +15,7 @@ namespace CogniteSdk.Types.Events
         /// <summary>
         /// Start time of event in unix timestamp milliseconds.
         /// </summary>
-        public long? startTime { get; set; }
+        public long? StartTime { get; set; }
 
         /// <summary>
         /// End time of event in unix timestamp milliseconds.

@@ -7,19 +7,19 @@ namespace CogniteSdk.Types.Assets
     public class AssetDeleteDto
     {
         /// <summary>
-        /// Sequence of IdentityId or IdentityExternalId.
+        /// Sequence of IdentityId or IdentityExternalId (required).
         /// </summary>
         /// <value></value>
-        public IEnumerable<Identity> items { get; set; }
+        public IEnumerable<Identity> Items { get; set; }
 
         /// <summary>
-        /// Recursively delete all asset subtrees under the specified IDs.
+        /// Recursively delete all asset subtrees under the specified IDs. Default: false
         /// </summary>
-        public bool Recursive { get; set; }
+        public bool? Recursive { get; set; }
 
         /// <summary>
-        /// Ignore IDs and external IDs that are not found.
+        /// Ignore IDs and external IDs that are not found. Default: false
         /// </summary>
-        public bool ignoreUnknownIds { get; set; }
+        public bool? IgnoreUnknownIds { get; set; }
     }
 }

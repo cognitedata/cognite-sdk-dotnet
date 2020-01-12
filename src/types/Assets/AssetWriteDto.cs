@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types
+namespace CogniteSdk.Types.Assets
 {
     public class AssetWriteDto
     {

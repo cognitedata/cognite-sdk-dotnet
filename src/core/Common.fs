@@ -19,8 +19,8 @@ open Oryx
 open Oryx.Retry
 
 
-// Shadow types that pins the error type for Oryx to ResponeError
-type HttpFuncResult<'r> =  Task<Result<Context<'r>, HandlerError<ResponseException>>>
+// Shadow types that pins the error type for Oryx to ResponseError
+type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
 type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
 type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
 type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
@@ -185,7 +185,7 @@ module Handlers =
             use! stream = response.Content.ReadAsStreamAsync ()
             try
                 let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
-                let found, requestId = response.Headers.TryGetValues "x-request-id"
+                let _, requestId = response.Headers.TryGetValues "x-request-id"
                 match Seq.tryExactlyOne requestId with
                 | Some requestId -> error.RequestId <- requestId
                 | None -> ()

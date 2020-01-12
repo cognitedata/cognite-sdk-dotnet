@@ -14,5 +14,3 @@ namespace CogniteSdk.Types.Assets
         public int ChildCount { get; set; }
     }
 }
-
-

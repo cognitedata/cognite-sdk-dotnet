@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Types.Timeseries
 {
     /// <summary>
-    /// Timeseries read dto.
+    /// TimeSeries read dto.
     /// </summary>
-    public class TimeseriesReadDto
+    public class TimeSeriesReadDto
     {
         /// <summary>
         /// Server-generated ID for the object
@@ -43,7 +43,7 @@ namespace CogniteSdk.Types.Timeseries
         public string Unit { get; set; }
 
         /// <summary>
-        /// AssetId for the asset this timeseries is linked to.
+        /// AssetId for the asset this time series is linked to.
         /// </summary>
         public long? AssetId { get; set; }
 
