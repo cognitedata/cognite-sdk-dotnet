@@ -9,14 +9,16 @@ open System.Net.Http
 open System.IO
 open System.Reflection
 open System.Text.Json
-open System.Text.RegularExpressions
 open System.Threading.Tasks
 
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+open System.Threading
 open Oryx
 open Oryx.Retry
+open Oryx.SystemTextJson
+open Oryx.SystemTextJson.ResponseReader
 
 
 // Shadow types that pins the error type for Oryx to ResponseError
@@ -39,68 +41,8 @@ type ApiVersion =
         | V06 -> "0.6"
         | V10 -> "v1"
 
-/// Id or ExternalId
-type Identity =
-    internal
-    | CaseId of int64
-    | CaseExternalId of string
-
-    static member Id id =
-        CaseId id
-    static member ExternalId id =
-        CaseExternalId id
-    member this.ToIdentityDto : CogniteSdk.Identity =
-        match this with
-        | CaseId identity -> IdentityId(identity) :> CogniteSdk.Identity
-        | CaseExternalId externalId -> IdentityExternalId(externalId) :> CogniteSdk.Identity
-
-
-type Numeric =
-    internal
-    | CaseString of string
-    | CaseInteger of int64
-    | CaseFloat of double
-
-    static member String value =
-        CaseString value
-
-    static member Integer value =
-        CaseInteger value
-
-    static member Float value =
-        CaseFloat value
-
-[<AutoOpen>]
-module Patterns =
-    /// Active pattern to permit pattern matching over numeric values.
-    let (|Integer|Float|String|) (value : Numeric) : Choice<int64, float, string>  =
-        match value with
-        | CaseInteger value -> Integer value
-        | CaseFloat value -> Float value
-        | CaseString value -> String value
-
-    /// Active pattern to permit pattern matching over identity values.
-    let (|Id|ExternalId|) (value : Identity) : Choice<int64, string>  =
-        match value with
-        | CaseId value -> Id value
-        | CaseExternalId value -> ExternalId value
-
-    let (|ParseInteger|_|) (str: string) =
-       let mutable intvalue = 0
-       if System.Int32.TryParse(str, &intvalue) then Some(intvalue)
-       else None
-
-    let (|ParseRegex|_|) regex str =
-       let m = Regex(regex).Match(str)
-       if m.Success
-       then Some (List.tail [ for x in m.Groups -> x.Value ])
-       else None
-
 [<AutoOpen>]
 module Common =
-    [<Literal>]
-    let MaxLimitSize = 1000
-
     let (+/) path1 path2 = Path.Combine(path1, path2)
 
     let jsonOptions =
@@ -132,9 +74,7 @@ module Context =
         if not (Map.containsKey "hasAppId" extra)
         then failwith "Client must set the Application ID (appId)."
 
-        let a = sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
-        printfn "URL: %A" a
-        a
+        sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
@@ -190,6 +130,17 @@ module Handlers =
         | Panic (Oryx.JsonDecodeException err) -> raise <| Oryx.Cognite.JsonDecodeException err
         | Panic (err) -> raise err
 
+    /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
+    let runUnsafeAsync (handler: HttpHandler<HttpResponseMessage, 'r,'r>) (ctx : HttpContext) (token: CancellationToken) : Task<'r> = task {
+        let! result =
+            ctx
+            |> Context.setCancellationToken token
+            |> runAsync handler
+        match result with
+        | Ok value -> return value
+        | Error error -> return raiseError error
+    }
+
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseException>> = task {
         if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
@@ -211,6 +162,80 @@ module Handlers =
             exn.Code <- int response.StatusCode
             return ResponseError exn
     }
+    let get<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
+        let url = url +/ sprintf "%d" id
+
+        GET
+        >=> setVersion V10
+        >=> setResource url
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let list<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'b>, 'c> =
+        let url = url +/ "list"
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<'a>(query, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let create<'a, 'b, 'c> (items: ItemsWithoutCursor<'a>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<'a>>(items, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let delete<'a, 'b> (items: 'a) (url: string): HttpHandler<HttpResponseMessage, EmptyResult, 'b> =
+        let url = url +/ "delete"
+
+        POST
+        >=> setVersion V10
+        >=> setContent (new JsonPushStreamContent<'a>(items))
+        >=> setResource url
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let retrieve<'a, 'b, 'c> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
+        let request = ItemsWithoutCursor<Identity>(Items = ids)
+        let url = url +/ "byids"
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let search<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
+        let url = url +/ "search"
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<'a>(query, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let update<'a, 'b, 'c> (query: ItemsWithoutCursor<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c>  =
+        let url = url +/ "update"
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<'a>>>(query, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =

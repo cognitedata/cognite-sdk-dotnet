@@ -1,7 +1,9 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CogniteSdk
 {
@@ -15,6 +17,17 @@ namespace CogniteSdk
         /// Resource items of type T.
         /// </summary>
         public IEnumerable<T> Items { get; set; }
+
+        public override string ToString()
+        {
+            var props = new List<string>();
+            foreach (var item in Items)
+            {
+                props.Add(item.ToString());
+            }
+
+            return String.Join("/n", props);
+        }
     }
 
     /// <summary>
@@ -32,5 +45,16 @@ namespace CogniteSdk
         /// Cursor to next page of data items.
         /// </summary>
         public string NextCursor { get; set; }
+
+        public override string ToString()
+        {
+            var props = new List<string>();
+            foreach (var item in Items)
+            {
+                props.Add(item.ToString());
+            }
+
+            return String.Join("/n", props);
+        }
     }
 }

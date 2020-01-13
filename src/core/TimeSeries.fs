@@ -5,15 +5,12 @@ namespace Oryx.Cognite
 
 open System.Net.Http
 
-open Oryx
-open Oryx.SystemTextJson.ResponseReader
 open Oryx.Cognite
-open Oryx.SystemTextJson
 
 open CogniteSdk
 open CogniteSdk.TimeSeries
 
-// Various asset item types
+/// Various time series HTTP handlers
 
 [<RequireQualifiedAccess>]
 module TimeSeries =
@@ -26,15 +23,7 @@ module TimeSeries =
     /// <param name="query">The query to use.</param>
     /// <returns>List of time series matching given filters and optional cursor</returns>
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
-        let url = Url +/ "list"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<TimeSeriesQuery>(query, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
+        list query Url
 
     /// <summary>
     /// Create one or more new timeseries.
@@ -44,27 +33,14 @@ module TimeSeries =
     /// <returns>List of created timeseries.</returns>
 
     let create (items: ItemsWithoutCursor<TimeSeriesWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
-        POST
-        >=> setVersion V10
-        >=> setResource Url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<TimeSeriesWriteDto>>(items, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
+        create items Url
 
     /// <summary>
     /// Delete one or more timeseries.
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
-    let delete (items: TimeSeriesDeleteDto) : HttpHandler<HttpResponseMessage, HttpResponseMessage, 'a> =
-        let url = Url +/ "delete"
-
-        POST
-        >=> setVersion V10
-        >=> setContent (new JsonPushStreamContent<TimeSeriesDeleteDto>(items))
-        >=> setResource url
-        >=> fetch
-        >=> withError decodeError
+    let delete (items: TimeSeriesDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResult, 'a> =
+        delete items Url
 
     /// <summary>
     /// Retrieves information about multiple timeseries in the same project.
@@ -74,16 +50,7 @@ module TimeSeries =
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
-        let request = ItemsWithoutCursor<Identity>(Items = ids)
-        let url = Url +/ "byids"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
+        retrieve ids Url
 
     /// <summary>
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
@@ -91,15 +58,7 @@ module TimeSeries =
     /// <param name="query">Time series search query.</param>
     /// <returns>List of time series matching given criteria.</returns>
     let search (query: TimeSeriesSearchQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
-        let url = Url +/ "search"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<TimeSeriesSearchQueryDto>(query, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
+        search query Url
 
     /// <summary>
     /// Updates multiple timeseries within the same project.
@@ -107,13 +66,5 @@ module TimeSeries =
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
     let update (query: ItemsWithoutCursor<UpdateItem<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a>  =
-        let url = Url +/ "update"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<TimeSeriesUpdateDto>>>(query, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
+        update query Url
 

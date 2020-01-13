@@ -1,7 +1,9 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace CogniteSdk.Assets
 {
@@ -68,6 +70,21 @@ namespace CogniteSdk.Assets
         /// Aggregated metrics of the asset.
         /// </summary>
         public Aggregates Aggregates { get; set; }
+
+        public override string ToString()
+        {
+            var props = new List<string> { "{"};
+            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
+            {
+                string name = descriptor.Name;
+                object value = descriptor.GetValue(this);
+                value = value == null ? "null" : value;
+                props.Add(String.Format("\t{0}={1}", name, value));
+            }
+            props.Add("}");
+
+            return String.Join("\n", props);
+        }
     }
 }
 
