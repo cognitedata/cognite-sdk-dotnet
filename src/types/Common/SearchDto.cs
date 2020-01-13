@@ -3,6 +3,9 @@
 
 namespace CogniteSdk
 {
+    /// <summary>
+    /// Search query DTO. Shared between the various resource search functions.
+    /// </summary>
     public class SearchDto
     {
         /// <summary>

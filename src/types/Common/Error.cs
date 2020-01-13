@@ -59,7 +59,7 @@ namespace CogniteSdk
         /// <summary>
         /// Convert error to exception.
         /// </summary>
-        public ResponseException ToException ()
+        public ResponseException ToException()
         {
             var exn = new ResponseException(this.Error.Message) {
                 Code = this.Error.Code,
@@ -81,12 +81,8 @@ namespace CogniteSdk
 
         public string RequestId { get; set; }
 
-        public ResponseException(string message) : base(message)
-        {
-        }
+        public ResponseException(string message) : base(message) {}
 
-        public ResponseException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        public ResponseException(string message, Exception innerException) : base(message, innerException) {}
     }
 }

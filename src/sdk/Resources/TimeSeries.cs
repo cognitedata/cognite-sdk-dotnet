@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Oryx.Cognite;
-
+using static Oryx.Cognite.HandlersModule;
 using CogniteSdk.TimeSeries;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
@@ -38,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<TimeSeriesReadDto>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.list<ItemsWithCursor<TimeSeriesReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<TimeSeriesReadDto>> CreateAsync(ItemsWithoutCursor<TimeSeriesWriteDto> assets, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.create<ItemsWithoutCursor<TimeSeriesReadDto>>(assets);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResult> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResult>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.retrieve<ItemsWithoutCursor<TimeSeriesReadDto>>(ids);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
         
         /// <summary>
@@ -82,10 +81,10 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<ItemsWithoutCursor<TimeSeriesReadDto>> SearchAsync (TimeSeriesSearchQueryDto query, CancellationToken token = default )
+        public async Task<ItemsWithoutCursor<TimeSeriesReadDto>> SearchAsync (SearchQueryDto<TimeSeriesFilterDto> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.TimeSeries.search<ItemsWithoutCursor<TimeSeriesReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -98,7 +97,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<TimeSeriesReadDto>> UpdateAsync (ItemsWithoutCursor<UpdateItem<TimeSeriesUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.TimeSeries.update<ItemsWithoutCursor<TimeSeriesReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
     }
 }

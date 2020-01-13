@@ -8,14 +8,14 @@ open System.Net.Http
 open Oryx.Cognite
 
 open CogniteSdk
-open CogniteSdk.Assets
+open CogniteSdk.Events
 
 /// Various asset HTTP handlers.
 
 [<RequireQualifiedAccess>]
-module Assets =
+module Events =
     [<Literal>]
-    let Url = "/assets"
+    let Url = "/events"
 
     /// <summary>
     /// Retrieves information about an asset given an asset id. Expects a next continuation handler.
@@ -23,7 +23,7 @@ module Assets =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <param name="next">Async handler to use.</param>
     /// <returns>Asset with the given id.</returns>
-    let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
+    let get (assetId: int64) : HttpHandler<HttpResponseMessage, EventReadDto, 'a> =
         get assetId Url
 
     /// <summary>
@@ -31,7 +31,7 @@ module Assets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
+    let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventReadDto>, 'a> =
         list query Url
 
     /// <summary>
@@ -39,7 +39,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (items: ItemsWithoutCursor<AssetWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let create (items: ItemsWithoutCursor<EventWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
         create items Url
 
     /// <summary>
@@ -48,8 +48,8 @@ module Assets =
     /// <param name="assets">The list of assets to delete.</param>
     /// <param name="recursive">If true, delete all children recursively.</param>
     /// <param name="next">Async handler to use</param>
-    let delete (assets: AssetDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResult, 'a> =
-        delete assets Url
+    let delete (items: EventDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResult, 'a> =
+        delete items Url
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
@@ -57,7 +57,7 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -67,7 +67,7 @@ module Assets =
     /// <param name="query">Asset search query.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: SearchQueryDto<AssetFilterDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let search (query: AssetSearchQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
         search query Url
 
     /// <summary>
@@ -75,6 +75,6 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let update (query: ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a>  =
+    let update (query: ItemsWithoutCursor<UpdateItem<EventUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a>  =
         update query Url
 

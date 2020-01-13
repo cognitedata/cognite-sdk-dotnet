@@ -3,22 +3,22 @@
 
 using CogniteSdk;
 
-namespace CogniteSdk.Assets
+namespace CogniteSdk
 {
-    public class AssetSearchQueryDto
+    public class SearchQueryDto<TFilter>
     {
         /// <summary>
-        /// Filter on assets with strict matching.
+        /// Filter on items with strict matching.
         /// </summary>
-        public AssetFilterDto Filter { get; set; }
+        public TFilter Filter { get; set; }
 
         /// <summary>
-        /// Limits the number of results to return.
+        /// Limits the number of items to return.
         /// </summary>
         public long? Limit { get; set; }
 
         /// <summary>
-        /// Fulltext search for assets.
+        /// Fulltext search for items.
         /// </summary>
         public SearchDto Search { get; set; }
     }

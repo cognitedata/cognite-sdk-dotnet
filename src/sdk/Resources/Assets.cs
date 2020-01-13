@@ -5,10 +5,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Oryx.Cognite;
-
 using CogniteSdk.Assets;
-
+using static Oryx.Cognite.HandlersModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -38,7 +36,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<AssetReadDto>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.list<ItemsWithCursor<AssetReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -50,7 +48,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<AssetReadDto>> CreateAsync(ItemsWithoutCursor<AssetWriteDto> assets, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.create<ItemsWithoutCursor<AssetReadDto>>(assets);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<AssetReadDto> GetAsync(long assetId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.get<AssetReadDto>(assetId);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -73,7 +71,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResult> DeleteAsync(AssetDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.delete<EmptyResult>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -85,7 +83,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<AssetReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.retrieve<ItemsWithoutCursor<AssetReadDto>>(ids);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -94,10 +92,10 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<ItemsWithoutCursor<AssetReadDto>> SearchAsync (AssetSearchQueryDto query, CancellationToken token = default )
+        public async Task<ItemsWithoutCursor<AssetReadDto>> SearchAsync (SearchQueryDto<AssetFilterDto> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.search<ItemsWithoutCursor<AssetReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
@@ -109,7 +107,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithoutCursor<AssetReadDto>> UpdateAsync (ItemsWithoutCursor<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.update<ItemsWithoutCursor<AssetReadDto>>(query);
-            return await HandlersModule.runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(req, _ctx, token);
         }
     }
 }
