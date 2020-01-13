@@ -103,7 +103,12 @@ module Common =
 
     let (+/) path1 path2 = Path.Combine(path1, path2)
 
-    let jsonOptions = JsonSerializerOptions(AllowTrailingCommas=true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase)
+    let jsonOptions =
+        JsonSerializerOptions(
+            AllowTrailingCommas=true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            IgnoreNullValues = true
+        )
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Context =

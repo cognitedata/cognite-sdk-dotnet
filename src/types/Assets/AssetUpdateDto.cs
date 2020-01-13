@@ -24,7 +24,7 @@ namespace CogniteSdk.Assets
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public Update<IDictionary<string, string>> MetaData { get; set; }
+        public Update<IDictionary<string, string>> Metadata { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.

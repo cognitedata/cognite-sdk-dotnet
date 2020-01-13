@@ -5,4 +5,4 @@ group Core
     Taskbuilder.fs
     Oryx
     Oryx.Protobuf
-    Oryx.System.Text.Json
+    Oryx.SystemTextJson

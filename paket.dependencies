@@ -21,7 +21,7 @@ group Core
     nuget Microsoft.Extensions.Http
     nuget Oryx prerelease
     nuget Oryx.Protobuf prerelease
-    nuget Oryx.System.Text.Json prerelease
+    nuget Oryx.SystemTextJson prerelease
 
 group Types
     source https://www.nuget.org/api/v2

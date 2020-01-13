@@ -102,7 +102,12 @@ namespace csharp {
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
             var project = Environment.GetEnvironmentVariable("PROJECT");
 
-            using var httpClient = new HttpClient();
+            using var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+            };
+
+            using var httpClient = new HttpClient(handler);
             var builder = new Client.Builder();
             var client =
                 builder

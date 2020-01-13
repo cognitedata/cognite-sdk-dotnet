@@ -34,7 +34,7 @@ module Assets =
         >=> setResource url
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -47,10 +47,10 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<AssetQuery>(query))
+        >=> setContent (new JsonPushStreamContent<AssetQuery>(query, jsonOptions))
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
     /// <summary>
     /// Create new assets in the given project.
@@ -61,10 +61,10 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<AssetWriteDto>>(assets))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<AssetWriteDto>>(assets, jsonOptions))
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
@@ -96,10 +96,10 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request, jsonOptions))
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -114,10 +114,10 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<AssetSearchQueryDto>(query))
+        >=> setContent (new JsonPushStreamContent<AssetSearchQueryDto>(query, jsonOptions))
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
     /// <summary>
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -130,8 +130,8 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>>(query))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>>(query, jsonOptions))
         >=> fetch
         >=> withError decodeError
-        >=> json (Some jsonOptions)
+        >=> json jsonOptions
 
