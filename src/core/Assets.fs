@@ -18,10 +18,9 @@ module Assets =
     let Url = "/assets"
 
     /// <summary>
-    /// Retrieves information about an asset given an asset id. Expects a next continuation handler.
+    /// Retrieves information about an asset given an asset id.
     /// </summary>
     /// <param name="assetId">The id of the asset to get.</param>
-    /// <param name="next">Async handler to use.</param>
     /// <returns>Asset with the given id.</returns>
     let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
         get assetId Url

@@ -9,6 +9,7 @@
     <Compile Include="Common.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="TimeSeries.fs" />
+    <Compile Include="Events.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
 

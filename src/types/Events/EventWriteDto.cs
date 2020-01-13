@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Events
+namespace CogniteSdk.Events
 {
     public class EventWriteDto
     {
