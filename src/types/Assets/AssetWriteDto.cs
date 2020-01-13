@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Assets
+namespace CogniteSdk.Assets
 {
     public class AssetWriteDto
     {
@@ -30,7 +30,7 @@ namespace CogniteSdk.Types.Assets
         /// <summary>
         /// Custom, application specific metadata. String key -> String value.
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public IDictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// The source of this asset

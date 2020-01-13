@@ -1,4 +1,4 @@
-namespace CogniteSdk.Types.Common {
+namespace CogniteSdk {
     /// <summary>
     /// Abstract base for Identity case classes.
     /// </summary>

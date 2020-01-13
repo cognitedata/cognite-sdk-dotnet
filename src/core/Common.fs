@@ -12,7 +12,7 @@ open System.Text.Json
 open System.Text.RegularExpressions
 open System.Threading.Tasks
 
-open CogniteSdk.Types.Common
+open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Oryx
@@ -49,10 +49,10 @@ type Identity =
         CaseId id
     static member ExternalId id =
         CaseExternalId id
-    member this.ToIdentityDto : CogniteSdk.Types.Common.Identity =
+    member this.ToIdentityDto : CogniteSdk.Identity =
         match this with
-        | CaseId identity -> IdentityId(identity) :> CogniteSdk.Types.Common.Identity
-        | CaseExternalId externalId -> IdentityExternalId(externalId) :> CogniteSdk.Types.Common.Identity
+        | CaseId identity -> IdentityId(identity) :> CogniteSdk.Identity
+        | CaseExternalId externalId -> IdentityExternalId(externalId) :> CogniteSdk.Identity
 
 
 type Numeric =
@@ -124,7 +124,9 @@ module Context =
         if not (Map.containsKey "hasAppId" extra)
         then failwith "Client must set the Application ID (appId)."
 
-        sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
+        let a = sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
+        printfn "URL: %A" a
+        a
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version

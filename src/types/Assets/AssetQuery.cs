@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Assets
+namespace CogniteSdk.Assets
 {
     public class AssetQuery
     {

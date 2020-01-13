@@ -8,16 +8,12 @@ using System.Threading.Tasks;
 using Oryx;
 using Oryx.Cognite;
 
-using CogniteSdk.Types.Assets;
+using CogniteSdk.Assets;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
-using AssetItemsReadDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetReadDto>;
-using AssetItemsWriteDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Assets.AssetWriteDto>;
-using AssetItemsWithCursorReadDto = CogniteSdk.Types.Common.ResourceItemsWithCursor<CogniteSdk.Types.Assets.AssetReadDto>;
-using AssetItemsUpdateDto = CogniteSdk.Types.Common.ResourceItems<CogniteSdk.Types.Common.UpdateItem<CogniteSdk.Types.Assets.AssetUpdateDto>>;
 
 
-namespace CogniteSdk
+namespace CogniteSdk.Resources
 {
     /// <summary>
     /// Contains all asset methods.
@@ -26,6 +22,10 @@ namespace CogniteSdk
     {
         private readonly HttpContext _ctx;
 
+        /// <summary>
+        /// Will only be instantiated by the client.
+        /// </summary>
+        /// <param name="ctx">Context to use for the request.</param>
         internal Assets(HttpContext ctx)
         {
             _ctx = ctx;
@@ -37,13 +37,13 @@ namespace CogniteSdk
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<AssetItemsWithCursorReadDto> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<AssetReadDto>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
             var ctx = Context.setCancellationToken(token, this._ctx);
-            var req = Oryx.Cognite.Assets.list<AssetItemsWithCursorReadDto>(query);
+            var req = Oryx.Cognite.Assets.list<ItemsWithCursor<AssetReadDto>>(query);
 
             var result = await Handler.runAsync(req, ctx);
-            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsWithCursorReadDto>(result.ErrorValue);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<ItemsWithCursor<AssetReadDto>>(result.ErrorValue);
         }
 
         /// <summary>
@@ -52,13 +52,13 @@ namespace CogniteSdk
         /// <param name="assets">Assets to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<AssetItemsReadDto> CreateAsync(AssetItemsWriteDto assets, CancellationToken token = default)
+        public async Task<ItemsWithoutCursor<AssetReadDto>> CreateAsync(ItemsWithoutCursor<AssetWriteDto> assets, CancellationToken token = default)
         {
             var ctx = Context.setCancellationToken(token, _ctx);
-            var req = Oryx.Cognite.Assets.create<AssetItemsReadDto>(assets);
+            var req = Oryx.Cognite.Assets.create<ItemsWithoutCursor<AssetReadDto>>(assets);
 
             var result = await Handler.runAsync(req, ctx);
-            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<ItemsWithoutCursor<AssetReadDto>>(result.ErrorValue);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace CogniteSdk
             var result = await Handler.runAsync(req, ctx);
             return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetReadDto>(result.ErrorValue);
         }
-        
+
         /// <summary>
         /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
         /// </summary>
@@ -92,35 +92,35 @@ namespace CogniteSdk
                 HandlersModule.raiseError<HttpResponseMessage>(result.ErrorValue);
             }
         }
-        
+
         /// <summary>
         /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<AssetItemsReadDto> SearchAsync (AssetSearchQueryDto query, CancellationToken token = default )
+        public async Task<ItemsWithoutCursor<AssetReadDto>> SearchAsync (AssetSearchQueryDto query, CancellationToken token = default )
         {
             var ctx = Context.setCancellationToken(token, _ctx);
-            var req = Oryx.Cognite.Assets.search<AssetItemsReadDto>(query);
+            var req = Oryx.Cognite.Assets.search<ItemsWithoutCursor<AssetReadDto>>(query);
 
             var result = await Handler.runAsync(req, ctx);
-            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<ItemsWithoutCursor<AssetReadDto>>(result.ErrorValue);
         }
-        
+
         /// <summary>
         /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
         /// </summary>
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<AssetItemsReadDto> UpdateAsync (AssetItemsUpdateDto query, CancellationToken token = default )
+        public async Task<ItemsWithoutCursor<AssetReadDto>> UpdateAsync (ItemsWithoutCursor<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
         {
             var ctx = Context.setCancellationToken(token, _ctx);
-            var req = Oryx.Cognite.Assets.update<AssetItemsReadDto>(query);
+            var req = Oryx.Cognite.Assets.update<ItemsWithoutCursor<AssetReadDto>>(query);
 
             var result = await Handler.runAsync(req, ctx);
-            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<AssetItemsReadDto>(result.ErrorValue);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<ItemsWithoutCursor<AssetReadDto>>(result.ErrorValue);
         }
     }
 }

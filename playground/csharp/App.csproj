@@ -3,11 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>7.1</LangVersion>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\src\types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\src\core\Core.fsproj" />
+    <ProjectReference Include="..\..\src\sdk\CogniteSdk.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.Types.Common
+namespace CogniteSdk
 {
     [JsonConverter(typeof(ErrorValue))]
     public abstract class ErrorValue {}
@@ -88,5 +88,4 @@ namespace CogniteSdk.Types.Common
         {
         }
     }
-
 }

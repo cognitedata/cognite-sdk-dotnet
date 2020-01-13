@@ -3,6 +3,7 @@
 
 using System.Net.Http;
 using Oryx;
+using CogniteSdk;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -15,12 +16,10 @@ namespace CogniteSdk
     /// </summary>
     public class Client
     {
-        private HttpContext Ctx { get; set; }
-
         /// <summary>
         /// Client Assets extension methods
         /// </summary>
-        public Assets Assets { get; }
+        public Resources.Assets Assets { get; }
 
         // Client TimeSeries extension methods
         //public TimeSeries.ClientExtension TimeSeries { get; }
@@ -43,16 +42,9 @@ namespace CogniteSdk
         /// /// <param name="context">Context to use for this session.</param>
         private Client(HttpContext context)
         {
-            Ctx = setUrlBuilder(context);
-        }
+            var ctx = setUrlBuilder(context);
 
-        /// <summary>
-        /// Client for making requests to the API.
-        /// </summary>
-        /// <param name="httpClient">HTTP client to use for making the actual requests.</param>
-        public Client(HttpClient httpClient)
-        {
-            Ctx = Context.setHttpClient(httpClient, Ctx);
+            Assets = new Resources.Assets(ctx);
         }
 
         /// <summary>
@@ -68,7 +60,7 @@ namespace CogniteSdk
             /// <param name="httpClient">The HttpClient to use.</param>
             public Builder(HttpClient httpClient)
             {
-                this._context = Context.setHttpClient(httpClient, _context);
+                _context = Context.setHttpClient(httpClient, _context);
             }
 
             /// <summary>
@@ -93,7 +85,7 @@ namespace CogniteSdk
             /// <param name="apiKey">API key</param>
             public Builder SetApiKey(string apiKey)
             {
-                return this.AddHeader("api-key", apiKey);
+                return AddHeader("api-key", apiKey);
             }
 
             /// <summary>

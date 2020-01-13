@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using CogniteSdk.Types.Common;
+using CogniteSdk;
 
-namespace CogniteSdk.Types.Assets
+namespace CogniteSdk.Assets
 {
     public class AssetDeleteDto
     {

@@ -10,15 +10,10 @@ open Oryx.SystemTextJson.ResponseReader
 open Oryx.Cognite
 open Oryx.SystemTextJson
 
-open CogniteSdk.Types.Assets
-open CogniteSdk.Types
+open CogniteSdk
+open CogniteSdk.Assets
 
 // Various asset item types
-type AssetItemsWithCursorReadDto = Common.ResourceItemsWithCursor<AssetReadDto>
-type AssetItemsReadDto = Common.ResourceItems<AssetReadDto>
-type AssetItemsWriteDto = Common.ResourceItems<AssetWriteDto>
-type AssetItemsIdentityWriteDto = Common.ResourceItems<Common.Identity>
-type AssetItemsUpdateDto = Common.ResourceItems<Common.UpdateItem<AssetUpdateDto>>
 
 [<RequireQualifiedAccess>]
 module Assets =
@@ -39,14 +34,14 @@ module Assets =
         >=> setResource url
         >=> fetch
         >=> withError decodeError
-        >=> json None
+        >=> json (Some jsonOptions)
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, AssetItemsWithCursorReadDto, 'a> =
+    let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
         let url = Url +/ "list"
 
         POST
@@ -57,11 +52,16 @@ module Assets =
         >=> withError decodeError
         >=> json (Some jsonOptions)
 
-    let create (assets: AssetItemsWriteDto) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
+    /// <summary>
+    /// Create new assets in the given project.
+    /// </summary>
+    /// <param name="assets">The assets to create.</param>
+    /// <returns>List of created assets.</returns>
+    let create (assets: ItemsWithoutCursor<AssetWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setContent (new JsonPushStreamContent<AssetItemsWriteDto>(assets))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<AssetWriteDto>>(assets))
         >=> fetch
         >=> withError decodeError
         >=> json (Some jsonOptions)
@@ -78,7 +78,7 @@ module Assets =
         POST
         >=> setVersion V10
         >=> setContent (new JsonPushStreamContent<AssetDeleteDto>(assets))
-        >=> setResource  url
+        >=> setResource url
         >=> fetch
         >=> withError decodeError
 
@@ -89,14 +89,14 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Common.Identity seq) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
-        let request = AssetItemsIdentityWriteDto(Items = ids)
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+        let request = ItemsWithoutCursor<Identity>(Items = ids)
         let url = Url +/ "byids"
 
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<AssetItemsIdentityWriteDto>(request))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request))
         >=> fetch
         >=> withError decodeError
         >=> json (Some jsonOptions)
@@ -108,7 +108,7 @@ module Assets =
     /// <param name="query">Asset search query.</param>
     ///
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: AssetSearchQueryDto) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a> =
+    let search (query: AssetSearchQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
         let url = Url +/ "search"
 
         POST
@@ -124,13 +124,13 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let update (query: AssetItemsUpdateDto) : HttpHandler<HttpResponseMessage, AssetItemsReadDto, 'a>  =
+    let update (query: ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a>  =
         let url = Url +/ "update"
 
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<AssetItemsUpdateDto>(query))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>>(query))
         >=> fetch
         >=> withError decodeError
         >=> json (Some jsonOptions)

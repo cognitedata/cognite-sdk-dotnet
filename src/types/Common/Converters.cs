@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.Types.Common
+namespace CogniteSdk
 {
 
     public class ErrorConverter : JsonConverter<ErrorValue>

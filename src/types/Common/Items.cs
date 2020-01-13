@@ -3,13 +3,13 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Common
+namespace CogniteSdk
 {
     /// <summary>
-    /// Holds several resource items.
+    /// Holds several items. But don't support paging, i.e no cursor.
     /// </summary>
     /// <typeparam name="T">A resource type that is serializable.</typeparam>
-    public class ResourceItems<T>
+    public class ItemsWithoutCursor<T>
     {
         /// <summary>
         /// Resource items of type T.
@@ -18,10 +18,10 @@ namespace CogniteSdk.Types.Common
     }
 
     /// <summary>
-    /// Resource items with a next cursor.
+    /// Items with a next cursor.
     /// </summary>
     /// <typeparam name="T">Resource type that is serializable.</typeparam>
-    public class ResourceItemsWithCursor<T>
+    public class ItemsWithCursor<T>
     {
         /// <summary>
         /// Resource items of type T.
