@@ -1,17 +1,10 @@
-using System.Collections.Generic;
-
-using CogniteSdk;
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
 
 namespace CogniteSdk.Assets
 {
-    public class AssetDeleteDto
+    public class AssetDeleteDto : ItemsWithoutCursor<Identity>
     {
-        /// <summary>
-        /// Sequence of IdentityId or IdentityExternalId (required).
-        /// </summary>
-        /// <value></value>
-        public IEnumerable<Identity> Items { get; set; }
-
         /// <summary>
         /// Recursively delete all asset subtrees under the specified IDs. Default: false
         /// </summary>

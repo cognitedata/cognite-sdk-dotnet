@@ -104,7 +104,7 @@ namespace csharp {
 
             using var handler = new HttpClientHandler
             {
-                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; }
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
 
             using var httpClient = new HttpClient(handler);

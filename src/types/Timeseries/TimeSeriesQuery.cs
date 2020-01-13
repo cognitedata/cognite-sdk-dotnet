@@ -1,16 +1,14 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
-
-namespace CogniteSdk.Assets
+namespace CogniteSdk.TimeSeries
 {
-    public class AssetQuery
+    public class TimeSeriesQuery
     {
         /// <summary>
-        /// Filter on assets with strict matching.
+        /// Filter on timeseries with strict matching.
         /// </summary>
-        public AssetFilterDto Filter { get; set; }
+        public TimeSeriesFilterDto Filter { get; set; }
 
         /// <summary>
         /// Limits the number of results to return.
@@ -21,11 +19,6 @@ namespace CogniteSdk.Assets
         /// Cursor to next result page.
         /// </summary>
         public string Cursor { get; set; }
-
-        /// <summary>
-        /// Set of aggregated properties to include.
-        /// </summary>
-        public IEnumerable<string> AggregatedProperties { get; set; }
 
         /// <summary>
         /// Splits the data set into N partitions. You need to follow the cursors within each partition in order to

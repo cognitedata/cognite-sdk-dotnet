@@ -57,11 +57,11 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (assets: ItemsWithoutCursor<AssetWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let create (items: ItemsWithoutCursor<AssetWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
         POST
         >=> setVersion V10
         >=> setResource Url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<AssetWriteDto>>(assets, jsonOptions))
+        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<AssetWriteDto>>(items, jsonOptions))
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

@@ -8,6 +8,7 @@
     <Compile Include="Error.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Assets.fs" />
+    <Compile Include="TimeSeries.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
 

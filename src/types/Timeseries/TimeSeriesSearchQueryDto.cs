@@ -3,14 +3,14 @@
 
 using CogniteSdk;
 
-namespace CogniteSdk.Assets
+namespace CogniteSdk.TimeSeries
 {
-    public class AssetSearchQueryDto
+    public class TimeSeriesSearchQueryDto
     {
         /// <summary>
         /// Filter on assets with strict matching.
         /// </summary>
-        public AssetFilterDto Filter { get; set; }
+        public TimeSeriesFilterDto Filter { get; set; }
 
         /// <summary>
         /// Limits the number of results to return.

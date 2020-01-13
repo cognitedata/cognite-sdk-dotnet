@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Timeseries
+namespace CogniteSdk.TimeSeries
 {
     /// <summary>
     /// Timeseries write dto.
