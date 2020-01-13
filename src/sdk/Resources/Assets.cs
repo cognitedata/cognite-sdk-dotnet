@@ -11,7 +11,7 @@ using Oryx.Cognite;
 using CogniteSdk.Assets;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
-
+using System.Collections.Generic;
 
 namespace CogniteSdk.Resources
 {
@@ -91,6 +91,21 @@ namespace CogniteSdk.Resources
             {
                 HandlersModule.raiseError<HttpResponseMessage>(result.ErrorValue);
             }
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
+        /// request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of assets to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<ItemsWithoutCursor<AssetReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        {
+            var ctx = Context.setCancellationToken(token, _ctx);
+            var req = Oryx.Cognite.Assets.retrieve<ItemsWithoutCursor<AssetReadDto>>(ids);
+
+            var result = await Handler.runAsync(req, ctx);
+            return result.IsOk ? result.ResultValue : HandlersModule.raiseError<ItemsWithoutCursor<AssetReadDto>>(result.ErrorValue);
         }
 
         /// <summary>

@@ -20,9 +20,12 @@ namespace CogniteSdk
         /// Client Assets extension methods
         /// </summary>
         public Resources.Assets Assets { get; }
-
-        // Client TimeSeries extension methods
-        //public TimeSeries.ClientExtension TimeSeries { get; }
+        
+        /// <summary>
+        /// Client TimeSeries extension methods.
+        /// </summary>
+        public Resources.TimeSeries TimeSeries { get; }
+        
         // Client DataPoints extension methods
         //public DataPoints.ClientExtension DataPoints { get; }
         // Client Events extension methods
@@ -45,6 +48,7 @@ namespace CogniteSdk
             var ctx = setUrlBuilder(context);
 
             Assets = new Resources.Assets(ctx);
+            TimeSeries = new Resources.TimeSeries(ctx);
         }
 
         /// <summary>

@@ -83,9 +83,8 @@ module Assets =
         >=> withError decodeError
 
     /// <summary>
-    /// Retrieves information about multiple assets in the same project.
-    /// A maximum of 1000 assets IDs may be listed per request and all
-    /// of them must be unique.
+    /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
+    /// request and all of them must be unique.
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
