@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace CogniteSdk.Types.Raw
+namespace CogniteSdk.Raw
 {
     public class RowReadDto
     {

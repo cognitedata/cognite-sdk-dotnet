@@ -5,6 +5,7 @@
 namespace Oryx.Cognite
 
 open System
+open System.Collections.Generic
 open System.Net.Http
 open System.IO
 open System.Reflection
@@ -14,6 +15,7 @@ open System.Threading.Tasks
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
+open System.Collections
 open System.Threading
 open Oryx
 open Oryx.Retry
@@ -172,7 +174,16 @@ module Handlers =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let list<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'b>, 'c> =
+    let list<'a, 'b> (query: IEnumerable<Tuple<string, string>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
+        GET
+        >=> setVersion V10
+        >=> setResource url
+        >=> addQuery (List.ofSeq query)
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let filter<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'b>, 'c> =
         let url = url +/ "list"
 
         POST
@@ -192,7 +203,7 @@ module Handlers =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let delete<'a, 'b> (items: 'a) (url: string): HttpHandler<HttpResponseMessage, EmptyResult, 'b> =
+    let delete<'a, 'b> (items: 'a) (url: string): HttpHandler<HttpResponseMessage, EmptyResponse, 'b> =
         let url = url +/ "delete"
 
         POST

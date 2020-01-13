@@ -3,12 +3,12 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Raw
+namespace CogniteSdk.Raw
 {
     /// <summary>
     /// Raw table object.
     /// </summary>
-    public class Table
+    public class TableDto
     {
         /// <summary>
         /// Name of the table. Unique in database.

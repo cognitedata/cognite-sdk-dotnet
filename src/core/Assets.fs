@@ -31,7 +31,7 @@ module Assets =
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
-        list query Url
+        filter query Url
 
     /// <summary>
     /// Create new assets in the given project.
@@ -45,9 +45,8 @@ module Assets =
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
-    /// <param name="recursive">If true, delete all children recursively.</param>
-    /// <param name="next">Async handler to use</param>
-    let delete (assets: AssetDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResult, 'a> =
+    /// <returns>Empty result.</returns>
+    let delete (assets: AssetDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete assets Url
 
     /// <summary>
@@ -62,9 +61,7 @@ module Assets =
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
     /// </summary>
-    ///
     /// <param name="query">Asset search query.</param>
-    ///
     /// <returns>List of assets matching given criteria.</returns>
     let search (query: SearchQueryDto<AssetFilterDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
         search query Url

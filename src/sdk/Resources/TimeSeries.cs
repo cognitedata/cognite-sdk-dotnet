@@ -57,9 +57,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResult> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.delete<EmptyResult>(query);
+            var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
 

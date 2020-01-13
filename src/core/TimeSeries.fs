@@ -23,7 +23,7 @@ module TimeSeries =
     /// <param name="query">The query to use.</param>
     /// <returns>List of time series matching given filters and optional cursor</returns>
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
-        list query Url
+        filter query Url
 
     /// <summary>
     /// Create one or more new timeseries.
@@ -39,7 +39,7 @@ module TimeSeries =
     /// Delete one or more timeseries.
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
-    let delete (items: TimeSeriesDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResult, 'a> =
+    let delete (items: TimeSeriesDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete items Url
 
     /// <summary>

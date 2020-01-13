@@ -68,9 +68,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResult> DeleteAsync(AssetDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(AssetDeleteDto query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.delete<EmptyResult>(query);
+            var req = Oryx.Cognite.Assets.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
