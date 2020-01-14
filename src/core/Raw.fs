@@ -24,12 +24,9 @@ module Raw =
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     let listDatabases (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<DatabaseDto>, 'a> =
-        let query = [
-            "limit", string query.Limit
-            "cursor", query.Cursor
-        ]
+        let query' = query.ToQuery();
 
-        list query Url
+        list query' Url
 
     /// <summary>
     /// Create new events in the given project.
@@ -49,12 +46,9 @@ module Raw =
 
     let listTables (database: string) (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TableDto>, 'a> =
         let url = Url +/ database +/ "tables"
-        let query = [
-            "limit", string query.Limit
-            "cursor", query.Cursor
-        ]
+        let query' = query.ToQuery()
 
-        list query url
+        list query' url
 
     let createTables (database: string) (items: ItemsWithoutCursor<TableDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<DatabaseDto>, 'a> =
         let url = Url +/ database +/ "tables"
@@ -78,4 +72,4 @@ module Raw =
     let retrieveRows (database: string) (table: string) (query: RowQueryDto): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowReadDto>, 'a> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         let query' = query.ToQuery()
-        Oryx.Cognite.Handlers.list query' url
+        list query' url

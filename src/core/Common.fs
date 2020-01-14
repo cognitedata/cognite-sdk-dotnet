@@ -174,11 +174,11 @@ module Handlers =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let list<'a, 'b> (query: IEnumerable<Tuple<string, string>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
+    let list<'a, 'b> (query: IEnumerable<ValueTuple<string, string>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
         GET
         >=> setVersion V10
         >=> setResource url
-        >=> addQuery (List.ofSeq query)
+        >=> addQuery (query |> Seq.map (fun x -> x.ToTuple()) |> List.ofSeq) 
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

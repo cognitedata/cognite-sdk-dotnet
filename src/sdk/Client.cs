@@ -3,7 +3,6 @@
 
 using System.Net.Http;
 using Oryx;
-using CogniteSdk;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -28,8 +27,10 @@ namespace CogniteSdk
         
         // Client DataPoints extension methods
         //public DataPoints.ClientExtension DataPoints { get; }
-        // Client Events extension methods
-        //public Events.ClientExtension Events { get; }
+        
+        /// Client Events extension methods
+        public Resources.Events Events { get; }
+        
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
         // Client Files extension methods
@@ -49,6 +50,7 @@ namespace CogniteSdk
 
             Assets = new Resources.Assets(ctx);
             TimeSeries = new Resources.TimeSeries(ctx);
+            Events = new Resources.Events(ctx);
         }
 
         /// <summary>

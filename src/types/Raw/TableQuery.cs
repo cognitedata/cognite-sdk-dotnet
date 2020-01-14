@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Raw
 {
-    public class DatabaseQuery : CursorQueryBase
+    public class TableQuery : CursorQueryBase
     {
     }
 }
