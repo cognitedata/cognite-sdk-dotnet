@@ -5,17 +5,12 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Events
 {
-    public class EventQuery
+    public class EventQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on assets with strict matching.
         /// </summary>
         public EventFilterDto Filter { get; set; }
-
-        /// <summary>
-        /// Limits the number of results to return.
-        /// </summary>
-        public int? Limit { get; set; }
 
         /// <summary>
         /// Sort by array of selected fields. Syntax: ["<fieldname>:asc|desc"]. Default sort order is asc with short
@@ -24,11 +19,6 @@ namespace CogniteSdk.Events
         /// elements from different partitions.
         /// </summary>
         public IEnumerable<string> Sort { get; set; }
-
-        /// <summary>
-        /// Cursor to next result page.
-        /// </summary>
-        public string Cursor { get; set; }
 
         /// <summary>
         /// Splits the data set into N partitions. You need to follow the cursors within each partition in order to

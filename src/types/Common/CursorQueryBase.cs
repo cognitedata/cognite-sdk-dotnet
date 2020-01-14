@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     public abstract class CursorQueryBase
     {

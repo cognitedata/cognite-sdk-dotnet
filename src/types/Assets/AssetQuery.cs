@@ -5,22 +5,12 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
 {
-    public class AssetQuery
+    public class AssetQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on assets with strict matching.
         /// </summary>
         public AssetFilterDto Filter { get; set; }
-
-        /// <summary>
-        /// Limits the number of results to return.
-        /// </summary>
-        public int? Limit { get; set; }
-
-        /// <summary>
-        /// Cursor to next result page.
-        /// </summary>
-        public string Cursor { get; set; }
 
         /// <summary>
         /// Set of aggregated properties to include.
