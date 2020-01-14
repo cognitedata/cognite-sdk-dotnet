@@ -9,6 +9,6 @@ namespace CogniteSdk.Types.Sequences
     {
         public long RowNumber { get; set; }
 
-        ///public IEnumerable<RowValue> Values { get; set; }
+        //public IEnumerable<RowValue> Values { get; set; }
     }
 }

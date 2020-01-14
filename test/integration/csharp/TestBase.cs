@@ -1,13 +1,15 @@
-using CogniteSdk;
-using CogniteSdk.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+
+using CogniteSdk;
+using CogniteSdk.Events;
+
 using Xunit;
 
-namespace Test.CSharp.Integration { 
+namespace Test.CSharp.Integration {
 
     public class TestFixture : IDisposable {
 
@@ -20,7 +22,6 @@ namespace Test.CSharp.Integration {
             WriteClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
 
             PopulateDataAsync();
-
         }
 
         public void Dispose() { }

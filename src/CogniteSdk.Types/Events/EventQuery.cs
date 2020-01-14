@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Events
 {
+    /// <summary>
+    /// The Event query DTO.
+    /// </summary>
     public class EventQuery : CursorQueryBase
     {
         /// <summary>
@@ -13,8 +16,8 @@ namespace CogniteSdk.Events
         public EventFilterDto Filter { get; set; }
 
         /// <summary>
-        /// Sort by array of selected fields. Syntax: ["<fieldname>:asc|desc"]. Default sort order is asc with short
-        /// syntax: ["<fieldname>"]. Filter accepts the following field names: startTime, endTime, createdTime,
+        /// Sort by array of selected fields. Syntax: ["{fieldname}:asc|desc"]. Default sort order is asc with short
+        /// syntax: ["{fieldname}"]. Filter accepts the following field names: startTime, endTime, createdTime,
         /// lastUpdatedTime. Partitions are done independently of sorting, there is no guarantee on sort order between
         /// elements from different partitions.
         /// </summary>

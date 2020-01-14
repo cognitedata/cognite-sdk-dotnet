@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Events
 {
+    /// <summary>
+    /// The Event filter DTO.
+    /// </summary>
     public class EventFilterDto
     {
         /// <summary>

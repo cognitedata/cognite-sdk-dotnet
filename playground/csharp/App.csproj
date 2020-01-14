@@ -7,8 +7,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\types\CogniteSdk.Types.csproj" />
-    <ProjectReference Include="..\..\src\core\Core.fsproj" />
-    <ProjectReference Include="..\..\src\sdk\CogniteSdk.csproj" />
+    <ProjectReference Include="..\..\src\Oryx.Cognite\Oryx.Cogntie.fsproj" />
+    <ProjectReference Include="..\..\src\CogniteSdk\CogniteSdk.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 

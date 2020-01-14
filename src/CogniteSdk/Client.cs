@@ -35,8 +35,12 @@ namespace CogniteSdk
         //public Login.ClientExtension Login  { get; }
         // Client Files extension methods
         //public Files.ClientExtension Files { get; }
-        // Client Raw extension methods
-        //public Raw.ClientExtension Raw { get; }
+        
+        /// <summary>
+        /// Client Raw extension methods
+        /// </summary>
+        public Resources.Raw Raw { get; }
+        
         // Client Sequences extension methods
         //public Sequences.ClientExtension Sequences  { get; }
 
@@ -47,10 +51,12 @@ namespace CogniteSdk
         private Client(HttpContext context)
         {
             var ctx = setUrlBuilder(context);
-
+            
+            // Setup extension methods.
             Assets = new Resources.Assets(ctx);
             TimeSeries = new Resources.TimeSeries(ctx);
             Events = new Resources.Events(ctx);
+            Raw = new Resources.Raw(ctx);
         }
 
         /// <summary>

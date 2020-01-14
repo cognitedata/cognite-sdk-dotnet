@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using CogniteSdk.Assets;
-using System.Threading.Tasks;
-using CogniteSdk;
 using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 using Xunit;
+
+using CogniteSdk.Assets;
+using CogniteSdk;
 
 namespace Test.CSharp.Integration {
 

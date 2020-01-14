@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Events
 {
+    /// <summary>
+    /// The Event read DTO.
+    /// </summary>
     public class EventReadDto
     {
         /// <summary>

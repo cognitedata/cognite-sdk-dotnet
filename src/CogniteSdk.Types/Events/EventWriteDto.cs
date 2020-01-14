@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Events
 {
+    /// <summary>
+    /// The event write DTO.
+    /// </summary>
     public class EventWriteDto
     {
         /// <summary>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <PackageId>CogniteSdk.Types</PackageId>
+    <Author>Cognite AS</Author>
+    <Company>Cognite AS</Company>
+    <Copyright>Cognite AS</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+  </PropertyGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

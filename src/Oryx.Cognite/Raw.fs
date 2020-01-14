@@ -54,7 +54,6 @@ module Raw =
         let query' = query.ToQuery()
         list query' url
 
-
     /// <summary>
     /// Create tables in database.
     /// </summary>

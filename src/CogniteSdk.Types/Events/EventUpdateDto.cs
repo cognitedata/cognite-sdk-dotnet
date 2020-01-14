@@ -3,6 +3,9 @@ using CogniteSdk;
 
 namespace CogniteSdk.Events
 {
+    /// <summary>
+    /// The event update DTO.
+    /// </summary>
     public class EventUpdateDto
     {
         /// <summary>
@@ -10,8 +13,14 @@ namespace CogniteSdk.Events
         /// </summary>
         public Update<string> ExternalId { get; set; }
 
+        /// <summary>
+        /// Set a new value for the start time, or remove the value.
+        /// </summary>
         public Update<long> StartTime { get; set; }
-        
+
+        /// <summary>
+        /// Set a new value for the end time, or remove the value.
+        /// </summary>
         public Update<long> EndTime { get; set; }
 
         /// <summary>

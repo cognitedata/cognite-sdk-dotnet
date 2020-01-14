@@ -3,6 +3,9 @@
 
 namespace CogniteSdk.Assets
 {
+    /// <summary>
+    /// The event delete DTO.
+    /// </summary>
     public class AssetDeleteDto : ItemsWithoutCursor<Identity>
     {
         /// <summary>

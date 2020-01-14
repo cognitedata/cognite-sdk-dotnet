@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7550F7AF-8338-4505-AEC8-CC7AA2C498C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Types", "src\types\CogniteSdk.Types.csproj", "{0FE21EFC-BA48-4AA1-8444-B6B648AEDE33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Types", "src\CogniteSdk.Types\CogniteSdk.Types.csproj", "{0FE21EFC-BA48-4AA1-8444-B6B648AEDE33}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Core", "src\Core\Core.fsproj", "{71D7712C-6ED2-4E70-AEA4-54FA149149C9}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Oryx.Cogntie", "src\Oryx.Cognite\Oryx.Cognite.fsproj", "{71D7712C-6ED2-4E70-AEA4-54FA149149C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk", "src\sdk\CogniteSdk.csproj", "{970FAC7F-F3D7-411F-80C9-E18C71AC70B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk", "src\CogniteSdk\CogniteSdk.csproj", "{970FAC7F-F3D7-411F-80C9-E18C71AC70B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{D6594809-62AA-416C-AA3E-D289963F012E}"
 EndProject

@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
 {
+    /// <summary>
+    /// The asset filter DTO.
+    /// </summary>
     public class AssetFilterDto
     {
         /// <summary>
