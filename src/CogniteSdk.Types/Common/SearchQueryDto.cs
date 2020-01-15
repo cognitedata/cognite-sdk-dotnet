@@ -5,7 +5,12 @@ using CogniteSdk;
 
 namespace CogniteSdk
 {
-    public class SearchQueryDto<TFilter>
+    /// <summary>
+    /// Combined search and filter query.
+    /// </summary>
+    /// <typeparam name="TFilter">Filter type</typeparam>
+    /// <typeparam name="TSearch">Search type</typeparam>
+    public class SearchQueryDto<TFilter, TSearch>
     {
         /// <summary>
         /// Filter on items with strict matching.
@@ -20,6 +25,6 @@ namespace CogniteSdk
         /// <summary>
         /// Fulltext search for items.
         /// </summary>
-        public SearchDto Search { get; set; }
+        public TSearch Search { get; set; }
     }
 }

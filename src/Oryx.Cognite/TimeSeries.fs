@@ -57,7 +57,7 @@ module TimeSeries =
     /// </summary>
     /// <param name="query">Time series search query.</param>
     /// <returns>List of time series matching given criteria.</returns>
-    let search (query: SearchQueryDto<TimeSeriesFilterDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
+    let search (query: SearchQueryDto<TimeSeriesFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
         search query Url
 
     /// <summary>

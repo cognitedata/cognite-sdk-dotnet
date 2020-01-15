@@ -6,7 +6,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File download response with Url.
     /// </summary>
-    public class DownloadResponse
+    public class FileDownloadDto
     {
         /// <summary>
         /// Id of the file object.
