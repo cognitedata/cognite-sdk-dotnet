@@ -5,7 +5,10 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
 {
-    public class AssetQuery : CursorQueryBase
+    /// <summary>
+    /// The Asset query DTO.
+    /// </summary>
+    public class AssetQueryDto : CursorQueryBase
     {
         /// <summary>
         /// Filter on assets with strict matching.

@@ -19,39 +19,39 @@ namespace CogniteSdk
         /// Client Assets extension methods
         /// </summary>
         public Resources.Assets Assets { get; }
-        
+
         /// <summary>
         /// Client TimeSeries extension methods.
         /// </summary>
         public Resources.TimeSeries TimeSeries { get; }
-        
+
         // Client DataPoints extension methods
         //public DataPoints.ClientExtension DataPoints { get; }
-        
+
         /// Client Events extension methods
         public Resources.Events Events { get; }
-        
+
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
         // Client Files extension methods
         //public Files.ClientExtension Files { get; }
-        
+
         /// <summary>
         /// Client Raw extension methods
         /// </summary>
         public Resources.Raw Raw { get; }
-        
+
         // Client Sequences extension methods
         //public Sequences.ClientExtension Sequences  { get; }
 
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
-        /// /// <param name="context">Context to use for this session.</param>
+        /// <param name="context">Context to use for this session.</param>
         private Client(HttpContext context)
         {
             var ctx = setUrlBuilder(context);
-            
+
             // Setup extension methods.
             Assets = new Resources.Assets(ctx);
             TimeSeries = new Resources.TimeSeries(ctx);

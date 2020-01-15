@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static Oryx.Cognite.HandlersModule;
+using static Oryx.Cognite.HandlerModule;
 using CogniteSdk.TimeSeries;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;

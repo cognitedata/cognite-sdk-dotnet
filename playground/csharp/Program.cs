@@ -43,7 +43,7 @@ namespace csharp {
         }
         */
         static async Task<AssetReadDto> GetAssetsExample(Client client, string assetName) {
-            var query = new AssetQuery
+            var query = new AssetQueryDto
             {
                 Filter = new AssetFilterDto { Name = assetName }
             };

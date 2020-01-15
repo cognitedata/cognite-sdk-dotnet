@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk.Assets;
-using static Oryx.Cognite.HandlersModule;
+using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -33,7 +33,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<AssetReadDto>> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<AssetReadDto>> ListAsync(AssetQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.list<ItemsWithCursor<AssetReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);

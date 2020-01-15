@@ -7,6 +7,9 @@ using System.ComponentModel;
 
 namespace CogniteSdk.Assets
 {
+    /// <summary>
+    /// The Asset read DTO.
+    /// </summary>
     public class AssetReadDto
     {
         /// <summary>
@@ -76,14 +79,14 @@ namespace CogniteSdk.Assets
             var props = new List<string> { "{"};
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
             {
-                string name = descriptor.Name;
+                var name = descriptor.Name;
                 object value = descriptor.GetValue(this);
-                value = value == null ? "null" : value;
-                props.Add(String.Format("\t{0}={1}", name, value));
+                value ??= "null";
+                props.Add($"\t{name}={value}");
             }
             props.Add("}");
 
-            return String.Join("\n", props);
+            return string.Join("\n", props);
         }
     }
 }

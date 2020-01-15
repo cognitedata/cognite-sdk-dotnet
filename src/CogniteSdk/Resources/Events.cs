@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk.Events;
-using static Oryx.Cognite.HandlersModule;
+using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources

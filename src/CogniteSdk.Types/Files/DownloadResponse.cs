@@ -1,10 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace CogniteSdk.Types.Files
+namespace CogniteSdk.Files
 {
     /// <summary>
     /// File download response with Url.

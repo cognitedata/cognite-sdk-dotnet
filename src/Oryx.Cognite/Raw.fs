@@ -62,7 +62,7 @@ module Raw =
     /// <returns>List of created tables.</returns>
     let createTables (database: string) (items: ItemsWithoutCursor<TableDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TableDto>, 'a> =
         let url = Url +/ database +/ "tables"
-        create items Url
+        create items url
 
     /// <summary>
     /// Delete multiple tables in the same database.

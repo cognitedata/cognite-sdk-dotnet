@@ -13,10 +13,12 @@
   <ItemGroup>
     <Compile Include="Error.fs" />
     <Compile Include="Common.fs" />
+    <Compile Include="Handler.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="TimeSeries.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Raw.fs" />
+    <Compile Include="Files.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
 

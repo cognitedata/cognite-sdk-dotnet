@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Files
+namespace CogniteSdk.Files
 {
     /// <summary>
     /// File read response resource.

@@ -3,8 +3,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\types\CogniteSdk.Types.csproj" />
-    <ProjectReference Include="..\core\core.fsproj" />
+    <ProjectReference Include="..\CogniteSdk\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\Oryx.Cognite\Oryx.Cognite.fsproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common.fs" />
