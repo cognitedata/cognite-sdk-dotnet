@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk
@@ -41,8 +40,14 @@ namespace CogniteSdk
         }
     }
 
-    public class ResponseError
+    /// <summary>
+    /// The DTO for errors received from CDF.
+    /// </summary>
+    public class ResponseErrorDto
     {
+        /// <summary>
+        ///  The API error code (HTTP error code)
+        /// </summary>
         public int Code { get; set; }
         public string Message { get; set; }
 
@@ -50,9 +55,12 @@ namespace CogniteSdk
         public IEnumerable<IDictionary<string, ErrorValue>> Duplicated;
     }
 
-    public class ApiResponseError
+    /// <summary>
+    /// The DTO for errors received from CDF.
+    /// </summary>
+    public class ApiResponseErrorDto
     {
-        public ResponseError Error { get; set; }
+        public ResponseErrorDto Error { get; set; }
 
         public string RequestId { get; set; }
 
@@ -72,17 +80,45 @@ namespace CogniteSdk
         }
     }
 
+    /// <summary>
+    /// The main exception thrown by the SDK in case of errors.
+    /// </summary>
     public class ResponseException : Exception
     {
+        /// <summary>
+        /// HTTP error code.
+        /// </summary>
+        /// <value></value>
         public int Code { get; set; }
 
+        /// <summary>
+        /// Missing values.
+        /// </summary>
         public IEnumerable<IDictionary<string, ErrorValue>> Missing;
+        /// <summary>
+        /// Duplicated values.
+        /// </summary>
         public IEnumerable<IDictionary<string, ErrorValue>> Duplicated;
 
+        /// <summary>
+        /// Request ID extracted from the response header.
+        /// </summary>
+        /// <value></value>
         public string RequestId { get; set; }
 
+        /// <summary>
+        /// The response exception constructor.
+        /// </summary>
+        /// <param name="message">Error message</param>
+        /// <returns>New response exception.</returns>
         public ResponseException(string message) : base(message) {}
 
+        /// <summary>
+        /// The response exception constructor.
+        /// </summary>
+        /// <param name="message">Error message.</param>
+        /// <param name="innerException">Original exception to be stored as inner exception.</param>
+        /// <returns>New response exception.</returns>
         public ResponseException(string message, Exception innerException) : base(message, innerException) {}
     }
 }

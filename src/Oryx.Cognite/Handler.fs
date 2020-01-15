@@ -21,7 +21,7 @@ open Oryx.SystemTextJson.ResponseReader
 open CogniteSdk
 
 
-// Shadow types that pins the error type for Oryx to ResponseError
+// Shadow types for Oryx that pins the error type to ResponseError
 type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
 type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
 type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
@@ -73,26 +73,27 @@ module Handler =
         | Error error -> return raiseError error
     }
 
+    /// Decode response message into a ResponseException.
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseException>> = task {
         if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
             try
-                let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
+                let! error = JsonSerializer.DeserializeAsync<ApiResponseErrorDto>(stream, jsonOptions)
                 let _, requestId = response.Headers.TryGetValues "x-request-id"
                 match Seq.tryExactlyOne requestId with
                 | Some requestId -> error.RequestId <- requestId
                 | None -> ()
 
-                return error.ToException () |> ResponseError
+                return error.ToException () |> Oryx.ResponseError
             with
             | ex ->
                 let exn = ResponseException(response.ReasonPhrase, ex)
                 exn.Code <- int response.StatusCode
-                return ResponseError exn
+                return Oryx.ResponseError exn
         else
             let exn = ResponseException(response.ReasonPhrase)
             exn.Code <- int response.StatusCode
-            return ResponseError exn
+            return Oryx.ResponseError exn
     }
     let get<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         let url = url +/ sprintf "%d" id
