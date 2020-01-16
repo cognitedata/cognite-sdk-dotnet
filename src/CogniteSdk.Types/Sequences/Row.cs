@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Types.Sequences
+namespace CogniteSdk.Sequences
 {
     public class Row
     {

@@ -8,7 +8,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The Event query DTO.
     /// </summary>
-    public class EventQuery : CursorQueryBase
+    public class EventQueryDto : CursorQueryBase
     {
         /// <summary>
         /// Filter on assets with strict matching.

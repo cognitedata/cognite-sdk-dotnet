@@ -96,27 +96,27 @@ module Handler =
             return Oryx.ResponseError exn
     }
 
-    let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =      
+    let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        
+
     let inline getById<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         url +/ sprintf "%d" id |> get
 
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
-        let parms = 
+        let parms =
             query.ToQueryParams ()
             |> Seq.map (fun x -> x.ToTuple())
             |> List.ofSeq
-            
+
         GET
         >=> setVersion V10
         >=> setResource url
-        >=> addQuery parms 
+        >=> addQuery parms
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -132,23 +132,23 @@ module Handler =
 
     let inline list<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "list" |> post content
-        
+
     let inline search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "search" |> post content
-        
+
     let inline update<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "update" |> post content
-    
+
     let inline retrieve<'a, 'b, 'c> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
         let request = ItemsWithoutCursor<Identity>(Items = ids)
         url +/ "byids" |> post request
 
     let inline create<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         post content url
-        
+
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
-    
+
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

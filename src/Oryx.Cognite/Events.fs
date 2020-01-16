@@ -30,7 +30,7 @@ module Events =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
-    let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventReadDto>, 'a> =
+    let list (query: EventQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventReadDto>, 'a> =
         list query Url
 
     /// <summary>

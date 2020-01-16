@@ -1,4 +1,4 @@
-namespace CogniteSdk.Types.Sequences
+namespace CogniteSdk.Sequences
 {
     /// <summary>
     /// Type for datapoints in a column.

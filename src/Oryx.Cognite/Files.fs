@@ -30,16 +30,16 @@ module Files =
     /// <returns>List of files matching given filters and optional cursor</returns>
     let list (query: FileQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<FileReadDto>, 'a> =
         post query Url
-    
+
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileDownloadDto>, 'a> =
-        Url +/ "download" |> post ids 
+        Url +/ "download" |> post ids
 
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
         Url +/ "byids" |> retrieve ids
-        
+
     let search (query: SearchQueryDto<FileFilterDto, FileSearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
-        Url +/ "search" |> post query 
-        
+        Url +/ "search" |> post query
+
     let delete (files: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         Url +/ "delete" |> post files
 

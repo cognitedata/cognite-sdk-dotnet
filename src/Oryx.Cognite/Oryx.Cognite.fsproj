@@ -19,6 +19,7 @@
     <Compile Include="Events.fs" />
     <Compile Include="Raw.fs" />
     <Compile Include="Files.fs" />
+    <Compile Include="Sequences.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
 
