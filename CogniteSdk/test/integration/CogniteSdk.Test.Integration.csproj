@@ -21,7 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\sdk\CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\..\Oryx.Cognite\src\Oryx.Cognite.fsproj" />
+    <ProjectReference Include="..\..\src\CogniteSdk.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="../../shared/Common.fs" />
+    <Compile Include="../shared/Common.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Timeseries.fs" />
     <Compile Include="Datapoints.fs" />
@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Core\Core.fsproj" />
+    <ProjectReference Include="..\..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\src\Oryx.Cognite.fsproj" />
   </ItemGroup>
 
   <Import Project="..\..\..\.paket\Paket.Restore.targets" />

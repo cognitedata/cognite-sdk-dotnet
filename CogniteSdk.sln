@@ -23,9 +23,9 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "playground\fsharp\Ap
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "integration", "integration", "{7979817D-C86E-4993-9AE6-E276C93EA0B3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.CSharp.Integration", "test\integration\csharp\Test.CSharp.Integration.csproj", "{EE8D40AB-DF1B-405A-AF56-710D959D0403}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Test.Integration", "CogniteSdk\test\integration\CogniteSdk.Test.Integration.csproj", "{EE8D40AB-DF1B-405A-AF56-710D959D0403}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Test.FSharp.Integration", "test\integration\fsharp\Test.FSharp.Integration.fsproj", "{9A31A45D-AA11-4E16-9645-5D15EED67618}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Oryx.Cognite.Test.Integration", "Oryx.Cognite\test\integration\Oryx.Cognite.Test.Integration.fsproj", "{9A31A45D-AA11-4E16-9645-5D15EED67618}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,8 +146,6 @@ Global
 		{0C33C8B5-4AEB-4164-A6FF-02E452F00F65} = {8C9B6594-D6BC-47A2-8AA9-F0A7035E5D48}
 		{7DB1936B-CE7A-4449-9853-F0E95001D351} = {8C9B6594-D6BC-47A2-8AA9-F0A7035E5D48}
 		{7979817D-C86E-4993-9AE6-E276C93EA0B3} = {D6594809-62AA-416C-AA3E-D289963F012E}
-		{EE8D40AB-DF1B-405A-AF56-710D959D0403} = {7979817D-C86E-4993-9AE6-E276C93EA0B3}
-		{9A31A45D-AA11-4E16-9645-5D15EED67618} = {7979817D-C86E-4993-9AE6-E276C93EA0B3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {30342030-1874-42CA-94C9-897C12C02FEB}
