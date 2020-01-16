@@ -4,9 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace CogniteSdk
 {
-
+    /// <summary>
+    /// Converts ErrorValue values from JSON to LongValue, DoubleValue or StringValue.
+    /// </summary>
     public class ErrorConverter : JsonConverter<ErrorValue>
     {
+        /// <summary>
+        /// Produces error values from the JSON input.
+        /// </summary>
+        /// <returns>ErrorValue value.</returns>
         public override ErrorValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
@@ -28,6 +34,9 @@ namespace CogniteSdk
             }
         }
 
+        /// <summary>
+        /// Not in use. We don't write any error values.
+        /// </summary>
         public override void Write(Utf8JsonWriter writer, ErrorValue value, JsonSerializerOptions options)
         {
             throw new NotImplementedException();

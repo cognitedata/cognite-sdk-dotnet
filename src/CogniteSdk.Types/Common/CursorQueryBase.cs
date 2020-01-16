@@ -5,7 +5,10 @@ using System.Collections.Generic;
 
 namespace CogniteSdk
 {
-    public abstract class CursorQueryBase
+    /// <summary>
+    /// A base class for queries with cursor and limits.
+    /// </summary>
+    public abstract class CursorQueryBase : IQueryParams
     {
         /// <summary>
         /// Limits the number of results to return.
@@ -21,7 +24,7 @@ namespace CogniteSdk
         /// Convert query class to sequence of query parameter tuples.
         /// </summary>
         /// <returns>Key/value tuple sequence of all properties set in the query object.</returns>
-        public List<(string, string)> ToQuery()
+        public List<(string, string)> ToQueryParams()
         {
             var list = new List<(string, string)>();
             if (Limit.HasValue)

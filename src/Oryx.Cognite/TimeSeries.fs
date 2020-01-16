@@ -23,7 +23,7 @@ module TimeSeries =
     /// <param name="query">The query to use.</param>
     /// <returns>List of time series matching given filters and optional cursor</returns>
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
-        filter query Url
+        list query Url
 
     /// <summary>
     /// Create one or more new timeseries.

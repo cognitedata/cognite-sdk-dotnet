@@ -23,7 +23,7 @@ module Events =
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
     let get (eventId: int64) : HttpHandler<HttpResponseMessage, EventReadDto, 'a> =
-        get eventId Url
+        getById eventId Url
 
     /// <summary>
     /// Retrieves list of events matching filter, and a cursor if given limit is exceeded
@@ -31,7 +31,7 @@ module Events =
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventReadDto>, 'a> =
-        filter query Url
+        list query Url
 
     /// <summary>
     /// Create new events in the given project.

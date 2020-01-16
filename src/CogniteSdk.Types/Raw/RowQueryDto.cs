@@ -26,9 +26,9 @@ namespace CogniteSdk.Raw
         /// </summary>
         public long? MaxLastUpdatedTime { get; set; }
 
-        public new List<(string, string)> ToQuery()
+        public new List<(string, string)> ToQueryParams()
         {
-            var list = base.ToQuery();
+            var list = base.ToQueryParams();
             if (Columns != null)
                 list.Add(("columns", Columns));
             if (MinLastUpdatedTime.HasValue)

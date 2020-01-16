@@ -95,90 +95,60 @@ module Handler =
             exn.Code <- int response.StatusCode
             return Oryx.ResponseError exn
     }
-    let get<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        let url = url +/ sprintf "%d" id
 
+    let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =      
         GET
         >=> setVersion V10
         >=> setResource url
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        
+    let inline getById<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
+        url +/ sprintf "%d" id |> get
 
-    let list<'a, 'b> (query: IEnumerable<ValueTuple<string, string>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
+    let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
+        let parms = 
+            query.ToQueryParams ()
+            |> Seq.map (fun x -> x.ToTuple())
+            |> List.ofSeq
+            
         GET
         >=> setVersion V10
         >=> setResource url
-        >=> addQuery (query |> Seq.map (fun x -> x.ToTuple()) |> List.ofSeq)
+        >=> addQuery parms 
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
 
-    let filter<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'b>, 'c> =
-        let url = url +/ "list"
-
+    let post<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<'a>(query, jsonOptions))
+        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
 
-    let create<'a, 'b, 'c> (items: ItemsWithoutCursor<'a>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<'a>>(items, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-
-    let delete<'a, 'b> (items: 'a) (url: string): HttpHandler<HttpResponseMessage, EmptyResponse, 'b> =
-        let url = url +/ "delete"
-
-        POST
-        >=> setVersion V10
-        >=> setContent (new JsonPushStreamContent<'a>(items))
-        >=> setResource url
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-
-    let retrieve<'a, 'b, 'c> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
+    let inline list<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        url +/ "list" |> post content
+        
+    let inline search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        url +/ "search" |> post content
+        
+    let inline update<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        url +/ "update" |> post content
+    
+    let inline retrieve<'a, 'b, 'c> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
         let request = ItemsWithoutCursor<Identity>(Items = ids)
-        let url = url +/ "byids"
+        url +/ "byids" |> post request
 
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<Identity>>(request, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-
-    let search<'a, 'b, 'c> (query: 'a) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
-        let url = url +/ "search"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<'a>(query, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-
-    let update<'a, 'b, 'c> (query: ItemsWithoutCursor<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c>  =
-        let url = url +/ "update"
-
-        POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (new JsonPushStreamContent<ItemsWithoutCursor<UpdateItem<'a>>>(query, jsonOptions))
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-
+    let inline create<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        post content url
+        
+    let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        url +/ "delete" |> post content
+    
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

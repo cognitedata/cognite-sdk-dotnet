@@ -24,8 +24,7 @@ module Raw =
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     let listDatabases (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<DatabaseDto>, 'a> =
-        let query' = query.ToQuery();
-        list query' Url
+        getWithQuery query Url
 
     /// <summary>
     /// Create new databases in the given project.
@@ -50,9 +49,8 @@ module Raw =
     /// <param name="query">The query with optional limit and cursor.</param>
     /// <returns>List of tables.</returns>
     let listTables (database: string) (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TableDto>, 'a> =
-        let url = Url +/ database +/ "tables"
-        let query' = query.ToQuery()
-        list query' url
+        Url +/ database +/ "tables/list"
+        |> getWithQuery query
 
     /// <summary>
     /// Create tables in database.
@@ -61,8 +59,7 @@ module Raw =
     /// <param name="items">The tables to create.</param>
     /// <returns>List of created tables.</returns>
     let createTables (database: string) (items: ItemsWithoutCursor<TableDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TableDto>, 'a> =
-        let url = Url +/ database +/ "tables"
-        create items url
+        Url +/ database +/ "tables" |> post items
 
     /// <summary>
     /// Delete multiple tables in the same database.
@@ -70,8 +67,7 @@ module Raw =
     /// <param name="items">The list of tables to delete.</param>
     /// <returns>Empty result.</returns>
     let deleteTables (database: string) (items: TableDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        let url = Url +/ database +/ "tables/"
-        delete items url
+        Url +/ database +/ "tables/delete" |> post items
 
     /// <summary>
     /// Retrieve rows from a table.
@@ -81,6 +77,5 @@ module Raw =
     /// <param name="query">The Row query.</param>
     /// <returns>The retrieved rows.</returns>
     let retrieveRows (database: string) (table: string) (query: RowQueryDto): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowReadDto>, 'a> =
-        let url = Url +/ database +/ "tables" +/ table +/ "rows"
-        let query' = query.ToQuery()
-        list query' url
+        Url +/ database +/ "tables" +/ table +/ "rows" 
+        |> getWithQuery query

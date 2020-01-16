@@ -23,7 +23,7 @@ module Assets =
     /// <param name="assetId">The id of the asset to get.</param>
     /// <returns>Asset with the given id.</returns>
     let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
-        get assetId Url
+        getById assetId Url
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -31,7 +31,7 @@ module Assets =
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let list (query: AssetQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
-        filter query Url
+        list query Url 
 
     /// <summary>
     /// Create new assets in the given project.

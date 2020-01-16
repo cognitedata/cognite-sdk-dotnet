@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Raw.deleteDatabases<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// List tables in database.
         /// </summary>
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Raw.listTables<ItemsWithCursor<TableDto>>(database, query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// List tables in database.
         /// </summary>
@@ -100,7 +100,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Raw.deleteTables<EmptyResponse>(database, query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// Retrieve rows from a table.
         /// </summary>

@@ -41,7 +41,8 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The DTO for errors received from CDF.
+    /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code as we will
+    /// convert it directly to a ResponseException.
     /// </summary>
     public class ResponseErrorDto
     {
@@ -49,6 +50,10 @@ namespace CogniteSdk
         ///  The API error code (HTTP error code)
         /// </summary>
         public int Code { get; set; }
+
+        /// <summary>
+        /// The error message.
+        /// </summary>
         public string Message { get; set; }
 
         public IEnumerable<IDictionary<string, ErrorValue>> Missing;
@@ -56,7 +61,8 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The DTO for errors received from CDF.
+    /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code as we will
+    /// convert it directly to a ResponseException.
     /// </summary>
     public class ApiResponseErrorDto
     {

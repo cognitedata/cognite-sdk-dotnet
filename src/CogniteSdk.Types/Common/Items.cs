@@ -18,6 +18,10 @@ namespace CogniteSdk
         /// </summary>
         public IEnumerable<T> Items { get; set; }
 
+        /// <summary>
+        /// Returns a user friendly string for printing.
+        /// </summary>
+        /// <returns>String representation of the items.</returns>
         public override string ToString()
         {
             var props = new List<string>();
@@ -46,6 +50,10 @@ namespace CogniteSdk
         /// </summary>
         public string NextCursor { get; set; }
 
+        /// <summary>
+        /// Returns a user friendly string for printing.
+        /// </summary>
+        /// <returns>String representation of the items.</returns>
         public override string ToString()
         {
             var props = new List<string>();

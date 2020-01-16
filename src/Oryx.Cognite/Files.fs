@@ -20,7 +20,7 @@ module Files =
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
     let get (fileId: int64) : HttpHandler<HttpResponseMessage, FileReadDto, 'a> =
-        get fileId Url
+        Url +/ sprintf "%d" fileId |> get
 
     /// <summary>
     /// Retrieves list of files matching filter, and a cursor if given limit is exceeded.
@@ -29,19 +29,18 @@ module Files =
     /// <param name="filters">Search filters</param>
     /// <returns>List of files matching given filters and optional cursor</returns>
     let list (query: FileQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<FileReadDto>, 'a> =
-        filter query Url
-
+        post query Url
+    
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileDownloadDto>, 'a> =
-        Url +/ "download"
-        |> retrieve ids 
+        Url +/ "download" |> post ids 
 
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
-        retrieve ids Url
+        Url +/ "byids" |> retrieve ids
         
     let search (query: SearchQueryDto<FileFilterDto, FileSearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
-        search query Url
+        Url +/ "search" |> post query 
         
     let delete (files: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete files Url
+        Url +/ "delete" |> post files
 
 
