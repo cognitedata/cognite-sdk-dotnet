@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageId>Oryx.Cognite</PackageId>
+    <PackageId>CogniteSdk</PackageId>
     <Author>Cognite AS</Author>
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
@@ -11,20 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Error.fs" />
-    <Compile Include="Common.fs" />
-    <Compile Include="Handler.fs" />
-    <Compile Include="Assets.fs" />
-    <Compile Include="TimeSeries.fs" />
-    <Compile Include="Events.fs" />
-    <Compile Include="Raw.fs" />
-    <Compile Include="Files.fs" />
-    <Compile Include="Sequences.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../CogniteSdk.Types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\Oryx.Cognite/src\Oryx.Cognite.fsproj" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
