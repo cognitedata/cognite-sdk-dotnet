@@ -9,6 +9,7 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open System.Collections.Generic
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Assets
 
@@ -73,6 +74,6 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let update (query: ItemsWithoutCursor<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a>  =
         update query Url
 

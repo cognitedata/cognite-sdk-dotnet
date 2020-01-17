@@ -33,7 +33,7 @@ namespace CogniteSdk.Sequences
         /// </summary>
         public IEnumerable<Identity> RootAssetIds { get; set; }
 
-        // <summary>
+        /// <summary>
         /// Only include assets in subtrees rooted at the specified assets (including the roots given). If the total
         /// size of the given subtrees exceeds 100,000 assets, an error will be returned.
         /// </summary>

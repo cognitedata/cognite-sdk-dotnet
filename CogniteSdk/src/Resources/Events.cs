@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -74,6 +75,7 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(req, _ctx, token);
         }
 
+        #region Retrieve overloads
         /// <summary>
         /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
         /// request and all of them must be unique.
@@ -85,6 +87,31 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Events.retrieve<IEnumerable<EventReadDto>>(ids);
             return await runUnsafeAsync(req, _ctx, token);
         }
+        
+        /// <summary>
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
+        /// request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of event internal ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            var req = internalIds.Select(Identity.Id);
+            return await RetrieveAsync(req, token);
+        }
+        
+        /// <summary>
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
+        /// request and all of them must be unique.
+        /// </summary>
+        /// <param name="externalIds">The list of event external ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var req = externalIds.Select(Identity.ExternalId);
+            return await RetrieveAsync(req, token);
+        }
+        #endregion
 
         /// <summary>
         /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -104,9 +131,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<ItemsWithoutCursor<EventReadDto>> UpdateAsync (ItemsWithoutCursor<UpdateItem<EventUpdateDto>> query, CancellationToken token = default )
+        public async Task<IEnumerable<EventReadDto>> UpdateAsync (IEnumerable<UpdateItem<EventUpdateDto>> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Events.update<ItemsWithoutCursor<EventReadDto>>(query);
+            var req = Oryx.Cognite.Events.update<IEnumerable<EventReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
     }

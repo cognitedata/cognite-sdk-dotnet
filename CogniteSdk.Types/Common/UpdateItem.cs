@@ -4,7 +4,9 @@
 namespace CogniteSdk
 {
     public abstract class UpdateItem<TUpdate> {}
-    public class UpdateById<TUpdate> : UpdateItem<TUpdate> {
+    
+    public class UpdateById<TUpdate> : UpdateItem<TUpdate> 
+    { 
         public TUpdate Update { get; set; }
 
         /// <summary>

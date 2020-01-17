@@ -34,7 +34,7 @@ namespace CogniteSdk
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
         // Client Files extension methods
-        //public Files.ClientExtension Files { get; }
+        //public Resources.Files Files { get; }
 
         /// <summary>
         /// Client Raw extension methods
@@ -42,7 +42,7 @@ namespace CogniteSdk
         public Resources.Raw Raw { get; }
 
         // Client Sequences extension methods
-        //public Sequences.ClientExtension Sequences  { get; }
+        public Resources.Sequences Sequences  { get; }
 
         /// <summary>
         /// Client for making requests to the API.
@@ -57,6 +57,7 @@ namespace CogniteSdk
             TimeSeries = new Resources.TimeSeries(ctx);
             Events = new Resources.Events(ctx);
             Raw = new Resources.Raw(ctx);
+            Sequences = new Resources.Sequences(ctx);
         }
 
         /// <summary>

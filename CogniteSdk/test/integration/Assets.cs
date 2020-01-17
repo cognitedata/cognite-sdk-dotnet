@@ -113,19 +113,19 @@ namespace Test.CSharp.Integration {
             // Arrange
             var numOfAssets = 10;
             var id = 6687602007296940;
-            var options = new List<AssetQuery>() {
-                AssetQuery.Limit(numOfAssets)
-            };
-            var filter = new List<AssetFilter>() {
-                AssetFilter.RootIds(new List<Identity>() { Identity.Id(id) })
+            var query = new AssetQueryDto() {
+                Limit = numOfAssets,
+                Filter = new AssetFilterDto() {
+                    RootIds = new List<Identity>() { Identity.Id(id) }
+                }
             };
 
             // Act
-            var res = await ReadClient.Assets.ListAsync(options, filter);
+            var res = await ReadClient.Assets.ListAsync(query);
 
             // Assert
             var resCount = res.Items.Count();
-            Assert.True(numOfAssets == resCount, $"Expected {options.Count} assets but got {resCount}");
+            Assert.True(numOfAssets == resCount, $"Expected {query.Limit} assets but got {resCount}");
         }
 
         [Fact]
@@ -133,15 +133,20 @@ namespace Test.CSharp.Integration {
         public async Task CreateAndDeleteAssetWorkAsExpectedAsync() {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
-            var newAsset = new AssetEntity();
-            newAsset.ExternalId = externalIdString;
-            newAsset.Name = "Create Assets c# sdk test";
-            newAsset.Description = "Just a test";
-
+            var newAsset = new AssetWriteDto
+            {
+                ExternalId = externalIdString, 
+                Name = "Create Assets c# sdk test", 
+                Description = "Just a test"
+            };
+            var deletes = new AssetDeleteDto
+            {
+                Items = new List<Identity>() {Identity.ExternalId(externalIdString)}
+            };
 
             // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetEntity>() { newAsset });
-            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString }, false);
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset });
+            await WriteClient.Assets.DeleteAsync(deletes);
 
             // Assert
             var resCount = res.Count();
@@ -156,9 +161,14 @@ namespace Test.CSharp.Integration {
             var id = 0;
             var caughtException = false;
 
+            var query = new AssetDeleteDto
+            {
+                Items = new List<Identity> { Identity.Id(id) }
+            };
+            
             // Act
             try {
-                await WriteClient.Assets.DeleteAsync(new List<long>() { id }, false);
+                await WriteClient.Assets.DeleteAsync(query);
             } catch (ResponseException) {
                 caughtException = true;
             }
@@ -168,36 +178,47 @@ namespace Test.CSharp.Integration {
         }
 
         [Fact]
-        [Trait("Description", "Deleting an asset that exist fails with ResponseException")]
+        [Trait("Description", "Updating asset performs expected changes")]
         public async Task UpdatedAssetsPerformsExpectedChangesAsync() {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
-            var newAsset = new AssetEntity();
             var newMetadata = new Dictionary<string, string>() {
                 { "key1", "value1" },
                 { "key2", "value2" }
             };
-            newAsset.ExternalId = externalIdString;
-            newAsset.Name = "Update Assets c# sdk test";
-            newAsset.Description = "Just a test";
-            newAsset.MetaData = new Dictionary<string, string>() {
-                { "oldkey1", "oldvalue1" },
-                { "oldkey2", "oldvalue2" }
+            var newAsset = new AssetWriteDto
+            {
+                ExternalId = externalIdString,
+                Name = "Update Assets c# sdk test",
+                Description = "Just a test",
+                Metadata = new Dictionary<string, string>() {{"oldkey1", "oldvalue1"}, {"oldkey2", "oldvalue2"}}
             };
-
             var newName = "Updated update asset";
 
-            // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetEntity>() { newAsset });
-            await WriteClient.Assets.UpdateAsync(new List<(Identity, IEnumerable<AssetUpdate>)>() {
-                (Identity.ExternalId(externalIdString), new List<AssetUpdate>() {
-                    AssetUpdate.SetName(newName),
-                    AssetUpdate.ChangeMetaData(newMetadata, new List<string>() { "oldkey1" })
-                })
-            });
+            var update = new List<UpdateItem<AssetUpdateDto>>()
+            {
+                new UpdateByExternalId<AssetUpdateDto>()
+                {
+                    ExternalId = externalIdString,
+                    Update = new AssetUpdateDto()
+                    {
+                        Name = new SetUpdate<string> { Set = newName },
+                        Metadata = new SetUpdate<IDictionary<string, string>>
+                        {
+                            Set = newMetadata
+                        }
+                    }
+                }
+            };
+            
 
-            var getRes = await WriteClient.Assets.GetByIdsAsync(new List<string>() { externalIdString });
-            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString }, false);
+
+            // Act
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset });
+            await WriteClient.Assets.UpdateAsync(update);
+
+            var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });
+            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert
             var resCount = getRes.Count();
@@ -205,8 +226,8 @@ namespace Test.CSharp.Integration {
             var resAsset = getRes.First();
             Assert.True(externalIdString == resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
             Assert.True(newName == resAsset.Name, $"Expected the Asset name to update to '{newName}' but was '{resAsset.Name}'");
-            Assert.True(resAsset.MetaData.ContainsKey("key1") && resAsset.MetaData.ContainsKey("key2"), "Asset wasnt update with new metadata values");
-            Assert.True(resAsset.MetaData.ContainsKey("oldkey2") && !resAsset.MetaData.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
+            Assert.True(resAsset.Metadata.ContainsKey("key1") && resAsset.Metadata.ContainsKey("key2"), "Asset wasnt update with new metadata values");
+            Assert.True(resAsset.Metadata.ContainsKey("oldkey2") && !resAsset.Metadata.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
         }
     }
 }

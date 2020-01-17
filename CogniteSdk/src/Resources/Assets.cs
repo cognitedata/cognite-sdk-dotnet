@@ -64,17 +64,53 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(req, _ctx, token);
         }
 
+        #region Delete overloads
         /// <summary>
         /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
         /// </summary>
-        /// <param name="query">The list of assets to delete.</param>
+        /// <param name="query">The query of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(AssetDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
+        
+        /// <summary>
+        /// Delete multiple assets in the same project by identity items.
+        /// </summary>
+        /// <param name="items">The list of assets identities to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> items, CancellationToken token = default)
+        {
+            var query = new AssetDeleteDto() { Items = items };
+            return await DeleteAsync(query, token);
+        }
+        
+        /// <summary>
+        /// Delete multiple assets in the same project by internal ids.
+        /// </summary>
+        /// <param name="internalIds">The list of assets ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            var query = new AssetDeleteDto() { Items = internalIds.Select(id => new IdentityId(id)) };
+            return await DeleteAsync(query, token);
+        }
+        
+        /// <summary>
+        /// Delete multiple assets in the same project by external ids.
+        /// </summary>
+        /// <param name="externalIds">The list of assets ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var query = new AssetDeleteDto() { Items = externalIds.Select(id => new IdentityExternalId(id)) };
+            return await DeleteAsync(query, token);
+        }
+        #endregion
 
+        #region Retrieve overloads
         /// <summary>
         /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
         /// request and all of them must be unique.
@@ -110,6 +146,7 @@ namespace CogniteSdk.Resources
             var ids = externalIds.Select(id => new IdentityExternalId(id));
             return await RetrieveAsync(ids, token);
         }
+        #endregion
 
         /// <summary>
         /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -129,9 +166,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<ItemsWithoutCursor<AssetReadDto>> UpdateAsync (ItemsWithoutCursor<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
+        public async Task<IEnumerable<AssetReadDto>> UpdateAsync (IEnumerable<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Assets.update<ItemsWithoutCursor<AssetReadDto>>(query);
+            var req = Oryx.Cognite.Assets.update<IEnumerable<AssetReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
     }

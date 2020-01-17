@@ -21,44 +21,51 @@ namespace Test.CSharp.Integration
         public async Task ListSequenceWithLimit()
         {
             // Arrange
-            var limit = 10;
-            var option = SequenceQuery.Limit(limit);
+            var query = new SequenceQueryDto
+            {
+                Limit = 10
+            };
 
             // Act
-            var res = await WriteClient.Sequences.ListAsync(new List<SequenceQuery> { option }, new List<SequenceFilter>());
+            var res = await WriteClient.Sequences.ListAsync(query);
 
             // Assert
-            Assert.True(res.Items.Count() > 0, "Expected atleast one sequence");
+            Assert.True(res.Items.Any(), "Expected at least one sequence");
         }
         [Fact]
         [Trait("Description", "List Sequences with limit and filter is Ok")]
         public async Task ListSequenceWithLimitAndFilter()
         {
             // Arrange
-            var limit = 10;
-            var option = SequenceQuery.Limit(limit);
-            var filter = SequenceFilter.ExternalIdPrefix("sdk-test");
-
+            var query = new SequenceQueryDto
+            {
+                Limit = 10,
+                Filter = new SequenceFilterDto()
+                {
+                    ExternalIdPrefix = "sdk-test"
+                }
+            };
+            
             // Act
-            var res = await WriteClient.Sequences.ListAsync(new List<SequenceQuery> { option }, new List<SequenceFilter> { filter });
+            var res = await WriteClient.Sequences.ListAsync(query);
 
             // Assert
-            Assert.True(res.Items.Count() > 0, "Expected atleast one sequence");
+            Assert.True(res.Items.Any(), "Expected at least one sequence");
         }
         [Fact]
         [Trait("Description", "Retrieve Sequences by id is Ok")]
         public async Task RetrieveSequenceById()
         {
             // Arrange
-            var id = new List<long>() { 5702374195409554L };
+            var ids = new List<long>() { 5702374195409554L };
 
             // Act
-            var res = await WriteClient.Sequences.GetByIdsAsync(id);
+            var res = await WriteClient.Sequences.RetrieveAsync(ids);
             var returnedIds = res.Select(sequence => sequence.Id);
 
             // Assert
             Assert.True(res.Count() == 1, "Expected one sequence");
-            Assert.True(returnedIds.Intersect(id).Count() == returnedIds.Count(), "One of the received Sequence dont match the requested IDs");
+            Assert.True(returnedIds.Intersect(ids).Count() == returnedIds.Count(), "One of the received Sequence dont match the requested IDs");
         }
 
         [Fact]

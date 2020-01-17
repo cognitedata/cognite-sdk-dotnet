@@ -3,6 +3,9 @@ using CogniteSdk;
 
 namespace CogniteSdk.TimeSeries
 {
+    /// <summary>
+    /// The time series update DTO.
+    /// </summary>
     public class TimeSeriesUpdateDto
     {
         /// <summary>

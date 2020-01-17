@@ -74,6 +74,10 @@ namespace CogniteSdk.Assets
         /// </summary>
         public Aggregates Aggregates { get; set; }
 
+        /// <summary>
+        /// Return user friendly string representation of the object.
+        /// </summary>
+        /// <returns>String representation.</returns>
         public override string ToString()
         {
             var props = new List<string> { "{"};

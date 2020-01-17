@@ -3,10 +3,13 @@
 
 namespace CogniteSdk.TimeSeries
 {
+    /// <summary>
+    /// The time series update DTO.
+    /// </summary>
     public class TimeSeriesQuery
     {
         /// <summary>
-        /// Filter on timeseries with strict matching.
+        /// Filter on time series with strict matching.
         /// </summary>
         public TimeSeriesFilterDto Filter { get; set; }
 

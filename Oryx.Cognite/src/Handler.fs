@@ -141,8 +141,13 @@ module Handler =
             return ret.Items
         }
 
-    let inline update<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "update" |> post content
+    let update<'a, 'b, 'c> (items: IEnumerable<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+        req {
+            let url = url +/ "update"
+            let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
+            let! ret = post<ItemsWithoutCursor<UpdateItem<'a>>, ItemsWithoutCursor<'b>, 'c> request url
+            return ret.Items
+        }
 
     let retrieve<'a, 'b> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'a>, 'b> =
         req {

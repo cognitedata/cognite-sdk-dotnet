@@ -7,9 +7,15 @@ using System.Text.Json.Serialization;
 
 namespace CogniteSdk
 {
+    /// <summary>
+    /// Abstract error value. Will either be LongValue, DoubleValue or StringValue.
+    /// </summary>
     [JsonConverter(typeof(ErrorValue))]
     public abstract class ErrorValue {}
 
+    /// <summary>
+    /// Long (int64) error value
+    /// </summary>
     public class LongValue : ErrorValue
     {
         public long Value { get; set; }
@@ -20,6 +26,9 @@ namespace CogniteSdk
         }
     }
 
+    /// <summary>
+    /// Double (float) error value. 
+    /// </summary>
     public class DoubleValue : ErrorValue
     {
         public double Value { get; set; }
@@ -30,6 +39,9 @@ namespace CogniteSdk
         }
     }
 
+    /// <summary>
+    /// String error value.
+    /// </summary>
     public class StringValue : ErrorValue
     {
         public string String { get; set; }

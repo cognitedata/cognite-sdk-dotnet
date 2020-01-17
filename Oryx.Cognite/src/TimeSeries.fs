@@ -67,6 +67,6 @@ module TimeSeries =
     /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
     /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
     /// <returns>List of updated timeseries.</returns>
-    let update (query: ItemsWithoutCursor<UpdateItem<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItem<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a>  =
         update query Url
 

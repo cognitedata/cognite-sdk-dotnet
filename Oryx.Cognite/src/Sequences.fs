@@ -64,6 +64,6 @@ module Sequences =
     /// </summary>
     /// <param name="query">The list of sequences to update.</param>
     /// <returns>List of updated sequences.</returns>
-    let update (query: ItemsWithoutCursor<UpdateItem<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<SequenceReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItem<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a>  =
         update query Url
 
