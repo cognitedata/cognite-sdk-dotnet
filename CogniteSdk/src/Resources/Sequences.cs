@@ -45,9 +45,9 @@ namespace CogniteSdk.Resources
         /// <param name="sequences">Sequences to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<ItemsWithoutCursor<SequenceReadDto>> CreateAsync(ItemsWithoutCursor<SequenceWriteDto> sequences, CancellationToken token = default)
+        public async Task<IEnumerable<SequenceReadDto>> CreateAsync(IEnumerable<SequenceWriteDto> sequences, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Sequences.create<ItemsWithoutCursor<SequenceReadDto>>(sequences);
+            var req = Oryx.Cognite.Sequences.create<IEnumerable<SequenceReadDto>>(sequences);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
@@ -68,9 +68,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<ItemsWithoutCursor<SequenceReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Sequences.retrieve<ItemsWithoutCursor<SequenceReadDto>>(ids);
+            var req = Oryx.Cognite.Sequences.retrieve<IEnumerable<SequenceReadDto>>(ids);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
@@ -80,9 +80,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<ItemsWithoutCursor<SequenceReadDto>> SearchAsync (SearchQueryDto<SequenceFilterDto, SearchDto> query, CancellationToken token = default )
+        public async Task<IEnumerable<SequenceReadDto>> SearchAsync (SearchQueryDto<SequenceFilterDto, SearchDto> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Sequences.search<ItemsWithoutCursor<SequenceReadDto>>(query);
+            var req = Oryx.Cognite.Sequences.search<IEnumerable<SequenceReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
 

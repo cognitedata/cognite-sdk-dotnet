@@ -20,11 +20,14 @@ namespace Test.CSharp.Integration {
         [Trait("Description", "Ensures listing Assets returns number of assets equal to 'limit' value")]
         public void ListingAssetsRespectsLimit() {
             // Arrange
-            var limit = 10;
-            var option = AssetQuery.Limit(limit);
+            const int limit = 10;
+            var option = new AssetQueryDto
+            {
+                Limit = limit
+            };
 
             // Act
-            var res = ReadClient.Assets.ListAsync(new List<AssetQuery> { option });
+            var res = ReadClient.Assets.ListAsync(option);
 
             // Assert
             Assert.True(limit == res.Result.Items.Count(), "Expected the number of assets to be the same as the Limit value");
@@ -35,7 +38,7 @@ namespace Test.CSharp.Integration {
 
         public async Task AssetByIdReturnsCorrectAssetAsync() {
             // Arrange
-            var assetId = 130452390632424;
+            const long assetId = 130452390632424;
 
             // Act
             var res = await ReadClient.Assets.GetAsync(assetId);
@@ -73,7 +76,7 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            var res = await ReadClient.Assets.GetByIdsAsync(ids);
+            var res = await ReadClient.Assets.RetrieveAsync(ids);
 
             // Assert
             var returnedIds = res.Select(asset => asset.Id);
@@ -86,17 +89,22 @@ namespace Test.CSharp.Integration {
         [Trait("Description", "Search Asset returns the correct number of assets")]
         public async Task AssetSearchReturnsExpectedNumberOfAssetsAsync() {
             // Arrange
-            var options = new List<AssetSearch>() {
-                AssetSearch.Name("23")
-            };
             var numOfAssets = 10;
-
+            var query = new SearchQueryDto<AssetFilterDto, SearchDto>()
+            {
+                Limit = numOfAssets,
+                Search = new SearchDto()
+                {
+                    Name = "23"
+                }
+            };
+            
             // Act
-            var res = await ReadClient.Assets.SearchAsync(numOfAssets, options);
+            var res = await ReadClient.Assets.SearchAsync(query);
 
             // Assert
             var resCount = res.Count();
-            Assert.True(numOfAssets == resCount, $"Expected {options.Count} assets but got {resCount}");
+            Assert.True(numOfAssets == resCount, $"Expected {query.Limit} assets but got {resCount}");
         }
 
         [Fact]

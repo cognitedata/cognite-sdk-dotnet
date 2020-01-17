@@ -67,18 +67,13 @@ namespace CogniteSdk
             private HttpContext _context = Context.defaultContext;
 
             /// <summary>
-            /// Create builder using HTTP client
+            /// Create Client builder.
             /// </summary>
-            /// <param name="httpClient">The HttpClient to use.</param>
-            public Builder(HttpClient httpClient)
+            /// <param name="httpClient">Optional HttpClient to use for HTTP requests.</param>
+            public Builder(HttpClient httpClient = null)
             {
-                _context = Context.setHttpClient(httpClient, _context);
+                _context = httpClient == null ? _context : Context.setHttpClient(httpClient, _context);
             }
-
-            /// <summary>
-            /// Create builder using default context.
-            /// </summary>
-            public Builder() {}
 
             /// <summary>
             /// Add header for accessing the API.
@@ -156,6 +151,16 @@ namespace CogniteSdk
                 HttpContext ctx = _context;
                 _context = null; // Builder is invalid after this
                 return new Client(ctx);
+            }
+            
+            /// <summary>
+            /// Create new Client builder.
+            /// </summary>
+            /// <param name="httpClient">Optional httpClient</param>
+            /// <returns>New client builder.</returns>
+            public static Builder Create(HttpClient httpClient = null)
+            {
+                return new Builder(httpClient);
             }
         }
     }

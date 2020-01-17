@@ -4,6 +4,7 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Files
 
@@ -34,7 +35,7 @@ module Files =
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileDownloadDto>, 'a> =
         Url +/ "download" |> post ids
 
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileReadDto>, 'a> =
         Url +/ "byids" |> retrieve ids
 
     let search (query: SearchQueryDto<FileFilterDto, FileSearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =

@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,9 +45,9 @@ namespace CogniteSdk.Resources
         /// <param name="items">Databases to create.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of created databases.</returns>
-        public async Task<ItemsWithoutCursor<DatabaseDto>> CreateDatabasesAsync(ItemsWithoutCursor<DatabaseDto> items, CancellationToken token = default)
+        public async Task<IEnumerable<DatabaseDto>> CreateDatabasesAsync(IEnumerable<DatabaseDto> items, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.createDatabases<ItemsWithoutCursor<DatabaseDto>>(items);
+            var req = Oryx.Cognite.Raw.createDatabases<IEnumerable<DatabaseDto>>(items);
             return await runUnsafeAsync(req, _ctx, token);
         }
 

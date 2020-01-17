@@ -7,6 +7,8 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.TimeSeries
 
@@ -32,7 +34,7 @@ module TimeSeries =
     /// <param name="next">Async handler to use.</param>
     /// <returns>List of created timeseries.</returns>
 
-    let create (items: ItemsWithoutCursor<TimeSeriesWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
+    let create (items: IEnumerable<TimeSeriesWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
         create items Url
 
     /// <summary>
@@ -49,7 +51,7 @@ module TimeSeries =
     /// </summary>
     /// <param name="ids">The ids of the timeseries to get.</param>
     /// <returns>The timeseries with the given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -57,7 +59,7 @@ module TimeSeries =
     /// </summary>
     /// <param name="query">Time series search query.</param>
     /// <returns>List of time series matching given criteria.</returns>
-    let search (query: SearchQueryDto<TimeSeriesFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TimeSeriesReadDto>, 'a> =
+    let search (query: SearchQueryDto<TimeSeriesFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
         search query Url
 
     /// <summary>

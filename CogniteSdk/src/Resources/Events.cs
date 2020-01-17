@@ -45,9 +45,9 @@ namespace CogniteSdk.Resources
         /// <param name="events">Events to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<ItemsWithoutCursor<EventReadDto>> CreateAsync(ItemsWithoutCursor<EventWriteDto> events, CancellationToken token = default)
+        public async Task<IEnumerable<EventReadDto>> CreateAsync(IEnumerable<EventWriteDto> events, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Events.create<ItemsWithoutCursor<EventReadDto>>(events);
+            var req = Oryx.Cognite.Events.create<IEnumerable<EventReadDto>>(events);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
@@ -80,9 +80,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<ItemsWithoutCursor<EventReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Events.retrieve<ItemsWithoutCursor<EventReadDto>>(ids);
+            var req = Oryx.Cognite.Events.retrieve<IEnumerable<EventReadDto>>(ids);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
@@ -92,9 +92,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<ItemsWithoutCursor<EventReadDto>> SearchAsync (SearchQueryDto<EventFilterDto, SearchDto> query, CancellationToken token = default )
+        public async Task<IEnumerable<EventReadDto>> SearchAsync (SearchQueryDto<EventFilterDto, SearchDto> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Events.search<ItemsWithoutCursor<EventReadDto>>(query);
+            var req = Oryx.Cognite.Events.search<IEnumerable<EventReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
 

@@ -7,6 +7,8 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Assets
 
@@ -38,7 +40,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (items: ItemsWithoutCursor<AssetWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let create (items: IEnumerable<AssetWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
         create items Url
 
     /// <summary>
@@ -55,7 +57,7 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -63,7 +65,7 @@ module Assets =
     /// </summary>
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: SearchQueryDto<AssetFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<AssetReadDto>, 'a> =
+    let search (query: SearchQueryDto<AssetFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
         search query Url
 
     /// <summary>

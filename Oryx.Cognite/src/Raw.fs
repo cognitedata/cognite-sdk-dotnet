@@ -7,6 +7,7 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Raw
 
@@ -31,7 +32,7 @@ module Raw =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created databases.</returns>
-    let createDatabases (items: ItemsWithoutCursor<DatabaseDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<DatabaseDto>, 'a> =
+    let createDatabases (items: IEnumerable<DatabaseDto>) : HttpHandler<HttpResponseMessage, IEnumerable<DatabaseDto>, 'a> =
         create items Url
 
     /// <summary>

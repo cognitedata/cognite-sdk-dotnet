@@ -15,7 +15,7 @@ namespace Test.CSharp.Integration {
 
         protected static Client ReadClient;
         protected static Client WriteClient;
-        protected static EventEntity TestEvent;
+        protected static EventReadDto TestEvent;
 
         public TestFixture() {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
@@ -28,32 +28,37 @@ namespace Test.CSharp.Integration {
 
         private static Client CreateClient(string apiKey, string project, string url) {
             var httpClient = new HttpClient();
-            return Client.Create()
+            return Client.Builder.Create(httpClient)
                 .SetAppId("TestApp")
-                .SetHttpClient(httpClient)
                 .AddHeader("api-key", apiKey)
                 .SetProject(project)
-                .SetServiceUrl(url);
+                .SetServiceUrl(url)
+                .Build();
         }
 
         private void PopulateDataAsync() {
             try {
-                TestEvent = WriteClient.Events.GetByIdsAsync(new List<string>() { "TestEvent" }).Result.FirstOrDefault();
+                TestEvent = WriteClient.Events.RetrieveAsync(new List<string>() { "TestEvent" }).Result.FirstOrDefault();
             } catch (AggregateException) {
                 TestEvent = CreateTestEventAsync();
             }
         }
 
-        private EventEntity CreateTestEventAsync() {
-            var newEvent = new EventEntity();
-            newEvent.ExternalId = "TestEvent";
-            newEvent.StartTime = 1565941329;
-            newEvent.EndTime = 1565941341;
-            newEvent.Type = "DotNet Test";
-            newEvent.SubType = "Dummy Event";
-            newEvent.Description = "To be use for dotnet Test testing";
-
-            return WriteClient.Events.CreateAsync(new List<EventEntity>() { newEvent }).Result.FirstOrDefault();
+        private EventReadDto CreateTestEventAsync()
+        {
+            var items = new List<EventWriteDto> {
+                new EventWriteDto
+                {
+                    ExternalId = "TestEvent",
+                    StartTime = 1565941329,
+                    EndTime = 1565941341,
+                    Type = "DotNet Test",
+                    SubType = "Dummy Event",
+                    Description = "To be use for dotnet Test testing"
+                }
+            };
+            
+            return WriteClient.Events.CreateAsync(items).Result.FirstOrDefault();
         }
     }
 

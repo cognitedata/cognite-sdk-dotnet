@@ -19,6 +19,7 @@ open Oryx.SystemTextJson
 open Oryx.SystemTextJson.ResponseReader
 
 open CogniteSdk
+open CogniteSdk
 
 
 // Shadow types for Oryx that pins the error type to ResponseError
@@ -133,19 +134,31 @@ module Handler =
     let inline list<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "list" |> post content
 
-    let inline search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "search" |> post content
+    let search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+        req {
+            let url = url +/ "search"
+            let! ret = post<'a, ItemsWithoutCursor<'b>, 'c> content url
+            return ret.Items
+        }
 
     let inline update<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "update" |> post content
 
-    let inline retrieve<'a, 'b, 'c> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
-        let request = ItemsWithoutCursor<Identity>(Items = ids)
-        url +/ "byids" |> post request
-
-    let inline create<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        post content url
-
+    let retrieve<'a, 'b> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'a>, 'b> =
+        req {
+            let url = url +/ "byids"
+            let request = ItemsWithoutCursor<Identity>(Items = ids)
+            let! ret = post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
+            return ret.Items
+        }
+        
+    let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+        req {
+            let content' = ItemsWithoutCursor(Items=content)
+            let! ret = post<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
+            return ret.Items
+        }
+ 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
 

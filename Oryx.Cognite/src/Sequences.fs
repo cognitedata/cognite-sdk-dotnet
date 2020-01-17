@@ -7,6 +7,7 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Sequences
 
@@ -30,7 +31,7 @@ module Sequences =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created sequences.</returns>
-    let create (items: ItemsWithoutCursor<SequenceWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<SequenceReadDto>, 'a> =
+    let create (items: IEnumerable<SequenceWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a> =
         create items Url
 
     /// <summary>
@@ -47,7 +48,7 @@ module Sequences =
     /// </summary>
     /// <param name="ids">The ids of the sequences to get.</param>
     /// <returns>Sequences with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<SequenceReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -55,7 +56,7 @@ module Sequences =
     /// </summary>
     /// <param name="query">Sequence search query.</param>
     /// <returns>List of sequences matching given criteria.</returns>
-    let search (query: SearchQueryDto<SequenceFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<SequenceReadDto>, 'a> =
+    let search (query: SearchQueryDto<SequenceFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a> =
         search query Url
 
     /// <summary>

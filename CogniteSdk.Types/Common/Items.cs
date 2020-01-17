@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Linq;
 
 namespace CogniteSdk
 {
@@ -24,11 +24,7 @@ namespace CogniteSdk
         /// <returns>String representation of the items.</returns>
         public override string ToString()
         {
-            var props = new List<string>();
-            foreach (var item in Items)
-            {
-                props.Add(item.ToString());
-            }
+            var props = Items.Select(item => item.ToString()).ToList();
 
             return String.Join("/n", props);
         }
@@ -56,13 +52,9 @@ namespace CogniteSdk
         /// <returns>String representation of the items.</returns>
         public override string ToString()
         {
-            var props = new List<string>();
-            foreach (var item in Items)
-            {
-                props.Add(item.ToString());
-            }
+            var props = Items.Select(item => item.ToString()).ToList();
 
-            return String.Join("/n", props);
+            return string.Join("/n", props);
         }
     }
 }

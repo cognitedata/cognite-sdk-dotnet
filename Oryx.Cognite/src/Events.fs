@@ -7,6 +7,7 @@ open System.Net.Http
 
 open Oryx.Cognite
 
+open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Events
 
@@ -38,9 +39,9 @@ module Events =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
-    let create (items: ItemsWithoutCursor<EventWriteDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
+    let create (items: IEnumerable<EventWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
         create items Url
-
+        
     /// <summary>
     /// Delete multiple events in the same project,
     /// </summary>
@@ -55,7 +56,7 @@ module Events =
     /// </summary>
     /// <param name="ids">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -63,7 +64,7 @@ module Events =
     /// </summary>
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
-    let search (query: SearchQueryDto<EventFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<EventReadDto>, 'a> =
+    let search (query: SearchQueryDto<EventFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
         search query Url
 
     /// <summary>
