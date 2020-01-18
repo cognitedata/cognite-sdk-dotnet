@@ -27,3 +27,11 @@ let optionToSeq (o: 'a option): 'a seq =
     match o with
     | Some a -> Seq.ofList [ a ]
     | None -> Seq.empty
+
+[<RequireQualifiedAccess>]
+module Result =
+    let isOk = function
+        | Ok _ -> true
+        | Error _ -> false
+
+    let isError res = not (isOk res)

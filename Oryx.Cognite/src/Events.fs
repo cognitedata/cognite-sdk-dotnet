@@ -41,7 +41,7 @@ module Events =
     /// <returns>List of created events.</returns>
     let create (items: IEnumerable<EventWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
         create items Url
-        
+
     /// <summary>
     /// Delete multiple events in the same project,
     /// </summary>

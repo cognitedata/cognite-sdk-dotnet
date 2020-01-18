@@ -119,12 +119,15 @@ namespace Test.CSharp.Integration
                 Columns = new List<SequenceColumnDto> { column }
             };
 
-            var data = new SequenceDataWriteEntity() {
+            var data = new SequenceDataWriteByExternalId() {
                 Columns = new List<string> { columnExternalIdString },
-                Rows = new List<RowEntity> { new RowEntity() { RowNumber=1, Values=new List<RowValue>() { RowValue.Double(42.0) } }},
-                Id = Identity.ExternalId(externalIdString)
+                Rows = new List<SequenceRowDto>
+                {
+                    new SequenceRowDto() { RowNumber=1, Values=new List<ValueType>() { DoubleValue(42.0) } }
+                },
+                ExternalId = externalIdString
             };
-            var delete = new SequenceDataDeleteEntity() { Id = Identity.ExternalId(externalIdString), Rows = new List<Int64> { 1L } };
+            var delete = new SequenceDeleteDto() { Id = Identity.ExternalId(externalIdString), Rows = new List<Int64> { 1L } };
 
             // Act
             var res = await WriteClient.Sequences.CreateAsync(new List<SequenceEntity>() { sequence });
