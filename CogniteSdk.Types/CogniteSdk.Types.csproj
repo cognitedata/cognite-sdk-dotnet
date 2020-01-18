@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
@@ -10,10 +10,8 @@
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="../LICENSE" />
   </ItemGroup>
-
-  <Import Project="..\.paket\Paket.Restore.targets" />
+  <Import Project="../.paket/Paket.Restore.targets" />
 </Project>

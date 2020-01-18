@@ -9,7 +9,6 @@
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="Error.fs" />
     <Compile Include="Common.fs" />
@@ -22,10 +21,8 @@
     <Compile Include="Sequences.fs" />
     <None Include="../../LICENSE" />
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\CogniteSdk.Types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
   </ItemGroup>
-
-  <Import Project="..\..\.paket\Paket.Restore.targets" />
+  <Import Project="../../.paket/Paket.Restore.targets" />
 </Project>

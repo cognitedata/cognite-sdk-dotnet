@@ -3,7 +3,6 @@ module Tests.Integration.Common
 open System
 open System.Net.Http
 
-open Oryx
 open CogniteSdk
 
 let createClient apiKey project url =
