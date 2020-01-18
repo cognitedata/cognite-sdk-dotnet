@@ -6,9 +6,7 @@ open System.Net.Http
 open Swensen.Unquote
 open Xunit
 
-open Oryx
 open CogniteSdk
-
 open Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
@@ -24,7 +22,7 @@ let ``List assets with limit is Ok`` () = task {
     // Assert
     test <@ len = 10 @>
 }
-∏
+
 // [<Fact>]
 // let ``Get asset by id is Ok`` () = task {
 //     // Arrange
