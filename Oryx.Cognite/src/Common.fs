@@ -9,6 +9,7 @@ open System.Reflection
 open System.Text.Json
 
 open Oryx
+open CogniteSdk
 
 type ApiVersion =
     | V05
@@ -26,14 +27,17 @@ module Common =
     let (+/) path1 path2 = Path.Combine(path1, path2)
 
     let jsonOptions =
-        JsonSerializerOptions(
-            /// Allow extra comma at the end of a list of JSON values in an object or array is allowed (and ignored)
-            AllowTrailingCommas=true,
-            /// Convert property names on an object to camel-casing
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            /// Null values are ignored during serialization and deserialization.
-            IgnoreNullValues = true
-        )
+        let options =
+            JsonSerializerOptions(
+                /// Allow extra comma at the end of a list of JSON values in an object or array is allowed (and ignored)
+                AllowTrailingCommas=true,
+                /// Convert property names on an object to camel-casing
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                /// Null values are ignored during serialization and deserialization.
+                IgnoreNullValues = true
+            )
+        options.Converters.Add(ValueTypeConverter())
+        options
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Context =

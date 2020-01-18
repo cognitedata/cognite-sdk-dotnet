@@ -7,7 +7,7 @@ namespace CogniteSdk
     /// <summary>
     /// Converts ErrorValue values from JSON to LongValue, DoubleValue or StringValue.
     /// </summary>
-    public class ErrorConverter : JsonConverter<ValueType>
+    public class ValueTypeConverter : JsonConverter<ValueType>
     {
         /// <summary>
         /// Produces error values from the JSON input.
@@ -20,7 +20,8 @@ namespace CogniteSdk
                 case JsonTokenType.String:
                     return new StringValue { Value=reader.GetString() };
                 case JsonTokenType.Number:
-                    if (Int64.TryParse(reader.GetString(), out long longNumber))
+                    var value = reader.GetString();
+                    if (Int64.TryParse(value, out long longNumber))
                     {
                         return new LongValue { Value=longNumber };
                     }
@@ -30,9 +31,9 @@ namespace CogniteSdk
                         return new DoubleValue { Value=doubleNumber };
                     }
 
-                    return new StringValue { Value="Unable to parse value" };
+                    throw new JsonException($"Unable to parse number value: {value}");
                 default:
-                    return new StringValue { Value="Unable to parse value" };
+                    throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
             }
         }
 

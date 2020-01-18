@@ -4,7 +4,7 @@
 namespace CogniteSdk.TimeSeries
 {
     /// <summary>
-    /// The time series update DTO.
+    /// The time series query DTO.
     /// </summary>
     public class TimeSeriesQuery
     {
