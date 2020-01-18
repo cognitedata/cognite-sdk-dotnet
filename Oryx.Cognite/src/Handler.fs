@@ -141,11 +141,11 @@ module Handler =
             return ret.Items
         }
 
-    let update<'a, 'b, 'c> (items: IEnumerable<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+    let update<'a, 'b, 'c> (items: IEnumerable<UpdateItemType<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let url = url +/ "update"
-            let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
-            let! ret = post<ItemsWithoutCursor<UpdateItem<'a>>, ItemsWithoutCursor<'b>, 'c> request url
+            let request = ItemsWithoutCursor<UpdateItemType<'a>>(Items = items)
+            let! ret = post<ItemsWithoutCursor<UpdateItemType<'a>>, ItemsWithoutCursor<'b>, 'c> request url
             return ret.Items
         }
 
@@ -166,7 +166,7 @@ module Handler =
  
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
-
+        
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

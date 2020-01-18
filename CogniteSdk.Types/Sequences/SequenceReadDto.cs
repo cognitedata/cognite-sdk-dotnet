@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CogniteSdk.Sequences
 {
     /// <summary>
-    /// Sequence dto for reading.
+    /// Sequence DTO for reading.
     /// </summary>
     public class SequenceReadDto
     {
@@ -43,7 +43,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// List of column definitions.
         /// </summary>
-        public IEnumerable<Column> Columns { get; set; }
+        public IEnumerable<SequenceColumnDto> Columns { get; set; }
 
         /// <summary>
         /// Time when this sequence was created in CDF in milliseconds since Jan 1, 1970.

@@ -4,34 +4,34 @@ using CogniteSdk;
 namespace CogniteSdk.Sequences
 {
     /// <summary>
-    /// The event update DTO.
+    /// The sequence update DTO.
     /// </summary>
     public class SequenceUpdateDto
     {
         /// <summary>
         /// Set a new value for the Name, or remove the value.
         /// </summary>
-        public Update<string> Name { get; set; }
+        public UpdateType<string> Name { get; set; }
 
         /// <summary>
         /// Set a new value for the Description, or remove the value.
         /// </summary>
-        public Update<string> Description { get; set; }
+        public UpdateType<string> Description { get; set; }
 
         /// <summary>
         /// Set a new value for the assetId, or remove the value.
         /// </summary>
-        public Update<long> AssetId { get; set; }
+        public UpdateType<long> AssetId { get; set; }
 
         /// <summary>
         /// Set a new value for the ExternalId, or remove the value.
         /// </summary>
-        public Update<string> ExternalId { get; set; }
+        public UpdateType<string> ExternalId { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public Update<IDictionary<string, string>> Metadata { get; set; }
+        public UpdateType<IDictionary<string, string>> Metadata { get; set; }
     }
 }

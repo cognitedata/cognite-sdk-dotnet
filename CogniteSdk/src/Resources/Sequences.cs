@@ -52,17 +52,41 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(req, _ctx, token);
         }
 
+        #region Delete overloads
         /// <summary>
         /// Delete multiple sequences in the same project.
         /// </summary>
-        /// <param name="query">The list of sequeneces to delete.</param>
+        /// <param name="query">The list of sequence identities to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(ItemsWithoutCursor<Identity> query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-
+        
+        /// <summary>
+        /// Delete multiple sequences in the same project.
+        /// </summary>
+        /// <param name="internalIds">The list of sequence internal ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            var req = internalIds.Select(Identity.Id);
+            return await DeleteAsync(req, token);
+        }
+        
+        /// <summary>
+        /// Delete multiple sequences in the same project.
+        /// </summary>
+        /// <param name="internalIds">The list of sequence external ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> internalIds, CancellationToken token = default)
+        {
+            var req = internalIds.Select(Identity.ExternalId);
+            return await DeleteAsync(req, token);
+        }
+        #endregion
+        
         #region Retrieve overloads
         /// <summary>
         /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
@@ -80,7 +104,7 @@ namespace CogniteSdk.Resources
         /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
         /// request and all of them must be unique.
         /// </summary>
-        /// <param name="internalds">The list of events internal ids to retrieve.</param>
+        /// <param name="internalIds">The list of events internal ids to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
@@ -119,7 +143,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<SequenceReadDto>> UpdateAsync (IEnumerable<UpdateItem<SequenceUpdateDto>> query, CancellationToken token = default )
+        public async Task<IEnumerable<SequenceReadDto>> UpdateAsync (IEnumerable<UpdateItemType<SequenceUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Sequences.update<IEnumerable<SequenceReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);

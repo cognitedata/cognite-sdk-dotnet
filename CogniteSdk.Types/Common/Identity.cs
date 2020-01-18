@@ -15,7 +15,7 @@ namespace CogniteSdk {
         {
             return new IdentityExternalId(externalId);
         }
-        
+
         /// <summary>
         /// Create new internal Id.
         /// </summary>

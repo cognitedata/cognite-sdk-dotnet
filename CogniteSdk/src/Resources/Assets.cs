@@ -166,7 +166,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<AssetReadDto>> UpdateAsync (IEnumerable<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
+        public async Task<IEnumerable<AssetReadDto>> UpdateAsync (IEnumerable<UpdateItemType<AssetUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.update<IEnumerable<AssetReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);

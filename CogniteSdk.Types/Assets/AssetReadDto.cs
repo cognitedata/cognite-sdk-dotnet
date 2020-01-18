@@ -40,7 +40,6 @@ namespace CogniteSdk.Assets
         /// <summary>
         /// The source of this asset.
         /// </summary>
-        /// <value></value>
         public string Source { get; set; }
 
         /// <summary>
@@ -56,7 +55,6 @@ namespace CogniteSdk.Assets
         /// <summary>
         /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
         /// </summary>
-        /// <value></value>
         public long LastUpdatedTime { get; set; }
 
         /// <summary>

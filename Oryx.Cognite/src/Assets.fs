@@ -74,6 +74,6 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to update.</param>
     /// <returns>List of updated assets.</returns>
-    let update (query: IEnumerable<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItemType<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a>  =
         update query Url
 

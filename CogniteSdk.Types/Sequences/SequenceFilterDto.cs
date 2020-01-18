@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
 {
+    /// <summary>
+    /// The Sequence filter DTO.
+    /// </summary>
     public class SequenceFilterDto
     {
         /// <summary>

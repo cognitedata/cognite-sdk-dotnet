@@ -5,7 +5,10 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
 {
-    public class Column
+    /// <summary>
+    /// The Sequence column DTO.
+    /// </summary>
+    public class SequenceColumnDto
     {
         /// <summary>
         /// The name of the column.

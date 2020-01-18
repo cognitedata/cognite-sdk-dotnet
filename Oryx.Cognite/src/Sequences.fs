@@ -39,8 +39,9 @@ module Sequences =
     /// </summary>
     /// <param name="items">The list of events to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (items: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete items Url
+    let delete (items: IEnumerable<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let req = ItemsWithoutCursor(Items=items)
+        delete req Url
 
     /// <summary>
     /// Retrieves information about multiple sequences in the same project. A maximum of 1000 event IDs may be listed per
@@ -64,6 +65,6 @@ module Sequences =
     /// </summary>
     /// <param name="query">The list of sequences to update.</param>
     /// <returns>List of updated sequences.</returns>
-    let update (query: IEnumerable<UpdateItem<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItemType<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<SequenceReadDto>, 'a>  =
         update query Url
 

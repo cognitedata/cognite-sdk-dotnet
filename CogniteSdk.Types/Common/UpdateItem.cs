@@ -3,10 +3,18 @@
 
 namespace CogniteSdk
 {
-    public abstract class UpdateItem<TUpdate> {}
-    
-    public class UpdateById<TUpdate> : UpdateItem<TUpdate> 
-    { 
+    /// <summary>
+    /// Base class for updating by Id or External Id.
+    /// </summary>
+    /// <typeparam name="TUpdate">Type of object to update.</typeparam>
+    public abstract class UpdateItemType<TUpdate> {}
+
+    /// <summary>
+    /// Update using external Id.
+    /// </summary>
+    /// <typeparam name="TUpdate">Type of object to update.</typeparam>
+    public class UpdateById<TUpdate> : UpdateItemType<TUpdate>
+    {
         public TUpdate Update { get; set; }
 
         /// <summary>
@@ -15,7 +23,11 @@ namespace CogniteSdk
         public long Id { get; set; }
     }
 
-    public class UpdateByExternalId<TUpdate> : UpdateItem<TUpdate> {
+    /// <summary>
+    /// Update using internal Id
+    /// </summary>
+    /// <typeparam name="TUpdate">Type of object to update.</typeparam>
+    public class UpdateByExternalId<TUpdate> : UpdateItemType<TUpdate> {
         public TUpdate Update { get; set; }
 
         /// <summary>

@@ -195,7 +195,7 @@ namespace Test.CSharp.Integration {
             };
             var newName = "Updated update asset";
 
-            var update = new List<UpdateItem<AssetUpdateDto>>()
+            var update = new List<UpdateItemType<AssetUpdateDto>>()
             {
                 new UpdateByExternalId<AssetUpdateDto>()
                 {

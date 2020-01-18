@@ -5,6 +5,11 @@ namespace CogniteSdk.Sequences
     /// </summary>
     public enum ValueType
     {
-        STRING, DOUBLE, LONG
+        /// String value
+        STRING,
+        /// Double value
+        DOUBLE,
+        /// Long value
+        LONG
     }
 }

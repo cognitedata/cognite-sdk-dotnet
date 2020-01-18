@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CogniteSdk.Sequences
 {
     /// <summary>
-    /// Sequence dto for writing.
+    /// Sequence DTO for writing.
     /// </summary>
     public class SequenceWriteDto
     {
@@ -43,6 +43,6 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// List of column definitions.
         /// </summary>
-        public IEnumerable<Column> Columns { get; set; }
+        public IEnumerable<SequenceColumnDto> Columns { get; set; }
     }
 }

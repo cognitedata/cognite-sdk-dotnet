@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 using CogniteSdk;
+using CogniteSdk.Raw;
 using CogniteSdk.Sequences;
 using CogniteSdk.Sequences.Rows;
 
@@ -76,20 +77,20 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new ColumnEntity() {
+            var column = new SequenceColumnDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
             };
-            var sequence = new SequenceEntity() {
+            var sequence = new SequenceWriteDto {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
-                Columns = new List<ColumnEntity>() { column }
+                Columns = new List<SequenceColumnDto> { column }
             };
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceEntity>() { sequence });
-            await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWriteDto> { sequence });
+            await WriteClient.Sequences.DeleteAsync(new List<string> { externalIdString });
 
             // Assert
             var resCount = res.Count();
@@ -105,17 +106,17 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new ColumnEntity() {
+            var column = new SequenceColumnDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
             };
 
-            var sequence = new SequenceEntity() {
+            var sequence = new SequenceWriteDto {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
-                Columns = new List<ColumnEntity>() { column }
+                Columns = new List<SequenceColumnDto> { column }
             };
 
             var data = new SequenceDataWriteEntity() {
@@ -143,7 +144,10 @@ namespace Test.CSharp.Integration
         public async Task ListRowsAsync()
         {
             // Arrange
-            var rowQuery = new List<RowQuery>() { RowQuery.Limit(10) };
+            var rowQuery = new List<RowQueryDto>
+            {
+                new RowQueryDto { Limit = 10 }
+            };
             var externalId = Identity.ExternalId("sdk-test");
 
             // Act

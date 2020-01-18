@@ -8,51 +8,6 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Abstract error value. Will either be LongValue, DoubleValue or StringValue.
-    /// </summary>
-    [JsonConverter(typeof(ErrorValue))]
-    public abstract class ErrorValue {}
-
-    /// <summary>
-    /// Long (int64) error value
-    /// </summary>
-    public class LongValue : ErrorValue
-    {
-        public long Value { get; set; }
-
-        public override string ToString()
-        {
-            return this.Value.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Double (float) error value. 
-    /// </summary>
-    public class DoubleValue : ErrorValue
-    {
-        public double Value { get; set; }
-
-        public override string ToString()
-        {
-            return this.Value.ToString();
-        }
-    }
-
-    /// <summary>
-    /// String error value.
-    /// </summary>
-    public class StringValue : ErrorValue
-    {
-        public string String { get; set; }
-
-        public override string ToString()
-        {
-            return this.String;
-        }
-    }
-
-    /// <summary>
     /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code as we will
     /// convert it directly to a ResponseException.
     /// </summary>
@@ -68,8 +23,15 @@ namespace CogniteSdk
         /// </summary>
         public string Message { get; set; }
 
-        public IEnumerable<IDictionary<string, ErrorValue>> Missing;
-        public IEnumerable<IDictionary<string, ErrorValue>> Duplicated;
+        /// <summary>
+        /// The missing entries if any.
+        /// </summary>
+        public IEnumerable<IDictionary<string, ValueType>> Missing;
+        
+        /// <summary>
+        /// The duplicated entries if any.
+        /// </summary>
+        public IEnumerable<IDictionary<string, ValueType>> Duplicated;
     }
 
     /// <summary>
@@ -112,11 +74,11 @@ namespace CogniteSdk
         /// <summary>
         /// Missing values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ErrorValue>> Missing;
+        public IEnumerable<IDictionary<string, ValueType>> Missing;
         /// <summary>
         /// Duplicated values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ErrorValue>> Duplicated;
+        public IEnumerable<IDictionary<string, ValueType>> Duplicated;
 
         /// <summary>
         /// Request ID extracted from the response header.

@@ -41,7 +41,10 @@ namespace CogniteSdk
         /// </summary>
         public Resources.Raw Raw { get; }
 
-        // Client Sequences extension methods
+        /// <summary>
+        /// Client Sequences extension methods
+        /// </summary>
+        /// <value></value>
         public Resources.Sequences Sequences  { get; }
 
         /// <summary>
@@ -153,7 +156,7 @@ namespace CogniteSdk
                 _context = null; // Builder is invalid after this
                 return new Client(ctx);
             }
-            
+
             /// <summary>
             /// Create new Client builder.
             /// </summary>

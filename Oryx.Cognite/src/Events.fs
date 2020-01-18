@@ -72,6 +72,6 @@ module Events =
     /// </summary>
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let update (query: IEnumerable<UpdateItem<EventUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a>  =
+    let update (query: IEnumerable<UpdateItemType<EventUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a>  =
         update query Url
 
