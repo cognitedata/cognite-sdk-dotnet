@@ -27,7 +27,7 @@ namespace CogniteSdk
         /// The missing entries if any.
         /// </summary>
         public IEnumerable<IDictionary<string, ValueType>> Missing;
-        
+
         /// <summary>
         /// The duplicated entries if any.
         /// </summary>
@@ -40,8 +40,14 @@ namespace CogniteSdk
     /// </summary>
     public class ApiResponseErrorDto
     {
+        /// <summary>
+        /// Response error object.
+        /// </summary>
         public ResponseErrorDto Error { get; set; }
 
+        /// <summary>
+        /// Unique id for the request.
+        /// </summary>
         public string RequestId { get; set; }
 
         /// <summary>

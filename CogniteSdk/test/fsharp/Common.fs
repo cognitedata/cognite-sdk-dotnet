@@ -6,22 +6,26 @@ open System.Net.Http
 open Oryx
 open CogniteSdk
 
-let testApiKeyWrite = Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE"
-let testApiKeyRead = Environment.GetEnvironmentVariable "TEST_API_KEY_READ"
+let createClient apiKey project url =
+    let httpClient = new HttpClient();
+    Client.Builder.Create(httpClient)
+        .SetAppId("TestApp")
+        .AddHeader("api-key", apiKey)
+        .SetProject(project)
+        .SetServiceUrl(url)
+        .Build();
 
-let createCtx (key: string) (project: string) (serviceUrl: string) =
-    let handler = new HttpClientHandler(AllowAutoRedirect = false)
-    let client = new HttpClient (handler)
+let readClient =
+    createClient
+        (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
+        "publicdata"
+        "https://api.cognitedata.com"
 
-    Context.create ()
-    |> Context.setAppId "test"
-    |> Context.setHttpClient client
-    |> Context.addHeader ("api-key", key)
-    |> Context.setProject project
-    |> Context.setServiceUrl serviceUrl
-
-let readCtx () = createCtx testApiKeyRead "publicdata" "https://api.cognitedata.com"
-let writeCtx () = createCtx testApiKeyWrite "fusiondotnet-tests" "https://greenfield.cognitedata.com"
+let writeClient =
+    createClient
+        (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
+        "fusiondotnet-tests"
+        "https://greenfield.cognitedata.com"
 
 let optionToSeq (o: 'a option): 'a seq =
     match o with

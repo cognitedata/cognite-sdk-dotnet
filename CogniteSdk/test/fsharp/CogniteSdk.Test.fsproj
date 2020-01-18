@@ -8,20 +8,19 @@
 
   <ItemGroup>
     <Compile Include="Common.fs" />
-    <Compile Include="Timeseries.fs" />
-    <Compile Include="Datapoints.fs" />
+    <!-- <Compile Include="Timeseries.fs" /> -->
+    <!-- <Compile Include="Datapoints.fs" /> -->
     <Compile Include="Assets.fs" />
-    <Compile Include="Events.fs" />
+    <!-- <Compile Include="Events.fs" />
     <Compile Include="Files.fs" />
     <Compile Include="Login.fs" />
     <Compile Include="Raw.fs" />
-    <Compile Include="Sequences.fs" />
+    <Compile Include="Sequences.fs" /> -->
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
-    <ProjectReference Include="..\..\..\Oryx.Cognite\src\Oryx.Cognite.fsproj" />
     <ProjectReference Include="..\..\src\CogniteSdk.csproj" />
   </ItemGroup>
 

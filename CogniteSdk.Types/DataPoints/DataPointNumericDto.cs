@@ -12,7 +12,10 @@ namespace CogniteSdk.DataPoints
         /// </summary>
         public long Timestamp { get; set; }
     }
-    
+
+    /// <summary>
+    /// Datapoint with double value.
+    /// </summary>
     public class DataPointNumericDto : DataPointType
     {
         /// <summary>
@@ -20,7 +23,10 @@ namespace CogniteSdk.DataPoints
         /// </summary>
         public double Value { get; set; }
     }
-    
+
+    /// <summary>
+    /// Datapoint with string value.
+    /// </summary>
     public class DataPointStringDto : DataPointType
     {
         /// <summary>

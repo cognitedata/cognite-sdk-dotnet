@@ -10,7 +10,6 @@ using Xunit;
 using CogniteSdk;
 using CogniteSdk.Raw;
 using CogniteSdk.Sequences;
-using CogniteSdk.Sequences.Rows;
 
 namespace Test.CSharp.Integration
 {
@@ -46,7 +45,7 @@ namespace Test.CSharp.Integration
                     ExternalIdPrefix = "sdk-test"
                 }
             };
-            
+
             // Act
             var res = await WriteClient.Sequences.ListAsync(query);
 

@@ -6,9 +6,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CogniteSdk.Types\CogniteSdk.Types.csproj" />
-    <ProjectReference Include="..\..\src\Oryx.Cognite\Oryx.Cognite.fsproj" />
-    <ProjectReference Include="..\..\src\CogniteSdk\CogniteSdk.csproj" />
+    <ProjectReference Include="..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\Oryx.Cognite\src\Oryx.Cognite.fsproj" />
+    <ProjectReference Include="..\..\CogniteSdk\src\CogniteSdk.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 

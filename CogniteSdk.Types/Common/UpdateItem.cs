@@ -15,6 +15,9 @@ namespace CogniteSdk
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
     public class UpdateById<TUpdate> : UpdateItemType<TUpdate>
     {
+        /// <summary>
+        /// The update object.
+        /// </summary>
         public TUpdate Update { get; set; }
 
         /// <summary>
@@ -27,7 +30,11 @@ namespace CogniteSdk
     /// Update using internal Id
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
-    public class UpdateByExternalId<TUpdate> : UpdateItemType<TUpdate> {
+    public class UpdateByExternalId<TUpdate> : UpdateItemType<TUpdate>
+    {
+        /// <summary>
+        /// The update object.
+        /// </summary>
         public TUpdate Update { get; set; }
 
         /// <summary>

@@ -13,14 +13,22 @@ namespace CogniteSdk
     /// The update class for setting values.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SetUpdate<T> : UpdateType<T> {
+    public class SetUpdate<T> : UpdateType<T>
+    {
+        /// <summary>
+        /// The property set in the update object.
+        /// </summary>
         public T Set { get; set; }
     }
 
     /// <summary>
     /// The update class for clearing values.
     /// </summary>
-    public class SetNullUpdate<T> : UpdateType<T> {
+    public class SetNullUpdate<T> : UpdateType<T>
+    {
+        /// <summary>
+        /// The property set to null in the update object.
+        /// </summary>
         public T SetNull { get; set; }
     }
 }

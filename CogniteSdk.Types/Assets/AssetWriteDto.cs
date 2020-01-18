@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
 {
+    /// <summary>
+    /// Dto for creating a new asset.
+    /// </summary>
     public class AssetWriteDto
     {
         /// <summary>

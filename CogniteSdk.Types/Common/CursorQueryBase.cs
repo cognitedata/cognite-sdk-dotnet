@@ -21,6 +21,30 @@ namespace CogniteSdk
         public string Cursor { get; set; }
 
         /// <summary>
+        /// Create new query object with limit set.
+        /// </summary>
+        /// <param name="limit">The limit to set.</param>
+        /// <returns>The new object with limit set.</returns>
+        public T WithLimit<T>(int limit) where T : CursorQueryBase
+        {
+            var newQuery = (T)this.MemberwiseClone();
+            newQuery.Limit = limit;
+            return newQuery;
+        }
+
+        /// <summary>
+        /// Add cursor to the query object.
+        /// </summary>
+        /// <param name="cursor">The cursor to set.</param>
+        /// <returns>The query object with cursor set.</returns>
+        public T WithCursor<T>(string cursor) where T : CursorQueryBase
+        {
+            var newQuery = (T)this.MemberwiseClone();
+            newQuery.Cursor = cursor;
+            return newQuery;
+        }
+
+        /// <summary>
         /// Convert query class to sequence of query parameter tuples.
         /// </summary>
         /// <returns>Key/value tuple sequence of all properties set in the query object.</returns>
