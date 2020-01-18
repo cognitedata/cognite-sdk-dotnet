@@ -2,4 +2,6 @@ group Playground
     FsConfig
     Microsoft.Extensions.Configuration
     FSharp.Core
-
+    Oryx
+    Oryx.Protobuf
+    CogniteSdk.Protobuf

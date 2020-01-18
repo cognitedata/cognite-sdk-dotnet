@@ -39,6 +39,9 @@ group Test
     nuget xunit ~> 2
     nuget xunit.runner.visualstudio ~> 2
     nuget Microsoft.NET.Test.Sdk ~> 16
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
 
 group Playground
     source https://www.nuget.org/api/v2
@@ -47,6 +50,10 @@ group Playground
     nuget FSharp.Core ~> 4.7
     nuget FsConfig ~> 2
     nuget Microsoft.Extensions.Configuration ~> 3
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
+    nuget CogniteSdk.Protobuf
 
 group FSharp
     source https://www.nuget.org/api/v2
