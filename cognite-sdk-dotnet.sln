@@ -9,9 +9,9 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Oryx.Cognite", "Oryx.Cognit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk.Test.Integration.FSharp", "CogniteSdk\test\integration\fsharp\CogniteSdk.Test.Integration.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk.Test.FSharp", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.Integration.CSharp", "CogniteSdk\test\integration\csharp\CogniteSdk.Test.Integration.csproj", "{45676171-B050-4E3F-9601-9390E7DA9AAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{45676171-B050-4E3F-9601-9390E7DA9AAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
