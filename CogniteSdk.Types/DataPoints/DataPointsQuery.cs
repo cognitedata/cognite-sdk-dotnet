@@ -8,7 +8,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query base class.
     /// </summary>
-    public class DataPointsQueryBase
+    public class DataPointsQueryType
     {
         /// <summary>
         /// Get datapoints starting from, and including, this time. The format is N[timeunit]-ago where timeunit is
@@ -51,13 +51,12 @@ namespace CogniteSdk.TimeSeries
         /// </summary>
         /// <value></value>
         public bool? IncludeOutsidePoints { get; set; }
-
     }
 
     /// <summary>
     /// The data points query by Id.
     /// </summary>
-    public class DataPointsQueryById : DataPointsQueryBase
+    public class DataPointsQueryById : DataPointsQueryType
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -68,7 +67,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query by External Id.
     /// </summary>
-    public class DataPointsQueryByExernalId : DataPointsQueryBase
+    public class DataPointsQueryByExernalId : DataPointsQueryType
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -79,12 +78,12 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query.
     /// </summary>
-    public class DataPointsQuery : DataPointsQueryBase
+    public class DataPointsQuery : DataPointsQueryType
     {
         /// <summary>
         /// Sequence of DataPointsQueryById or DataPointsQueryByExernalId
         /// </summary>
-        public IEnumerable<DataPointsQueryBase> Items { get; set; }
+        public IEnumerable<DataPointsQueryType> Items { get; set; }
 
         /// <summary>
         /// Ignore IDs and external IDs that are not found.

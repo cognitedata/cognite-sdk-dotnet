@@ -9,7 +9,8 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Oryx.Cognite/src/Oryx.Cognite.fsproj" />
+    <ProjectReference Include="../../CogniteSdk/src/CogniteSdk.csproj" />
+    <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

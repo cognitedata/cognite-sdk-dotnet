@@ -8,7 +8,7 @@ namespace CogniteSdk.DataPoints
     public abstract class DataPointsWriteType
     {
         /// <summary>
-        /// The list of datapoints. The limit per request is 100000 data points.
+        /// The list of data points. The limit per request is 100000 data points.
         /// </summary>
         public IEnumerable<DataPointType> DataPoints { get; set; }
     }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.DataPoints
@@ -5,7 +6,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points DTO.
     /// </summary>
-    public class DataPointsReadDto
+    public class DataPointsReadDto<TType>
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -37,6 +38,6 @@ namespace CogniteSdk.DataPoints
         /// The list of datapoints.
         /// </summary>
         [JsonPropertyName("datapoints")]
-        public DataPointNumericDto DataPoints { get; set; }
+        public IEnumerable<TType> DataPoints { get; set; }
     }
 }

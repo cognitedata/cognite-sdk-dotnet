@@ -5,13 +5,8 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The aggregate data point DTO.
     /// </summary>
-    public class DataPointAggregateDto
+    public class DataPointAggregateDto : DataPointType
     {
-        /// <summary>
-        /// A server-generated ID for the object.
-        /// </summary>
-        public long Timestamp { get; set; }
-
         /// <summary>
         /// The integral average value in the aggregate period.
         /// </summary>
