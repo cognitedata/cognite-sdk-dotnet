@@ -8,8 +8,6 @@ open System.Net.Http
 open Oryx.Cognite
 
 open System.Collections.Generic
-open System.Collections.Generic
-open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Assets
 
@@ -34,7 +32,7 @@ module Assets =
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let list (query: AssetQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
-        list query Url 
+        list query Url
 
     /// <summary>
     /// Create new assets in the given project.
