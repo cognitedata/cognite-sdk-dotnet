@@ -6,7 +6,6 @@ open System.Net.Http
 open CogniteSdk
 
 module Common =
-
     let createClient apiKey project url =
         let httpClient = new HttpClient();
         Client.Builder.Create(httpClient)
