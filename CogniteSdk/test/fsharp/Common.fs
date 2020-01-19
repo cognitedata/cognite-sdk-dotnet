@@ -38,3 +38,7 @@ module Result =
         | Error _ -> false
 
     let isError res = not (isOk res)
+
+    let getError = function
+        | Error e -> e
+        | Ok a -> failwith "Result is not error"

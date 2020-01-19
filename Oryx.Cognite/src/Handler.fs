@@ -156,17 +156,17 @@ module Handler =
             let! ret = post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
             return ret.Items
         }
-        
+
     let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = post<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
             return ret.Items
         }
- 
+
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
-        
+
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

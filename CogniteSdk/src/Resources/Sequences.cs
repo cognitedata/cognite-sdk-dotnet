@@ -63,7 +63,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Sequences.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// Delete multiple sequences in the same project.
         /// </summary>
@@ -71,10 +71,10 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var req = internalIds.Select(Identity.Id);
+            var req = internalIds.Select(Identity.CreateId);
             return await DeleteAsync(req, token);
         }
-        
+
         /// <summary>
         /// Delete multiple sequences in the same project.
         /// </summary>
@@ -82,11 +82,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> internalIds, CancellationToken token = default)
         {
-            var req = internalIds.Select(Identity.ExternalId);
+            var req = internalIds.Select(Identity.CreateExternalId);
             return await DeleteAsync(req, token);
         }
         #endregion
-        
+
         #region Retrieve overloads
         /// <summary>
         /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
@@ -99,7 +99,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Sequences.retrieve<IEnumerable<SequenceReadDto>>(ids);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
         /// request and all of them must be unique.
@@ -108,7 +108,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var req = internalIds.Select(Identity.Id);
+            var req = internalIds.Select(Identity.CreateId);
             return await RetrieveAsync(req, token);
         }
 
@@ -120,7 +120,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var req = externalIds.Select(Identity.ExternalId);
+            var req = externalIds.Select(Identity.CreateExternalId);
             return await RetrieveAsync(req, token);
         }
         #endregion

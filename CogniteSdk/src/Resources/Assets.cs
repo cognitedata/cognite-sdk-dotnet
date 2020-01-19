@@ -75,7 +75,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Assets.delete<EmptyResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
-        
+
         /// <summary>
         /// Delete multiple assets in the same project by identity items.
         /// </summary>
@@ -86,7 +86,7 @@ namespace CogniteSdk.Resources
             var query = new AssetDeleteDto() { Items = items };
             return await DeleteAsync(query, token);
         }
-        
+
         /// <summary>
         /// Delete multiple assets in the same project by internal ids.
         /// </summary>
@@ -94,10 +94,10 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var query = new AssetDeleteDto() { Items = internalIds.Select(id => new IdentityId(id)) };
+            var query = new AssetDeleteDto() { Items = internalIds.Select(Identity.CreateId) };
             return await DeleteAsync(query, token);
         }
-        
+
         /// <summary>
         /// Delete multiple assets in the same project by external ids.
         /// </summary>
@@ -105,7 +105,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var query = new AssetDeleteDto() { Items = externalIds.Select(id => new IdentityExternalId(id)) };
+            var query = new AssetDeleteDto() { Items = externalIds.Select(Identity.CreateExternalId) };
             return await DeleteAsync(query, token);
         }
         #endregion
@@ -131,10 +131,10 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var ids = internalIds.Select(id => new IdentityId(id));
+            var ids = internalIds.Select(Identity.CreateId);
             return await RetrieveAsync(ids, token);
         }
-        
+
         /// <summary>
         /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
         /// request and all of them must be unique.
@@ -143,7 +143,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var ids = externalIds.Select(id => new IdentityExternalId(id));
+            var ids = externalIds.Select(Identity.CreateExternalId);
             return await RetrieveAsync(ids, token);
         }
         #endregion

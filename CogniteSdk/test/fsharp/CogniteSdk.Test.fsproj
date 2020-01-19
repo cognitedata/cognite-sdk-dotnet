@@ -6,6 +6,8 @@
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Common.fs" />
+    <Compile Include="Assets.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

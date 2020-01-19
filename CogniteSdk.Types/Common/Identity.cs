@@ -1,19 +1,88 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace CogniteSdk {
     /// <summary>
-    /// Abstract base for Identity case classes.
+    /// Identity class. Set either Id or ExternalId.
     /// </summary>
-    public abstract class Identity
+    public class Identity
     {
+        /// <summary>
+        /// Creates an empty identity with both properties null.
+        /// </summary>
+        public Identity()
+        {
+            ExternalId = null;
+            Id = null;
+        }
+
+        /// <summary>
+        /// Creates an identity with externalId set.
+        /// </summary>
+        /// <param name="externalId">The externalId to set</param>
+        public Identity(string externalId)
+        {
+            ExternalId = externalId;
+        }
+
+        /// <summary>
+        /// Creates an identity with internalId set.
+        /// </summary>
+        /// <param name="internalId">The internalId to set</param>
+        public Identity(long internalId)
+        {
+            Id = internalId;
+        }
+
+        private long? id;
+        /// <summary>
+        /// Identity with internal id.
+        /// </summary>
+        public long? Id
+        {
+            get { return id; }
+            set
+            {
+                if (Id == null)
+                {
+                    id = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot set Id when ExternalId is already set.");
+                }
+            }
+        }
+        private string externalId;
+
+        /// <summary>
+        /// Identity with externalId
+        /// </summary>
+        public string ExternalId
+        {
+            get { return externalId; }
+            set
+            {
+                if (Id == null)
+                {
+                    externalId = value;
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot set externalId when Id is already set.");
+                }
+            }
+        }
+
+
         /// <summary>
         /// Create new external Id.
         /// </summary>
         /// <param name="externalId">External id value</param>
         /// <returns>New external Id.</returns>
-        public static IdentityExternalId ExternalId(string externalId)
+        public static Identity CreateExternalId(string externalId)
         {
-            return new IdentityExternalId(externalId);
+            return new Identity(externalId);
         }
 
         /// <summary>
@@ -21,45 +90,9 @@ namespace CogniteSdk {
         /// </summary>
         /// <param name="internalId">Internal id value</param>
         /// <returns>New internal Id.</returns>
-        public static IdentityId Id(long internalId)
+        public static Identity CreateId(long internalId)
         {
-            return new IdentityId(internalId);
+            return new Identity(internalId);
         }
-    }
-
-    /// <summary>
-    /// The Id case class.
-    /// </summary>
-    public class IdentityId : Identity {
-        /// <summary>
-        /// The IdentityId constructor.
-        /// </summary>
-        /// <param name="id">The Id value to use.</param>
-        public IdentityId (long id) {
-            Id = id;
-        }
-
-        /// <summary>
-        /// A server-generated ID for the object.
-        /// </summary>
-        public new long Id { get; set; }
-    }
-
-    /// <summary>
-    /// The ExternalId case class.
-    /// </summary>
-    public class IdentityExternalId : Identity {
-        /// <summary>
-        /// The IdentityExternalId constructor.
-        /// </summary>
-        /// <param name="externalId">The ExternalId value to use.</param>
-        public IdentityExternalId (string externalId) {
-            ExternalId = externalId;
-        }
-
-        /// <summary>
-        /// The external ID provided by the client. Must be unique for the resource type.
-        /// </summary>
-        public new string ExternalId { get; set; }
     }
 }
