@@ -1,3 +1,6 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
 
 namespace CogniteSdk.DataPoints
@@ -8,13 +11,13 @@ namespace CogniteSdk.DataPoints
     public abstract class DataPointsWriteType
     {
         /// <summary>
-        /// The list of datapoints. The limit per request is 100000 data points.
+        /// The list of data points. The limit per request is 100000 data points.
         /// </summary>
         public IEnumerable<DataPointType> DataPoints { get; set; }
     }
 
     /// <summary>
-    /// Data Points abstract write by Id DTO
+    /// Data points abstract write by Id DTO
     /// </summary>
     public abstract class DataPointsWriteByIdDto
     {
@@ -25,7 +28,7 @@ namespace CogniteSdk.DataPoints
     }
 
     /// <summary>
-    /// Data Points abstract write by External Id DTO
+    /// Data points abstract write by External Id DTO
     /// </summary>
     public abstract class DataPointsWriteByExternalIdDto
     {

@@ -8,7 +8,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query base class.
     /// </summary>
-    public class DataPointsQueryBase
+    public class DataPointsQueryType
     {
         /// <summary>
         /// Get datapoints starting from, and including, this time. The format is N[timeunit]-ago where timeunit is
@@ -46,18 +46,17 @@ namespace CogniteSdk.TimeSeries
         public string Granularity { get; set; }
 
         /// <summary>
-        /// Whether to include the last datapoint before the requested time period, and the first one after. This option
-        /// is useful for interpolating data. It is not available for aggregates.
+        /// Whether to include the last data point before the requested time period, and the first one after. This
+        /// option is useful for interpolating data. It is not available for aggregates.
         /// </summary>
         /// <value></value>
         public bool? IncludeOutsidePoints { get; set; }
-
     }
 
     /// <summary>
     /// The data points query by Id.
     /// </summary>
-    public class DataPointsQueryById : DataPointsQueryBase
+    public class DataPointsQueryById : DataPointsQueryType
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -68,7 +67,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query by External Id.
     /// </summary>
-    public class DataPointsQueryByExernalId : DataPointsQueryBase
+    public class DataPointsQueryByExternalId : DataPointsQueryType
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -79,17 +78,17 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The data points query.
     /// </summary>
-    public class DataPointsQuery : DataPointsQueryBase
+    public class DataPointsQuery : DataPointsQueryType
     {
         /// <summary>
-        /// Sequence of DataPointsQueryById or DataPointsQueryByExernalId
+        /// Sequence of data point queries of type <see cref="DataPointsQueryById">DataPointsQueryById</see> or
+        /// <see cref="DataPointsQueryByExternalId">DataPointsQueryByExternalId</see>.
         /// </summary>
-        public IEnumerable<DataPointsQueryBase> Items { get; set; }
+        public IEnumerable<DataPointsQueryType> Items { get; set; }
 
         /// <summary>
-        /// Ignore IDs and external IDs that are not found.
+        /// If true, then ignore IDs and external IDs that are not found.
         /// </summary>
-        /// <value></value>
         public bool? IgnoreUnknownIds { get; set; }
     }
 }

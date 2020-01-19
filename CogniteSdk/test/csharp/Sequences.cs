@@ -126,10 +126,14 @@ namespace Test.CSharp.Integration
                 },
                 ExternalId = externalIdString
             };
-            var delete = new SequenceDeleteDto() { Id = Identity.ExternalId(externalIdString), Rows = new List<Int64> { 1L } };
+            var delete = new SequenceRowDeleteByExternalIdDto()
+            {
+                ExternalId = externalIdString, 
+                Rows = new List<long> { 1L }
+            };
 
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceEntity>() { sequence });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWriteDto> { sequence });
 
             await WriteClient.Sequences.InsertRowsAsync(new List<SequenceDataWriteEntity> { data });
             await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceDataDeleteEntity> { delete });

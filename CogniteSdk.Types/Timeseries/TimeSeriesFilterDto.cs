@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace CogniteSdk.TimeSeries
 {
+    /// <summary>
+    /// The time series filter DTO.
+    /// </summary>
     public class TimeSeriesFilterDto
     {
         /// <summary>

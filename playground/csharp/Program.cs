@@ -17,13 +17,10 @@ namespace csharp {
                 ExternalId = externalId,
                 Name = name
             };
-            var assets = new ItemsWithoutCursor<AssetWriteDto>()
-            {
-                Items = new List<AssetWriteDto> { asset }
-            };
-
+            var assets = new List<AssetWriteDto> {asset};
+            
             var result = await client.Assets.CreateAsync(assets);
-            var newAsset = result.Items.FirstOrDefault();
+            var newAsset = result.FirstOrDefault();
 
             Console.WriteLine(newAsset.Name);
         }
