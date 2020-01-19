@@ -10,6 +10,7 @@ open Oryx.Cognite
 open System.Collections.Generic
 open System.Collections.Generic
 open CogniteSdk
+open CogniteSdk.DataPoints
 open CogniteSdk.TimeSeries
 
 /// Various time series HTTP handlers
@@ -19,54 +20,41 @@ module DataPoints =
     [<Literal>]
     let Url = "/timeseries/data"
 
-    /// <summary>
-    /// Retrieves list of time series matching filter, and a cursor if given limit is exceeded
-    /// </summary>
-    /// <param name="query">The query to use.</param>
-    /// <returns>List of time series matching given filters and optional cursor</returns>
-    let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
+    /// Retrieves a list of data points from multiple time series in a project. This operation supports aggregation, but not pagination.
+    let list (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointsReadDto<DataPointNumericDto>, 'a> =
         list query Url
+    
+    /// Retrieves a list of data points from multiple time series in a project. This operation supports aggregation, but not pagination.
+    let listStrings (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointsReadDto<DataPointStringDto>, 'a> =
+        Handler.list query Url
+
+    /// Retrieves a list of data points from multiple time series in a project. This operation supports aggregation, but not pagination.
+    let listAggregates (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointsReadDto<DataPointAggregateDto>, 'a> =
+        Handler.list query Url
 
     /// <summary>
-    /// Create one or more new timeseries.
+    /// Create one or more new times eries.
     /// </summary>
-    /// <param name="items">The list of timeseries to create.</param>
+    /// <param name="items">The list of time series to create.</param>
     /// <param name="next">Async handler to use.</param>
-    /// <returns>List of created timeseries.</returns>
+    /// <returns>List of created time series.</returns>
 
     let create (items: IEnumerable<TimeSeriesWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
         create items Url
 
     /// <summary>
-    /// Delete one or more timeseries.
+    /// Delete one or more time series.
     /// </summary>
     /// <param name="items">List of timeseries ids to delete.</param>
     let delete (items: TimeSeriesDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete items Url
 
     /// <summary>
-    /// Retrieves information about multiple timeseries in the same project.
+    /// Retrieves information about multiple time series in the same project.
     /// A maximum of 1000 timeseries IDs may be listed per request and all
     /// of them must be unique.
     /// </summary>
-    /// <param name="ids">The ids of the timeseries to get.</param>
-    /// <returns>The timeseries with the given ids.</returns>
+    /// <param name="ids">The ids of the time series to get.</param>
+    /// <returns>The time series with the given ids.</returns>
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
         retrieve ids Url
-
-    /// <summary>
-    /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
-    /// </summary>
-    /// <param name="query">Time series search query.</param>
-    /// <returns>List of time series matching given criteria.</returns>
-    let search (query: SearchQueryDto<TimeSeriesFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
-        search query Url
-
-    /// <summary>
-    /// Updates multiple timeseries within the same project.
-    /// This operation supports partial updates, meaning that fields omitted from the requests are not changed
-    /// <param name="timeseries">List of tuples of timeseries id to update and updates to perform on that timeseries.</param>
-    /// <returns>List of updated timeseries.</returns>
-    let update (query: IEnumerable<UpdateItemType<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a>  =
-        update query Url
-

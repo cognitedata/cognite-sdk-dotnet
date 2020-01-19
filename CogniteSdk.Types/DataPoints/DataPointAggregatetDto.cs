@@ -1,4 +1,5 @@
-using System.Text.Json.Serialization;
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
 
 namespace CogniteSdk.DataPoints
 {

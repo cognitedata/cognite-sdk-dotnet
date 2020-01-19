@@ -148,5 +148,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Sequences.update<IEnumerable<SequenceReadDto>>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
+        
+        //public async Task<IEnumerable<SequenceDataReadDto>> ListRowsAsync
     }
 }

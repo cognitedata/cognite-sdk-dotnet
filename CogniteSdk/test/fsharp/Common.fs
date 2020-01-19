@@ -1,4 +1,4 @@
-module Tests.Integration.Common
+module Tests.Integration
 
 open System
 open System.Net.Http
@@ -6,31 +6,33 @@ open System.Net.Http
 open Oryx
 open CogniteSdk
 
-let createClient apiKey project url =
-    let httpClient = new HttpClient();
-    Client.Builder.Create(httpClient)
-        .SetAppId("TestApp")
-        .AddHeader("api-key", apiKey)
-        .SetProject(project)
-        .SetServiceUrl(url)
-        .Build();
+module Common =
 
-let readClient =
-    createClient
-        (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
-        "publicdata"
-        "https://api.cognitedata.com"
+    let createClient apiKey project url =
+        let httpClient = new HttpClient();
+        Client.Builder.Create(httpClient)
+            .SetAppId("TestApp")
+            .AddHeader("api-key", apiKey)
+            .SetProject(project)
+            .SetServiceUrl(url)
+            .Build();
 
-let writeClient =
-    createClient
-        (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
-        "fusiondotnet-tests"
-        "https://greenfield.cognitedata.com"
+    let readClient =
+        createClient
+            (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
+            "publicdata"
+            "https://api.cognitedata.com"
 
-let optionToSeq (o: 'a option): 'a seq =
-    match o with
-    | Some a -> Seq.ofList [ a ]
-    | None -> Seq.empty
+    let writeClient =
+        createClient
+            (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
+            "fusiondotnet-tests"
+            "https://greenfield.cognitedata.com"
+
+    let optionToSeq (o: 'a option): 'a seq =
+        match o with
+        | Some a -> Seq.ofList [ a ]
+        | None -> Seq.empty
 
 [<RequireQualifiedAccess>]
 module Result =

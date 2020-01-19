@@ -16,6 +16,7 @@
     <Compile Include="Handler.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="TimeSeries.fs" />
+    <Compile Include="DataPoints.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Raw.fs" />
     <Compile Include="Files.fs" />

@@ -1,3 +1,6 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -6,7 +9,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points DTO.
     /// </summary>
-    public class DataPointsReadDto<TType>
+    public class DataPointsReadDto<TType> where TType : DataPointType
     {
         /// <summary>
         /// A server-generated ID for the object.

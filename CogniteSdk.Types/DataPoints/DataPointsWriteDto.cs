@@ -1,3 +1,6 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
 
 namespace CogniteSdk.DataPoints
@@ -14,7 +17,7 @@ namespace CogniteSdk.DataPoints
     }
 
     /// <summary>
-    /// Data Points abstract write by Id DTO
+    /// Data points abstract write by Id DTO
     /// </summary>
     public abstract class DataPointsWriteByIdDto
     {
@@ -25,7 +28,7 @@ namespace CogniteSdk.DataPoints
     }
 
     /// <summary>
-    /// Data Points abstract write by External Id DTO
+    /// Data points abstract write by External Id DTO
     /// </summary>
     public abstract class DataPointsWriteByExternalIdDto
     {
