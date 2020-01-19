@@ -1,4 +1,4 @@
-module Tests.Integration
+namespace Tests.Integration
 
 open System
 open System.Net.Http
