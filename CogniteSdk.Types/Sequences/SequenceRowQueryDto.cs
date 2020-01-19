@@ -6,7 +6,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence row query base type. Either SequenceRowQueryByIdDto or SequenceRowQueryByExternalIdDto.
     /// </summary>
-    public class SequenceRowQueryType : CursorQueryBase 
+    public class SequenceRowQuery : CursorQueryBase 
     {
         /// <summary>
         /// Lowest row number included.
@@ -28,24 +28,7 @@ namespace CogniteSdk.Sequences
         /// A server-generated ID for the object.
         /// </summary>
         public long Id { get; set; }
-    }
     
-    /// <summary>
-    /// The Sequence row query by Id DTO.
-    /// </summary>
-    public class SequenceRowQueryByIdDto : CursorQueryBase
-    {
-        /// <summary>
-        /// A server-generated ID for the object.
-        /// </summary>
-        public long Id { get; set; }
-    }
-    
-    /// <summary>
-    /// The Sequence row query by external id DTO.
-    /// </summary>
-    public class SequenceRowQueryByExternalIdDto : CursorQueryBase
-    {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>

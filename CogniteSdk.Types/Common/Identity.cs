@@ -40,7 +40,7 @@ namespace CogniteSdk {
         /// </summary>
         public long? Id
         {
-            get { return id; }
+            get => id;
             set
             {
                 if (Id == null)
@@ -60,7 +60,7 @@ namespace CogniteSdk {
         /// </summary>
         public string ExternalId
         {
-            get { return externalId; }
+            get => externalId;
             set
             {
                 if (Id == null)
@@ -80,7 +80,7 @@ namespace CogniteSdk {
         /// </summary>
         /// <param name="externalId">External id value</param>
         /// <returns>New external Id.</returns>
-        public static Identity CreateExternalId(string externalId)
+        public static Identity Create(string externalId)
         {
             return new Identity(externalId);
         }
@@ -90,7 +90,7 @@ namespace CogniteSdk {
         /// </summary>
         /// <param name="internalId">Internal id value</param>
         /// <returns>New internal Id.</returns>
-        public static Identity CreateId(long internalId)
+        public static Identity Create(long internalId)
         {
             return new Identity(internalId);
         }

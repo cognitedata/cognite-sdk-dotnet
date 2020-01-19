@@ -94,7 +94,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var query = new AssetDeleteDto() { Items = internalIds.Select(Identity.CreateId) };
+            var query = new AssetDeleteDto() { Items = internalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token);
         }
 
@@ -105,7 +105,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var query = new AssetDeleteDto() { Items = externalIds.Select(Identity.CreateExternalId) };
+            var query = new AssetDeleteDto() { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token);
         }
         #endregion
@@ -131,7 +131,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var ids = internalIds.Select(Identity.CreateId);
+            var ids = internalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token);
         }
 
@@ -143,7 +143,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var ids = externalIds.Select(Identity.CreateExternalId);
+            var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token);
         }
         #endregion

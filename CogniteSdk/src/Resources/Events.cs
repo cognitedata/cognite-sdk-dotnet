@@ -96,7 +96,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
-            var req = internalIds.Select(Identity.CreateId);
+            var req = internalIds.Select(Identity.Create);
             return await RetrieveAsync(req, token);
         }
 
@@ -108,7 +108,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var req = externalIds.Select(Identity.CreateExternalId);
+            var req = externalIds.Select(Identity.Create);
             return await RetrieveAsync(req, token);
         }
         #endregion

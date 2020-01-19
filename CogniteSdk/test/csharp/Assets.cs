@@ -116,7 +116,7 @@ namespace Test.CSharp.Integration {
             var query = new AssetQueryDto() {
                 Limit = numOfAssets,
                 Filter = new AssetFilterDto() {
-                    RootIds = new List<Identity>() { Identity.Id(id) }
+                    RootIds = new List<Identity>() { Identity.Create(id) }
                 }
             };
 
@@ -141,7 +141,7 @@ namespace Test.CSharp.Integration {
             };
             var deletes = new AssetDeleteDto
             {
-                Items = new List<Identity>() {Identity.ExternalId(externalIdString)}
+                Items = new List<Identity>() {Identity.Create(externalIdString)}
             };
 
             // Act
@@ -163,7 +163,7 @@ namespace Test.CSharp.Integration {
 
             var query = new AssetDeleteDto
             {
-                Items = new List<Identity> { Identity.Id(id) }
+                Items = new List<Identity> { Identity.Create(id) }
             };
             
             // Act
