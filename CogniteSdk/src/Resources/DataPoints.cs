@@ -4,10 +4,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
+using CogniteSdk.DataPoints;
 using static Oryx.Cognite.HandlerModule;
 using CogniteSdk.TimeSeries;
-
+using Com.Cognite.V1.Timeseries.Proto;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -15,7 +15,7 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// Contains all data points methods.
     /// </summary>
-    public class TimeSeries
+    public class DataPoints
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal TimeSeries(HttpContext ctx)
+        internal DataPoints(HttpContext ctx)
         {
             _ctx = ctx;
         }
@@ -33,29 +33,29 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
-        /// <returns>List of time series matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<TimeSeriesReadDto>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public async Task<DataPointListResponse> ListAsync(DataPointsQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.list<ItemsWithCursor<TimeSeriesReadDto>>(query);
+            var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
-        /// Create 1 or more time series.
+        /// Create assets.
         /// </summary>
-        /// <param name="timeseries">Time series to create.</param>
+        /// <param name="assets">Time series to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<TimeSeriesReadDto>> CreateAsync(IEnumerable<TimeSeriesWriteDto> timeseries, CancellationToken token = default)
+        public async Task<IEnumerable<TimeSeriesReadDto>> CreateAsync(IEnumerable<TimeSeriesWriteDto> assets, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeriesReadDto>>(timeseries);
+            var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeriesReadDto>>(assets);
             return await runUnsafeAsync(req, _ctx, token);
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
         /// </summary>
-        /// <param name="query">The list of timeseries to delete.</param>
+        /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
         {
@@ -88,12 +88,12 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Updates multiple time series within the same project. This operation supports partial updates, meaning that
+        /// Updates multiple timeseries within the same project. This operation supports partial updates, meaning that
         /// fields omitted from the requests are not changed
         /// </summary>
-        /// <param name="query">The list of timeseries to update.</param>
+        /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of updated timeseries.</returns>
+        /// <returns>List of updated assets.</returns>
         public async Task<IEnumerable<TimeSeriesReadDto>> UpdateAsync (IEnumerable<UpdateItemType<TimeSeriesUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.TimeSeries.update<IEnumerable<TimeSeriesReadDto>>(query);

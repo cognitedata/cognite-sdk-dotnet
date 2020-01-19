@@ -9,7 +9,7 @@ group Sdk
     nuget Microsoft.Extensions.Http
     nuget Oryx prerelease
 
-group Core
+group Oryx.Cognite
     source https://www.nuget.org/api/v2
     storage: none
     framework: netstandard2.0

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Net.Http;
+using System.Resources;
 using Oryx;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
@@ -25,10 +26,14 @@ namespace CogniteSdk
         /// </summary>
         public Resources.TimeSeries TimeSeries { get; }
 
-        // Client DataPoints extension methods
-        //public DataPoints.ClientExtension DataPoints { get; }
+        /// <summary>
+        /// Client DataPoints extension methods
+        /// </summary>
+        public Resources.DataPoints DataPoints { get; }
 
-        /// Client Events extension methods
+        /// <summary>
+        /// Client Events extension methods.
+        /// </summary>
         public Resources.Events Events { get; }
 
         // Client Login extension methods
@@ -58,9 +63,10 @@ namespace CogniteSdk
             // Setup extension methods.
             Assets = new Resources.Assets(ctx);
             TimeSeries = new Resources.TimeSeries(ctx);
+            DataPoints =new Resources.DataPoints(ctx);
             Events = new Resources.Events(ctx);
-            Raw = new Resources.Raw(ctx);
             Sequences = new Resources.Sequences(ctx);
+            Raw = new Resources.Raw(ctx);
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace CogniteSdk.DataPoints
         public long Id { get; set; }
 
         /// <summary>
-        /// The external ID of the time series the datapoints belong to.
+        /// The external ID of the time series the data points belong to.
         /// </summary>
         public string ExternalId { get; set; }
 

@@ -25,5 +25,5 @@
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
   </ItemGroup>
-  <Import Project="../../.paket/Paket.Restore.targets" />
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

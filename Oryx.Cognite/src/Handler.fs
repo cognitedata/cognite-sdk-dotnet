@@ -17,8 +17,9 @@ open Oryx
 open Oryx.Retry
 open Oryx.SystemTextJson
 open Oryx.SystemTextJson.ResponseReader
+open Oryx.Protobuf
+open Oryx.Protobuf.ResponseReader
 
-open CogniteSdk
 open CogniteSdk
 
 
@@ -166,6 +167,15 @@ module Handler =
 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
+
+    let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> protobuf parser
 
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
