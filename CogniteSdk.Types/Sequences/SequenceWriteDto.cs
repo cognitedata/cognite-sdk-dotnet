@@ -11,9 +11,9 @@ namespace CogniteSdk.Sequences
     public class SequenceWriteDto
     {
         /// <summary>
-        /// The Id of the sequence
+        /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
-        public long Id { get; set; }
+        public string ExternalId { get; set; }
 
         /// <summary>
         /// The name of the sequence.
@@ -31,11 +31,6 @@ namespace CogniteSdk.Sequences
         public long AssetId { get; set; }
 
         /// <summary>
-        /// The externalId of the sequence. Must be unique within the project.
-        /// </summary>
-        public string ExternalId { get; set; }
-
-        /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
@@ -43,6 +38,6 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// List of column definitions.
         /// </summary>
-        public IEnumerable<SequenceColumnDto> Columns { get; set; }
+        public IEnumerable<SequenceColumnWriteDto> Columns { get; set; }
     }
 }

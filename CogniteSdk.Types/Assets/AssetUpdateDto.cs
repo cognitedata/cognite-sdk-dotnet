@@ -10,37 +10,37 @@ namespace CogniteSdk.Assets
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public UpdateType<string> ExternalId { get; set; }
+        public Update<string> ExternalId { get; set; }
 
         /// <summary>
         /// Set a new value for the string.
         /// </summary>
-        public UpdateType<string> Name { get; set; }
+        public Update<string> Name { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public UpdateType<string> Description { get; set; }
+        public Update<string> Description { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public UpdateType<IDictionary<string, string>> Metadata { get; set; }
+        public Update<IDictionary<string, string>> Metadata { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public UpdateType<string> Source { get; set; }
+        public Update<string> Source { get; set; }
 
         /// <summary>
         /// Change the ID of the object.
         /// </summary>
-        public UpdateType<long> ParentId { get; set; }
+        public Update<long> ParentId { get; set; }
 
         /// <summary>
         /// Change the external ID of the object.
         /// </summary>
-        public UpdateType<long> ParentExternalId { get; set; }
+        public Update<long> ParentExternalId { get; set; }
     }
 }

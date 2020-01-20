@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices;
 
 namespace CogniteSdk {
     /// <summary>
@@ -7,14 +6,8 @@ namespace CogniteSdk {
     /// </summary>
     public class Identity
     {
-        /// <summary>
-        /// Creates an empty identity with both properties null.
-        /// </summary>
-        public Identity()
-        {
-            ExternalId = null;
-            Id = null;
-        }
+        private long? _id;
+        private string _externalId;
 
         /// <summary>
         /// Creates an identity with externalId set.
@@ -34,45 +27,37 @@ namespace CogniteSdk {
             Id = internalId;
         }
 
-        private long? id;
-
         /// <summary>
         /// Identity with internal id.
         /// </summary>
         public long? Id
         {
-            get => id;
+            get => _id;
             set
             {
-                if (Id == null)
+                if (_externalId != null)
                 {
-                    id = value;
+                    throw new ArgumentException($"Cannot set Id ({value}) when ExternalId ({_externalId}) is already set."); 
                 }
-                else
-                {
-                    throw new ArgumentException("Cannot set Id when ExternalId is already set.");
-                }
+
+                _id = value;
             }
         }
-
-        private string externalId;
 
         /// <summary>
         /// Identity with externalId
         /// </summary>
         public string ExternalId
         {
-            get => externalId;
+            get => _externalId;
             set
             {
-                if (Id == null)
+                if (_id.HasValue)
                 {
-                    externalId = value;
+                    throw new ArgumentException($"Cannot set externalId ({value}) when Id ({_id}) is already set.");                    
                 }
-                else
-                {
-                    throw new ArgumentException("Cannot set externalId when Id is already set.");
-                }
+                
+                _externalId = value;
             }
         }
 

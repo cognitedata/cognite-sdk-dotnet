@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Xunit;
@@ -202,10 +200,10 @@ namespace Test.CSharp.Integration {
                     ExternalId = externalIdString,
                     Update = new AssetUpdateDto()
                     {
-                        Name = new SetUpdate<string> { Set = newName },
-                        Metadata = new SetUpdate<IDictionary<string, string>>
+                        Name = new Update<string> { Set = newName },
+                        Metadata = new Update<IDictionary<string, string>>
                         {
-                            Set = newMetadata
+                            Add = newMetadata
                         }
                     }
                 }
