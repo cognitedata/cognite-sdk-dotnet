@@ -23,7 +23,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// Column information in order given by data.
         /// </summary>
-        public IEnumerable<string> Columns { get; set; }
+        public IEnumerable<SequenceColumnInfoDto> Columns { get; set; }
 
         /// <summary>
         /// List of row information.

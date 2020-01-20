@@ -159,7 +159,7 @@ namespace Test.CSharp.Integration
             // Assert
             Assert.True(res.Columns.Count() > 0);
             Assert.Equal("sdk-test", res.ExternalId);
-            Assert.Equal("sdk-test-column", res.Columns.First());
+            Assert.Equal("sdk-test-column", res.Columns.First().Name);
         }
     }
 }

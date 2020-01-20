@@ -203,7 +203,8 @@ namespace Test.CSharp.Integration {
                         Name = new Update<string> { Set = newName },
                         Metadata = new Update<IDictionary<string, string>>
                         {
-                            Add = newMetadata
+                            Add = newMetadata,
+                            Remove = new List<string> { "oldkey1" }
                         }
                     }
                 }

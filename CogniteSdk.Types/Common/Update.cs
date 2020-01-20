@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 
 namespace CogniteSdk
 {
@@ -52,6 +53,6 @@ namespace CogniteSdk
         }
 
         public T Add { get; set; }
-        public T Remove { get; set; }
+        public IEnumerable<string> Remove { get; set; }
     }
 }
