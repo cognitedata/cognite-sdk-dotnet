@@ -18,11 +18,7 @@ module Assets =
     [<Literal>]
     let Url = "/assets"
 
-    /// <summary>
-    /// Retrieves information about an asset given an asset id.
-    /// </summary>
-    /// <param name="assetId">The id of the asset to get.</param>
-    /// <returns>Asset with the given id.</returns>
+    /// Retrieves information about an asset given an asset id. Returns asset with the given id.
     let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
         getById assetId Url
 
@@ -39,7 +35,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (items: IEnumerable<AssetWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
+    let create (items: AssetWriteDto seq) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
         create items Url
 
     /// <summary>
@@ -56,7 +52,7 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -64,14 +60,10 @@ module Assets =
     /// </summary>
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: SearchQueryDto<AssetFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a> =
+    let search (query: SearchQueryDto<AssetFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
         search query Url
 
-    /// <summary>
-    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
-    /// </summary>
-    /// <param name="assets">The list of assets to update.</param>
-    /// <returns>List of updated assets.</returns>
-    let update (query: IEnumerable<UpdateItemType<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<AssetReadDto>, 'a>  =
+    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
+    let update (query: IEnumerable<UpdateItemType<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a>  =
         update query Url
 

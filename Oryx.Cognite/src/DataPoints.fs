@@ -30,8 +30,8 @@ module DataPoints =
         listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Create one or more new times eries. Returns a list of created time series.
-    let create (items: IEnumerable<DataPointsWriteType>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
-        create items Url
+    let create (items: DataPointsWriteType seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: IEnumerable<DataPointsDeleteType>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =

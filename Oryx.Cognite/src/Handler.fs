@@ -177,6 +177,15 @@ module Handler =
         >=> withError decodeError
         >=> protobuf parser
 
+    let createProtobuf<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

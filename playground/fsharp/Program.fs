@@ -4,10 +4,11 @@ open System
 open System.Net.Http
 
 open FsConfig
-open Com.Cognite.V1.Timeseries.Proto
+open Com.Cognite.V1.Timeseries.Proto 
 
 open Oryx
 open Oryx.Retry
+open Oryx.Cognite
 
 open CogniteSdk
 open CogniteSdk.Assets
@@ -23,8 +24,11 @@ type Config = {
 }
 
 let getDatapointsExample (ctx : HttpContext) = task {
-    let! res =
-        DataPoints.Items.listMultipleAsync [
+    let query = DataPointsQuery(
+                                   Items = [Id=20713436708L
+                               )
+    let! req =
+        DataPoints.list [
             {
                 Id = Identity.Id 20713436708L
                 QueryOptions = [
@@ -41,7 +45,7 @@ let getDatapointsExample (ctx : HttpContext) = task {
 
 let getAssetsExample (ctx : HttpContext) = task {
     printfn "FIRST **********************************"
-    let! res = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
+    let! res = Assets [ AssetQuery.Limit 2 ] [] ctx
 
     match res with
     | Ok res -> () //printfn "%A" res
@@ -157,11 +161,10 @@ let asyncMain argv = task {
 
     use client = new HttpClient ()
     let ctx =
-        Context.create ()
+        Context.defaultContext
         |> Context.setAppId "playground"
         |> Context.setHttpClient client
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
-
         |> Context.setProject (Uri.EscapeDataString config.Project)
 
     do! getAssetsExample ctx

@@ -39,7 +39,7 @@ module Events =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
-    let create (items: IEnumerable<EventWriteDto>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
+    let create (items: EventWriteDto seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
         create items Url
 
     /// <summary>
@@ -56,7 +56,7 @@ module Events =
     /// </summary>
     /// <param name="ids">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
         retrieve ids Url
 
     /// <summary>
@@ -64,7 +64,7 @@ module Events =
     /// </summary>
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
-    let search (query: SearchQueryDto<EventFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a> =
+    let search (query: SearchQueryDto<EventFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
         search query Url
 
     /// <summary>
@@ -72,6 +72,6 @@ module Events =
     /// </summary>
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let update (query: IEnumerable<UpdateItemType<EventUpdateDto>>) : HttpHandler<HttpResponseMessage, IEnumerable<EventReadDto>, 'a>  =
+    let update (query: UpdateItemType<EventUpdateDto> seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a>  =
         update query Url
 
