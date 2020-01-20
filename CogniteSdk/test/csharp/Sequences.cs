@@ -79,7 +79,7 @@ namespace Test.CSharp.Integration
             var column = new SequenceColumnDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
-                ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
+                ValueType = CogniteSdk.Sequences.SequenceValueType.DOUBLE
             };
             var sequence = new SequenceWriteDto {
                 ExternalId = externalIdString,
@@ -108,7 +108,7 @@ namespace Test.CSharp.Integration
             var column = new SequenceColumnDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
-                ValueType = CogniteSdk.Sequences.ValueType.DOUBLE
+                ValueType = SequenceValueType.DOUBLE
             };
 
             var sequence = new SequenceWriteDto {
@@ -118,11 +118,11 @@ namespace Test.CSharp.Integration
                 Columns = new List<SequenceColumnDto> { column }
             };
 
-            var data = new SequenceDataWriteByExternalId() {
+            var data = new SequenceDataReadDto() {
                 Columns = new List<string> { columnExternalIdString },
                 Rows = new List<SequenceRowDto>
                 {
-                    new SequenceRowDto() { RowNumber=1, Values=new List<ValueType>() { DoubleValue(42.0) } }
+                    new SequenceRowDto() { RowNumber=1, Values=new List<MultiValue>() { MultiValue.Create(42.0) } }
                 },
                 ExternalId = externalIdString
             };
@@ -154,7 +154,7 @@ namespace Test.CSharp.Integration
             {
                 new RowQueryDto { Limit = 10 }
             };
-            var externalId = Identity.ExternalId("sdk-test");
+            var externalId = Identity.Create("sdk-test");
 
             // Act
             var res = await WriteClient.Sequences.ListRowsAsync(externalId, rowQuery);

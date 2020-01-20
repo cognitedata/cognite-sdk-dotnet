@@ -19,6 +19,6 @@ namespace CogniteSdk.Sequences
         /// List of values in order defined in the columns field (Number of items must match. Null is accepted for
         /// missing values. String values must be no longer than 256 characters).
         /// </summary>
-        public IEnumerable<CogniteSdk.ValueType> Values { get; set; }
+        public IEnumerable<MultiValue> Values { get; set; }
     }
 }

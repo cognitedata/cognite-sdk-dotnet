@@ -21,6 +21,6 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// The value type of the column. Enum STRING, DOUBLE, LONG
         /// </summary>
-        public ValueType ValueType { get; set; }
+        public SequenceValueType ValueType { get; set; }
     }
 }

@@ -225,7 +225,7 @@ let ``Filter assets on Source is Ok`` () = task {
 let ``Search assets is Ok`` () = task {
     // Arrange
     let search = SearchDto(Name = "23")
-    let query = SearchQueryDto(Limit = Nullable 10L, Search = search)
+    let query = SearchQueryDto(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query
@@ -240,7 +240,7 @@ let ``Search assets on CreatedTime Ok`` () = task {
     // Arrange
     let timerange = TimeRange(Min = 1567084348460L, Max = 1567084348480L)
     let filter = Assets.AssetFilterDto(CreatedTime = timerange)
-    let query = SearchQueryDto(Limit = Nullable 10L, Filter = filter)
+    let query = SearchQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.SearchAsync query
@@ -259,7 +259,7 @@ let ``Search assets on LastUpdatedTime Ok`` () = task {
     // Arrange
     let timerange = TimeRange(Min = 1567084348460L, Max = 1567084348480L)
     let filter = Assets.AssetFilterDto(CreatedTime = timerange)
-    let query = SearchQueryDto(Limit = Nullable 10L, Filter = filter)
+    let query = SearchQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.SearchAsync query
@@ -276,7 +276,7 @@ let ``Search assets on LastUpdatedTime Ok`` () = task {
 let ``Search assets on Description is Ok`` () = task {
     // Arrange
     let search = SearchDto(Description = "1STSTGGEAR THRUST")
-    let query = SearchQueryDto(Limit = Nullable 10L, Search = search)
+    let query = SearchQueryDto(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query
@@ -295,7 +295,7 @@ let ``Search assets on Description is Ok`` () = task {
 let ``Search assets on Name is Ok`` () = task {
     // Arrange
     let search = SearchDto(Name = "TE-96116")
-    let query = SearchQueryDto(Limit = Nullable 10L, Search = search)
+    let query = SearchQueryDto(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query

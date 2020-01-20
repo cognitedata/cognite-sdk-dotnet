@@ -195,9 +195,9 @@ namespace Test.CSharp.Integration {
             };
             var newName = "Updated update asset";
 
-            var update = new List<UpdateItemType<AssetUpdateDto>>()
+            var update = new List<UpdateItem<AssetUpdateDto>>()
             {
-                new UpdateByExternalId<AssetUpdateDto>()
+                new UpdateItem<AssetUpdateDto>()
                 {
                     ExternalId = externalIdString,
                     Update = new AssetUpdateDto()
@@ -210,8 +210,6 @@ namespace Test.CSharp.Integration {
                     }
                 }
             };
-            
-
 
             // Act
             var res = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset });
