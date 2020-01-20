@@ -37,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<DataPointListResponse> ListAsync(DataPointsQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
-            return await runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(_ctx, token, req);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeriesReadDto>> CreateAsync(IEnumerable<TimeSeriesWriteDto> assets, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeriesReadDto>>(assets);
-            return await runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(_ctx, token, req);
         }
 
         /// <summary>
@@ -60,44 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(req, _ctx, token);
-        }
-
-        /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
-        /// be listed per request and all of them must be unique.
-        /// </summary>
-        /// <param name="ids">The list of time series to retrieve.</param>
-        /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
-        {
-            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeriesReadDto>>(ids);
-            return await runUnsafeAsync(req, _ctx, token);
-        }
-        
-        /// <summary>
-        /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
-        /// </summary>
-        /// <param name="query">Search query.</param>
-        /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<TimeSeriesReadDto>> SearchAsync (SearchQueryDto<TimeSeriesFilterDto, SearchDto> query, CancellationToken token = default )
-        {
-            var req = Oryx.Cognite.TimeSeries.search<IEnumerable<TimeSeriesReadDto>>(query);
-            return await runUnsafeAsync(req, _ctx, token);
-        }
-
-        /// <summary>
-        /// Updates multiple timeseries within the same project. This operation supports partial updates, meaning that
-        /// fields omitted from the requests are not changed
-        /// </summary>
-        /// <param name="query">The list of assets to update.</param>
-        /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<TimeSeriesReadDto>> UpdateAsync (IEnumerable<UpdateItemType<TimeSeriesUpdateDto>> query, CancellationToken token = default )
-        {
-            var req = Oryx.Cognite.TimeSeries.update<IEnumerable<TimeSeriesReadDto>>(query);
-            return await runUnsafeAsync(req, _ctx, token);
+            return await runUnsafeAsync(_ctx, token, req);
         }
     }
 }
