@@ -118,7 +118,7 @@ namespace Test.CSharp.Integration
                 Columns = new List<SequenceColumnDto> { column }
             };
 
-            var data = new SequenceDataReadDto() {
+            var data = new SequenceDataWriteDto() {
                 Columns = new List<string> { columnExternalIdString },
                 Rows = new List<SequenceRowDto>
                 {
@@ -126,7 +126,7 @@ namespace Test.CSharp.Integration
                 },
                 ExternalId = externalIdString
             };
-            var delete = new SequenceRowDeleteByExternalIdDto()
+            var delete = new SequenceRowDeleteDto()
             {
                 ExternalId = externalIdString, 
                 Rows = new List<long> { 1L }
@@ -135,8 +135,8 @@ namespace Test.CSharp.Integration
             // Act
             var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWriteDto> { sequence });
 
-            await WriteClient.Sequences.InsertRowsAsync(new List<SequenceDataWriteEntity> { data });
-            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceDataDeleteEntity> { delete });
+            await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataWriteDto> { data });
+            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDeleteDto> { delete });
             await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert
@@ -150,19 +150,19 @@ namespace Test.CSharp.Integration
         public async Task ListRowsAsync()
         {
             // Arrange
-            var rowQuery = new List<RowQueryDto>
+            var rowQuery = new SequenceRowQuery
             {
-                new RowQueryDto { Limit = 10 }
+                Limit = 10 
             };
             var externalId = Identity.Create("sdk-test");
 
             // Act
-            var res = await WriteClient.Sequences.ListRowsAsync(externalId, rowQuery);
+            var res = await WriteClient.Sequences.ListRowsAsync(rowQuery);
 
             // Assert
             Assert.True(res.Columns.Count() > 0);
             Assert.Equal("sdk-test", res.ExternalId);
-            Assert.Equal("sdk-test-column", res.Columns.First().Name);
+            Assert.Equal("sdk-test-column", res.Columns.First());
         }
     }
 }

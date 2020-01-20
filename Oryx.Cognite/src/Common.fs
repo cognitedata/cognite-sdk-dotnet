@@ -36,7 +36,7 @@ module Common =
                 /// Null values are ignored during serialization and deserialization.
                 IgnoreNullValues = true
             )
-        options.Converters.Add(ValueTypeConverter())
+        options.Converters.Add(MultiValueConverter())
         options
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]

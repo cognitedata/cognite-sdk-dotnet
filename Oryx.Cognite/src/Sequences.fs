@@ -28,16 +28,20 @@ module Sequences =
         Handler.list query RowsUrl
 
     /// Create new sequences in the given project. Returns list of created sequences.
-    let create (items: IEnumerable<SequenceWriteDto>) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a> =
+    let create (items: SequenceWriteDto seq) : HttpHandler<HttpResponseMessage, SequenceDataReadDto seq, 'a> =
         create items Url
 
-    let createRows(items: SequenceDataWriteDto seq) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a> =
-        Handler.create items RowsUrl
+    let createRows(items: SequenceDataWriteDto seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        Handler.createEmpty items RowsUrl
 
     /// Delete multiple sequences in the same project. Returns empty result.
     let delete (items: Identity seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let req = ItemsWithoutCursor(Items=items)
         delete req Url
+
+    let deleteRows (items: SequenceRowDeleteDto seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let req = ItemsWithoutCursor(Items=items)
+        Handler.delete req RowsUrl
 
     /// Retrieves information about multiple sequences in the same project. A maximum of 1000 event IDs may be listed per
     /// request and all of them must be unique. Returns sequences with given ids.

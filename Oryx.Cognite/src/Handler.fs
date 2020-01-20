@@ -163,6 +163,11 @@ module Handler =
             return ret.Items
         }
 
+    let createEmpty<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, EmptyResponse, 'c> =
+        let content' = ItemsWithoutCursor(Items=content)
+        post<ItemsWithoutCursor<'a>, EmptyResponse, 'c> content' url
+        
+
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
 
