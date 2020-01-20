@@ -49,6 +49,6 @@ module Sequences =
         search query Url
 
     /// Update one or more sequences. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated sequences.</returns>
-    let update (query: IEnumerable<UpdateItemType<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<SequenceUpdateDto>>) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a>  =
         update query Url
 

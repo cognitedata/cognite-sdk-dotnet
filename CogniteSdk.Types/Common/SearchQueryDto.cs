@@ -20,7 +20,7 @@ namespace CogniteSdk
         /// <summary>
         /// Limits the number of items to return.
         /// </summary>
-        public long? Limit { get; set; }
+        public int? Limit { get; set; }
 
         /// <summary>
         /// Fulltext search for items.

@@ -11,7 +11,6 @@ open Oryx.Cognite
 
 open CogniteSdk
 open CogniteSdk.DataPoints
-open CogniteSdk.TimeSeries
 
 
 /// Various time series data points HTTP handlers
@@ -30,7 +29,7 @@ module DataPoints =
         listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Create one or more new times eries. Returns a list of created time series.
-    let create (items: DataPointsWriteType seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let create (items: DataPointInsertionRequest) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
@@ -38,5 +37,5 @@ module DataPoints =
         delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    let latest (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
-        retrieve ids Url
+    //let latest (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
+    //    retrieve ids Url

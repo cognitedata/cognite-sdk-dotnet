@@ -35,6 +35,7 @@ namespace CogniteSdk {
         }
 
         private long? id;
+
         /// <summary>
         /// Identity with internal id.
         /// </summary>
@@ -53,6 +54,7 @@ namespace CogniteSdk {
                 }
             }
         }
+
         private string externalId;
 
         /// <summary>

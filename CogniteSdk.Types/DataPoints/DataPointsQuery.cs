@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk.DataPoints
 {
     /// <summary>
     /// The data points query base class.

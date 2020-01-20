@@ -80,7 +80,7 @@ let ``Get asset by ids is Ok`` () = task {
 [<Fact>]
 let ``Filter assets is Ok`` () = task {
     // Arrange
-    let filter = Assets.AssetFilterDto(RootIds = [ Identity.CreateId(6687602007296940L) ])
+    let filter = Assets.AssetFilterDto(RootIds = [ Identity.Create(6687602007296940L) ])
     let query = Assets.AssetQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act

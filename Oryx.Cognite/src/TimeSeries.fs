@@ -42,6 +42,6 @@ module TimeSeries =
 
     /// Updates multiple time series within the same project. This operation supports partial updates, meaning that
     /// fields omitted from the requests are not changed Returns list of updated time series.
-    let update (query: IEnumerable<UpdateItemType<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, TimeSeriesReadDto seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<TimeSeriesUpdateDto>>) : HttpHandler<HttpResponseMessage, TimeSeriesReadDto seq, 'a>  =
         update query Url
 

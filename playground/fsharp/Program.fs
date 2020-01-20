@@ -11,10 +11,8 @@ open Oryx.Retry
 open Oryx.Cognite
 
 open CogniteSdk
-open CogniteSdk.Assets
-open CogniteSdk.TimeSeries
-open CogniteSdk.DataPoints
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.Threading
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -24,43 +22,43 @@ type Config = {
 }
 
 let getDatapointsExample (ctx : HttpContext) = task {
-    let query = DataPointsQuery(
-                                   Items = [Id=20713436708L
-                               )
-    let! req =
-        DataPoints.list [
-            {
-                Id = Identity.Id 20713436708L
-                QueryOptions = [
-                    DataPointQuery.Start "1524851819000"
-                    DataPointQuery.End "1524859650000"
-                ]
-            }
-        ] [] ctx
-
-    match res with
-    | Ok res -> printfn "%A" res
-    | Error err -> printfn "Error: %A" err
-}
+    let query = 
+        DataPoints.DataPointsQuery(
+            Items = [ DataPoints.DataPointsQueryItem(Id=20713436708L) ],
+            Start = Nullable 1524851819000L,
+            End = Nullable 1524859650000L
+        )
+    let! res = 
+        DataPoints.list query
+        |> runUnsafeAsync ctx CancellationToken.None
+    printfn "%A" res
+ }
 
 let getAssetsExample (ctx : HttpContext) = task {
     printfn "FIRST **********************************"
-    let! res = Assets [ AssetQuery.Limit 2 ] [] ctx
-
-    match res with
-    | Ok res -> () //printfn "%A" res
-    | Error err -> printfn "Error: %A" err
-
+    let! res = 
+        Assets.AssetQueryDto(Limit = Nullable 2)
+        |> Assets.list
+        |> runUnsafeAsync ctx CancellationToken.None
+    
     printfn "SECOND **********************************"
-    let! res = Assets.Items.listAsync [ AssetQuery.Limit 2 ] [] ctx
-
+    let! res = 
+        Assets.AssetQueryDto(Limit = Nullable 2) 
+        |> Assets.list
+        |> runAsync ctx
     match res with
     | Ok res -> () //printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 
 let updateAssetsExample (ctx : HttpContext) = task {
-    let! res = Assets.Update.updateAsync [ (Identity.Id 84025677715833721L, [ AssetUpdate.SetName "string3" ] )]  ctx
+    let query =  [
+        UpdateItem(
+            Id = 84025677715833721L,
+            Update = Assets.AssetUpdateDto(Name = SetUpdate(Set="string3"))
+        )
+    ]
+    let! res = Assets.update query |> runAsync ctx
     match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -68,30 +66,32 @@ let updateAssetsExample (ctx : HttpContext) = task {
 
 let searchAssetsExample (ctx : HttpContext) = task {
 
-    let! res = Assets.Search.searchAsync 10 [ AssetSearch.Name "VAL" ] [] ctx
+    let query = 
+        SearchQueryDto<Assets.AssetFilterDto, SearchDto>(
+            Search = SearchDto(Name = "VAL"),
+            Limit = Nullable 10
+        )
+    let! res = Assets.search query |> runAsync ctx
     match res with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
 let createAssetsExample ctx = task {
 
-    let assets = [{
-        Name = "My new asset"
-        Description = Some "My description"
-        MetaData = Map.empty
-        Source = None
-        ParentId = None
-        ExternalId = None
-        ParentExternalId = None
-    }]
+    let assets = [
+        Assets.AssetWriteDto(
+            Name = "My new asset",
+            Description = "My description"
+       )
+    ]
 
     let myRetry = retry 500<ms> 5
 
-    let request = myRetry >=> oryx {
-        let! ga = Assets.Create.create assets
+    let request = myRetry >=> req {
+        let! ga = Assets.create assets
 
         let! gb = concurrent [
-            retry 500<ms> 5 >=> Assets.Create.create assets
+            retry 500<ms> 5 >=> Assets.create assets
         ]
 
         return gb
@@ -100,30 +100,10 @@ let createAssetsExample ctx = task {
     let request = myRetry >=> concurrent [
         let chunks = Seq.chunkBySize 10 assets
         for chunk in chunks do
-            yield retry 500<ms> 5 >=> Assets.Create.create chunk
+            yield retry 500<ms> 5 >=> Assets.create chunk
     ]
 
-    let! result = runAsync request ctx
-    match result with
-    | Ok res -> printfn "%A" res
-    | Error err -> printfn "Error: %A" err
-}
-
-let insertDataPointsOldWay ctx = task {
-
-    let dataPoints : NumericDataPointDto seq = seq {
-        for i in 0L..100L do
-            yield {
-                TimeStamp = DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds() - i * 10L
-                Value = (float ((1L + i) % 5L))
-            }
-        }
-    let dpInsertion : DataPoints.Insert.DataPoints = {
-        DataPoints = Numeric dataPoints
-        Identity = Identity.ExternalId "testts"
-    }
-
-    let! result = DataPoints.Insert.insertAsync [ dpInsertion ] ctx
+    let! result = request |> runAsync ctx
     match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
@@ -144,7 +124,9 @@ let insertDataPointsProtoStyle ctx = task {
     item.ExternalId <- "testts"
     request.Items.Add(item)
 
-    let! result = DataPoints.Insert.insertAsyncProto request ctx
+    let! result = 
+        DataPoints.create request
+        |> runAsync ctx
     match result with
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err

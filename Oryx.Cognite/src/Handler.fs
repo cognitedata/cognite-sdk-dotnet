@@ -65,12 +65,13 @@ module Handler =
         | Panic (err) -> raise err
 
     /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
-    let runUnsafeAsync (handler: HttpHandler<HttpResponseMessage, 'r,'r>) (ctx : HttpContext) (token: CancellationToken) : Task<'r> = task {
-        let! result =
+    let runUnsafeAsync (ctx : HttpContext) (token: CancellationToken) (handler: HttpHandler<HttpResponseMessage, 'r,'r>) : Task<'r> = task {
+        let runUnsafe  =
             ctx
             |> Context.setCancellationToken token
-            |> runAsync handler
-        match result with
+            |> runAsync            
+
+        match! runUnsafe handler with
         | Ok value -> return value
         | Error error -> return raiseError error
     }
@@ -110,11 +111,8 @@ module Handler =
         url +/ sprintf "%d" id |> get
 
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
-        let parms =
-            query.ToQueryParams ()
-            |> Seq.map (fun x -> x.ToTuple())
-            |> List.ofSeq
-
+        let parms = query.ToQueryParams ()
+            
         GET
         >=> setVersion V10
         >=> setResource url
@@ -142,11 +140,11 @@ module Handler =
             return ret.Items
         }
 
-    let update<'a, 'b, 'c> (items: IEnumerable<UpdateItemType<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+    let update<'a, 'b, 'c> (items: IEnumerable<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let url = url +/ "update"
-            let request = ItemsWithoutCursor<UpdateItemType<'a>>(Items = items)
-            let! ret = post<ItemsWithoutCursor<UpdateItemType<'a>>, ItemsWithoutCursor<'b>, 'c> request url
+            let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
+            let! ret = post<ItemsWithoutCursor<UpdateItem<'a>>, ItemsWithoutCursor<'b>, 'c> request url
             return ret.Items
         }
 

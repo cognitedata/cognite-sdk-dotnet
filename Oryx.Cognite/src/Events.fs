@@ -72,6 +72,6 @@ module Events =
     /// </summary>
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let update (query: UpdateItemType<EventUpdateDto> seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a>  =
+    let update (query: UpdateItem<EventUpdateDto> seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a>  =
         update query Url
 

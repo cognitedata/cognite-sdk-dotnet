@@ -64,6 +64,6 @@ module Assets =
         search query Url
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
-    let update (query: IEnumerable<UpdateItemType<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a>  =
         update query Url
 
