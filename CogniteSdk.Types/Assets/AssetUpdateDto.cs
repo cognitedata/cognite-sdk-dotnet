@@ -43,4 +43,6 @@ namespace CogniteSdk.Assets
         /// </summary>
         public SetProperty<long> ParentExternalId { get; set; }
     }
+
+    public class AssetUpdateItem : UpdateItem<AssetUpdateDto> { }
 }

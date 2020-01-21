@@ -20,11 +20,11 @@ namespace CogniteSdk
         /// <summary>
         /// Set a new value for the property.
         /// </summary>
-        /// <param name="value">Value to set.</param>
+        /// <param name="set">Value to set.</param>
         /// <returns>A new instance of the <see cref="Property{T}">SetUpdate{T}</see> class.</returns>
-        public SetProperty(T value)
+        public SetProperty(T set)
         {
-            Set = value;
+            Set = set;
         }
 
         /// <summary>
@@ -42,7 +42,16 @@ namespace CogniteSdk
         /// <summary>
         /// True if the value should be cleared.
         /// </summary>
-        public bool SetNull { get; set; }
+        public bool? SetNull { get; set; }
+
+        /// <summary>
+        /// Set a new value for the property.
+        /// </summary>
+        /// <param name="set">Value to set.</param>
+        /// <returns>A new instance of the <see cref="Property{T}">SetUpdate{T}</see> class.</returns>
+        public Property(T set) : base(set)
+        {
+        }
 
         /// <summary>
         /// Clear the property.
@@ -107,7 +116,15 @@ namespace CogniteSdk
         /// Initialize the object property and set a new value.
         /// </summary>
         /// <param name="set">Set the new value.</param>
-        public ObjProperty(IDictionary<string, T> set) : base(set)
+        public ObjProperty(Dictionary<string, T> set) : base(set)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the object property and remove values.
+        /// </summary>
+        /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
+        public ObjProperty(IEnumerable<T> remove) : base(null, remove)
         {
         }
 
@@ -116,7 +133,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public ObjProperty(IDictionary<string, T> add, IEnumerable<T> remove) : base(add, remove)
+        public ObjProperty(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove)
         {
         }
     }
