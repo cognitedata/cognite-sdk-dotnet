@@ -44,5 +44,8 @@ namespace CogniteSdk.Assets
         public SetProperty<long> ParentExternalId { get; set; }
     }
 
+    /// <summary>
+    /// The asset update item DTO. Contains the update item for an <see cref="AssetUpdateDto">AssetUpdateDto</see>.
+    /// </summary>
     public class AssetUpdateItem : UpdateItem<AssetUpdateDto> { }
 }

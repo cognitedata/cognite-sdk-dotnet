@@ -6,6 +6,9 @@ using System.Text.Json;
 
 namespace CogniteSdk.Raw
 {
+    /// <summary>
+    /// The row read DTO.
+    /// </summary>
     public class RowReadDto
     {
         /// <summary>

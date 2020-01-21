@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,13 +65,63 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Delete multiple times eries in the same project.
+        /// </summary>
+        /// <param name="internalIds">The list of timeseries internal ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            var query = new TimeSeriesDeleteDto { Items=internalIds.Select(Identity.Create) };
+            var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple times eries in the same project.
+        /// </summary>
+        /// <param name="externalIds">The list of timeseries external ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var query = new TimeSeriesDeleteDto { Items=externalIds.Select(Identity.Create) };
+            var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
-        /// <param name="ids">The list of time series to retrieve.</param>
+        /// <param name="ids">The list of time series identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
+            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeriesReadDto>>(ids);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        // <summary>
+        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            var ids = internalIds.Select(Identity.Create);
+            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeriesReadDto>>(ids);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        // <summary>
+        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var ids = externalIds.Select(Identity.Create);
             var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeriesReadDto>>(ids);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }

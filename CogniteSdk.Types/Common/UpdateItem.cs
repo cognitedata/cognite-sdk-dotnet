@@ -18,7 +18,7 @@ namespace CogniteSdk
         /// A server-generated ID for the object.
         /// </summary>
         public long? Id { get; set; }
-    
+
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>

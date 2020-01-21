@@ -336,8 +336,8 @@ let ``Update assets is Ok`` () = task {
         "key1", "value1"
         "key2", "value2"
     ])
-     
-    let dto = 
+
+    let dto =
         AssetWriteDto(
             ExternalId = externalIdString,
             Name = "Create Assets sdk test",
@@ -347,7 +347,7 @@ let ``Update assets is Ok`` () = task {
                 "oldkey2", "oldvalue2"
             ])
         )
-     
+
     let externalId = externalIdString
     let newName = "UpdatedName"
     let newExternalId = Guid.NewGuid().ToString();
@@ -362,7 +362,7 @@ let ``Update assets is Ok`` () = task {
             )
         )
     }
-     
+
     // Act
     let! createRes = writeClient.Assets.CreateAsync [ dto ]
     let! updateRes = writeClient.Assets.UpdateAsync update
@@ -399,7 +399,7 @@ let ``Update assets is Ok`` () = task {
                     Source = Property<string>(newSource)
                 )
             )
-        ] 
+        ]
 
     let! assetsResponses = writeClient.Assets.RetrieveAsync [ newExternalId ]
 
@@ -438,7 +438,7 @@ let ``Update assets is Ok`` () = task {
         | None -> "", "", dict []
 
     // Assert get2
-    test <@ resExternalId2 = null @>
-    test <@ resSource2 = null @>
+    test <@ isNull resExternalId2 @>
+    test <@ isNull resSource2 @>
     test <@ resMetaData3.Count = 0 @>
 }

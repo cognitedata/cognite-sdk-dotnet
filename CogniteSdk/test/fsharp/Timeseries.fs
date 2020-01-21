@@ -16,134 +16,74 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [ TimeSeriesQuery.Limit 10 ]
+    let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
-    let! res = TimeSeries.Items.listAsync options ctx
+    let! response = readClient.TimeSeries.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
+    let len = Seq.length response.Items
 
     // Assert
     test <@ len = 10 @>
-    test <@ ctx'.Request.Method = HttpMethod.Get @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries" @>
 }
 
 [<Fact>]
 let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let id = Identity.Id 613312137748079L
+    let id = 613312137748079L
 
     // Act
-    let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
+    let! dtos = readClient.TimeSeries.RetrieveAsync [ id ]
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     let resId =
         let h = Seq.tryHead dtos
         match h with
-        | Some dto -> Identity.Id dto.Id
-        | None -> Identity.Id 0L
+        | Some dto -> dto.Id
+        | None -> 0L
 
     // Assert
     test <@ resId = id @>
     test <@ len > 0 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/byids" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
 let ``Get timeseries by missing id is Error`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let id = Identity.Id 0L
+    let id = Identity 0L
 
     // Act
-    let! res = TimeSeries.Retrieve.getByIdsAsync [ id ] ctx
-
-    let err =
-        match res with
-        | Ok _ -> ResponseError.empty
-        | Error (ResponseError err) -> err
-        | Error (Panic err) -> raise err
-
-    // Assert
-    test <@ Result.isError res @>
-    test <@ err.Code = 400 @>
-    test <@ err.Message = "timeseries ids not found: (id: 0 | externalId: null)" @>
+    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.RetrieveAsync [ id ] :> _)
+    |> ignore
 }
 
 [<Fact>]
 let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
     let externalIdString = Guid.NewGuid().ToString();
-    let dto: TimeSeries.TimeSeriesWriteDto = {
-        ExternalId = Some externalIdString
-        Name = Some "Create Timeseries sdk test"
-        LegacyName = None
-        Description = Some "dotnet sdk test"
-        IsString = false
-        Metadata = Map.empty
-        Unit = None
-        AssetId = None
-        IsStep = false
-        SecurityCategories = Seq.empty
-    }
-    let externalId = Identity.ExternalId externalIdString
+    let dto =
+        TimeSeriesWriteDto(
+            ExternalId = externalIdString,
+            Name = "Create Timeseries sdk test",
+            Description = "dotnet sdk test",
+            IsStep = false
+        )
 
     // Act
-    let! res = TimeSeries.Create.createAsync [ dto ] ctx
-    let! delRes = TimeSeries.Delete.deleteAsync [ externalId ] ctx
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! timeSereiesResponses = writeClient.TimeSeries.CreateAsync [ dto ]
+    let! delRes = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
 
     let resExternalId =
-        let timeSereiesResponses = ctx'.Response
-        let h = Seq.tryHead timeSereiesResponses.Items
+        let h = Seq.tryHead timeSereiesResponses
         match h with
         | Some timeSereiesResponse -> timeSereiesResponse.ExternalId
-        | None -> None
-
-    let delCtx' =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
+        | None -> String.Empty
 
     // Assert
-    test <@ resExternalId = Some externalIdString @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
-
-    test <@ delCtx'.Request.Method = HttpMethod.Post @>
-    test <@ delCtx'.Request.Extra.["resource"] = "/timeseries/delete" @>
-    test <@ delCtx'.Request.Query.IsEmpty @>
+    test <@ resExternalId = externalIdString @>
 }
+(*
 
 [<Fact>]
 let ``Search timeseries is Ok`` () = task {
@@ -551,3 +491,4 @@ let ``Update timeseries is Ok`` () = task {
     test <@ deleteCtx'.Request.Query.IsEmpty @>
 
 }
+*)

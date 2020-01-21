@@ -1,7 +1,6 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 
 namespace CogniteSdk
@@ -21,7 +20,7 @@ namespace CogniteSdk
         /// Set a new value for the property.
         /// </summary>
         /// <param name="set">Value to set.</param>
-        /// <returns>A new instance of the <see cref="Property{T}">SetUpdate{T}</see> class.</returns>
+        /// <returns>A new instance of the <see cref="SetProperty{T}">SetProperty{T}</see> class.</returns>
         public SetProperty(T set)
         {
             Set = set;
@@ -48,7 +47,7 @@ namespace CogniteSdk
         /// Set a new value for the property.
         /// </summary>
         /// <param name="set">Value to set.</param>
-        /// <returns>A new instance of the <see cref="Property{T}">SetUpdate{T}</see> class.</returns>
+        /// <returns>A new instance of the <see cref="Property{T}">Property{T}</see> class.</returns>
         public Property(T set) : base(set)
         {
         }
@@ -87,7 +86,7 @@ namespace CogniteSdk
         /// Set the key-value pairs. All existing key-value pairs will be removed.
         /// </summary>
         /// <param name="set">Values to set (overwrite).</param>
-        /// <returns>A new instance of the <see cref="CollectionProperty{TCollection, TRemove}">AddRemoveUpdate</see> class.</returns>
+        /// <returns>A new instance of the <see cref="CollectionProperty{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see> class.</returns>
         public CollectionProperty(TCollection set)
         {
             Set = set;
