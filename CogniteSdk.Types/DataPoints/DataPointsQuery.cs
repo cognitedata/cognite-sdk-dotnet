@@ -17,7 +17,7 @@ namespace CogniteSdk.DataPoints
         /// unit (in UTC timezone). Daily granularities (d) are rounded to 0:00 AM; hourly granularities (h) to the
         /// start of the hour, etc.
         /// </summary>
-        public long? Start  { get; set; }
+        public string Start  { get; set; }
 
         /// <summary>
         /// Get data points up to, but excluding, this point in time. Same format as for start. Note that when using
@@ -26,7 +26,7 @@ namespace CogniteSdk.DataPoints
         /// For granularity 2d, the aggregation interval is 2 days, if end was originally 3 days after the start, it
         /// will be rounded to 4 days after the start.
         /// </summary>
-        public long? End { get; set; }
+        public string End { get; set; }
 
         /// <summary>
         /// Return up to this number of data points. Maximum is 100000 non-aggregated data points and 10000 aggregated
