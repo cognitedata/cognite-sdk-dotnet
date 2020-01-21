@@ -172,9 +172,11 @@ module Handler =
         url +/ "delete" |> post content
 
     let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =
+        let url = url +/ "list"
         POST
         >=> setVersion V10
         >=> setResource url
+        >=> setResponseType ResponseType.Protobuf
         >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
         >=> fetch
         >=> withError decodeError

@@ -6,24 +6,14 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series query DTO.
     /// </summary>
-    public class TimeSeriesQuery
+    public class TimeSeriesQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on time series with strict matching.
         /// </summary>
         public TimeSeriesFilterDto Filter { get; set; }
 
-        /// <summary>
-        /// Limits the number of results to return.
-        /// </summary>
-        public int? Limit { get; set; }
-
-        /// <summary>
-        /// Cursor to next result page.
-        /// </summary>
-        public string Cursor { get; set; }
-
-        /// <summary>
+        //// <summary>
         /// Splits the data set into N partitions. You need to follow the cursors within each partition in order to
         /// receive all the data. Example: 1/10.
         /// </summary>
