@@ -1,5 +1,5 @@
 #!/bin/sh
-DIRS="src test/unit/fsharp test/unit/csharp test/integration/fsharp test/integration/csharp playground/fsharp playground/csharp"
+DIRS="CogniteSdk.Types Oryx.Cognite CogniteSdk/src CogniteSdk/test/csharp CogniteSdk/test/csharp playground/csharp playground/fsharp"
 for dir in $DIRS; do
 	rm -rf $dir/bin $dir/obj
 done
