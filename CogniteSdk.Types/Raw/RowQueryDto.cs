@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace CogniteSdk.Raw
 {
@@ -32,9 +33,9 @@ namespace CogniteSdk.Raw
             if (Columns != null)
                 list.Add(("columns", Columns));
             if (MinLastUpdatedTime.HasValue)
-                list.Add(("minLastUpdatedTime", MinLastUpdatedTime.Value.ToString()));
+                list.Add(("minLastUpdatedTime", MinLastUpdatedTime.Value.ToString(CultureInfo.InvariantCulture)));
             if (MaxLastUpdatedTime.HasValue)
-                list.Add(("maxLastUpdatedTime", MaxLastUpdatedTime.Value.ToString()));
+                list.Add(("maxLastUpdatedTime", MaxLastUpdatedTime.Value.ToString(CultureInfo.InvariantCulture)));
 
             return list;
         }

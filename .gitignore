@@ -11,3 +11,4 @@ coverage.lcov
 .config
 .paket
 .idea
+launchSettings.json

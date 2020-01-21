@@ -26,12 +26,12 @@ namespace CogniteSdk
         /// <summary>
         /// The missing entries if any.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Missing;
+        public IEnumerable<IDictionary<string, ValueType>> Missing { get; set; }
 
         /// <summary>
         /// The duplicated entries if any.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Duplicated;
+        public IEnumerable<IDictionary<string, ValueType>> Duplicated { get; set; }
     }
 
     /// <summary>
@@ -80,17 +80,22 @@ namespace CogniteSdk
         /// <summary>
         /// Missing values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Missing;
+        public IEnumerable<IDictionary<string, ValueType>> Missing { get; set; }
         /// <summary>
         /// Duplicated values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Duplicated;
+        public IEnumerable<IDictionary<string, ValueType>> Duplicated { get; set; }
 
         /// <summary>
         /// Request ID extracted from the response header.
         /// </summary>
         /// <value></value>
         public string RequestId { get; set; }
+
+        /// <summary>
+        /// Default empty constructor.
+        /// </summary>
+        public ResponseException() {}
 
         /// <summary>
         /// The response exception constructor.

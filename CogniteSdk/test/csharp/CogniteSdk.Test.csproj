@@ -10,11 +10,7 @@
   <ItemGroup>
     <None Remove="paket.references" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
     <ProjectReference Include="../../../Oryx.Cognite/src/Oryx.Cognite.fsproj" />

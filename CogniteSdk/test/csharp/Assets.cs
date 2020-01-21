@@ -11,7 +11,7 @@ using CogniteSdk;
 namespace Test.CSharp.Integration {
 
     [Collection("TestBase")]
-    public class Assets : TestFixture {
+    public class AssetTests : TestFixture {
 
 
         [Fact]
@@ -200,18 +200,14 @@ namespace Test.CSharp.Integration {
                     ExternalId = externalIdString,
                     Update = new AssetUpdateDto()
                     {
-                        Name = new Update<string> { Set = newName },
-                        Metadata = new Update<IDictionary<string, string>>
-                        {
-                            Add = newMetadata,
-                            Remove = new List<string> { "oldkey1" }
-                        }
+                        Name = new SetProperty<string>(newName),
+                        Metadata = new ObjProperty<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
                     }
                 }
             };
 
             // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset });
+            _ = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset }).ConfigureAwait(false);
             await WriteClient.Assets.UpdateAsync(update);
 
             var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });

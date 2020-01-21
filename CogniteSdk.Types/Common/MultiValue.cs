@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk
@@ -57,7 +58,7 @@ namespace CogniteSdk
             /// </summary>
             public override string ToString()
             {
-                return this.Value.ToString();
+                return Value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -76,7 +77,7 @@ namespace CogniteSdk
             /// </summary>
             public override string ToString()
             {
-                return this.Value.ToString();
+                return Value.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -95,7 +96,7 @@ namespace CogniteSdk
             /// </summary>
             public override string ToString()
             {
-                return this.Value;
+                return Value;
             }
         }
     }

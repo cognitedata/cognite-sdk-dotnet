@@ -42,6 +42,11 @@ namespace CogniteSdk
         /// </summary>
         public override void Write(Utf8JsonWriter writer, MultiValue value, JsonSerializerOptions options)
         {
+            if (writer is null)
+            {
+                throw new ArgumentNullException(nameof(writer));
+            }
+
             switch (value)
             {
                 case MultiValue.String s:
@@ -54,7 +59,7 @@ namespace CogniteSdk
                     writer.WriteStringValue(l.ToString());
                     break;
                 default:
-                    throw new ArgumentException("Unknown MultiValue");
+                    throw new ArgumentException($"Unknown MultiValue: {value}");
             }
         }
     }
