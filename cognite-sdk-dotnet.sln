@@ -15,9 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playground", "playground", "{794719BD-C548-42F8-BD47-10240779604A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "App", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "playground\csharp\App.csproj", "{334BA0EF-EDCB-4085-81F4-3EDD43069D46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpApp", "playground\csharp\App.csproj", "{334BA0EF-EDCB-4085-81F4-3EDD43069D46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
