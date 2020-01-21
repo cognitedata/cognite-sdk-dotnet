@@ -13,6 +13,7 @@ open CogniteSdk.TimeSeries
 
 open Tests
 open Common
+open System.Collections.Generic
 
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
@@ -344,62 +345,54 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
     test <@ ctx'.Request.Method = HttpMethod.Post @>
     test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
-
+*)
 [<Fact>]
 let ``Update timeseries is Ok`` () = task {
     // Arrange
-    let wctx = writeCtx ()
 
-    let newMetadata = ([
-        "key1", "value1"
-        "key2", "value2"
-    ]
-    |> Map.ofList)
-    let dto : TimeSeries.TimeSeriesWriteDto = {
-        Metadata = [
-            "oldkey1", "oldvalue1"
-            "oldkey2", "oldvalue2"
-        ] |> Map.ofList
-        ExternalId = Some "testupdate"
-        Name = Some "testupdate"
-        LegacyName = None
-        Description = None
-        IsString = false
-        IsStep = false
-        Unit = None
-        AssetId = None
-        SecurityCategories = Seq.empty
-    }
-    let externalId = Identity.ExternalId dto.ExternalId.Value
+    let newMetadata =
+        dict [
+            "key1", "value1"
+            "key2", "value2"
+        ] |> Dictionary
+    let dto =
+        TimeSeriesWriteDto(
+            Metadata = (dict [
+                "oldkey1", "oldvalue1"
+                "oldkey2", "oldvalue2"
+            ] |> Dictionary),
+            ExternalId = "testupdate",
+            Name = "testupdate",
+            IsString = false,
+            IsStep = false
+        )
+    let externalId = dto.ExternalId
     let newExternalId = "testupdatenew"
     let newDescription = "testdescription"
 
     // Act
-    let! createRes = TimeSeries.Create.createAsync [ dto ] wctx
+    let! createRes = writeClient.TimeSeries.CreateAsync [ dto ]
     let! updateRes =
-        TimeSeries.Update.updateAsync [
-            (externalId, [
-                TimeSeriesUpdate.SetExternalId (Some newExternalId)
-                TimeSeriesUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                TimeSeriesUpdate.SetDescription (Some newDescription)
-                TimeSeriesUpdate.SetName None
-                TimeSeriesUpdate.SetUnit (Some "unit")
-            ])
-        ] wctx
-    let! getRes = TimeSeries.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
-    let! deleteRes = TimeSeries.Delete.deleteAsync [ Identity.ExternalId newExternalId ] wctx
-
-    let getCtx' =
-        match getRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+        writeClient.TimeSeries.UpdateAsync [
+            TimeSeriesUpdateItem(
+                ExternalId = externalId,
+                Update = TimeSeriesUpdateDto(
+                    ExternalId = Property<string>(newExternalId),
+                    Metadata = ObjProperty(newMetadata, [ "oldkey1" ]),
+                    Description = Property<string>(newDescription),
+                    Name = Property<string>(clear=true),
+                    Unit = Property<string>("unit")
+                )
+            )
+        ]
+    let! getRes = writeClient.TimeSeries.RetrieveAsync [ newExternalId ]
+    let! deleteRes = writeClient.TimeSeries.DeleteAsync [ newExternalId ]
 
     let resExternalId, resMetaData, resDescription =
-        let head = Seq.tryHead getCtx'.Response
+        let head = Seq.tryHead getRes
         match head with
-        | Some tsresp -> tsresp.ExternalId, tsresp.MetaData, tsresp.Description
-        | None -> Some "", Map.empty, Some ""
+        | Some tsresp -> tsresp.ExternalId, tsresp.Metadata, tsresp.Description
+        | None -> "", Dictionary (), ""
 
     let metaDataOk =
         resMetaData.ContainsKey "key1"
@@ -407,46 +400,10 @@ let ``Update timeseries is Ok`` () = task {
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
-    let createCtx' =
-        match createRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let updateCtx' =
-        match updateRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let deleteCtx' =
-        match deleteRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    // Assert create
-    test <@ createCtx'.Request.Method = HttpMethod.Post @>
-    test <@ createCtx'.Request.Extra.["resource"] = "/timeseries" @>
-    test <@ createCtx'.Request.Query.IsEmpty @>
-
-    // Assert update
-    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
-    test <@ updateCtx'.Request.Extra.["resource"] = "/timeseries/update" @>
-    test <@ updateCtx'.Request.Query.IsEmpty @>
-
     // Assert get
-    test <@ getCtx'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx'.Request.Extra.["resource"] = "/timeseries/byids" @>
-    test <@ getCtx'.Request.Query.IsEmpty @>
-    test <@ resExternalId = Some newExternalId @>
-    test <@ resDescription = Some newDescription @>
+    test <@ resExternalId = newExternalId @>
+    test <@ resDescription = newDescription @>
     test <@ metaDataOk @>
 
     // Assert delete
-    test <@ deleteCtx'.Request.Method = HttpMethod.Post @>
-    test <@ deleteCtx'.Request.Extra.["resource"] = "/timeseries/delete" @>
-    test <@ deleteCtx'.Request.Query.IsEmpty @>
-
 }
-*)

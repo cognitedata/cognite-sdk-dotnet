@@ -44,4 +44,9 @@ namespace CogniteSdk.TimeSeries
         /// </summary>
         public SeqProperty<long> SecurityCategories { get; set; }
     }
+
+    /// <summary>
+    /// The time series update item DTO. Contains the update item for an <see cref="TimeSeriesUpdateDto">TimeSeriesUpdateDto</see>.
+    /// </summary>
+    public class TimeSeriesUpdateItem : UpdateItem<TimeSeriesUpdateDto> { }
 }

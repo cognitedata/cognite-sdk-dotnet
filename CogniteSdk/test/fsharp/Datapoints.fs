@@ -3,59 +3,54 @@ module Tests.Integration.Datapoints
 open System
 open System.Net.Http
 
-open Xunit
-open Swensen.Unquote
-
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Oryx
+open Swensen.Unquote
+open Xunit
+
 open CogniteSdk
 open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
+
 open Common
 open Tests
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Fact>]
 let ``Get datapoints by id with options is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        DataPoints.DataPointQuery.Start "1563175800000"
-        DataPointQuery.End "1563181200000"
-    ]
     let id = 613312137748079L
+    let query =
+        DataPointsQuery(
+            Start = "1563175800000",
+            End  = "1563181200000",
+            Items = [
+                DataPointsQueryItem(Id = Nullable id)
+            ]
+        )
 
     // Act
-    let! res = DataPoints.Items.listAsync id options ctx
+    let! res = readClient.DataPoints.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
 
-    let dtos = ctx'.Response
+    let dtos = res.Items
     let resId =
         let h = Seq.tryHead dtos
         match h with
-        | Some dto -> Identity.Id dto.Id
-        | None -> Identity.Id 0L
+        | Some dto -> dto.Id
+        | None -> 0L
 
     let datapoints =
         seq {
             for datapointDto in dtos do
-                match datapointDto.DataPoints with
-                | Numeric dps -> yield! dps
-                | String dps -> failwith "Unexpected string datapoints"
+                for dp in datapointDto.NumericDatapoints.Datapoints do
+                    yield dp
         }
 
     // Assert
-    test <@ resId = Identity.Id id @>
+    test <@ resId = id @>
     test <@ Seq.length datapoints = 9 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
 }
-
+(*
 [<Fact>]
 let ``Get datapoints by id with limit is Ok`` () = task {
     // Arrange
@@ -377,3 +372,4 @@ let ``Delete datapoints is Ok`` () = task {
     // Assert
     test <@ Result.isOk res @>
 }
+*)
