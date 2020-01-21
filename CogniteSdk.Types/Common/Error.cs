@@ -26,12 +26,12 @@ namespace CogniteSdk
         /// <summary>
         /// The missing entries if any.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Missing { get; set; }
+        public IEnumerable<Dictionary<string, ValueType>> Missing { get; set; }
 
         /// <summary>
         /// The duplicated entries if any.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Duplicated { get; set; }
+        public IEnumerable<Dictionary<string, ValueType>> Duplicated { get; set; }
     }
 
     /// <summary>
@@ -80,11 +80,11 @@ namespace CogniteSdk
         /// <summary>
         /// Missing values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Missing { get; set; }
+        public IEnumerable<Dictionary<string, ValueType>> Missing { get; set; }
         /// <summary>
         /// Duplicated values.
         /// </summary>
-        public IEnumerable<IDictionary<string, ValueType>> Duplicated { get; set; }
+        public IEnumerable<Dictionary<string, ValueType>> Duplicated { get; set; }
 
         /// <summary>
         /// Request ID extracted from the response header.

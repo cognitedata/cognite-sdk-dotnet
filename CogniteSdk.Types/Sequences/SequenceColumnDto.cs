@@ -31,7 +31,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Time when this column was created in CDF in milliseconds since Jan 1, 1970.

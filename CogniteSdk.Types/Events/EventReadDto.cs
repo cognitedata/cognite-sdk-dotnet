@@ -43,7 +43,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.

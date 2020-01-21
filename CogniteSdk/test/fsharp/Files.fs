@@ -641,7 +641,7 @@ let ``Create and delete files is Ok`` () = task {
         Name = "testFile"
         ExternalId = Some externalIdString
         MimeType = None
-        MetaData = Map.empty
+        Metadata = Map.empty
         AssetIds = Seq.empty
         Source = None
         SourceCreatedTime = Some 999L
@@ -702,7 +702,7 @@ let ``Update files is Ok`` () = task {
         AssetIds = []
         SourceCreatedTime = Some 123L
         SourceModifiedTime = Some 456L
-        MetaData = [
+        Metadata = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
         ] |> Map.ofList

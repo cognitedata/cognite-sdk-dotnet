@@ -24,7 +24,7 @@ namespace CogniteSdk.Sequences
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public IDictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.

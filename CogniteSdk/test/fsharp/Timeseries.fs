@@ -101,7 +101,7 @@ let ``Create and delete timeseries is Ok`` () = task {
         LegacyName = None
         Description = Some "dotnet sdk test"
         IsString = false
-        MetaData = Map.empty
+        Metadata = Map.empty
         Unit = None
         AssetId = None
         IsStep = false
@@ -458,7 +458,7 @@ let ``Update timeseries is Ok`` () = task {
     ]
     |> Map.ofList)
     let dto : TimeSeries.TimeSeriesWriteDto = {
-        MetaData = [
+        Metadata = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
         ] |> Map.ofList

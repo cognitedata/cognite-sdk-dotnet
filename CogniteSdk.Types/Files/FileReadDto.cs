@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Files
 {
@@ -35,7 +36,7 @@ namespace CogniteSdk.Files
         /// Limits: Maximum length of key is 32 bytes,
         /// value 512 bytes, up to 16 key-value pairs
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Ids of assets this file is linked to.

@@ -137,13 +137,13 @@ let ``Create and delete sequences is Ok`` () = task {
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
         ValueType = ValueType.Double
-        MetaData = Map.empty
+        Metadata = Map.empty
     }
     let dto: Sequences.SequenceWriteDto = {
         ExternalId = Some externalIdString
         Name = Some name
         Description = Some "dotnet sdk test"
-        MetaData = Map.empty
+        Metadata = Map.empty
         AssetId = None
         Columns = [column]
     }
@@ -334,13 +334,13 @@ let ``Update sequences is Ok`` () = task {
         ExternalId = columnExternalIdString
         Description = Some "dotnet sdk test"
         ValueType = ValueType.Double
-        MetaData = Map.empty
+        Metadata = Map.empty
     }
     let dto: Sequences.SequenceWriteDto = {
         ExternalId = Some externalIdString
         Name = Some "Create Sequences sdk test"
         Description = Some "dotnet sdk test"
-        MetaData = [
+        Metadata = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
         ] |> Map.ofList

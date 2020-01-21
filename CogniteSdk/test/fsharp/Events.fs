@@ -28,7 +28,7 @@ let ``Create and delete events is Ok`` () = task {
         Type = Some "dotnet test"
         SubType = Some "create and delete"
         Description = Some "dotnet sdk test"
-        MetaData = Map.empty
+        Metadata = Map.empty
         AssetIds = Seq.empty
         Source = None
     }
@@ -156,7 +156,7 @@ let ``Update assets is Ok`` () = task {
         StartTime = Some 1566815994L
         EndTime = Some 1566816009L
         Description = Some "dotnet sdk test"
-        MetaData = [
+        Metadata = [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
         ] |> Map.ofList
