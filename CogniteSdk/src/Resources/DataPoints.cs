@@ -37,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<DataPointListResponse> ListAsync(DataPointsQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeriesReadDto>> CreateAsync(IEnumerable<TimeSeriesWriteDto> assets, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeriesReadDto>>(assets);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
 }

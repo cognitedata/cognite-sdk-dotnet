@@ -37,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<SequenceReadDto>> ListAsync(SequenceQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.list<ItemsWithCursor<SequenceReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceDataReadDto>> CreateAsync(IEnumerable<SequenceWriteDto> sequences, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.create<IEnumerable<SequenceDataReadDto>>(sequences);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var req = internalIds.Select(Identity.Create);
-            return await DeleteAsync(req, token);
+            return await DeleteAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> internalIds, CancellationToken token = default)
         {
             var req = internalIds.Select(Identity.Create);
-            return await DeleteAsync(req, token);
+            return await DeleteAsync(req, token).ConfigureAwait(false);
         }
         #endregion
 
@@ -97,7 +97,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.retrieve<IEnumerable<SequenceReadDto>>(ids);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var req = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, token);
+            return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var req = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, token);
+            return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
         #endregion
 
@@ -134,7 +134,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceReadDto>> SearchAsync (SearchQueryDto<SequenceFilterDto, SearchDto> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.search<IEnumerable<SequenceReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<SequenceReadDto>> UpdateAsync (IEnumerable<UpdateItem<SequenceUpdateDto>> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.update<IEnumerable<SequenceReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -158,19 +158,19 @@ namespace CogniteSdk.Resources
         public async Task<SequenceDataReadDto> ListRowsAsync(SequenceRowQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.listRows<SequenceDataReadDto>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         public async Task<EmptyResponse> CreateRowsAsync(IEnumerable<SequenceDataWriteDto> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.createRows<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         public async Task<EmptyResponse> DeleteRowsAsync(IEnumerable<SequenceRowDeleteDto> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.deleteRows<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
 }

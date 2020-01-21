@@ -37,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<EventReadDto>> ListAsync(EventQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.list<ItemsWithCursor<EventReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> CreateAsync(IEnumerable<EventWriteDto> events, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.create<IEnumerable<EventReadDto>>(events);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
         public async Task<EventReadDto> GetAsync(long eventId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.get<EventReadDto>(eventId);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(EventDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         #region Retrieve overloads
@@ -85,7 +85,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.retrieve<IEnumerable<EventReadDto>>(ids);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var req = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, token);
+            return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var req = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, token);
+            return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
         #endregion
 
@@ -122,7 +122,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> SearchAsync (SearchQueryDto<EventFilterDto, SearchDto> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Events.search<IEnumerable<EventReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<EventReadDto>> UpdateAsync (IEnumerable<UpdateItem<EventUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Events.update<IEnumerable<EventReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
 }

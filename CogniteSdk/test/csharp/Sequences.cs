@@ -11,7 +11,7 @@ using CogniteSdk.Sequences;
 namespace Test.CSharp.Integration
 {
     [Collection("TestBase")]
-    public class Sequences : TestFixture
+    public class SequencesTests : TestFixture
     {
         [Fact]
         [Trait("Description", "List Sequences with limit is Ok")]
@@ -157,7 +157,7 @@ namespace Test.CSharp.Integration
             var res = await WriteClient.Sequences.ListRowsAsync(rowQuery);
 
             // Assert
-            Assert.True(res.Columns.Count() > 0);
+            Assert.True(res.Columns.Any());
             Assert.Equal("sdk-test", res.ExternalId);
             Assert.Equal("sdk-test-column", res.Columns.First().Name);
         }

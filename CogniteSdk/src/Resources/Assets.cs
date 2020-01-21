@@ -37,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<AssetReadDto>> ListAsync(AssetQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.list<ItemsWithCursor<AssetReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> CreateAsync(IEnumerable<AssetWriteDto> assets, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.create<IEnumerable<AssetReadDto>>(assets);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
         public async Task<AssetReadDto> GetAsync(long assetId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.get<AssetReadDto>(assetId);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -73,7 +73,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(AssetDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> items, CancellationToken token = default)
         {
             var query = new AssetDeleteDto() { Items = items };
-            return await DeleteAsync(query, token);
+            return await DeleteAsync(query, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var query = new AssetDeleteDto() { Items = internalIds.Select(Identity.Create) };
-            return await DeleteAsync(query, token);
+            return await DeleteAsync(query, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var query = new AssetDeleteDto() { Items = externalIds.Select(Identity.Create) };
-            return await DeleteAsync(query, token);
+            return await DeleteAsync(query, token).ConfigureAwait(false);
         }
         #endregion
 
@@ -120,7 +120,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Assets.retrieve<IEnumerable<AssetReadDto>>(ids);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token);
+            return await RetrieveAsync(ids, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token);
+            return await RetrieveAsync(ids, token).ConfigureAwait(false);
         }
         #endregion
 
@@ -157,7 +157,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> SearchAsync (SearchQueryDto<AssetFilterDto, SearchDto> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.search<IEnumerable<AssetReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<AssetReadDto>> UpdateAsync (IEnumerable<UpdateItem<AssetUpdateDto>> query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.update<IEnumerable<AssetReadDto>>(query);
-            return await runUnsafeAsync(_ctx, token, req);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
 }
