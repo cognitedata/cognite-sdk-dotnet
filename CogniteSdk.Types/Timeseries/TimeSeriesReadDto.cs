@@ -61,5 +61,17 @@ namespace CogniteSdk.TimeSeries
         /// The required security categories to access this time series.
         /// </summary>
         public IEnumerable<long> SecurityCategories { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
+        /// leap seconds.
+        /// </summary>
+        public long CreatedTime { get; set; }
+
+        /// <summary>
+        /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
+        /// leap seconds.
+        /// </summary>
+        public long LastUpdatedTime { get; set; }
     }
 }

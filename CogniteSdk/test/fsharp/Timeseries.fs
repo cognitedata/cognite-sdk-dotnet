@@ -3,15 +3,16 @@ module Tests.Integration.Timeseries
 open System
 open System.Net.Http
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
+open Oryx
 open Swensen.Unquote
 open Xunit
 
-open Oryx
 open CogniteSdk
 open CogniteSdk.TimeSeries
+
 open Tests
 open Common
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
@@ -83,52 +84,41 @@ let ``Create and delete timeseries is Ok`` () = task {
     // Assert
     test <@ resExternalId = externalIdString @>
 }
-(*
 
 [<Fact>]
 let ``Search timeseries is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeries.TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(Name = "VAL_23-TT-96136-08:Z.X.Value"),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Name "VAL_23-TT-96136-08:Z.X.Value" ] ctx
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
+    let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     // Assert
     test <@ len = 1 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``Search timeseries on CreatedTime Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567707299032L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567707299052L)
-    }
+    let timerange =
+        TimeRange(
+            Min = 1567707299032L,
+            Max = 1567707299052L
+        )
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(CreatedTime = timerange),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.CreatedTime timerange ] ctx
+    let! dtos = writeClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     let createdTime = (Seq.head dtos).CreatedTime
@@ -136,30 +126,25 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
     // Assert
     test <@ len = 2 @>
     test <@ createdTime = 1567707299042L @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``Search timeseries on LastUpdatedTime Ok`` () = task {
-
     // Arrange
-    let ctx = writeCtx ()
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1567707299032L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1567707299052L)
-    }
+    let timerange =
+        TimeRange(
+            Min = 1567707299032L,
+            Max = 1567707299052L
+        )
+
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(LastUpdatedTime = timerange),
+            Limit = Nullable 10
+        )
+
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.LastUpdatedTime timerange] ctx
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
+    let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     let lastUpdatedTime = (Seq.head dtos).LastUpdatedTime
@@ -167,9 +152,9 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     // Assert
     test <@ len = 2 @>
     test <@ lastUpdatedTime = 1567707299042L @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
+
+(*
 
 [<Fact>]
 let ``Search timeseries on AssetIds is Ok`` () = task {
