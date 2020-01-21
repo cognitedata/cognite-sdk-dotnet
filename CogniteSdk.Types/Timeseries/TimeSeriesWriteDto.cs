@@ -50,7 +50,7 @@ namespace CogniteSdk.TimeSeries
         /// <summary>
         /// Asset this time series should be related to.
         /// </summary>
-        public long AssetId { get; set; }
+        public long? AssetId { get; set; }
 
         /// <summary>
         /// Whether the time series is a step series or not.
