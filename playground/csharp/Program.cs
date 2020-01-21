@@ -18,7 +18,7 @@ namespace csharp {
                 Name = name
             };
             var assets = new List<AssetWriteDto> {asset};
-            
+
             var result = await client.Assets.CreateAsync(assets);
             var newAsset = result.FirstOrDefault();
 

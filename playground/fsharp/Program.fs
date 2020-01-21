@@ -4,7 +4,7 @@ open System
 open System.Net.Http
 
 open FsConfig
-open Com.Cognite.V1.Timeseries.Proto 
+open Com.Cognite.V1.Timeseries.Proto
 
 open Oryx
 open Oryx.Retry
@@ -22,13 +22,13 @@ type Config = {
 }
 
 let getDatapointsExample (ctx : HttpContext) = task {
-    let query = 
+    let query =
         DataPoints.DataPointsQuery(
-            Items = [ DataPoints.DataPointsQueryItem(Id=20713436708L) ],
+            Items = [ DataPoints.DataPointsQueryItem(Id=Nullable 20713436708L) ],
             Start = Nullable 1524851819000L,
             End = Nullable 1524859650000L
         )
-    let! res = 
+    let! res =
         DataPoints.list query
         |> runUnsafeAsync ctx CancellationToken.None
     printfn "%A" res
@@ -36,14 +36,14 @@ let getDatapointsExample (ctx : HttpContext) = task {
 
 let getAssetsExample (ctx : HttpContext) = task {
     printfn "FIRST **********************************"
-    let! res = 
+    let! res =
         Assets.AssetQueryDto(Limit = Nullable 2)
         |> Assets.list
         |> runUnsafeAsync ctx CancellationToken.None
-    
+
     printfn "SECOND **********************************"
-    let! res = 
-        Assets.AssetQueryDto(Limit = Nullable 2) 
+    let! res =
+        Assets.AssetQueryDto(Limit = Nullable 2)
         |> Assets.list
         |> runAsync ctx
     match res with
@@ -54,8 +54,8 @@ let getAssetsExample (ctx : HttpContext) = task {
 let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
-            Id = 84025677715833721L,
-            Update = Assets.AssetUpdateDto(Name = SetUpdate(Set="string3"))
+            Id = Nullable 84025677715833721L,
+            Update = Assets.AssetUpdateDto(Name = SetProperty(Set="string3"))
         )
     ]
     let! res = Assets.update query |> runAsync ctx
@@ -66,7 +66,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
 
 let searchAssetsExample (ctx : HttpContext) = task {
 
-    let query = 
+    let query =
         SearchQueryDto<Assets.AssetFilterDto, SearchDto>(
             Search = SearchDto(Name = "VAL"),
             Limit = Nullable 10
@@ -124,7 +124,7 @@ let insertDataPointsProtoStyle ctx = task {
     item.ExternalId <- "testts"
     request.Items.Add(item)
 
-    let! result = 
+    let! result =
         DataPoints.create request
         |> runAsync ctx
     match result with
