@@ -144,7 +144,7 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
         )
 
     // Act
-    let! dtos = readClient.TimeSeries.SearchAsync query
+    let! dtos = writeClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     let lastUpdatedTime = (Seq.head dtos).LastUpdatedTime
@@ -154,115 +154,88 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     test <@ lastUpdatedTime = 1567707299042L @>
 }
 
-(*
-
 [<Fact>]
 let ``Search timeseries on AssetIds is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(AssetIds = [ 4293345866058133L ]),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.AssetIds [4293345866058133L] ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let assetIds = Seq.map (fun d -> d.AssetId) dtos
+    let assetIds = Seq.map (fun (d : TimeSeriesReadDto) -> d.AssetId.Value) dtos
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall ((=) (Some 4293345866058133L)) assetIds @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ Seq.forall ((=) (4293345866058133L)) assetIds @>
 }
 
 [<Fact>]
 let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(ExternalIdPrefix = "VAL_45"),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.ExternalIdPrefix "VAL_45" ] ctx
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
+    let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
-    let externalIds = Seq.collect (fun d -> d.ExternalId |> optionToSeq) dtos
+    let externalIds = Seq.map (fun (d : TimeSeriesReadDto) -> d.ExternalId) dtos
 
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("VAL_45")) externalIds @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``Search timeseries on IsStep is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(IsStep = Nullable true),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsStep true ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let isSteps = Seq.map (fun d -> d.IsStep) dtos
+    let isSteps = Seq.map (fun (d : TimeSeriesReadDto) -> d.IsStep.Value) dtos
 
     // Assert
     test <@ len = 5 @>
     test <@ Seq.forall id isSteps @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``Search timeseries on IsString is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(IsString = Nullable true),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.IsString true ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
-
-    let isStrings = Seq.map (fun d -> d.IsString) dtos
+    let isStrings = Seq.map (fun (d: TimeSeriesReadDto) -> d.IsString.Value) dtos
 
     // Assert
     test <@ len = 6 @>
     test <@ Seq.forall id isStrings @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
+(*
 
 [<Fact>]
 let ``Search timeseries on Unit is Ok`` () = task {
