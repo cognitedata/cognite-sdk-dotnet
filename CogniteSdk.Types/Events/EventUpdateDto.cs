@@ -59,4 +59,9 @@ namespace CogniteSdk.Events
         /// </summary>
         public Property<string> SubType { get; set; }
     }
+
+    // <summary>
+    /// The asset update item DTO. Contains the update item for an <see cref="AssetUpdateDto">AssetUpdateDto</see>.
+    /// </summary>
+    public class EventUpdateItem : UpdateItem<EventUpdateDto> { }
 }

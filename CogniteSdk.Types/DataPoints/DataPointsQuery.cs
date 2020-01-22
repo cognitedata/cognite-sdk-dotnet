@@ -32,7 +32,7 @@ namespace CogniteSdk.DataPoints
         /// Return up to this number of data points. Maximum is 100000 non-aggregated data points and 10000 aggregated
         /// data points.
         /// </summary>
-        public long? Limit { get; set; }
+        public int? Limit { get; set; }
 
         /// <summary>
         /// Specify the aggregates to return, or an empty array if this sub-query should return data points without

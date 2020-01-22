@@ -50,47 +50,38 @@ let ``Get datapoints by id with options is Ok`` () = task {
     test <@ resId = id @>
     test <@ Seq.length datapoints = 9 @>
 }
-(*
 [<Fact>]
 let ``Get datapoints by id with limit is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        DataPointQuery.Limit 20
-    ]
     let id = 613312137748079L
-
+    let query =
+        DataPointsQuery(
+            Items = [
+                DataPointsQueryItem(Id = Nullable id)
+            ],
+            Limit = Nullable 20
+        )
     // Act
-    let! res = DataPoints.Items.listAsync id options ctx
+    let! dtos = readClient.DataPoints.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let resId =
-        let h = Seq.tryHead dtos
+        let h = Seq.tryHead dtos.Items
         match h with
-        | Some dto -> Identity.Id dto.Id
-        | None -> Identity.Id 0L
+        | Some dto -> dto.Id
+        | None -> 0L
 
     let datapoints =
         seq {
-            for datapointDto in dtos do
-                match datapointDto.DataPoints with
-                | Numeric dps -> yield! dps
-                | String dps -> failwith "Unexpected string datapoints"
+            for datapointDto in dtos.Items do
+                for dp in datapointDto.NumericDatapoints.Datapoints do
+                    yield dp
         }
 
     // Assert
-    test <@ resId = Identity.Id id @>
+    test <@ resId = id @>
     test <@ Seq.length datapoints = 20 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/list" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
 }
+(*
 
 [<Fact>]
 let ``Get datapoints by id with limit and timerange is Ok`` () = task {

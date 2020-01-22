@@ -352,7 +352,7 @@ let ``Update timeseries is Ok`` () = task {
                     Metadata = ObjProperty(newMetadata, [ "oldkey1" ]),
                     Description = Property<string>(newDescription),
                     Name = Property<string>(clear=true),
-                    Unit = Property<string>("unit")
+                    Unit = Property<string>(set="unit")
                 )
             )
         ]
