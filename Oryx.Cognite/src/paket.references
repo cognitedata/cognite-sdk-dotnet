@@ -1,0 +1,9 @@
+group Oryx.Cognite
+    System.Text.Json
+    Microsoft.Extensions.Http
+    FSharp.Core
+    Taskbuilder.fs
+    Oryx
+    Oryx.SystemTextJson
+    Oryx.Protobuf
+    CogniteSdk.Protobuf

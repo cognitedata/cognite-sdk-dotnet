@@ -1,0 +1,154 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections.Generic;
+
+namespace CogniteSdk
+{
+    /// <summary>
+    /// Used for setting a new value for the update property. Or for removing the property.
+    /// </summary>
+    /// <typeparam name="T">The type of the property being updated.</typeparam>
+    public class SetUpdate<T> 
+    {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public SetUpdate() { }
+
+        /// <summary>
+        /// Set a new value for the property.
+        /// </summary>
+        /// <param name="value">Value to set.</param>
+        /// <returns>A new instance of the <see cref="SetUpdate{T}">SetProperty{T}</see> class.</returns>
+        public SetUpdate(T value)
+        {
+            Set = value;
+        }
+
+        /// <summary>
+        /// Contains the value to set.
+        /// </summary>
+        public T Set { get; set; }
+    }
+
+    /// <summary>
+    /// Used for setting a new value for the update property. Or for removing the property.
+    /// </summary>
+    /// <typeparam name="T">The type of the property being updated.</typeparam>
+    public class Update<T> : SetUpdate<T>
+    {
+        /// <summary>
+        /// True if the value should be cleared.
+        /// </summary>
+        public bool? SetNull { get; set; }
+
+        /// <summary>
+        /// Set a new value for the property.
+        /// </summary>
+        /// <param name="value">Value to set.</param>
+        /// <returns>A new instance of the <see cref="Update{T}">Property{T}</see> class.</returns>
+        public Update(T value) : base(value)
+        {
+            if (value is null)
+            {
+                SetNull = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Used for setting, updating and removing Metadata entries.
+    /// </summary>
+    public class CollectionUpdate<TCollection, TRemove>
+    {
+        /// <summary>
+        /// Set the key-value pairs. All existing key-value pairs will be removed.
+        /// </summary>
+        public TCollection Set { get; set; }
+
+        /// <summary>
+        /// Add the key-value pairs. Values for existing keys will be overwritten.
+        /// </summary>
+        public TCollection Add { get; set; }
+
+        /// <summary>
+        /// Remove the key-value pairs with the specified keys.
+        /// </summary>
+        public IEnumerable<TRemove> Remove { get; set; }
+
+        /// <summary>
+        /// Set the key-value pairs. All existing key-value pairs will be removed.
+        /// </summary>
+        /// <param name="value">Values to set (overwrite).</param>
+        /// <returns>A new instance of the <see cref="CollectionUpdate{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see> class.</returns>
+        public CollectionUpdate(TCollection value)
+        {
+            Set = value;
+        }
+
+        /// <summary>
+        /// Add the key-value pairs. Values for existing keys will be overwritten. Remove the key-value pairs with the specified keys.
+        /// </summary>
+        /// <param name="addKeyValues">Values to update.</param>
+        /// <param name="removeKeys">Keys to remove.</param>
+        /// <returns></returns>
+        public CollectionUpdate(TCollection addKeyValues, IEnumerable<TRemove> removeKeys)
+        {
+            Add = addKeyValues;
+            Remove = removeKeys;
+        }
+    }
+
+    /// <summary>
+    /// The object property used i.e for Metadata properties.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    public class DictUpdate<T> : CollectionUpdate<Dictionary<string, T>, T>
+    {
+        /// <summary>
+        /// Initialize the object property and set a new value.
+        /// </summary>
+        /// <param name="set">Set the new value.</param>
+        public DictUpdate(Dictionary<string, T> set) : base(set)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the object property and remove values.
+        /// </summary>
+        /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
+        public DictUpdate(IEnumerable<T> remove) : base(null, remove)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the object property and add and remove values.
+        /// </summary>
+        /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
+        /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
+        public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove)
+        {
+        }
+    }
+
+    /// <summary>
+    /// A sequence property to use for array properties.
+    /// </summary>
+    /// <typeparam name="T">The type of the sequence items.</typeparam>
+    public class SequenceUpdate<T> : CollectionUpdate<IEnumerable<T>, T>
+    {
+        /// <summary>
+        /// Replace sequence with given sequence.
+        /// </summary>
+        /// <param name="set">Values to set.</param>
+        public SequenceUpdate(IEnumerable<T> set) : base(set) { }
+
+        /// <summary>
+        /// Initialize sequence property.
+        /// </summary>
+        /// <param name="add">Values to add to the sequence.</param>
+        /// <param name="remove">Values to remove from the sequence.</param>
+        public SequenceUpdate(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
+    }
+}

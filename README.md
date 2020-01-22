@@ -103,8 +103,8 @@ Dependencies for all projects are handled using [Paket](https://fsprojects.githu
 This will install the main dependencies and sub-dependencies. The main dependencies are:
 
 - [Oryx](https://www.nuget.org/packages/Oryx/) - HTTP Handlers.
-- [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json/12.0.1) - for JSON (de)serialization.
-- [Thoth.Json.Net](https://www.nuget.org/packages/Thoth.Json.Net/2.5.0) - F# wrapper for Newtonsoft.Json.
+- [Oryx.SystemTextJson](https://www.nuget.org/packages/Oryx.SystemTextJson/) - JSON handling for Oryx
+- [Oryx.Protobuf](https://www.nuget.org/packages/Oryx.Protobuf/) - Protobuf handling for Oryx
 - [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for Protobuf support
 
 # Code of Conduct

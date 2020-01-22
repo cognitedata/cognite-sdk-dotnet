@@ -2,11 +2,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>7.1</LangVersion>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\CogniteSdk.fsproj" />
+    <ProjectReference Include="..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
+    <ProjectReference Include="..\..\Oryx.Cognite\src\Oryx.Cognite.fsproj" />
+    <ProjectReference Include="..\..\CogniteSdk\src\CogniteSdk.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 

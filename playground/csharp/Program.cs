@@ -1,29 +1,30 @@
 ﻿using CogniteSdk;
-using CogniteSdk.Assets;
-using CogniteSdk.DataPoints;
-using CogniteSdk.TimeSeries;
-using Com.Cognite.V1.Timeseries.Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using CogniteSdk.Assets;
+
 namespace csharp {
 
     class Program {
 
         static async Task CreateAssetsExample(Client client, string externalId, string name) {
-            var asset = new AssetEntity();
-            asset.ExternalId = externalId;
-            asset.Name = name;
+            var asset = new AssetWriteDto
+            {
+                ExternalId = externalId,
+                Name = name
+            };
+            var assets = new List<AssetWriteDto> {asset};
 
-            var result = await client.Assets.CreateAsync(new List<AssetEntity>() { asset });
+            var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
 
             Console.WriteLine(newAsset.Name);
         }
-
+        /*
         static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData) {
             var fieldsToUpdate = new List<AssetUpdate>() {
                 AssetUpdate.ChangeMetaData(metaData, null),
@@ -37,19 +38,21 @@ namespace csharp {
             var updatedAsset = result.FirstOrDefault();
             Console.WriteLine(updatedAsset.Name);
         }
-
-        static async Task<AssetEntity> GetAssetsExample(Client client, string assetName) {
-            var filter = new List<AssetFilter> {
-                AssetFilter.Name(assetName)
+        */
+        static async Task<AssetReadDto> GetAssetsExample(Client client, string assetName) {
+            var query = new AssetQueryDto
+            {
+                Filter = new AssetFilterDto { Name = assetName }
             };
-            var result = await client.Assets.ListAsync(filter);
+
+            var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
 
             var asset = result.Items.FirstOrDefault();
             Console.WriteLine(asset.ParentId);
             Console.WriteLine(result);
             return asset;
         }
-
+        /*
         static async Task QueryTimeseriesDataExample(Client client) {
             var aggregates = new List<Aggregate> { Aggregate.Average };
             var defaultOptions = new List<AggregateQuery> {
@@ -89,23 +92,29 @@ namespace csharp {
             });
             await client.DataPoints.InsertAsync(points);
         }
-
-        static async Task Main(string[] args) {
+        */
+        private static async Task Main(string[] args) {
             Console.WriteLine("C# Client");
 
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
             var project = Environment.GetEnvironmentVariable("PROJECT");
 
-            using (var httpClient = new HttpClient()) {
-                var client =
-                    Client.Create()
+            using var handler = new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+            };
+
+            using var httpClient = new HttpClient(handler);
+            var builder = new Client.Builder();
+            var client =
+                builder
                     .SetAppId("playground")
                     .SetHttpClient(httpClient)
                     .SetApiKey(apiKey)
-                    .SetProject(project);
+                    .SetProject(project)
+                    .Build();
 
-                var asset = await GetAssetsExample(client, "23-TE-96116-04");
-            }
+            var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
         }
     }
 }

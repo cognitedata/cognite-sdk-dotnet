@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Common.fs" />
+    <Compile Include="Raw.fs" />
+    <Compile Include="Events.fs" />
+    <Compile Include="Assets.fs" />
+    <Compile Include="TimeSeries.fs" />
+    <Compile Include="DataPoints.fs" />
+    <Compile Include="Files.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="../../src/CogniteSdk.csproj" />
+    <ProjectReference Include="../../../Oryx.Cognite/src/Oryx.Cognite.fsproj" />
+  </ItemGroup>
+  <Import Project="..\..\..\.paket\Paket.Restore.targets" />
+</Project>

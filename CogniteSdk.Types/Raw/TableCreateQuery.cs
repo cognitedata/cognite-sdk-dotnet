@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CogniteSdk.Raw
+{
+    /// <summary>
+    /// Query parameter when creating a raw table.
+    /// </summary>
+    public class TableCreateQuery : IQueryParams
+    {
+        /// <summary>
+        /// Create database if it doesn't exist already.
+        /// </summary>
+        public bool EnsureParent { get; set; }
+
+        /// <inheritdoc/>
+        public List<(string, string)> ToQueryParams()
+        {
+            return new List<(string, string)> { ("ensureParent", EnsureParent ? "true" : "false") };
+        }
+    }
+}

@@ -10,3 +10,5 @@ coverage.lcov
 *.swp
 .config
 .paket
+.idea
+launchSettings.json

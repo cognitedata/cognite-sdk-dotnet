@@ -1,0 +1,37 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk.Sequences
+{
+    /// <summary>
+    /// The Sequence row query base type. Either SequenceRowQueryByIdDto or SequenceRowQueryByExternalIdDto.
+    /// </summary>
+    public class SequenceRowQuery : CursorQueryBase 
+    {
+        /// <summary>
+        /// Lowest row number included.
+        /// </summary>
+        public long? Start { get; set; }
+
+        /// <summary>
+        /// Get rows up to, but excluding, this row number. Default - No limit.
+        /// </summary>
+        public long? End { get; set; }
+
+        /// <summary>
+        /// Columns to be included. Specified as list of column externalIds. In case this filter is not set, all
+        /// available columns will be returned.
+        /// </summary>
+        public string Columns { get; set; }
+
+        /// <summary>
+        /// A server-generated ID for the object.
+        /// </summary>
+        public long? Id { get; set; }
+    
+        /// <summary>
+        /// The external ID provided by the client. Must be unique for the resource type.
+        /// </summary>
+        public string ExternalId { get; set; }
+    }
+}

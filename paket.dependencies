@@ -3,15 +3,32 @@ storage: none
 
 group Sdk
     source https://www.nuget.org/api/v2
+    framework: netstandard2.0
+
+    nuget Microsoft.Extensions.Http
+    nuget Oryx prerelease
+    nuget Microsoft.CodeAnalysis.FxCopAnalyzers
+
+group Oryx.Cognite
+    source https://www.nuget.org/api/v2
     storage: none
     framework: netstandard2.0
 
+    nuget System.Text.Json
     nuget FSharp.Core ~> 4.7
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2.1
-    nuget Thoth.Json.Net ~> 3.6
     nuget Microsoft.Extensions.Http
-    nuget Oryx
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
+
+group Types
+    source https://www.nuget.org/api/v2
+    framework: netstandard2.0
+
+    nuget System.Text.Json
+    nuget Microsoft.CodeAnalysis.FxCopAnalyzers
 
 group Test
     source https://www.nuget.org/api/v2
@@ -23,6 +40,12 @@ group Test
     nuget xunit ~> 2
     nuget xunit.runner.visualstudio ~> 2
     nuget Microsoft.NET.Test.Sdk ~> 16
+    nuget MSTest.TestAdapter ~> 1
+    nuget MSTest.TestFramework ~> 1
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
+
 
 group Playground
     source https://www.nuget.org/api/v2
@@ -31,3 +54,11 @@ group Playground
     nuget FSharp.Core ~> 4.7
     nuget FsConfig ~> 2
     nuget Microsoft.Extensions.Configuration ~> 3
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
+    nuget CogniteSdk.Protobuf
+
+group FSharp
+    source https://www.nuget.org/api/v2
+    storage: none
