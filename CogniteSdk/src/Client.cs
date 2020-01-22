@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Net.Http;
-using System.Resources;
 using Oryx;
+using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
-
 using static Oryx.Cognite.ContextModule;
 
 namespace CogniteSdk
@@ -19,22 +18,22 @@ namespace CogniteSdk
         /// <summary>
         /// Client Assets extension methods
         /// </summary>
-        public Resources.Assets Assets { get; }
+        public AssetsResource Assets { get; }
 
         /// <summary>
         /// Client TimeSeries extension methods.
         /// </summary>
-        public Resources.TimeSeries TimeSeries { get; }
+        public TimeSeriesResource TimeSeries { get; }
 
         /// <summary>
         /// Client DataPoints extension methods
         /// </summary>
-        public Resources.DataPoints DataPoints { get; }
+        public DataPointsResource DataPoints { get; }
 
         /// <summary>
         /// Client Events extension methods.
         /// </summary>
-        public Resources.Events Events { get; }
+        public EventsResource Events { get; }
 
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
@@ -44,13 +43,13 @@ namespace CogniteSdk
         /// <summary>
         /// Client Raw extension methods
         /// </summary>
-        public Resources.Raw Raw { get; }
+        public RawResource Raw { get; }
 
         /// <summary>
         /// Client Sequences extension methods
         /// </summary>
         /// <value></value>
-        public Resources.Sequences Sequences  { get; }
+        public SequencesResource Sequences  { get; }
 
         /// <summary>
         /// Client for making requests to the API.
@@ -60,18 +59,19 @@ namespace CogniteSdk
         {
             var ctx = setUrlBuilder(context);
 
-            // Setup extension methods.
-            Assets = new Resources.Assets(ctx);
-            TimeSeries = new Resources.TimeSeries(ctx);
-            DataPoints =new Resources.DataPoints(ctx);
-            Events = new Resources.Events(ctx);
-            Sequences = new Resources.Sequences(ctx);
-            Raw = new Resources.Raw(ctx);
+            // Setup resources.
+            Assets = new AssetsResource(ctx);
+            TimeSeries = new TimeSeriesResource(ctx);
+            DataPoints =new DataPointsResource(ctx);
+            Events = new EventsResource(ctx);
+            Sequences = new SequencesResource(ctx);
+            Raw = new RawResource(ctx);
         }
 
         /// <summary>
         /// Builder to build a client.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
             private HttpContext _context = Context.defaultContext;

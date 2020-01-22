@@ -14,7 +14,7 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// Contains all raw methods.
     /// </summary>
-    public class Raw
+    public class RawResource
     {
         private readonly HttpContext _ctx;
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal Raw(HttpContext ctx)
+        internal RawResource(HttpContext ctx)
         {
             _ctx = ctx;
         }

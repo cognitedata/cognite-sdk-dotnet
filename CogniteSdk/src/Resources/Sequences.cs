@@ -13,9 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all sequences methods.
+    /// For internal use. Contains all sequences methods.
     /// </summary>
-    public class Sequences
+    public class SequencesResource
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal Sequences(HttpContext ctx)
+        internal SequencesResource(HttpContext ctx)
         {
             _ctx = ctx;
         }
@@ -161,12 +161,24 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Create rows.
+        /// </summary>
+        /// <param name="query">Query of rows to create.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> CreateRowsAsync(IEnumerable<SequenceDataWriteDto> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.createRows<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Delete rows
+        /// </summary>
+        /// <param name="query">Sequence of rows to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteRowsAsync(IEnumerable<SequenceRowDeleteDto> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.deleteRows<EmptyResponse>(query);

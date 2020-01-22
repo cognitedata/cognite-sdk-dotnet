@@ -56,9 +56,9 @@ namespace CogniteSdk
         /// Clear the property.
         /// </summary>
         /// <param name="clear">Set to true to clear the property.</param>
-        public Property(bool clear)
+        public static Property<T> Clear(bool clear=true)
         {
-            SetNull = clear;
+            return new Property<T>() { SetNull = clear };
         }
     }
 

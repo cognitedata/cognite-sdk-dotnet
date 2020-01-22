@@ -14,9 +14,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all data points methods.
+    /// For internal use. Contains all data points methods.
     /// </summary>
-    public class TimeSeries
+    public class TimeSeriesResource
     {
         private readonly HttpContext _ctx;
 
@@ -24,7 +24,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal TimeSeries(HttpContext ctx)
+        internal TimeSeriesResource(HttpContext ctx)
         {
             _ctx = ctx;
         }
@@ -117,7 +117,7 @@ namespace CogniteSdk.Resources
         /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
-        /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<TimeSeriesReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {

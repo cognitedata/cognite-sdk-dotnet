@@ -13,9 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all event methods.
+    /// For internal use. Contains all event methods.
     /// </summary>
-    public class Events
+    public class EventsResource
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal Events(HttpContext ctx)
+        internal EventsResource(HttpContext ctx)
         {
             _ctx = ctx;
         }

@@ -13,9 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all data points methods.
+    /// For internal use. Contains all data points methods.
     /// </summary>
-    public class DataPoints
+    public class DataPointsResource
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal DataPoints(HttpContext ctx)
+        internal DataPointsResource(HttpContext ctx)
         {
             _ctx = ctx;
         }
