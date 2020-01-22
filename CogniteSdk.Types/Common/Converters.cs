@@ -20,18 +20,12 @@ namespace CogniteSdk
                 case JsonTokenType.String:
                     return MultiValue.Create(reader.GetString());
                 case JsonTokenType.Number:
-                    var value = reader.GetString();
-                    if (Int64.TryParse(value, out long longNumber))
+                    if (reader.TryGetInt64(out var longNumber))
                     {
                         return MultiValue.Create(longNumber);
                     }
-
-                    if (Double.TryParse(reader.GetString(), out double doubleNumber))
-                    {
-                        return MultiValue.Create(doubleNumber);
-                    }
-
-                    throw new JsonException($"Unable to parse number value: {value}");
+                    
+                    return MultiValue.Create(reader.GetDouble());
                 default:
                     throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
             }

@@ -196,94 +196,70 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
     test <@ greaterThanZero first.Average && greaterThanZero first.Min && greaterThanZero first.Sum @>
 }
 
-(*
 [<Fact>]
 let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let latestDataPointRequest: DataPoints.Latest.LatestRequest = {
-        Before = Some "2w-ago"
-        Identity = Identity.Id 613312137748079L
-    }
-
     let id = 613312137748079L
+    let query = 
+        DataPointsLatestQuery(
+            Items = [
+                IdentityWithBefore(
+                    Before = "2w-ago",
+                    Id = id
+                )
+            ]
+        )
+       
 
     // Act
-    let! res = DataPoints.Latest.getAsync [ latestDataPointRequest ] ctx
+    let! dtos = readClient.DataPoints.LatestAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
-
+    
     let resId =
         let h = Seq.tryHead dtos
         match h with
-        | Some dto -> Identity.Id dto.Id
-        | None -> Identity.Id 0L
+        | Some dto -> dto.Id
+        | None -> 0L
 
     let datapoints =
         seq {
             for datapointDto in dtos do
-                match datapointDto.DataPoints with
-                | Numeric dps -> yield! dps
-                | String _ -> failwith "Unexpected string datapoints"
+                yield! datapointDto.DataPoints
         }
 
     // Assert
-    test <@ resId = Identity.Id id @>
+    test <@ resId = id @>
     test <@ Seq.length datapoints = 1 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data/latest" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
 }
 
 [<Fact>]
 let ``Insert datapoints is Ok`` () = task {
-    // Arrange
-    let ctx = writeCtx ()
     let externalIdString = Guid.NewGuid().ToString();
-    let dto: TimeSeriesWriteDto = {
-        ExternalId = Some externalIdString
-        Name = Some "Insert datapoints test"
-        LegacyName = None
-        Description = Some "dotnet sdk test"
-        IsString = false
-        Metadata = Map.empty
-        Unit = None
-        AssetId = None
-        IsStep = false
-        SecurityCategories = Seq.empty
-    }
-    let externalId = Identity.ExternalId externalIdString
+    let dto = 
+        TimeSeriesWriteDto(
+            ExternalId = externalIdString,
+            Name = "Delete datapoints test",
+            Description = "dotnet sdk test",
+            IsString = false
+        )
+    
+    
+    let dataPoints = NumericDatapoints()
+    dataPoints.Datapoints.Add(NumericDatapoint(Timestamp = 1563048800000L, Value = 3.0))
 
-    let points: NumericDataPointDto seq = Seq.ofList [ { TimeStamp = 1563048800000L; Value = 3.0} ]
-
-    let datapoints: DataPoints.Insert.DataPoints = {
-        DataPoints = Numeric points
-        Identity = Identity.ExternalId externalIdString
-    }
+    let points = DataPointInsertionRequest()
+    points.Items.Add [
+        DataPointInsertionItem(ExternalId = externalIdString, NumericDatapoints = dataPoints)
+    ]
 
     // Act
-    let! _ = TimeSeries.Create.createAsync [ dto ] ctx
-    let! res = DataPoints.Insert.insertAsync [ datapoints ] ctx
-    let! _ = TimeSeries.Delete.deleteAsync [ externalId ] ctx
+    let! _ = writeClient.TimeSeries.CreateAsync [ dto ]
+    let! _ = writeClient.DataPoints.CreateAsync points
+    let! _ = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
+    ()
     // Assert
-    test <@ Result.isOk res @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/data" @>
 }
-*)
 
 [<Fact>]
 let ``Delete datapoints is Ok`` () = task {

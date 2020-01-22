@@ -8,12 +8,11 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The data points query for each individual data point query within the top-level <see cref="DataPointsQuery">DataPointsQuery</see>.
     /// </summary>
-    public class DataPointsLatestQueryItem
+    public class IdentityWithBefore
     {
         /// <summary>
-        ///
+        /// Get datapoints before this time. The format is N[timeunit]-ago where timeunit is w,d,h,m,s. Example: '2d-ago' gets data that is up to 2 days old. You can also specify time in milliseconds since epoch.
         /// </summary>
-        /// <value></value>
         public string Before { get; set; }
 
         /// <summary>
@@ -30,13 +29,8 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The top level data points query.
     /// </summary>
-    public class DataPointsLatestQuery
+    public class DataPointsLatestQuery : ItemsWithoutCursor<IdentityWithBefore>
     {
-        /// <summary>
-        /// Sequence of data point queries of type <see cref="DataPointsLatestQueryItem">DataPointsLatestQueryItem</see>.
-        /// </summary>
-        public IEnumerable<DataPointsLatestQueryItem> Items { get; set; }
-
         /// <summary>
         /// If true, then ignore IDs and external IDs that are not found.
         /// </summary>
