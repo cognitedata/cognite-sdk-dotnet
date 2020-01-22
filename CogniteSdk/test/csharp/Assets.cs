@@ -200,8 +200,8 @@ namespace Test.CSharp.Integration {
                     ExternalId = externalIdString,
                     Update = new AssetUpdateDto()
                     {
-                        Name = new SetProperty<string>(newName),
-                        Metadata = new ObjProperty<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
+                        Name = new SetUpdate<string>(newName),
+                        Metadata = new DictUpdate<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
                     }
                 }
             };

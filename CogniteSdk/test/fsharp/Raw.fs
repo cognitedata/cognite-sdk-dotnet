@@ -1,20 +1,17 @@
 module Tests.Integration.Raw
 
 open System
-open System.Net.Http
 open System.Collections.Generic
 open FSharp.Control.Tasks.V2.ContextInsensitive
+open System.Text.Json
 
 open Xunit
 open Swensen.Unquote
-
-open Oryx
 
 open CogniteSdk
 open CogniteSdk.Raw
 
 open Common
-open System.Text.Json
 
 [<Trait("resource", "raw")>]
 [<Fact>]

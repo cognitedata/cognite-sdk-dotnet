@@ -55,7 +55,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
             Id = Nullable 84025677715833721L,
-            Update = Assets.AssetUpdateDto(Name = SetProperty(Set="string3"))
+            Update = Assets.AssetUpdateDto(Name = SetUpdate("string3"))
         )
     ]
     let! res = Assets.update query |> runAsync ctx

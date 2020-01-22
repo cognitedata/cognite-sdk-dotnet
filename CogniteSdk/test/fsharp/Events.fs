@@ -1,26 +1,23 @@
 module Tests.Integration.Events
 
 open System
-open System.Net.Http
-open System.Threading.Tasks
+open System.Collections.Generic
 
+open FSharp.Control.Tasks.V2.ContextInsensitive
 open Xunit
 open Swensen.Unquote
 
-open Tests
 open Common
-open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
 open CogniteSdk.Events
-open System.Collections.Generic
 
 [<Fact>]
 let ``Create and delete events is Ok`` () = task {
     // Arrange
     let externalId = Guid.NewGuid().ToString()
     let dto =
-        Events.EventWriteDto(
+        EventWriteDto(
             ExternalId = externalId,
             StartTime = Nullable 1565941329L,
             EndTime = Nullable 1565941341L,
@@ -114,8 +111,8 @@ let ``Update events is Ok`` () = task {
             EventUpdateItem(
                 ExternalId = externalId,
                 Update = EventUpdateDto(
-                    Description = Property<string>(set=newDescription),
-                    Metadata = ObjProperty<string>(add=newMetadata, remove=[ "oldkey1" ])
+                    Description = Update<string>(newDescription),
+                    Metadata = DictUpdate<string>(add=newMetadata, remove=[ "oldkey1" ])
                 )
             )
         ]
@@ -140,7 +137,7 @@ let ``Update events is Ok`` () = task {
 [<Fact>]
 let ``List events with limit is Ok`` () = task {
     // Arrange
-    let query = Events.EventQueryDto(Limit = Nullable 10)
+    let query = EventQueryDto(Limit = Nullable 10)
 
     // Act
     let! res = readClient.Events.ListAsync query
@@ -155,7 +152,7 @@ let ``List events with limit is Ok`` () = task {
 let ``Filter events on AssetIds is Ok`` () = task {
     // Arrange
     let filter = EventFilterDto(AssetIds = [ 4650652196144007L ])
-    let query = Events.EventQueryDto(Limit = Nullable 10, Filter = filter)
+    let query = EventQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Events.ListAsync query

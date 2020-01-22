@@ -356,9 +356,9 @@ let ``Update assets is Ok`` () = task {
         AssetUpdateItem(
             ExternalId = externalId,
             Update = AssetUpdateDto(
-                Name = SetProperty<string>(newName),
-                Metadata = ObjProperty<string>(add=newMetadata, remove=["oldkey1"]),
-                ExternalId = Property<string>(set=newExternalId)
+                Name = SetUpdate(newName),
+                Metadata = DictUpdate(add=newMetadata, remove=["oldkey1"]),
+                ExternalId = Update(newExternalId)
             )
         )
     }
@@ -394,9 +394,9 @@ let ``Update assets is Ok`` () = task {
             AssetUpdateItem(
                 ExternalId=newExternalId,
                 Update=AssetUpdateDto(
-                    Metadata = ObjProperty(set=Dictionary(dict["newKey", "newValue"])),
-                    Description = Property<string>(newDescription),
-                    Source = Property<string>(newSource)
+                    Metadata = DictUpdate(set=Dictionary(dict["newKey", "newValue"])),
+                    Description = Update(newDescription),
+                    Source = Update(newSource)
                 )
             )
         ]
@@ -420,9 +420,9 @@ let ``Update assets is Ok`` () = task {
             AssetUpdateItem(
                 Id = Nullable identity,
                 Update = AssetUpdateDto(
-                    Metadata = ObjProperty<string>(remove=["newKey"]),
-                    ExternalId = Property<string>(clear=true),
-                    Source = Property<string>(clear=true)
+                    Metadata = DictUpdate<string>(remove=["newKey"]),
+                    ExternalId = Update<string>(null),
+                    Source = Update<string>(null)
                 )
             )
         ]

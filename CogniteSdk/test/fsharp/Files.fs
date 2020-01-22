@@ -1,19 +1,16 @@
 module Tests.Integration.Files
 
 open System
-open System.Net.Http
-open System.Threading.Tasks
+open System.Collections.Generic
 
 open Xunit
 open Swensen.Unquote
 
-open Tests
 open Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
 open CogniteSdk.Files
-open System.Collections.Generic
 
 [<Trait("resource", "files")>]
 [<Fact>]
@@ -540,6 +537,9 @@ let ``Create and delete files is Ok`` () = task {
     test <@ ctx''.Request.Extra.["resource"] = "/files/delete" @>
     test <@ ctx''.Request.Query.IsEmpty @>
 }
+
+*)
+
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Update files is Ok`` () = task {
@@ -574,12 +574,12 @@ let ``Update files is Ok`` () = task {
                 ExternalId = externalId,
                 Update = 
                     FileUpdateDto(
-                        Source =  Property<string>(newSource),
-                        AssetIds = SeqProperty<int64>([ newAssetId ]),
-                        Metadata = ObjProperty<string>(newMetadata, [ "oldkey1" ]),
-                        ExternalId = Property<string>(newExternalId),
-                        SourceCreatedTime = Property<int64>(321L),
-                        SourceModifiedTime = Property<int64>(654L)
+                        Source =  Update<string>(newSource),
+                        AssetIds = SequenceUpdate<int64>([ newAssetId ]),
+                        Metadata = DictUpdate<string>(newMetadata, [ "oldkey1" ]),
+                        ExternalId = Update<string>(newExternalId),
+                        SourceCreatedTime = Update<Nullable<int64>>(Nullable 321L),
+                        SourceModifiedTime = Update<Nullable<int64>>(Nullable 654L)
                     )
                 )
             ]
@@ -625,8 +625,8 @@ let ``Update files is Ok`` () = task {
                 ExternalId = newExternalId,
                 Update = 
                     FileUpdateDto(
-                        Metadata = ObjProperty<string>(dict ["newKey", "newValue"] |> Dictionary),
-                        AssetIds = SeqProperty<int64>([newAssetId2], [newAssetId])
+                        Metadata = DictUpdate<string>(dict ["newKey", "newValue"] |> Dictionary),
+                        AssetIds = SequenceUpdate<int64>([newAssetId2], [newAssetId])
                     )
            )
         ]
@@ -650,12 +650,12 @@ let ``Update files is Ok`` () = task {
                 Id = Nullable identity,
                 Update = 
                     FileUpdateDto(
-                        Metadata = ObjProperty(set=Dictionary()),
-                        ExternalId = Property(clear=true),
-                        Source = Property(clear=true),
-                        SourceCreatedTime = Property(clear=true),
-                        SourceModifiedTime = Property(clear=true),
-                        AssetIds = SeqProperty(set=[])
+                        Metadata = DictUpdate(set=Dictionary()),
+                        ExternalId = Update(null),
+                        Source = Update(null),
+                        SourceCreatedTime = Update(Nullable ()),
+                        SourceModifiedTime = Update(Nullable ()),
+                        AssetIds = SequenceUpdate([])
                     )
             )]
     
@@ -680,10 +680,9 @@ let ``Update files is Ok`` () = task {
     test <@ resSource2 = null @>
     test <@ resSourceCreatedTime2 = 0L @>
     test <@ resSourceModifiedTime2 = 0L @>
-    test <@ Seq.isEmpty resAssetIds3 @>
-    test <@ resMetaData3.Count = 0 @>
+    test <@ resAssetIds3 = null @>
+    test <@ Seq.isEmpty resMetaData3  @>
 
     // Assert delete
 }
 
-*)

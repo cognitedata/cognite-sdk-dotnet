@@ -11,38 +11,38 @@ namespace CogniteSdk.TimeSeries
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Property<string> ExternalId { get; set; }
+        public Update<string> ExternalId { get; set; }
 
         /// <summary>
         /// Set a new value for the string.
         /// </summary>
-        public Property<string> Name { get; set; }
+        public Update<string> Name { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public ObjProperty<string> Metadata { get; set; }
+        public DictUpdate<string> Metadata { get; set; }
 
         /// <summary>
         /// The change that will be applied to the key.
         /// </summary>
-        public Property<string> Unit { get; set; }
+        public Update<string> Unit { get; set; }
 
         /// <summary>
         /// Change the ID of the object.
         /// </summary>
-        public Property<long> AssetId { get; set; }
+        public Update<long?> AssetId { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Property<string> Description { get; set; }
+        public Update<string> Description { get; set; }
 
         /// <summary>
         /// Change that will be applied to the array.
         /// </summary>
-        public SeqProperty<long> SecurityCategories { get; set; }
+        public SequenceUpdate<long?> SecurityCategories { get; set; }
     }
 
     /// <summary>

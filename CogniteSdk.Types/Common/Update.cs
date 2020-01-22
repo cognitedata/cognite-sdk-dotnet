@@ -9,21 +9,21 @@ namespace CogniteSdk
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
     /// <typeparam name="T">The type of the property being updated.</typeparam>
-    public class SetProperty<T>
+    public class SetUpdate<T> 
     {
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public SetProperty() { }
+        public SetUpdate() { }
 
         /// <summary>
         /// Set a new value for the property.
         /// </summary>
-        /// <param name="set">Value to set.</param>
-        /// <returns>A new instance of the <see cref="SetProperty{T}">SetProperty{T}</see> class.</returns>
-        public SetProperty(T set)
+        /// <param name="value">Value to set.</param>
+        /// <returns>A new instance of the <see cref="SetUpdate{T}">SetProperty{T}</see> class.</returns>
+        public SetUpdate(T value)
         {
-            Set = set;
+            Set = value;
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace CogniteSdk
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
     /// <typeparam name="T">The type of the property being updated.</typeparam>
-    public class Property<T> : SetProperty<T>
+    public class Update<T> : SetUpdate<T>
     {
         /// <summary>
         /// True if the value should be cleared.
@@ -46,26 +46,21 @@ namespace CogniteSdk
         /// <summary>
         /// Set a new value for the property.
         /// </summary>
-        /// <param name="set">Value to set.</param>
-        /// <returns>A new instance of the <see cref="Property{T}">Property{T}</see> class.</returns>
-        public Property(T set) : base(set)
+        /// <param name="value">Value to set.</param>
+        /// <returns>A new instance of the <see cref="Update{T}">Property{T}</see> class.</returns>
+        public Update(T value) : base(value)
         {
-        }
-
-        /// <summary>
-        /// Clear the property.
-        /// </summary>
-        /// <param name="clear">Set to true to clear the property.</param>
-        public Property(bool clear)
-        {
-            SetNull = clear;
+            if (value is null)
+            {
+                SetNull = true;
+            }
         }
     }
 
     /// <summary>
     /// Used for setting, updating and removing Metadata entries.
     /// </summary>
-    public class CollectionProperty<TCollection, TRemove>
+    public class CollectionUpdate<TCollection, TRemove>
     {
         /// <summary>
         /// Set the key-value pairs. All existing key-value pairs will be removed.
@@ -85,23 +80,23 @@ namespace CogniteSdk
         /// <summary>
         /// Set the key-value pairs. All existing key-value pairs will be removed.
         /// </summary>
-        /// <param name="set">Values to set (overwrite).</param>
-        /// <returns>A new instance of the <see cref="CollectionProperty{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see> class.</returns>
-        public CollectionProperty(TCollection set)
+        /// <param name="value">Values to set (overwrite).</param>
+        /// <returns>A new instance of the <see cref="CollectionUpdate{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see> class.</returns>
+        public CollectionUpdate(TCollection value)
         {
-            Set = set;
+            Set = value;
         }
 
         /// <summary>
         /// Add the key-value pairs. Values for existing keys will be overwritten. Remove the key-value pairs with the specified keys.
         /// </summary>
-        /// <param name="add">Values to update.</param>
-        /// <param name="remove">Keys to remove.</param>
+        /// <param name="addKeyValues">Values to update.</param>
+        /// <param name="removeKeys">Keys to remove.</param>
         /// <returns></returns>
-        public CollectionProperty(TCollection add, IEnumerable<TRemove> remove)
+        public CollectionUpdate(TCollection addKeyValues, IEnumerable<TRemove> removeKeys)
         {
-            Add = add;
-            Remove = remove;
+            Add = addKeyValues;
+            Remove = removeKeys;
         }
     }
 
@@ -109,13 +104,13 @@ namespace CogniteSdk
     /// The object property used i.e for Metadata properties.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    public class ObjProperty<T> : CollectionProperty<IDictionary<string, T>, T>
+    public class DictUpdate<T> : CollectionUpdate<Dictionary<string, T>, T>
     {
         /// <summary>
         /// Initialize the object property and set a new value.
         /// </summary>
         /// <param name="set">Set the new value.</param>
-        public ObjProperty(Dictionary<string, T> set) : base(set)
+        public DictUpdate(Dictionary<string, T> set) : base(set)
         {
         }
 
@@ -123,7 +118,7 @@ namespace CogniteSdk
         /// Initialize the object property and remove values.
         /// </summary>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public ObjProperty(IEnumerable<T> remove) : base(null, remove)
+        public DictUpdate(IEnumerable<T> remove) : base(null, remove)
         {
         }
 
@@ -132,7 +127,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public ObjProperty(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove)
+        public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove)
         {
         }
     }
@@ -141,19 +136,19 @@ namespace CogniteSdk
     /// A sequence property to use for array properties.
     /// </summary>
     /// <typeparam name="T">The type of the sequence items.</typeparam>
-    public class SeqProperty<T> : CollectionProperty<IEnumerable<T>, T>
+    public class SequenceUpdate<T> : CollectionUpdate<IEnumerable<T>, T>
     {
         /// <summary>
         /// Replace sequence with given sequence.
         /// </summary>
         /// <param name="set">Values to set.</param>
-        public SeqProperty(IEnumerable<T> set) : base(set) { }
+        public SequenceUpdate(IEnumerable<T> set) : base(set) { }
 
         /// <summary>
         /// Initialize sequence property.
         /// </summary>
         /// <param name="add">Values to add to the sequence.</param>
         /// <param name="remove">Values to remove from the sequence.</param>
-        public SeqProperty(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
+        public SequenceUpdate(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
     }
 }
