@@ -13,6 +13,7 @@ open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
 open CogniteSdk.Files
+open System.Collections.Generic
 
 [<Trait("resource", "files")>]
 [<Fact>]
@@ -111,217 +112,144 @@ let ``Get files by externalIds is Ok`` () = task {
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "dotnet sdk test") ids @>
 }
-(*
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on AssetIds is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.AssetIds [ 5409900891232494L ]
-    ]
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(AssetIds = [ 5409900891232494L ]),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = writeClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let assetIds = Seq.collect (fun (e: FileReadDto) -> e.AssetIds) dtos.Items
+    let assetIds = Seq.collect (fun (e: FileReadDto) -> e.AssetIds) dtos
 
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall ((=) 5409900891232494L) assetIds @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on CreatedTime is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1533213749083L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1533213749099L)
-    }
-    let filters = [
-        FileFilter.CreatedTime timerange
-    ]
-
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(CreatedTime = TimeRange(Min=1533213749083L, Max=1533213749099L)),
+            Limit = Nullable 10
+        )
+    
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let createdTimes = Seq.map (fun (e: FileReadDto) -> e.CreatedTime) dtos.Items
+    let createdTimes = Seq.map (fun (e: FileReadDto) -> e.CreatedTime) dtos
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213749099L && t > 1533213749083L) createdTimes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1533213795975L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1533213795995L)
-    }
-    let filters = [
-        FileFilter.LastUpdatedTime timerange
-    ]
-
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(LastUpdatedTime = TimeRange(Min=1533213795975L, Max=1533213795995L)),
+            Limit = Nullable 10
+        )
+    
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = readClient.Files.ListAsync query
+    
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let lastUpdatedTimes = Seq.map (fun (e: FileReadDto) -> e.LastUpdatedTime) dtos.Items
+    let lastUpdatedTimes = Seq.map (fun (e: FileReadDto) -> e.LastUpdatedTime) dtos
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213795995L && t > 1533213795975L) lastUpdatedTimes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.ExternalIdPrefix "dotnet"
-    ]
-
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(ExternalIdPrefix = "dotnet"),
+            Limit = Nullable 10
+        )
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = writeClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let externalIds = Seq.collect (fun (e: FileReadDto) -> e.ExternalId |> optionToSeq) dtos.Items
+    let externalIds = Seq.map (fun (e: FileReadDto) -> e.ExternalId) dtos
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("dotnet")) externalIds @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on MetaData is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.MetaData (Map.ofList ["workmate_id", "474635"])
-    ]
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(Metadata = (dict ["workmate_id", "474635"] |> Dictionary)),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let ms = Seq.map (fun (e: FileReadDto) -> e.MetaData) dtos.Items
+    let ms = Seq.map (fun (e: FileReadDto) -> e.Metadata) dtos
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun m -> Map.tryFind "workmate_id" m = Some "474635") ms @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
+    test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["workmate_id"] = "474635") ms @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on Source is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.Source "Documentum"
-    ]
+    let query = 
+        FileQueryDto(
+            Filter = FileFilterDto(Source = "Documentum"),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! res = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let dtos = res.Items
+    let len = Seq.length dtos
 
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
-
-    let sources = Seq.collect (fun (e: FileReadDto) -> e.Source |> optionToSeq) dtos.Items
+    let sources = Seq.map (fun (e: FileReadDto) -> e.Source) dtos
 
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall ((=) "Documentum") sources @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
-
+(*
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on Name is Ok`` () = task {
@@ -612,203 +540,150 @@ let ``Create and delete files is Ok`` () = task {
     test <@ ctx''.Request.Extra.["resource"] = "/files/delete" @>
     test <@ ctx''.Request.Query.IsEmpty @>
 }
-
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Update files is Ok`` () = task {
     // Arrange
-    let wctx = writeCtx ()
-
     let externalIdString = Guid.NewGuid().ToString()
-    let newMetadata = ([
+    let newMetadata = (dict [
         "key1", "value1"
         "key2", "value2"
-    ]
-    |> Map.ofList)
-    let dto: FileWriteDto = {
-        ExternalId = Some externalIdString
-        Source = None
-        Name = "testName"
-        MimeType = None
-        AssetIds = []
-        SourceCreatedTime = Some 123L
-        SourceModifiedTime = Some 456L
-        Metadata = [
-            "oldkey1", "oldvalue1"
-            "oldkey2", "oldvalue2"
-        ] |> Map.ofList
-    }
-    let externalId = Identity.ExternalId externalIdString
+    ] |> Dictionary)
+
+    let dto = 
+        FileWriteDto(
+            ExternalId = externalIdString,
+            Name = "testName",
+            SourceCreatedTime = Nullable 123L,
+            SourceModifiedTime = Nullable 456L,
+            Metadata = (dict [
+                "oldkey1", "oldvalue1"
+                "oldkey2", "oldvalue2"
+            ] |> Dictionary)
+        )
+    let externalId = externalIdString
     let newSource = "UpdatedSource"
     let newExternalId = Guid.NewGuid().ToString()
     let newAssetId = 5409900891232494L
 
     // Act
-    let! createRes = Files.Create.createAsync dto wctx
+    let! createRes = writeClient.Files.UploadAsync dto 
     let! updateRes =
-        Files.Update.updateAsync [
-            (externalId, [
-                FileUpdate.SetSource newSource
-                FileUpdate.SetAssetIds [ newAssetId ]
-                FileUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                FileUpdate.SetExternalId (Some newExternalId)
-                FileUpdate.SetSourceCreatedTime 321L
-                FileUpdate.SetSourceModifiedTime 654L
-            ])
-        ] wctx
-    let! getRes = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
+        writeClient.Files.UpdateAsync [
+            FileUpdateItem(
+                ExternalId = externalId,
+                Update = 
+                    FileUpdateDto(
+                        Source =  Property<string>(newSource),
+                        AssetIds = SeqProperty<int64>([ newAssetId ]),
+                        Metadata = ObjProperty<string>(newMetadata, [ "oldkey1" ]),
+                        ExternalId = Property<string>(newExternalId),
+                        SourceCreatedTime = Property<int64>(321L),
+                        SourceModifiedTime = Property<int64>(654L)
+                    )
+                )
+            ]
+    let! filesResponses = writeClient.Files.RetrieveAsync [ newExternalId ]
 
-    let getCtx' =
-        match getRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
 
     let resSource, resExternalId, resMetaData, resSourceCreatedTime, resSourceModifiedTime, resAssetIds =
-        let filesResponses = getCtx'.Response
         let h = Seq.tryHead filesResponses
         match h with
         | Some fileResponse ->
             fileResponse.Source,
             fileResponse.ExternalId,
-            fileResponse.MetaData,
+            fileResponse.Metadata,
             fileResponse.SourceCreatedTime,
             fileResponse.SourceModifiedTime,
             fileResponse.AssetIds
-        | None -> None, Some "", Map.empty, None, None, [0L]
+        | None -> null, "", null, 0L, 0L,  Seq.singleton 0L
 
-    let updateSuccsess = Result.isOk updateRes
-
+    
     let metaDataOk =
-        (Map.tryFind "key1" resMetaData) = Some "value1"
-        && (Map.tryFind "key2" resMetaData) = Some "value2"
+        resMetaData.["key1"] = "value1"
+        && resMetaData.["key2"] = "value2"
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
-    let createCtx' =
-        match createRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let updateCtx' =
-        match updateRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
     // Assert create
-    test <@ createCtx'.Request.Method = HttpMethod.Post @>
-    test <@ createCtx'.Request.Extra.["resource"] = "/files" @>
-    test <@ createCtx'.Request.Query.IsEmpty @>
+    
 
     // Assert update
-    test <@ updateSuccsess @>
-    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
-    test <@ updateCtx'.Request.Extra.["resource"] = "/files/update" @>
-    test <@ updateCtx'.Request.Query.IsEmpty @>
-
     // Assert get
-    test <@ getCtx'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx'.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getCtx'.Request.Query.IsEmpty @>
-    test <@ resExternalId = Some newExternalId @>
-    test <@ resSource = Some newSource @>
-    test <@ resSourceCreatedTime = Some 321L @>
-    test <@ resSourceModifiedTime = Some 654L @>
-    test <@ List.head resAssetIds = newAssetId  @>
+    test <@ resExternalId = newExternalId @>
+    test <@ resSource = newSource @>
+    test <@ resSourceCreatedTime = 321L @>
+    test <@ resSourceModifiedTime = 654L @>
+    test <@ Seq.head resAssetIds = newAssetId  @>
     test <@ metaDataOk @>
 
     let newAssetId2 = 7366035474714226L
 
     let! updateRes2 =
-        Files.Update.updateAsync [
-            (Identity.ExternalId newExternalId, [
-                FileUpdate.SetMetaData (Map.ofList ["newKey", "newValue"])
-                FileUpdate.ChangeAssetIds ([newAssetId2], [newAssetId])
-            ])
-        ] wctx
+        writeClient.Files.UpdateAsync [
+            FileUpdateItem(
+                ExternalId = newExternalId,
+                Update = 
+                    FileUpdateDto(
+                        Metadata = ObjProperty<string>(dict ["newKey", "newValue"] |> Dictionary),
+                        AssetIds = SeqProperty<int64>([newAssetId2], [newAssetId])
+                    )
+           )
+        ]
 
-    let! getRes2 = Files.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
-
-    let getCtx2' =
-        match getRes2 with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! filesResponses = writeClient.Files.RetrieveAsync [ newExternalId ]
 
     let resMetaData2, resAssetIds2, identity =
-        let filesResponses = getCtx2'.Response
         let h = Seq.tryHead filesResponses
         match h with
         | Some fileResponse ->
-            fileResponse.MetaData, fileResponse.AssetIds, fileResponse.Id
-        | None -> Map.empty, [0L], 0L
+            fileResponse.Metadata, fileResponse.AssetIds, fileResponse.Id
+        | None -> null, Seq.singleton 0L, 0L
 
     // Assert get2
-    test <@ getCtx2'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx2'.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getCtx2'.Request.Query.IsEmpty @>
     test <@ Seq.head resAssetIds2 = 7366035474714226L @>
-    test <@ (Map.tryFind "newKey" resMetaData2) = Some "newValue" @>
+    test <@ (resMetaData2.["newKey"] ) = "newValue" @>
 
     let! updateRes3 =
-        Files.Update.updateAsync [
-            (Identity.Id identity, [
-                FileUpdate.ClearMetaData
-                FileUpdate.ClearExternalId
-                FileUpdate.ClearSource
-                FileUpdate.ClearSourceCreatedTime
-                FileUpdate.ClearSourceModifiedTime
-                FileUpdate.ClearAssetIds
-            ])
-        ] wctx
+        writeClient.Files.UpdateAsync [
+            FileUpdateItem(
+                Id = Nullable identity,
+                Update = 
+                    FileUpdateDto(
+                        Metadata = ObjProperty(set=Dictionary()),
+                        ExternalId = Property(clear=true),
+                        Source = Property(clear=true),
+                        SourceCreatedTime = Property(clear=true),
+                        SourceModifiedTime = Property(clear=true),
+                        AssetIds = SeqProperty(set=[])
+                    )
+            )]
+    
 
-    let! getRes3 = Files.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
-    let! delRes = Files.Delete.deleteAsync ([ Identity.Id identity]) wctx
-
-    let getCtx3' =
-        match getRes3 with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let delCtx' =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
+    let! filesResponses = writeClient.Files.RetrieveAsync [ identity ]
+    let! delRes = writeClient.Files.DeleteAsync [ identity ]
 
     let resExternalId2, resSource2, resMetaData3, resAssetIds3, resSourceCreatedTime2, resSourceModifiedTime2 =
-        let filesResponses = getCtx3'.Response
         let h = Seq.tryHead filesResponses
         match h with
         | Some fileResponse ->
             fileResponse.ExternalId,
             fileResponse.Source,
-            fileResponse.MetaData,
+            fileResponse.Metadata,
             fileResponse.AssetIds,
             fileResponse.SourceCreatedTime,
             fileResponse.SourceModifiedTime
-        | None -> Some "", Some "", Map.empty, [0L], Some 0L, Some 0L
+        | None -> "", "", null, Seq.singleton 0L, 0L, 0L
 
     // Assert get2
-    test <@ getCtx3'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx3'.Request.Extra.["resource"] = "/files/byids" @>
-    test <@ getCtx3'.Request.Query.IsEmpty @>
-    test <@ resExternalId2 = None @>
-    test <@ resSource2 = None @>
-    test <@ resSourceCreatedTime2 = None @>
-    test <@ resSourceModifiedTime2 = None @>
-    test <@ List.isEmpty resAssetIds3 @>
-    test <@ Map.isEmpty resMetaData3 @>
+    test <@ resExternalId2 = null @>
+    test <@ resSource2 = null @>
+    test <@ resSourceCreatedTime2 = 0L @>
+    test <@ resSourceModifiedTime2 = 0L @>
+    test <@ Seq.isEmpty resAssetIds3 @>
+    test <@ resMetaData3.Count = 0 @>
 
     // Assert delete
-    test <@ delCtx'.Request.Method = HttpMethod.Post @>
-    test <@ delCtx'.Request.Extra.["resource"] = "/files/delete" @>
-    test <@ delCtx'.Request.Query.IsEmpty @>
 }
 
 *)

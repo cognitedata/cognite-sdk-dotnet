@@ -16,23 +16,19 @@ module Files =
     [<Literal>]
     let Url = "/files"
 
-    /// <summary>
-    /// Retrieves information about an event given an event id.
-    /// </summary>
-    /// <param name="eventId">The id of the event to get.</param>
-    /// <returns>Event with the given id.</returns>
+    /// Retrieves information about a file given a file id.
     let get (fileId: int64) : HttpHandler<HttpResponseMessage, FileReadDto, 'a> =
         Url +/ sprintf "%d" fileId |> get
 
-    /// <summary>
-    /// Retrieves list of files matching filter, and a cursor if given limit is exceeded.
-    /// </summary>
-    /// <param name="query">Query filter</param>
-    /// <param name="filters">Search filters</param>
-    /// <returns>List of files matching given filters and optional cursor</returns>
+    /// Retrieves list of files matching filter, and a cursor if given limit is exceeded. Returns list of files matching given filters and optional cursor</returns>
     let list (query: FileQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<FileReadDto>, 'a> =
         list query Url
 
+    /// Upload new file in the given project.
+    let upload (file: FileWriteDto) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadReadDto, 'a> =
+        post file Url
+
+    /// Get download URL for file in the given project.
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileDownloadDto>, 'a> =
         req {
             let url = Url +/ "downloadlink"
@@ -51,3 +47,6 @@ module Files =
         Url +/ "delete" |> post files
 
 
+    /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
+    let update (query: IEnumerable<UpdateItem<FileUpdateDto>>) : HttpHandler<HttpResponseMessage, FileReadDto seq, 'a>  =
+        update query Url

@@ -106,6 +106,65 @@ namespace CogniteSdk.Resources
             return await DownloadAsync(ids, token).ConfigureAwait(false);
         }
         #endregion
+
+        public async Task<FileUploadReadDto> UploadAsync(FileWriteDto file, bool overwrite=false, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.Files.upload<FileUploadReadDto>(file, overwrite);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<FileReadDto>> UpdateAsync(IEnumerable<FileUpdateItem> query, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.Files.update<IEnumerable<FileReadDto>>(query);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        #region Delete overloads
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="query">The list of events to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(FileDeleteDto query, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.Files.delete<EmptyResponse>(query);
+            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="identities">The list of event ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> identities, CancellationToken token = default)
+        {
+            var query = new FileDeleteDto { Items = identities };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="ids">The list of event ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
+        {
+            var query = new FileDeleteDto { Items = ids.Select(Identity.Create) };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="externalIds">The list of event externalids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var query = new FileDeleteDto { Items = externalIds.Select(Identity.Create) };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }
 

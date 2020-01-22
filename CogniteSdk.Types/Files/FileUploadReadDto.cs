@@ -1,7 +1,5 @@
-// Copyright 2019 Cognite AS
+// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-
-using System.Collections.Generic;
 
 namespace CogniteSdk.Files
 {
@@ -13,6 +11,7 @@ namespace CogniteSdk.Files
         /// <summary>
         /// The URL where the file contents should be uploaded.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1056:Uri properties should not be strings", Justification = "Class is DTO")]
         public string UploadUrl { get; set; }
     }
 }
