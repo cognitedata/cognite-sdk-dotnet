@@ -24,7 +24,7 @@ namespace CogniteSdk.Events
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public IDictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// The event subtype
         /// </summary>
-        public string SubType { get; set; }
+        public string Subtype { get; set; }
 
         /// <summary>
         /// Range between two timestamps.

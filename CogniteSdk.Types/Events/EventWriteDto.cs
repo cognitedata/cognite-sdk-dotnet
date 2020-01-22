@@ -33,7 +33,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Subtype of the event, e.g 'electrical'.
         /// </summary>
-        public string SubType { get; set; }
+        public string Subtype { get; set; }
 
         /// <summary>
         /// The description of the asset.
@@ -43,7 +43,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public IDictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.

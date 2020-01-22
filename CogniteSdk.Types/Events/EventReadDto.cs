@@ -33,7 +33,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Subtype of the event, e.g 'electrical'.
         /// </summary>
-        public string SubType { get; set; }
+        public string Subtype { get; set; }
 
         /// <summary>
         /// The description of the asset.

@@ -64,16 +64,53 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
+
+        #region Delete overloads
         /// <summary>
-        /// Delete multiple events in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+        /// Delete multiple events in the same project.
         /// </summary>
-        /// <param name="query">The list of assets to delete.</param>
+        /// <param name="query">The list of events to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(EventDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.delete<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="identities">The list of event ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> identities, CancellationToken token = default)
+        {
+            var query = new EventDeleteDto { Items = identities };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="ids">The list of event ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
+        {
+            var query = new EventDeleteDto { Items = ids.Select(Identity.Create) };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple events in the same project.
+        /// </summary>
+        /// <param name="externalIds">The list of event externalids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            var query = new EventDeleteDto { Items = externalIds.Select(Identity.Create) };
+            return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        #endregion
 
         #region Retrieve overloads
         /// <summary>

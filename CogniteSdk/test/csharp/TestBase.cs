@@ -53,11 +53,11 @@ namespace Test.CSharp.Integration {
                     StartTime = 1565941329,
                     EndTime = 1565941341,
                     Type = "DotNet Test",
-                    SubType = "Dummy Event",
+                    Subtype = "Dummy Event",
                     Description = "To be use for dotnet Test testing"
                 }
             };
-            
+
             return WriteClient.Events.CreateAsync(items).Result.FirstOrDefault();
         }
     }
