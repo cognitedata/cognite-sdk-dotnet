@@ -35,7 +35,8 @@ namespace CogniteSdk.Files
         /// Limits: Maximum length of key is 32 bytes,
         /// value 512 bytes, up to 16 key-value pairs
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Ids of assets this file is linked to.

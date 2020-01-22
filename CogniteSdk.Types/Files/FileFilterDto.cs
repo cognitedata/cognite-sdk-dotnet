@@ -78,6 +78,6 @@ namespace CogniteSdk.Files
         /// post body.
         /// </summary>
         /// <value></value>
-        public bool Uploaded { get; set; }
+        public bool? Uploaded { get; set; }
     }
 }

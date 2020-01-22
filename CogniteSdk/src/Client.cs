@@ -38,8 +38,12 @@ namespace CogniteSdk
 
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
-        // Client Files extension methods
-        //public Resources.Files Files { get; }
+
+        
+        /// <summary>
+        /// Client Files extension methods
+        /// </summary>
+        public FilesResource Files { get; }
 
         /// <summary>
         /// Client Raw extension methods
@@ -67,6 +71,7 @@ namespace CogniteSdk
             Events = new EventsResource(ctx);
             Sequences = new SequencesResource(ctx);
             Raw = new RawResource(ctx);
+            Files = new FilesResource(ctx);
         }
 
         /// <summary>

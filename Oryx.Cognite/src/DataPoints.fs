@@ -7,6 +7,7 @@ open System.Collections.Generic
 open System.Net.Http
 
 open Com.Cognite.V1.Timeseries.Proto
+open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
@@ -33,9 +34,13 @@ module DataPoints =
         createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
-    let delete (items: IEnumerable<DataPointsDeleteType>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (items: DataPointsDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    //let latest (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeriesReadDto>, 'a> =
-    //    retrieve ids Url
+    let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsReadDto>, 'a> =
+        req {
+            let url = Url +/ "latest"
+            let! ret = post<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsReadDto>, 'a> query url
+            return ret.Items
+        }
