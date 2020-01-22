@@ -4,9 +4,12 @@
 using System.Collections.Generic;
 using System.Text.Json;
 
-namespace CogniteSdk.Types.Raw
+namespace CogniteSdk.Raw
 {
-    public class RowKeyDto
+    /// <summary>
+    /// Dto with keys of rows to delete in table.
+    /// </summary>
+    public class RowDeleteDto
     {
         /// <summary>
         /// Row key. Unique in table.

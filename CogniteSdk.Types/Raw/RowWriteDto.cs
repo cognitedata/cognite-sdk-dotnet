@@ -6,7 +6,10 @@ using System.Text.Json;
 
 namespace CogniteSdk.Raw
 {
-    public class RowWriteto
+    /// <summary>
+    /// Dto to write a row to a table in Raw.
+    /// </summary>
+    public class RowWriteDto
     {
         /// <summary>
         /// Row key. Unique in table.
@@ -16,6 +19,6 @@ namespace CogniteSdk.Raw
         /// <summary>
         /// Row data stored as a JSON object.
         /// </summary>
-        public IDictionary<string, JsonElement> Columns { get; set; }
+        public Dictionary<string, string> Columns { get; set; }
     }
 }

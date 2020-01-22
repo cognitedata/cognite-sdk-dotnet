@@ -69,7 +69,7 @@ module Handler =
         let runUnsafe  =
             ctx
             |> Context.setCancellationToken token
-            |> runAsync            
+            |> runAsync
 
         match! runUnsafe handler with
         | Ok value -> return value
@@ -112,7 +112,7 @@ module Handler =
 
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
         let parms = query.ToQueryParams ()
-            
+
         GET
         >=> setVersion V10
         >=> setResource url
@@ -125,6 +125,18 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
+        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+
+    let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+        let parms = query.ToQueryParams ()
+
+        POST
+        >=> setVersion V10
+        >=> setResource url
+        >=> addQuery parms
         >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
         >=> fetch
         >=> withError decodeError
@@ -163,10 +175,21 @@ module Handler =
             return ret.Items
         }
 
+    let createWithQuery<'a, 'b, 'c> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
+        req {
+            let content' = ItemsWithoutCursor(Items=content)
+            let! ret = postWithQuery<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' query url
+            return ret.Items
+        }
+
+    let createWithQueryEmpty<'a, 'b, 'c> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, EmptyResponse, 'c> =
+        let content' = ItemsWithoutCursor(Items=content)
+        postWithQuery<ItemsWithoutCursor<'a>, EmptyResponse, 'c> content' query url
+
     let createEmpty<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, EmptyResponse, 'c> =
         let content' = ItemsWithoutCursor(Items=content)
         post<ItemsWithoutCursor<'a>, EmptyResponse, 'c> content' url
-        
+
 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content

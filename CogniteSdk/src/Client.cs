@@ -7,6 +7,7 @@ using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using static Oryx.Cognite.ContextModule;
+using System;
 
 namespace CogniteSdk
 {

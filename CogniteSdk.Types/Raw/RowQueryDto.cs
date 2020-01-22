@@ -13,7 +13,7 @@ namespace CogniteSdk.Raw
         /// Example: columns=column1,column2 Ordered list of column keys, separated by commas. Leave empty for all, use
         /// single comma to retrieve only row keys.
         /// </summary>
-        public string Columns { get; set; }
+        public IEnumerable<string> Columns { get; set; }
 
         /// <summary>
         /// It is an exclusive filter, specifed as the number of milliseconds that have elapsed since 00:00:00 Thursday,
@@ -31,7 +31,7 @@ namespace CogniteSdk.Raw
         {
             var list = base.ToQueryParams();
             if (Columns != null)
-                list.Add(("columns", Columns));
+                list.Add(("columns", string.Join(",", Columns)));
             if (MinLastUpdatedTime.HasValue)
                 list.Add(("minLastUpdatedTime", MinLastUpdatedTime.Value.ToString(CultureInfo.InvariantCulture)));
             if (MaxLastUpdatedTime.HasValue)

@@ -19,7 +19,7 @@ namespace csharp {
             };
             var assets = new List<AssetWriteDto> {asset};
 
-            var result = await client.Assets.CreateAsync(assets);
+            var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
 
             Console.WriteLine(newAsset.Name);
@@ -45,7 +45,7 @@ namespace csharp {
                 Filter = new AssetFilterDto { Name = assetName }
             };
 
-            var result = await client.Assets.ListAsync(query);
+            var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
 
             var asset = result.Items.FirstOrDefault();
             Console.WriteLine(asset.ParentId);
@@ -114,7 +114,7 @@ namespace csharp {
                     .SetProject(project)
                     .Build();
 
-            var asset = await GetAssetsExample(client, "23-TE-96116-04");
+            var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
         }
     }
 }

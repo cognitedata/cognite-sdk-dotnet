@@ -50,7 +50,7 @@ module Raw =
     /// <param name="query">The query with optional limit and cursor.</param>
     /// <returns>List of tables.</returns>
     let listTables (database: string) (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TableDto>, 'a> =
-        Url +/ database +/ "tables/list"
+        Url +/ database +/ "tables"
         |> getWithQuery query
 
     /// <summary>
@@ -59,8 +59,9 @@ module Raw =
     /// <param name="database">The database to list tables from.</param>
     /// <param name="items">The tables to create.</param>
     /// <returns>List of created tables.</returns>
-    let createTables (database: string) (items: ItemsWithoutCursor<TableDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<TableDto>, 'a> =
-        Url +/ database +/ "tables" |> post items
+    let createTables (database: string) (items: TableDto seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, TableDto seq, 'a> =
+        let query = TableCreateQuery(EnsureParent = ensureParent)
+        Url +/ database +/ "tables" |> createWithQuery items query
 
     /// <summary>
     /// Delete multiple tables in the same database.
@@ -77,6 +78,30 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="query">The Row query.</param>
     /// <returns>The retrieved rows.</returns>
-    let retrieveRows (database: string) (table: string) (query: RowQueryDto): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowReadDto>, 'a> =
-        Url +/ database +/ "tables" +/ table +/ "rows" 
+    let listRows (database: string) (table: string) (query: RowQueryDto): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowReadDto>, 'a> =
+        Url +/ database +/ "tables" +/ table +/ "rows"
         |> getWithQuery query
+
+    /// <summary>
+    /// Create rows in a table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="dtos">The Rows to create.</param>
+    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+    /// <returns>The retrieved rows.</returns>
+    let createRows (database: string) (table: string) (dtos: RowWriteDto seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let query = RowCreateQuery(EnsureParent = ensureParent)
+        Url +/ database +/ "tables" +/ table +/ "rows"
+        |> createWithQueryEmpty dtos query
+
+    /// <summary>
+    /// Delete rows in a table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="dtos">The Rows to create.</param>
+    /// <returns>The retrieved rows.</returns>
+    let deleteRows (database: string) (table: string) (dtos: RowDeleteDto seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
+        |> delete dtos
