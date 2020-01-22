@@ -8,7 +8,7 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Assets.fs" />
-    <Compile Include="Timeseries.fs" />
+    <Compile Include="TimeSeries.fs" />
     <Compile Include="DataPoints.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

@@ -236,116 +236,87 @@ let ``Search timeseries on IsString is Ok`` () = task {
     test <@ len = 6 @>
     test <@ Seq.forall id isStrings @>
 }
-(*
 
 [<Fact>]
 let ``Search timeseries on Unit is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(Unit = "et"),
+            Limit = Nullable 10
+        )
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.Unit "et" ] ctx
+    let! dtos = writeClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let units = Seq.collect (fun d -> d.Unit |> optionToSeq) dtos
+    let units = Seq.map (fun (d: TimeSeriesReadDto) -> d.Unit) dtos
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "et") units @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``Search timeseries on MetaData is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-
+    let query =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilterDto(Metadata = (dict ["pointid", "160909"] |> Dictionary)),
+            Limit = Nullable 10
+        )
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [] [ TimeSeriesFilter.MetaData (Map.ofList ["pointid", "160909"]) ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
-
-    let ms = Seq.map (fun d -> d.MetaData) dtos
+    let ms = Seq.map (fun (d: TimeSeriesReadDto)  -> d.Metadata) dtos
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun m -> (Map.tryFind "pointid" m) = Some "160909") ms @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
+    test <@ Seq.forall (fun (m : Dictionary<string,string>) -> m.["pointid"] = "160909") ms @>
 }
 
 [<Fact>]
 let ``FuzzySearch timeseries on Name is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-
+    let query =
+        TimeSeriesSearch(
+            Search = SearchDto(Name = "92529_SILch0"),
+            Limit = Nullable 10
+        )
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Name "92529_SILch0" ] [ ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let names = Seq.collect (fun d -> d.Name |> optionToSeq) dtos
+    let names = Seq.map (fun (d: TimeSeriesReadDto) -> d.Name) dtos
 
     // Assert
     test <@ len = 9 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("SILch0") || n.Contains("92529")) names @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
 
 [<Fact>]
 let ``FuzzySearch timeseries on Description is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
+    let query =
+        TimeSeriesSearch(
+            Search = SearchDto(Description = "Tube y"),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res =
-        TimeSeries.Search.searchAsync 10 [ TimeSeriesSearch.Description "Tube y" ] [ ] ctx
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let descriptions = Seq.collect (fun d -> d.Description |> optionToSeq) dtos
+    let descriptions = Seq.map (fun (d: TimeSeriesReadDto) -> d.Description) dtos
 
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/timeseries/search" @>
 }
-*)
+
 [<Fact>]
 let ``Update timeseries is Ok`` () = task {
     // Arrange

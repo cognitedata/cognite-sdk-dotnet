@@ -13,7 +13,7 @@ namespace CogniteSdk.TimeSeries
         /// </summary>
         public TimeSeriesFilterDto Filter { get; set; }
 
-        //// <summary>
+        /// <summary>
         /// Splits the data set into N partitions. You need to follow the cursors within each partition in order to
         /// receive all the data. Example: 1/10.
         /// </summary>

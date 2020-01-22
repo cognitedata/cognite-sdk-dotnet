@@ -25,8 +25,8 @@ let getDatapointsExample (ctx : HttpContext) = task {
     let query =
         DataPoints.DataPointsQuery(
             Items = [ DataPoints.DataPointsQueryItem(Id=Nullable 20713436708L) ],
-            Start = Nullable 1524851819000L,
-            End = Nullable 1524859650000L
+            Start = "1524851819000",
+            End = "1524859650000"
         )
     let! res =
         DataPoints.list query
