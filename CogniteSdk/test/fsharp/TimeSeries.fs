@@ -90,7 +90,7 @@ let ``Create and delete timeseries is Ok`` () = task {
 let ``Search timeseries is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeries.TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(Name = "VAL_23-TT-96136-08:Z.X.Value"),
             Limit = Nullable 10
         )
@@ -112,7 +112,7 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
             Max = 1567707299052L
         )
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(CreatedTime = timerange),
             Limit = Nullable 10
         )
@@ -139,7 +139,7 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
         )
 
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(LastUpdatedTime = timerange),
             Limit = Nullable 10
         )
@@ -159,7 +159,7 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
 let ``Search timeseries on AssetIds is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(AssetIds = [ 4293345866058133L ]),
             Limit = Nullable 10
         )
@@ -180,7 +180,7 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
 let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(ExternalIdPrefix = "VAL_45"),
             Limit = Nullable 10
         )
@@ -200,7 +200,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
 let ``Search timeseries on IsStep is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(IsStep = Nullable true),
             Limit = Nullable 10
         )
@@ -221,7 +221,7 @@ let ``Search timeseries on IsStep is Ok`` () = task {
 let ``Search timeseries on IsString is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(IsString = Nullable true),
             Limit = Nullable 10
         )
@@ -241,7 +241,7 @@ let ``Search timeseries on IsString is Ok`` () = task {
 let ``Search timeseries on Unit is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(Unit = "et"),
             Limit = Nullable 10
         )
@@ -261,7 +261,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
 let ``Search timeseries on MetaData is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Filter = TimeSeriesFilterDto(Metadata = (dict ["pointid", "160909"] |> Dictionary)),
             Limit = Nullable 10
         )
@@ -280,7 +280,7 @@ let ``Search timeseries on MetaData is Ok`` () = task {
 let ``FuzzySearch timeseries on Name is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Search = SearchDto(Name = "92529_SILch0"),
             Limit = Nullable 10
         )
@@ -300,7 +300,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
 let ``FuzzySearch timeseries on Description is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearch(
+        TimeSeriesSearchDto(
             Search = SearchDto(Description = "Tube y"),
             Limit = Nullable 10
         )

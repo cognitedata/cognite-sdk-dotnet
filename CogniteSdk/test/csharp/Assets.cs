@@ -88,7 +88,7 @@ namespace Test.CSharp.Integration {
         public async Task AssetSearchReturnsExpectedNumberOfAssetsAsync() {
             // Arrange
             var numOfAssets = 10;
-            var query = new SearchQueryDto<AssetFilterDto, SearchDto>()
+            var query = new AssetSearchDto()
             {
                 Limit = numOfAssets,
                 Search = new SearchDto()
@@ -96,7 +96,7 @@ namespace Test.CSharp.Integration {
                     Name = "23"
                 }
             };
-            
+
             // Act
             var res = await ReadClient.Assets.SearchAsync(query);
 
@@ -133,8 +133,8 @@ namespace Test.CSharp.Integration {
             var externalIdString = Guid.NewGuid().ToString();
             var newAsset = new AssetWriteDto
             {
-                ExternalId = externalIdString, 
-                Name = "Create Assets c# sdk test", 
+                ExternalId = externalIdString,
+                Name = "Create Assets c# sdk test",
                 Description = "Just a test"
             };
             var deletes = new AssetDeleteDto
@@ -163,7 +163,7 @@ namespace Test.CSharp.Integration {
             {
                 Items = new List<Identity> { Identity.Create(id) }
             };
-            
+
             // Act
             try {
                 await WriteClient.Assets.DeleteAsync(query);

@@ -13,9 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all asset methods.
+    /// For internal use. Contains all asset methods.
     /// </summary>
-    public class Assets
+    public class AssetsResource
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal Assets(HttpContext ctx)
+        internal AssetsResource(HttpContext ctx)
         {
             _ctx = ctx;
         }
@@ -154,7 +154,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<AssetReadDto>> SearchAsync (SearchQueryDto<AssetFilterDto, SearchDto> query, CancellationToken token = default )
+        public async Task<IEnumerable<AssetReadDto>> SearchAsync (AssetSearchDto query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Assets.search<IEnumerable<AssetReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

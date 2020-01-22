@@ -67,7 +67,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
 let searchAssetsExample (ctx : HttpContext) = task {
 
     let query =
-        SearchQueryDto<Assets.AssetFilterDto, SearchDto>(
+        Assets.AssetSearchDto(
             Search = SearchDto(Name = "VAL"),
             Limit = Nullable 10
         )

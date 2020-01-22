@@ -37,7 +37,7 @@ module TimeSeries =
 
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination. Returns
     /// list of time series matching given criteria.</returns>
-    let search (query: SearchQueryDto<TimeSeriesFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, TimeSeriesReadDto seq, 'a> =
+    let search (query: TimeSeriesSearchDto) : HttpHandler<HttpResponseMessage, TimeSeriesReadDto seq, 'a> =
         search query Url
 
     /// Updates multiple time series within the same project. This operation supports partial updates, meaning that

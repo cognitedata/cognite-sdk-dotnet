@@ -13,9 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all event methods.
+    /// For internal use. Contains all event methods.
     /// </summary>
-    public class Events
+    public class EventsResource
     {
         private readonly HttpContext _ctx;
 
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="ctx">Context to use for the request.</param>
-        internal Events(HttpContext ctx)
+        internal EventsResource(HttpContext ctx)
         {
             _ctx = ctx;
         }
@@ -156,7 +156,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<EventReadDto>> SearchAsync (SearchQueryDto<EventFilterDto, SearchDto> query, CancellationToken token = default )
+        public async Task<IEnumerable<EventReadDto>> SearchAsync (EventSearchDto query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.Events.search<IEnumerable<EventReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

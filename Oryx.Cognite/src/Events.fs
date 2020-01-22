@@ -64,7 +64,7 @@ module Events =
     /// </summary>
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
-    let search (query: SearchQueryDto<EventFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
+    let search (query: EventSearchDto) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
         search query Url
 
     /// <summary>
