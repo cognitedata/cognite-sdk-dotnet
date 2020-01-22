@@ -330,7 +330,7 @@ let ``Filter events on Type is Ok`` () = task {
 let ``Search events is Ok`` () = task {
     // Arrange
     let dto = SearchDto(Description = "dotnet")
-    let query = SearchQueryDto(Search = dto)
+    let query = EventSearchDto(Search = dto)
 
     // Act
     let! res = writeClient.Events.SearchAsync query
