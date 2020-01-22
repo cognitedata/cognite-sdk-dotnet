@@ -182,11 +182,11 @@ module Handler =
         >=> withError decodeError
         >=> protobuf parser
 
-    let createProtobuf<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+    let createProtobuf<'a, 'b> (content: Google.Protobuf.IMessage) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> setContent (new ProtobufPushStreamContent(content))
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

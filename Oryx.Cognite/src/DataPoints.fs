@@ -33,7 +33,7 @@ module DataPoints =
         createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
-    let delete (items: IEnumerable<DataPointsDeleteType>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (items: DataPointsDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.

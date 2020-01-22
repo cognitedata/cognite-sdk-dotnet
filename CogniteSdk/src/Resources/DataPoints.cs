@@ -4,10 +4,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CogniteSdk.DataPoints;
-using static Oryx.Cognite.HandlerModule;
-using CogniteSdk.TimeSeries;
+
 using Com.Cognite.V1.Timeseries.Proto;
+
+using static Oryx.Cognite.HandlerModule;
+
+using CogniteSdk.DataPoints;
+using CogniteSdk.TimeSeries;
+
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -43,12 +47,12 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// Create assets.
         /// </summary>
-        /// <param name="assets">Time series to create.</param>
+        /// <param name="points">Data Points to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<TimeSeriesReadDto>> CreateAsync(IEnumerable<TimeSeriesWriteDto> assets, CancellationToken token = default)
+        public async Task<EmptyResponse> CreateAsync(DataPointInsertionRequest points, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeriesReadDto>>(assets);
+            var req = Oryx.Cognite.DataPoints.create<EmptyResponse>(points);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -57,9 +61,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(TimeSeriesDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(DataPointsDeleteDto query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
+            var req = Oryx.Cognite.DataPoints.delete<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
