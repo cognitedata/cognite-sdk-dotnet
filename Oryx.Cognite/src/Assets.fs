@@ -60,7 +60,7 @@ module Assets =
     /// </summary>
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: SearchQueryDto<AssetFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
+    let search (query: AssetSearchDto) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
         search query Url
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.

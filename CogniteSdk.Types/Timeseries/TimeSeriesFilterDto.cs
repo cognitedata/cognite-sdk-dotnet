@@ -72,9 +72,4 @@ namespace CogniteSdk.TimeSeries
         /// </summary>
         public TimeRange LastUpdatedTime { get; set; }
     }
-
-    /// <summary>
-    /// The timeseries search.
-    /// </summary>
-    public class TimeSeriesSearch : SearchQueryDto<TimeSeriesFilterDto, SearchDto> { }
 }

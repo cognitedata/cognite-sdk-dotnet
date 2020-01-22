@@ -100,7 +100,7 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
-        // <summary>
+        /// <summary>
         /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
@@ -113,7 +113,7 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
-        // <summary>
+        /// <summary>
         /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
@@ -132,7 +132,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<TimeSeriesReadDto>> SearchAsync (SearchQueryDto<TimeSeriesFilterDto, SearchDto> query, CancellationToken token = default )
+        public async Task<IEnumerable<TimeSeriesReadDto>> SearchAsync (TimeSeriesSearchDto query, CancellationToken token = default )
         {
             var req = Oryx.Cognite.TimeSeries.search<IEnumerable<TimeSeriesReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
