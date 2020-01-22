@@ -1,7 +1,8 @@
-namespace Oryx.Cognite.Files
+namespace Oryx.Cognite
 
 open System.Net.Http
 
+open Oryx
 open Oryx.Cognite
 
 open System.Collections.Generic
@@ -30,13 +31,18 @@ module Files =
     /// <param name="filters">Search filters</param>
     /// <returns>List of files matching given filters and optional cursor</returns>
     let list (query: FileQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<FileReadDto>, 'a> =
-        post query Url
+        list query Url
 
-    let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileDownloadDto>, 'a> =
-        Url +/ "download" |> post ids
-
+    let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileDownloadDto>, 'a> =
+        req {
+            let url = Url +/ "downloadlink"
+            let request = ItemsWithoutCursor<Identity>(Items = ids)
+            let! ret = post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownloadDto>, 'a> request url
+            return ret.Items
+        }
+        
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileReadDto>, 'a> =
-        Url +/ "byids" |> retrieve ids
+        retrieve ids Url
 
     let search (query: SearchQueryDto<FileFilterDto, FileSearchDto>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileReadDto>, 'a> =
         Url +/ "search" |> post query

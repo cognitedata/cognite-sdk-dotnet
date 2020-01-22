@@ -9,7 +9,6 @@ open Swensen.Unquote
 
 open Tests
 open Common
-open Oryx
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
@@ -19,168 +18,100 @@ open CogniteSdk.Files
 [<Fact>]
 let ``List Files with limit is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let query = [ FileQuery.Limit 10 ]
+    let query = FileQueryDto(Limit = Nullable 10)
 
     // Act
-    let! res = Items.listAsync query [] ctx
+    let! res = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
+    let len = Seq.length res.Items
 
     // Assert
     test <@ len = 10 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Get file by id is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
     let fileId = 2013333184649590L
 
     // Act
-    let! res = Files.Entity.getAsync fileId ctx
-
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! dto = readClient.Files.GetAsync fileId
 
 
-    let resId = ctx'.Response.Id
+    let resId = dto.Id
 
     // Assert
     test <@ resId = fileId @>
-    test <@ ctx'.Request.Method = HttpMethod.Get @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/2013333184649590" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Get file by missing id is Error`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let eventId = 0L
+    let fileId = 0L
 
     // Act
-    let! res = Files.Entity.getAsync eventId ctx
-
-    let err =
-        match res with
-        | Ok _ -> ResponseError.empty
-        | Error (ResponseError error) -> error
-        | Error (Panic error) -> raise error
-
-
-    // Assert
-    test <@ Result.isError res @>
-    test <@ err.Code = 400 @>
-    test <@ err.Message.Contains "violations" @>
+    Assert.ThrowsAsync<ResponseException>(fun () -> readClient.Files.GetAsync fileId :> _)
+    |> ignore
 }
-
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Get files by ids is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
     let fileIds =
         [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
-        |> Seq.map Identity.Id
-
+        
     // Act
-    let! res = Files.Retrieve.getByIdsAsync fileIds ctx
+    let! dtos = readClient.Files.RetrieveAsync fileIds
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     let ids = Seq.map (fun (d: FileReadDto) -> d.Id) dtos
 
     // Assert
     test <@ len = 3 @>
-    test <@ Seq.forall (fun i -> Seq.contains (Identity.Id i) fileIds) ids @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/byids" @>
+    test <@ Seq.forall (fun i -> Seq.contains i fileIds) ids @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Get files downloadLink by ids is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
     let fileIds =
         [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
-        |> Seq.map Identity.Id
-
+        
     // Act
-    let! res = Files.DownloadLink.getDownloadLinksAsync fileIds ctx
+    let! dtos = readClient.Files.DownloadAsync fileIds
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let ids = Seq.map (fun (d: DownloadResponse) -> d.Identity) dtos
+    let ids = Seq.map (fun (d: FileDownloadDto) -> d.Id) dtos
 
     // Assert
     test <@ len = 3 @>
     test <@ Seq.forall (fun i -> Seq.contains i fileIds) ids @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/downloadlink" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Get files by externalIds is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
     let fileIds =
         [ "dotnet sdk test" ]
-        |> Seq.map Identity.ExternalId
-
+       
     // Act
-    let! res = Files.Retrieve.getByIdsAsync fileIds ctx
+    let! dtos = writeClient.Files.RetrieveAsync fileIds
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let ids = Seq.collect (fun (d: FileReadDto) -> d.ExternalId |> optionToSeq) dtos
+    let ids = Seq.map (fun (d: FileReadDto) -> d.ExternalId) dtos
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "dotnet sdk test") ids @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/byids" @>
 }
+(*
 
 [<Trait("resource", "files")>]
 [<Fact>]
@@ -879,3 +810,5 @@ let ``Update files is Ok`` () = task {
     test <@ delCtx'.Request.Extra.["resource"] = "/files/delete" @>
     test <@ delCtx'.Request.Query.IsEmpty @>
 }
+
+*)

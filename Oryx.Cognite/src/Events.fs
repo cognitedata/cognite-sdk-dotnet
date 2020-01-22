@@ -7,7 +7,6 @@ open System.Net.Http
 
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
 open CogniteSdk.Events
 
