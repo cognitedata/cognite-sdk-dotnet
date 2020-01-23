@@ -44,10 +44,7 @@ namespace CogniteSdk
             return newQuery;
         }
 
-        /// <summary>
-        /// Convert query class to sequence of query parameter tuples.
-        /// </summary>
-        /// <returns>Key/value tuple sequence of all properties set in the query object.</returns>
+        /// <inheritdoc/>
         public List<(string, string)> ToQueryParams()
         {
             var list = new List<(string, string)>();
