@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// Update item.
+    /// Update item for a given property.
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
     public class UpdateItem<TUpdate>

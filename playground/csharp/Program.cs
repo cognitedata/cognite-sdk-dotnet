@@ -45,7 +45,7 @@ namespace csharp {
                 Filter = new AssetFilterDto { Name = assetName }
             };
 
-            var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
+            var result = await client.Assets.ListAsync(query);
 
             var asset = result.Items.FirstOrDefault();
             Console.WriteLine(asset.ParentId);

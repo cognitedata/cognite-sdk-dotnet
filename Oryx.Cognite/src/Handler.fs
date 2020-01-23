@@ -190,10 +190,10 @@ module Handler =
         let content' = ItemsWithoutCursor(Items=content)
         post<ItemsWithoutCursor<'a>, EmptyResponse, 'c> content' url
 
-
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> post content
 
+    /// List content using protocol buffers
     let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =
         let url = url +/ "list"
         POST
@@ -205,6 +205,7 @@ module Handler =
         >=> withError decodeError
         >=> protobuf parser
 
+    /// Create content using protocol buffers
     let createProtobuf<'a, 'b> (content: Google.Protobuf.IMessage) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         POST
         >=> setVersion V10
@@ -214,6 +215,7 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
+    /// Retry handler. May be used by F# clients. C# clients should use Polly instead.
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
         let shouldRetry (error: HandlerError<ResponseException>) : bool =
             match error with

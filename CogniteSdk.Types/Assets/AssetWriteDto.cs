@@ -31,6 +31,11 @@ namespace CogniteSdk.Assets
         public string Description { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// Custom, application specific metadata. String key -> String value.
         /// </summary>
         public Dictionary<string, string> Metadata { get; set; }
