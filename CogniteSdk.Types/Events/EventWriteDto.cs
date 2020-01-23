@@ -16,6 +16,11 @@ namespace CogniteSdk.Events
         public string ExternalId { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// Start time of event in unix timestamp milliseconds.
         /// </summary>
         public long? StartTime { get; set; }

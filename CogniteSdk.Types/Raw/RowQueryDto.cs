@@ -7,6 +7,9 @@ using System.Globalization;
 
 namespace CogniteSdk.Raw
 {
+    /// <summary>
+    /// The row query DTO.
+    /// </summary>
     public class RowQueryDto : CursorQueryBase
     {
         /// <summary>
@@ -27,6 +30,7 @@ namespace CogniteSdk.Raw
         /// </summary>
         public long? MaxLastUpdatedTime { get; set; }
 
+        /// <inheritdoc/>
         public new List<(string, string)> ToQueryParams()
         {
             var list = base.ToQueryParams();

@@ -32,7 +32,7 @@ namespace Test.CSharp.Integration {
                 .SetAppId("TestApp")
                 .AddHeader("api-key", apiKey)
                 .SetProject(project)
-                .SetServiceUrl(url)
+                .SetServiceUrl(new Uri(url))
                 .Build();
         }
 

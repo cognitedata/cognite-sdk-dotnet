@@ -8,8 +8,8 @@ namespace CogniteSdk
     /// <summary>
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
-    /// <typeparam name="T">The type of the property being updated.</typeparam>
-    public class SetUpdate<T> 
+    /// <typeparam name="T">The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.</typeparam>
+    public class SetUpdate<T>
     {
         /// <summary>
         /// Default constructor.
@@ -35,7 +35,7 @@ namespace CogniteSdk
     /// <summary>
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
-    /// <typeparam name="T">The type of the property being updated.</typeparam>
+    /// <typeparam name="T">The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.</typeparam>
     public class Update<T> : SetUpdate<T>
     {
         /// <summary>
@@ -101,35 +101,29 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The object property used i.e for Metadata properties.
+    /// The dictionary update used i.e for Metadata properties. Inner type is Dictionary{string, T}.
     /// </summary>
-    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="T">The type of the dictionary value.</typeparam>
     public class DictUpdate<T> : CollectionUpdate<Dictionary<string, T>, T>
     {
         /// <summary>
         /// Initialize the object property and set a new value.
         /// </summary>
         /// <param name="set">Set the new value.</param>
-        public DictUpdate(Dictionary<string, T> set) : base(set)
-        {
-        }
+        public DictUpdate(Dictionary<string, T> set) : base(set) { }
 
         /// <summary>
         /// Initialize the object property and remove values.
         /// </summary>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public DictUpdate(IEnumerable<T> remove) : base(null, remove)
-        {
-        }
+        public DictUpdate(IEnumerable<T> remove) : base(null, remove) { }
 
         /// <summary>
         /// Initialize the object property and add and remove values.
         /// </summary>
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove)
-        {
-        }
+        public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
     }
 
     /// <summary>

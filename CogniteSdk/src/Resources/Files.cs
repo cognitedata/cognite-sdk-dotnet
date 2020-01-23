@@ -54,7 +54,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in the same order as in the request. This operation does not return the file contents.
+        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in
+        /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="ids">The list of file identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -65,7 +66,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in the same order as in the request. This operation does not return the file contents.
+        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in
+        /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="internalIds">The list of file internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -76,7 +78,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in the same order as in the request. This operation does not return the file contents.
+        /// Retrieves metadata information about multiple specific files in the same project. Results are returned in
+        /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="externalIds">The list of file internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -87,6 +90,14 @@ namespace CogniteSdk.Resources
         }
         #endregion
 
+        /// <summary>
+        /// Retrieves a list of download URLs for the specified list of file IDs. After getting the download links, the
+        /// client has to issue a GET request to the returned URLs, which will respond with the contents of the file.
+        /// The link will expire after 30 seconds.
+        /// </summary>
+        /// <param name="ids">List of file IDs to retrieve the download URL for.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of file download URLs.</returns>
         #region Download overloads
         public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
@@ -94,11 +105,28 @@ namespace CogniteSdk.Resources
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Retrieves a list of download URLs for the specified list of file IDs. After getting the download links, the
+        /// client has to issue a GET request to the returned URLs, which will respond with the contents of the file.
+        /// The link will expire after 30 seconds.
+        /// </summary>
+        /// <param name="internalIds">List of file internal IDs to retrieve the download URL for.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of file download URLs.</returns>
         public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
             return await DownloadAsync(ids, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Retrieves a list of download URLs for the specified list of file IDs. After getting the download links, the
+        /// client has to issue a GET request to the returned URLs, which will respond with the contents of the file.
+        /// The link will expire after 30 seconds.
+        /// </summary>
+        /// <param name="externalIds">List of file external IDs to retrieve the download URL for.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of file download URLs.</returns>
 
         public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
@@ -107,15 +135,41 @@ namespace CogniteSdk.Resources
         }
         #endregion
 
+        /// <summary>
+        /// Create metadata information and get upload link for one file. The uploadUrl link which is returned in the
+        /// response is a Google Cloud Storage(GCS) resumable upload URL.It should be used in a separate request to
+        /// upload the file, as documented in
+        /// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload. The uploadUrl expires after one
+        /// week.Any file info entry that do not have the actual file uploaded within one week will be automatically
+        /// deleted. The 'Origin' header parameter is forwarded as a 'Origin' header to the GCS initiate upload session
+        /// request. Also, the 'mimeType' query parameter is forwarded as a 'X-Upload-Content-Type' heade
+        /// </summary>
+        /// <param name="file">The file to upload.</param>
+        /// <param name="overwrite">
+        /// If 'overwrite' is set to true, and the POST body content specifies a 'externalId' field, fields for the file
+        /// found for externalId can be overwritten. The default setting is false. If metadata is included in the
+        /// request body, all of the original metadata will be overwritten.The actual file will be overwritten after a
+        /// successful upload with the uploadUrl from the response.If there is no successful upload, the current file
+        /// contents will be kept. File-Asset mappings only change if explicitly stated in the assetIds field of the
+        /// POST json body. Do not set assetIds in request body if you want to keep the current file-asset mappings.
+        /// </param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The Updated file.</returns>
         public async Task<FileUploadReadDto> UploadAsync(FileWriteDto file, bool overwrite=false, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.upload<FileUploadReadDto>(file, overwrite);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<FileReadDto>> UpdateAsync(IEnumerable<FileUpdateItem> query, CancellationToken token = default)
+        /// <summary>
+        /// Updates the information for the files specified in the request body.
+        /// </summary>
+        /// <param name="update">The update for the files.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The updated files.</returns>
+        public async Task<IEnumerable<FileReadDto>> UpdateAsync(IEnumerable<FileUpdateItem> update, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.update<IEnumerable<FileReadDto>>(query);
+            var req = Oryx.Cognite.Files.update<IEnumerable<FileReadDto>>(update);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -125,6 +179,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The list of events to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteAsync(FileDeleteDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.delete<EmptyResponse>(query);

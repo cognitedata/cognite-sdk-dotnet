@@ -1,13 +1,15 @@
 ﻿// Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+
 using Oryx;
 using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using static Oryx.Cognite.ContextModule;
-using System;
 
 namespace CogniteSdk
 {
@@ -77,7 +79,7 @@ namespace CogniteSdk
         /// <summary>
         /// Builder to build a client.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
+        [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
             private HttpContext _context = Context.defaultContext;
@@ -145,15 +147,20 @@ namespace CogniteSdk
                 _context = Context.setHttpClient(client, _context);
                 return this;
             }
-
+           
             /// <summary>
             /// Set the service URL to be used by the client.
             /// </summary>
             /// <param name="serviceUrl">The service URL to use.</param>
             /// <returns>Updated builder.</returns>
-            public Builder SetServiceUrl(string serviceUrl)
+            public Builder SetServiceUrl(Uri serviceUrl)
             {
-                _context = setServiceUrl(serviceUrl, _context);
+                if (serviceUrl is null)
+                {
+                    throw new ArgumentNullException(nameof(serviceUrl));
+                }
+
+                _context = setServiceUrl(serviceUrl.ToString(), _context);
                 return this;
             }
 

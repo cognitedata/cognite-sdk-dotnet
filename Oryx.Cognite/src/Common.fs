@@ -24,7 +24,20 @@ type ApiVersion =
 
 [<AutoOpen>]
 module Common =
-    let (+/) path1 path2 = Path.Combine(path1, path2)
+    /// Combines two URI string fragments.
+    let combine (path1: string) (path2: string) =
+        if path2.Length = 0 then
+            path1
+        else if path1.Length = 0 then
+            path2
+        else
+            let ch = path1.[path1.Length - 1]
+            if ch <> '/' then
+                path1 + "/" + path2
+            else
+                path1 + path2
+
+    let (+/) path1 path2 = combine path1 path2
 
     let jsonOptions =
         let options =
@@ -58,7 +71,8 @@ module Context =
         if not (Map.containsKey "hasAppId" extra)
         then failwith "Client must set the Application ID (appId)."
 
-        sprintf "%s/api/%s/projects/%s%s" serviceUrl version project resource
+        sprintf "api/%s/projects/%s%s" version project resource
+        |> combine serviceUrl
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version

@@ -37,7 +37,7 @@ namespace CogniteSdk {
             {
                 if (_externalId != null)
                 {
-                    throw new ArgumentException($"Cannot set Id ({value}) when ExternalId ({_externalId}) is already set."); 
+                    throw new ArgumentException($"Cannot set Id ({value}) when ExternalId ({_externalId}) is already set.");
                 }
 
                 _id = value;
@@ -54,9 +54,9 @@ namespace CogniteSdk {
             {
                 if (_id.HasValue)
                 {
-                    throw new ArgumentException($"Cannot set externalId ({value}) when Id ({_id}) is already set.");                    
+                    throw new ArgumentException($"Cannot set externalId ({value}) when Id ({_id}) is already set.");
                 }
-                
+
                 _externalId = value;
             }
         }
