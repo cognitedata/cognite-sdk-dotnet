@@ -394,7 +394,7 @@ let ``Update assets is Ok`` () = task {
             AssetUpdateItem(
                 ExternalId=newExternalId,
                 Update=AssetUpdateDto(
-                    Metadata = DictUpdate(set=Dictionary(dict["newKey", "newValue"])),
+                    Metadata = DictUpdate(Dictionary(dict["newKey", "newValue"])),
                     Description = Update(newDescription),
                     Source = Update(newSource)
                 )

@@ -111,7 +111,7 @@ let ``Update events is Ok`` () = task {
             EventUpdateItem(
                 ExternalId = externalId,
                 Update = EventUpdateDto(
-                    Description = Update<string>(newDescription),
+                    Description = Update(newDescription),
                     Metadata = DictUpdate<string>(add=newMetadata, remove=[ "oldkey1" ])
                 )
             )
