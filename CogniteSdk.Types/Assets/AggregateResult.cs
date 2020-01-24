@@ -6,7 +6,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// Aggregated metrics of the asset.
     /// </summary>
-    public class Aggregates
+    public class AggregateResult
     {
         /// <summary>
         /// Number of direct descendants for the asset.

@@ -88,8 +88,8 @@ let ``Get datapoints by id with limit is Ok`` () = task {
 let ``Get datapoints by id with limit and timerange is Ok`` () = task {
     // Arrange
     let id = 613312137748079L
-    
-    let query = 
+
+    let query =
         DataPointsQuery(
             Start = "1562976000000",
             End  = "1563062399000",
@@ -125,14 +125,14 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
     // Arrange
     let idA = 613312137748079L
     let idB = 613312137748079L
-    let query = 
+    let query =
         DataPointsQuery(
             Items = [
                 DataPointsQueryItem(Id = Nullable idA, Limit=Nullable 10)
                 DataPointsQueryItem(Id = Nullable idB, Limit=Nullable 10)
             ]
         )
-    
+
     // Act
     let! response = readClient.DataPoints.ListAsync query
 
@@ -156,18 +156,18 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
 let ``Get datapoints by id with aggregate is Ok`` () = task {
     // Arrange
     let id = 605574483685900L
-    let query = 
+    let query =
         DataPointsQuery(
             Start = "1563048800000",
             End = "1563135200000",
             Granularity = "1h",
             Aggregates = [ "average"; "sum"; "min" ],
-          
+
             Items = [
                 DataPointsQueryItem(Id = Nullable id)
             ]
         )
-    
+
     // Act
     let! res = readClient.DataPoints.ListAsync query
 
@@ -200,8 +200,8 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
 let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Arrange
     let id = 613312137748079L
-    let query = 
-        DataPointsLatestQuery(
+    let query =
+        DataPointsLatestQueryDto(
             Items = [
                 IdentityWithBefore(
                     Before = "2w-ago",
@@ -209,12 +209,12 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
                 )
             ]
         )
-       
+
 
     // Act
     let! dtos = readClient.DataPoints.LatestAsync query
 
-    
+
     let resId =
         let h = Seq.tryHead dtos
         match h with
@@ -235,15 +235,15 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 [<Fact>]
 let ``Insert datapoints is Ok`` () = task {
     let externalIdString = Guid.NewGuid().ToString();
-    let dto = 
+    let dto =
         TimeSeriesWriteDto(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",
             IsString = false
         )
-    
-    
+
+
     let dataPoints = NumericDatapoints()
     dataPoints.Datapoints.Add(NumericDatapoint(Timestamp = 1563048800000L, Value = 3.0))
 
@@ -265,28 +265,28 @@ let ``Insert datapoints is Ok`` () = task {
 let ``Delete datapoints is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
-    let dto = 
+    let dto =
         TimeSeriesWriteDto(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",
             IsString = false
         )
-  
+
     let startTimestamp =     1563048800000L;
     let endDeleteTimestamp = 1563048800051L
     let endTimestamp =       1563048800100L
-    
+
     let dataPoints = NumericDatapoints()
-    for ts in startTimestamp..endTimestamp do        
+    for ts in startTimestamp..endTimestamp do
         dataPoints.Datapoints.Add(NumericDatapoint(Timestamp = ts, Value = 1.0))
 
     let points = DataPointInsertionRequest()
     points.Items.Add [
         DataPointInsertionItem(ExternalId = externalIdString, NumericDatapoints = dataPoints)
     ]
-  
-    let delete = 
+
+    let delete =
         DataPointsDeleteDto(
             Items=[
                 IdentityWithRange(
@@ -302,7 +302,7 @@ let ``Delete datapoints is Ok`` () = task {
     let! _ = writeClient.DataPoints.CreateAsync points
     let! res = writeClient.DataPoints.DeleteAsync delete
     let! _ = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
-    
+
     // Assert
     ()
 }

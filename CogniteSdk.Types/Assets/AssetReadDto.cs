@@ -75,7 +75,7 @@ namespace CogniteSdk.Assets
         /// <summary>
         /// Aggregated metrics of the asset.
         /// </summary>
-        public Aggregates Aggregates { get; set; }
+        public AggregateResult Aggregates { get; set; }
 
         /// <summary>
         /// Return user friendly string representation of the object.

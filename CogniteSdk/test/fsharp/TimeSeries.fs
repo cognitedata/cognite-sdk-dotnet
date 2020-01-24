@@ -18,7 +18,7 @@ open System.Collections.Generic
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
     // Arrange
-    let query = TimeSeriesQuery(Limit = Nullable 10)
+    let query = TimeSeriesQueryDto(Limit = Nullable 10)
 
     // Act
     let! response = readClient.TimeSeries.ListAsync query

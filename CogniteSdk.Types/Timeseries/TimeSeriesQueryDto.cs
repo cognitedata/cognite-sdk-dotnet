@@ -6,7 +6,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series query DTO.
     /// </summary>
-    public class TimeSeriesQuery : CursorQueryBase
+    public class TimeSeriesQueryDto : CursorQueryBase
     {
         /// <summary>
         /// Filter on time series with strict matching.

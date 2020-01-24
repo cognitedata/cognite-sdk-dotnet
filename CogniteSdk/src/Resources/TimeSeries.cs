@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of time series matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<TimeSeriesReadDto>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<TimeSeriesReadDto>> ListAsync(TimeSeriesQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.list<ItemsWithCursor<TimeSeriesReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

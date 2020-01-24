@@ -57,7 +57,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if
+        /// recursive is true.
         /// </summary>
         /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -74,7 +75,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The latest query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of latest data points.</returns>
-        public async Task<IEnumerable<DataPointsReadDto>> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
+        public async Task<IEnumerable<DataPointsReadDto>> LatestAsync(DataPointsLatestQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

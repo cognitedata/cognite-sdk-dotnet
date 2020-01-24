@@ -66,7 +66,8 @@ namespace CogniteSdk.Resources
 
         #region Delete overloads
         /// <summary>
-        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
+        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if
+        /// recursive is true.
         /// </summary>
         /// <param name="query">The query of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -112,8 +113,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -124,8 +125,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -136,8 +137,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -161,7 +162,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed
+        /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not
+        /// changed
         /// </summary>
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>

@@ -114,8 +114,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -126,8 +126,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of event internal ids to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -138,8 +138,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of event external ids to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -163,7 +163,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not changed
+        /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not
+        /// changed
         /// </summary>
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>

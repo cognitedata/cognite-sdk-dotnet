@@ -8,7 +8,6 @@ open Xunit
 open Swensen.Unquote
 
 open Oryx
-open Thoth.Json.Net
 
 open CogniteSdk
 open CogniteSdk.Sequences

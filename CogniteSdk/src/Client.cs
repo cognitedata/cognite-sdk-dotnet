@@ -41,7 +41,7 @@ namespace CogniteSdk
         // Client Login extension methods
         //public Login.ClientExtension Login  { get; }
 
-        
+
         /// <summary>
         /// Client Files extension methods
         /// </summary>
@@ -147,7 +147,7 @@ namespace CogniteSdk
                 _context = Context.setHttpClient(client, _context);
                 return this;
             }
-           
+
             /// <summary>
             /// Set the service URL to be used by the client.
             /// </summary>
