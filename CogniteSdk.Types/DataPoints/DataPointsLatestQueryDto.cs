@@ -1,8 +1,6 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
-
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
@@ -29,7 +27,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The top level data points query.
     /// </summary>
-    public class DataPointsLatestQuery : ItemsWithoutCursor<IdentityWithBefore>
+    public class DataPointsLatestQueryDto : ItemsWithoutCursor<IdentityWithBefore>
     {
         /// <summary>
         /// If true, then ignore IDs and external IDs that are not found.

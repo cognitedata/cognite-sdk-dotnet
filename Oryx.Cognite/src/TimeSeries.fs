@@ -19,7 +19,7 @@ module TimeSeries =
 
     /// Retrieves list of time series matching filter, and a cursor if given limit is exceeded. Returns list of time
     /// series matching given filters and optional cursor.
-    let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
+    let list (query: TimeSeriesQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeriesReadDto>, 'a> =
         list query Url
 
     /// Create one or more new time series. Returns list of created time series.

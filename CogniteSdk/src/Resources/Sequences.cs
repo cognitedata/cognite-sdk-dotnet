@@ -89,8 +89,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of events identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -101,8 +101,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed per
-        /// request and all of them must be unique.
+        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
+        /// per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of events internal ids to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -150,7 +150,9 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Processes data requests, and returns the result. NB - This operation uses a dynamic limit on the number of rows returned based on the number and type of columns, use the provided cursor to paginate and retrieve all data.
+        /// Processes data requests, and returns the result. NB - This operation uses a dynamic limit on the number of
+        /// rows returned based on the number and type of columns, use the provided cursor to paginate and retrieve all
+        /// data.
         /// </summary>
         /// <param name="query">The sequence rows query.</param>
         /// <param name="token">Optional cancellation token.</param>
