@@ -6,7 +6,7 @@
 
 [![Build Status](https://travis-ci.org/cognitedata/cognite-sdk-dotnet.svg?branch=master)](https://travis-ci.org/cognitedata/cognite-sdk-dotnet)
 [![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet)
-[![Nuget](https://img.shields.io/nuget/vpre/CogniteSdk)](https://www.nuget.org/packages/Oryx/)
+[![Nuget](https://img.shields.io/nuget/vpre/CogniteSdk)](https://www.nuget.org/packages/CogniteSdk/)
 
 _**Under development**, not recommended for production use cases_
 

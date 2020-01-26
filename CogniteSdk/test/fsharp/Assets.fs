@@ -145,7 +145,7 @@ let ``Filter assets on MetaData is Ok`` () = task {
 
     // Assert
     test <@ len = 10 @>
-    test <@ ms |> Seq.forall (fun (m: IDictionary<string, string>) -> (m.Item "RES_ID") = "525283") @>
+    test <@ ms |> Seq.forall (fun (m: Dictionary<string, string>) -> (m.Item "RES_ID") = "525283") @>
 }
 
 [<Fact>]
@@ -373,7 +373,7 @@ let ``Update assets is Ok`` () = task {
         let h = Seq.tryHead assetsResponses
         match h with
         | Some assetResponse -> assetResponse.Name, assetResponse.ExternalId, assetResponse.Metadata
-        | None -> "", "", dict []
+        | None -> "", "", Dictionary ()
 
     let metaDataOk =
         resMetaData.["key1"] = "value1"
@@ -408,7 +408,7 @@ let ``Update assets is Ok`` () = task {
         match h with
         | Some assetResponse ->
             assetResponse.Description, assetResponse.Source, assetResponse.Metadata, assetResponse.Id
-        | None -> "", "", dict [], 0L
+        | None -> "", "", Dictionary (), 0L
 
     // Assert get2
     test <@ resDescription = newDescription @>
@@ -435,7 +435,7 @@ let ``Update assets is Ok`` () = task {
         match h with
         | Some assetResponse ->
             assetResponse.ExternalId, assetResponse.Source, assetResponse.Metadata
-        | None -> "", "", dict []
+        | None -> "", "", Dictionary ()
 
     // Assert get2
     test <@ isNull resExternalId2 @>
