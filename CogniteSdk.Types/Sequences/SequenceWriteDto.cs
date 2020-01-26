@@ -28,7 +28,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// The valueType of the sequence. Enum STRING, DOUBLE, LONG
         /// </summary>
-        public long AssetId { get; set; }
+        public long? AssetId { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
