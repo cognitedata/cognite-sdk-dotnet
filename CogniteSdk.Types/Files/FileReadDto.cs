@@ -47,12 +47,12 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Unix timestamp in milliseconds of when the source was created.
         /// </summary>
-        public long SourceCreatedTime { get; set; }
+        public long? SourceCreatedTime { get; set; }
 
         /// <summary>
         /// Unix timestamp in milliseconds of when the source was last modified.
         /// </summary>
-        public long SourceModifiedTime { get; set; }
+        public long? SourceModifiedTime { get; set; }
 
         /// <summary>
         /// The server-generated ID of the file.

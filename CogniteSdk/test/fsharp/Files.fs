@@ -59,7 +59,7 @@ let ``Get files by ids is Ok`` () = task {
     // Arrange
     let fileIds =
         [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
-        
+
     // Act
     let! dtos = readClient.Files.RetrieveAsync fileIds
 
@@ -78,7 +78,7 @@ let ``Get files downloadLink by ids is Ok`` () = task {
     // Arrange
     let fileIds =
         [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
-        
+
     // Act
     let! dtos = readClient.Files.DownloadAsync fileIds
 
@@ -97,7 +97,7 @@ let ``Get files by externalIds is Ok`` () = task {
     // Arrange
     let fileIds =
         [ "dotnet sdk test" ]
-       
+
     // Act
     let! dtos = writeClient.Files.RetrieveAsync fileIds
 
@@ -114,7 +114,7 @@ let ``Get files by externalIds is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on AssetIds is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(AssetIds = [ 5409900891232494L ]),
             Limit = Nullable 10
@@ -137,12 +137,12 @@ let ``Filter Files on AssetIds is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on CreatedTime is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(CreatedTime = TimeRange(Min=1533213749083L, Max=1533213749099L)),
             Limit = Nullable 10
         )
-    
+
     // Act
     let! res = readClient.Files.ListAsync query
 
@@ -160,15 +160,15 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(LastUpdatedTime = TimeRange(Min=1533213795975L, Max=1533213795995L)),
             Limit = Nullable 10
         )
-    
+
     // Act
     let! res = readClient.Files.ListAsync query
-    
+
     let dtos = res.Items
     let len = Seq.length dtos
 
@@ -183,7 +183,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(ExternalIdPrefix = "dotnet"),
             Limit = Nullable 10
@@ -205,7 +205,7 @@ let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on MetaData is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(Metadata = (dict ["workmate_id", "474635"] |> Dictionary)),
             Limit = Nullable 10
@@ -228,7 +228,7 @@ let ``Filter Files on MetaData is Ok`` () = task {
 [<Fact>]
 let ``Filter Files on Source is Ok`` () = task {
     // Arrange
-    let query = 
+    let query =
         FileQueryDto(
             Filter = FileFilterDto(Source = "Documentum"),
             Limit = Nullable 10
@@ -550,7 +550,7 @@ let ``Update files is Ok`` () = task {
         "key2", "value2"
     ] |> Dictionary)
 
-    let dto = 
+    let dto =
         FileWriteDto(
             ExternalId = externalIdString,
             Name = "testName",
@@ -567,12 +567,12 @@ let ``Update files is Ok`` () = task {
     let newAssetId = 5409900891232494L
 
     // Act
-    let! createRes = writeClient.Files.UploadAsync dto 
+    let! createRes = writeClient.Files.UploadAsync dto
     let! updateRes =
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
                 ExternalId = externalId,
-                Update = 
+                Update =
                     FileUpdateDto(
                         Source =  Update<string>(newSource),
                         AssetIds = SequenceUpdate<int64>([ newAssetId ]),
@@ -596,9 +596,9 @@ let ``Update files is Ok`` () = task {
             fileResponse.SourceCreatedTime,
             fileResponse.SourceModifiedTime,
             fileResponse.AssetIds
-        | None -> null, "", null, 0L, 0L,  Seq.singleton 0L
+        | None -> null, "", null, Nullable 0L, Nullable 0L,  Seq.singleton 0L
 
-    
+
     let metaDataOk =
         resMetaData.["key1"] = "value1"
         && resMetaData.["key2"] = "value2"
@@ -606,14 +606,14 @@ let ``Update files is Ok`` () = task {
         && not (resMetaData.ContainsKey "oldkey1")
 
     // Assert create
-    
+
 
     // Assert update
     // Assert get
     test <@ resExternalId = newExternalId @>
     test <@ resSource = newSource @>
-    test <@ resSourceCreatedTime = 321L @>
-    test <@ resSourceModifiedTime = 654L @>
+    test <@ resSourceCreatedTime = Nullable 321L @>
+    test <@ resSourceModifiedTime = Nullable 654L @>
     test <@ Seq.head resAssetIds = newAssetId  @>
     test <@ metaDataOk @>
 
@@ -623,7 +623,7 @@ let ``Update files is Ok`` () = task {
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
                 ExternalId = newExternalId,
-                Update = 
+                Update =
                     FileUpdateDto(
                         Metadata = DictUpdate<string>(dict ["newKey", "newValue"] |> Dictionary),
                         AssetIds = SequenceUpdate<int64>([newAssetId2], [newAssetId])
@@ -648,7 +648,7 @@ let ``Update files is Ok`` () = task {
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
                 Id = Nullable identity,
-                Update = 
+                Update =
                     FileUpdateDto(
                         Metadata = DictUpdate(set=Dictionary()),
                         ExternalId = Update(null),
@@ -658,7 +658,7 @@ let ``Update files is Ok`` () = task {
                         AssetIds = SequenceUpdate([])
                     )
             )]
-    
+
 
     let! filesResponses = writeClient.Files.RetrieveAsync [ identity ]
     let! delRes = writeClient.Files.DeleteAsync [ identity ]
@@ -673,14 +673,14 @@ let ``Update files is Ok`` () = task {
             fileResponse.AssetIds,
             fileResponse.SourceCreatedTime,
             fileResponse.SourceModifiedTime
-        | None -> "", "", null, Seq.singleton 0L, 0L, 0L
+        | None -> "", "", null, Seq.singleton 0L, Nullable 0L, Nullable 0L
 
     // Assert get2
-    test <@ resExternalId2 = null @>
-    test <@ resSource2 = null @>
-    test <@ resSourceCreatedTime2 = 0L @>
-    test <@ resSourceModifiedTime2 = 0L @>
-    test <@ resAssetIds3 = null @>
+    test <@ isNull resExternalId2 @>
+    test <@ isNull resSource2 @>
+    test <@ resSourceCreatedTime2 = Nullable () @>
+    test <@ resSourceModifiedTime2 = Nullable () @>
+    test <@ isNull resAssetIds3 @>
     test <@ Seq.isEmpty resMetaData3  @>
 
     // Assert delete
