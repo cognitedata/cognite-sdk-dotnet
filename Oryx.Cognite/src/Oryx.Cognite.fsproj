@@ -19,6 +19,7 @@
     <Compile Include="Raw.fs" />
     <Compile Include="Files.fs" />
     <Compile Include="Sequences.fs" />
+    <Compile Include="Login.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
   <ItemGroup>

@@ -33,9 +33,9 @@ module Common =
         else
             let ch = path1.[path1.Length - 1]
             if ch <> '/' then
-                path1 + "/" + path2
+                path1 + "/" + path2.TrimStart('/')
             else
-                path1 + path2
+                path1 + path2.TrimStart('/')
 
     let (+/) path1 path2 = combine path1 path2
 

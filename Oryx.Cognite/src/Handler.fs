@@ -53,7 +53,7 @@ module Handler =
             if not (Map.containsKey "hasAppId" extra)
             then failwith "Client must set the Application ID (appId)"
 
-            sprintf "%s%s" serviceUrl url
+            serviceUrl +/ url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
