@@ -10,7 +10,6 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Error.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="Handler.fs" />
     <Compile Include="Assets.fs" />

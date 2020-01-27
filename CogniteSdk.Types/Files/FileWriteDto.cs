@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CogniteSdk.Files
 {
@@ -35,7 +36,7 @@ namespace CogniteSdk.Files
         /// Limits: Maximum length of key is 32 bytes,
         /// value 512 bytes, up to 16 key-value pairs
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>

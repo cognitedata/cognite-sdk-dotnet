@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CogniteSdk.Sequences
 {
@@ -38,6 +39,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
