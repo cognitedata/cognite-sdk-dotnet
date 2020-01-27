@@ -28,7 +28,7 @@ namespace CogniteSdk.TimeSeries
         /// <summary>
         /// Whether the time series is string valued or not.
         /// </summary>
-        public bool? IsString { get; set; }
+        public bool IsString { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata.
@@ -50,7 +50,7 @@ namespace CogniteSdk.TimeSeries
         /// <summary>
         /// Whether the time series is a step series or not.
         /// </summary>
-        public bool? IsStep { get; set; }
+        public bool IsStep { get; set; }
 
         /// <summary>
         /// Description of the time series.
