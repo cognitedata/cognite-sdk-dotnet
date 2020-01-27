@@ -61,7 +61,7 @@ module Handler =
     let raiseError (error: HandlerError<ResponseException>) =
         match error with
         | ResponseError error -> raise error
-        | Panic (Oryx.JsonDecodeException err) -> raise <| Oryx.Cognite.JsonDecodeException err
+        | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
         | Panic (err) -> raise err
 
     /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
