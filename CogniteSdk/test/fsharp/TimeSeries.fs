@@ -210,7 +210,7 @@ let ``Search timeseries on IsStep is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let isSteps = Seq.map (fun (d : TimeSeriesReadDto) -> d.IsStep.Value) dtos
+    let isSteps = Seq.map (fun (d : TimeSeriesReadDto) -> d.IsStep) dtos
 
     // Assert
     test <@ len = 5 @>
@@ -230,7 +230,7 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
-    let isStrings = Seq.map (fun (d: TimeSeriesReadDto) -> d.IsString.Value) dtos
+    let isStrings = Seq.map (fun (d: TimeSeriesReadDto) -> d.IsString) dtos
 
     // Assert
     test <@ len = 6 @>
