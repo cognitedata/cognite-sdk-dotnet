@@ -61,8 +61,7 @@ module Handler =
     let raiseError (error: HandlerError<ResponseException>) =
         match error with
         | ResponseError error -> raise error
-        | Panic (Oryx.JsonDecodeException err) -> raise <| CogniteSdk.JsonDecodeException err
-        | Panic (err) -> raise err
+        | Panic err -> raise err
 
     /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
     let runUnsafeAsync (ctx : HttpContext) (token: CancellationToken) (handler: HttpHandler<HttpResponseMessage, 'r,'r>) : Task<'r> = task {
