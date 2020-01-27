@@ -20,11 +20,11 @@ namespace CogniteSdk
         /// <summary>
         /// Missing values.
         /// </summary>
-        public IEnumerable<Dictionary<string, ValueType>> Missing { get; set; }
+        public IEnumerable<Dictionary<string, MultiValue>> Missing { get; set; }
         /// <summary>
         /// Duplicated values.
         /// </summary>
-        public IEnumerable<Dictionary<string, ValueType>> Duplicated { get; set; }
+        public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
 
         /// <summary>
         /// Request ID extracted from the response header.

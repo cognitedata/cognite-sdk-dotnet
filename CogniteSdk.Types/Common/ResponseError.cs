@@ -25,12 +25,12 @@ namespace CogniteSdk
         /// <summary>
         /// The missing entries if any.
         /// </summary>
-        public IEnumerable<Dictionary<string, ValueType>> Missing { get; set; }
+        public IEnumerable<Dictionary<string, MultiValue>> Missing { get; set; }
 
         /// <summary>
         /// The duplicated entries if any.
         /// </summary>
-        public IEnumerable<Dictionary<string, ValueType>> Duplicated { get; set; }
+        public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
     }
 
     /// <summary>

@@ -24,7 +24,7 @@ namespace CogniteSdk
                     {
                         return MultiValue.Create(longNumber);
                     }
-                    
+
                     return MultiValue.Create(reader.GetDouble());
                 default:
                     throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
