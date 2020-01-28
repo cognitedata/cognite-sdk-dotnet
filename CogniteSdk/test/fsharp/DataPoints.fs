@@ -203,10 +203,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
     let query =
         DataPointsLatestQueryDto(
             Items = [
-                IdentityWithBefore(
-                    Before = "2w-ago",
-                    Id = id
-                )
+                IdentityWithBefore(id, "2w-ago")
             ]
         )
 
