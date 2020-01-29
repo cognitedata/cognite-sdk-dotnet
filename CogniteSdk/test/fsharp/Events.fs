@@ -326,7 +326,7 @@ let ``Filter events on Type is Ok`` () = task {
 [<Fact>]
 let ``Search events is Ok`` () = task {
     // Arrange
-    let dto = SearchDto(Description = "dotnet")
+    let dto = DescriptionSearchDto(Description = "dotnet")
     let query = EventSearchDto(Search = dto)
 
     // Act
