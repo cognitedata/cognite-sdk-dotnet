@@ -118,8 +118,9 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     let dbName = Guid.NewGuid().ToString().[..31]
     let tableName = Guid.NewGuid().ToString().[..31]
     let rowKey = Guid.NewGuid().ToString().[..31]
-    let column = Dictionary(dict [ ("test column", JsonSerializer.Serialize<int> 42) ])
-    let rowDto = new RowWriteDto(Key = rowKey, Columns = column)
+    let doc = JsonDocument.Parse("42")
+    let column = Dictionary(dict [ ("test column", doc.RootElement) ])
+    let rowDto = RowWriteDto(Key = rowKey, Columns = column)
 
     // Act
     let! table = writeClient.Raw.CreateTablesAsync(dbName, [ tableName ], true)
