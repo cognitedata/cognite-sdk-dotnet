@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Events
@@ -8,7 +9,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The Event read DTO.
     /// </summary>
-    public class EventReadDto
+    public class EventReadDto : Stringable
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -77,6 +78,22 @@ namespace CogniteSdk.Events
         /// </summary>
         /// <value></value>
         public long LastUpdatedTime { get; set; }
+
+        /// <summary>Determines whether the specified object is equal to the current object.</summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            return obj is EventReadDto dto &&
+                   Id == dto.Id;
+        }
+
+        /// <summary>Serves as the default hash function.</summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return 2108858624 + Id.GetHashCode();
+        }
     }
 }
 

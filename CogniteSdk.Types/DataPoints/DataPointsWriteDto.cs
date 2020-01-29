@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.DataPoints
@@ -8,7 +9,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points write type
     /// </summary>
-    public class DataPointsWriteDto
+    public class DataPointsWriteDto : Stringable
     {
         /// <summary>
         /// The list of data points. The limit per request is 100000 data points.

@@ -1,13 +1,15 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk
 {
     /// <summary>
     /// Update item for a given property.
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
-    public class UpdateItem<TUpdate>
+    public class UpdateItem<TUpdate> : Stringable
     {
         /// <summary>
         /// The update object.

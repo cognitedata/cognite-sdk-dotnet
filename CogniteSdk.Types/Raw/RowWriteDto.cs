@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -10,7 +11,7 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// Dto to write a row to a table in Raw.
     /// </summary>
-    public class RowWriteDto
+    public class RowWriteDto : Stringable
     {
         /// <summary>
         /// Row key. Unique in table.

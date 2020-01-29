@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -9,7 +10,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File read response resource.
     /// </summary>
-    public class FileReadDto
+    public class FileReadDto : Stringable
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.

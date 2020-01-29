@@ -15,7 +15,7 @@ open Common
 [<Fact>]
 let ``List assets with limit is Ok`` () = task {
     // Arrange
-    let query = AssetQueryDto().WithLimit(10)
+    let query = AssetQueryDto(Limit= Nullable 10)
 
     // // Act
     let! res = readClient.Assets.ListAsync(query)

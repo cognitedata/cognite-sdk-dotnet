@@ -1,12 +1,14 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk
 {
     /// <summary>
     /// Search query DTO. Shared between the various resource search functions.
     /// </summary>
-    public class SearchDto
+    public class SearchDto : Stringable
     {
         /// <summary>
         /// Prefix and fuzzy search on name.

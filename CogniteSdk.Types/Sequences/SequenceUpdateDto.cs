@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 
 namespace CogniteSdk.Sequences
@@ -6,7 +6,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The sequence update DTO.
     /// </summary>
-    public class SequenceUpdateDto
+    public class SequenceUpdateDto : Stringable
     {
         /// <summary>
         /// Set a new value for the Name, or remove the value.

@@ -1,12 +1,14 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Assets
 {
     /// <summary>
     /// Aggregated metrics of the asset.
     /// </summary>
-    public class AggregateResult
+    public class AggregateResult : Stringable
     {
         /// <summary>
         /// Number of direct descendants for the asset.

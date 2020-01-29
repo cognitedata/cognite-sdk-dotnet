@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
@@ -8,7 +9,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// The asset filter DTO.
     /// </summary>
-    public class AssetFilterDto
+    public class AssetFilterDto : Stringable
     {
         /// <summary>
         /// The name of the asset.

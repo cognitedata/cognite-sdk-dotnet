@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.TimeSeries
@@ -8,7 +9,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series filter DTO.
     /// </summary>
-    public class TimeSeriesFilterDto
+    public class TimeSeriesFilterDto : Stringable
     {
         /// <summary>
         /// The name of the time series.

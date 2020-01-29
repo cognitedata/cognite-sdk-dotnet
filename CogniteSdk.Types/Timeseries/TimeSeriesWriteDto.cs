@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.TimeSeries
@@ -8,7 +9,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// Timeseries write dto.
     /// </summary>
-    public class TimeSeriesWriteDto
+    public class TimeSeriesWriteDto : Stringable
     {
         /// <summary>
         /// Externally provided ID for the time series (optional, but recommended.)

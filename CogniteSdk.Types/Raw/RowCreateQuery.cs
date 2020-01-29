@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using CogniteSdk.Types.Common;
+using System.Collections.Generic;
 
 namespace CogniteSdk.Raw
 {
     /// <summary>
     /// Query parameter when creating a raw table.
     /// </summary>
-    public class RowCreateQuery : IQueryParams
+    public class RowCreateQuery : Stringable, IQueryParams
     {
         /// <summary>
         /// Create database/table if it doesn't exist already.

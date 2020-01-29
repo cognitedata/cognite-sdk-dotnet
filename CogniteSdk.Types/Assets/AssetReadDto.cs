@@ -1,16 +1,15 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace CogniteSdk.Assets
 {
     /// <summary>
     /// The Asset read DTO.
     /// </summary>
-    public class AssetReadDto
+    public class AssetReadDto : Stringable
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -77,23 +76,20 @@ namespace CogniteSdk.Assets
         /// </summary>
         public AggregateResult Aggregates { get; set; }
 
-        /// <summary>
-        /// Return user friendly string representation of the object.
-        /// </summary>
-        /// <returns>String representation.</returns>
-        public override string ToString()
+        /// <summary>Determines whether the specified object is equal to the current object.</summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object obj)
         {
-            var props = new List<string> { "{"};
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
-            {
-                var name = descriptor.Name;
-                object value = descriptor.GetValue(this);
-                value ??= "null";
-                props.Add($"\t{name}={value}");
-            }
-            props.Add("}");
+            return obj is AssetReadDto dto &&
+                   Id == dto.Id;
+        }
 
-            return string.Join("\n", props);
+        /// <summary>Serves as the default hash function.</summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return 2108858624 + Id.GetHashCode();
         }
     }
 }

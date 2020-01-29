@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk
@@ -9,7 +10,7 @@ namespace CogniteSdk
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
     /// <typeparam name="T">The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.</typeparam>
-    public class SetUpdate<T>
+    public class SetUpdate<T> : Stringable
     {
         /// <summary>
         /// Default constructor.
@@ -60,7 +61,7 @@ namespace CogniteSdk
     /// <summary>
     /// Used for setting, updating and removing Metadata entries.
     /// </summary>
-    public class CollectionUpdate<TCollection, TRemove>
+    public class CollectionUpdate<TCollection, TRemove> : Stringable
     {
         /// <summary>
         /// Set the key-value pairs. All existing key-value pairs will be removed.

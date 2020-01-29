@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Events
@@ -8,7 +9,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The Event filter DTO.
     /// </summary>
-    public class EventFilterDto
+    public class EventFilterDto : Stringable
     {
         /// <summary>
         /// Range between two timestamps.

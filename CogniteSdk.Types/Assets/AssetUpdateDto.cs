@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Assets
 {
     /// <summary>
     /// The Asset update DTO.
     /// </summary>
-    public class AssetUpdateDto
+    public class AssetUpdateDto : Stringable
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.

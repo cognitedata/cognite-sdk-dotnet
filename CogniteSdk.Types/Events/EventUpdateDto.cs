@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Events
 {
     /// <summary>
     /// The event update DTO.
     /// </summary>
-    public class EventUpdateDto
+    public class EventUpdateDto : Stringable
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.

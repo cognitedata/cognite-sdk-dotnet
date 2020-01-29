@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Files
@@ -8,7 +9,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// The File query DTO.
     /// </summary>
-    public class FileFilterDto
+    public class FileFilterDto : Stringable
     {
         /// <summary>
         /// Name of the file.

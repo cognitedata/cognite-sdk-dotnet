@@ -1,4 +1,4 @@
-﻿using System;
+﻿using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Raw
@@ -6,7 +6,7 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// Query parameter when creating a raw table.
     /// </summary>
-    public class TableCreateQuery : IQueryParams
+    public class TableCreateQuery : Stringable, IQueryParams
     {
         /// <summary>
         /// Create database if it doesn't exist already.

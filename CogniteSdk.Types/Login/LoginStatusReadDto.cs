@@ -1,12 +1,14 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Login
 {
     /// <summary>
     /// The Login Status Read DTO.
     /// </summary>
-    public class LoginStatusReadDto
+    public class LoginStatusReadDto : Stringable
     {
         /// <summary>
         /// The user principal, e.g john.doe@corporation.com.

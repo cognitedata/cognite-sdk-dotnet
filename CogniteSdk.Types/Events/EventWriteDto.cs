@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Events
@@ -8,7 +9,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The event write DTO.
     /// </summary>
-    public class EventWriteDto
+    public class EventWriteDto : Stringable
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.

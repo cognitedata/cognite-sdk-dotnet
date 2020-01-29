@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
@@ -8,7 +9,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence filter DTO.
     /// </summary>
-    public class SequenceFilterDto
+    public class SequenceFilterDto : Stringable
     {
         /// <summary>
         /// Return only sequences with this exact name.

@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk
@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
     /// convert it directly to a ResponseException.
     /// </summary>
-    public class ResponseErrorDto
+    public class ResponseErrorDto : Stringable
     {
         /// <summary>
         ///  The API error code (HTTP error code)
@@ -37,7 +37,7 @@ namespace CogniteSdk
     /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
     /// convert it directly to a ResponseException.
     /// </summary>
-    public class ApiResponseErrorDto
+    public class ApiResponseErrorDto : Stringable
     {
         /// <summary>
         /// Response error object.

@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
@@ -8,7 +9,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// Dto for creating a new asset.
     /// </summary>
-    public class AssetWriteDto
+    public class AssetWriteDto : Stringable
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.

@@ -1,6 +1,7 @@
 ﻿// Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
@@ -8,14 +9,16 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence column DTO.
     /// </summary>
-    public class SequenceColumnWriteDto
+    public class SequenceColumnWriteDto : Stringable
     {
         /// <summary>
         /// The name of the column.
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
         /// The externalId of the column. Must be unique within the project.
+        /// </summary>
         public string ExternalId { get; set; }
 
         /// <summary>

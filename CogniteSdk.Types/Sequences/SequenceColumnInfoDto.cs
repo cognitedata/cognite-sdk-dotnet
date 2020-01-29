@@ -1,14 +1,14 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Sequences
 {
     /// <summary>
     /// The sequence column info DTO.
     /// </summary>
-    public class SequenceColumnInfoDto
+    public class SequenceColumnInfoDto : Stringable
     {
         /// <summary>
         /// The name of the column.

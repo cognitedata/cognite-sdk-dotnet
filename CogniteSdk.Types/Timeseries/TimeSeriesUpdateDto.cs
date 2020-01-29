@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.TimeSeries
 {
     /// <summary>
     /// The time series update DTO.
     /// </summary>
-    public class TimeSeriesUpdateDto
+    public class TimeSeriesUpdateDto : Stringable
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.

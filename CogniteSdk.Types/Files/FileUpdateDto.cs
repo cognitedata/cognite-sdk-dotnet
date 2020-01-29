@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-using System;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Files
 {
     /// <summary>
     /// The file update DTO.
     /// </summary>
-    public class FileUpdateDto
+    public class FileUpdateDto : Stringable
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.

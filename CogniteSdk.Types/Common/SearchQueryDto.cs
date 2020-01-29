@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// </summary>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <typeparam name="TSearch">Search type</typeparam>
-    public class SearchQueryDto<TFilter, TSearch>
+    public class SearchQueryDto<TFilter, TSearch> : Stringable
     {
         /// <summary>
         /// Filter on items with strict matching.

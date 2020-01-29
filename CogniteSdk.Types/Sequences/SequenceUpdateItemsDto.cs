@@ -1,12 +1,11 @@
-using System.Collections.Generic;
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Sequences
 {
     /// <summary>
     /// The sequence update items DTO base class.
     /// </summary>
-    public abstract class SequenceUpdateItemsType
+    public abstract class SequenceUpdateItemsType : Stringable
     {
         /// <summary>
         /// A description of changes that should be done to the sequence.

@@ -1,12 +1,14 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
     /// Identity class with time range.
     /// </summary>
-    public class IdentityWithRange
+    public class IdentityWithRange : Stringable
     {
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus

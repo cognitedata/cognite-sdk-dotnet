@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.DataPoints
@@ -8,7 +9,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The data points query base class.
     /// </summary>
-    public class DataPointsQueryType
+    public class DataPointsQueryType : Stringable
     {
         /// <summary>
         /// Get data points starting from, and including, this time. The format is N[timeunit]-ago where time unit is
