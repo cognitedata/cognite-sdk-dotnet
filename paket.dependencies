@@ -5,7 +5,6 @@ group Sdk
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget Microsoft.Extensions.Http
     nuget Oryx prerelease
     nuget Microsoft.CodeAnalysis.FxCopAnalyzers
 
@@ -14,11 +13,10 @@ group Oryx.Cognite
     storage: none
     framework: netstandard2.0
 
-    nuget System.Text.Json
     nuget FSharp.Core ~> 4.7
+    nuget System.Text.Json
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2.1
-    nuget Microsoft.Extensions.Http
     nuget Oryx prerelease
     nuget Oryx.Protobuf prerelease
     nuget Oryx.SystemTextJson prerelease
