@@ -89,11 +89,11 @@ module Handler =
                 return error.ToException () |> Oryx.ResponseError
             with
             | ex ->
-                let exn = ResponseException(response.ReasonPhrase, ex)
+                let exn = ResponseException (response.ReasonPhrase, ex)
                 exn.Code <- int response.StatusCode
                 return Oryx.ResponseError exn
         else
-            let exn = ResponseException(response.ReasonPhrase)
+            let exn = ResponseException response.ReasonPhrase
             exn.Code <- int response.StatusCode
             return Oryx.ResponseError exn
     }
@@ -124,7 +124,7 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -136,7 +136,7 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> addQuery parms
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -199,7 +199,7 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> setResponseType ResponseType.Protobuf
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> protobuf parser
@@ -209,7 +209,7 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new ProtobufPushStreamContent(content))
+        >=> getContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

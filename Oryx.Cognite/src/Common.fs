@@ -4,7 +4,6 @@
 /// Common types for the SDK.
 namespace Oryx.Cognite
 
-open System.IO
 open System.Reflection
 open System.Text.Json
 
