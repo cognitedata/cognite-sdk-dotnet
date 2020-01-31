@@ -211,7 +211,6 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Act
     let! dtos = readClient.DataPoints.LatestAsync query
 
-
     let resId =
         let h = Seq.tryHead dtos
         match h with

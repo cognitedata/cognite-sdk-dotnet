@@ -1,5 +1,4 @@
 group Sdk
 
-Microsoft.Extensions.Http
 Microsoft.CodeAnalysis.FxCopAnalyzers
 Oryx
