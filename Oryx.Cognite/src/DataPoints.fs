@@ -38,9 +38,9 @@ module DataPoints =
         delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    let latest (query: DataPointsLatestQueryDto) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsReadDto<DataPointAggregateDto>>, 'a> =
+    let latest (query: DataPointsLatestQueryDto) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsReadDto<DataPointDto>>, 'a> =
         req {
             let url = Url +/ "latest"
-            let! ret = post<DataPointsLatestQueryDto, ItemsWithoutCursor<DataPointsReadDto<DataPointAggregateDto>>, 'a> query url
+            let! ret = post<DataPointsLatestQueryDto, ItemsWithoutCursor<DataPointsReadDto<DataPointDto>>, 'a> query url
             return ret.Items
         }
