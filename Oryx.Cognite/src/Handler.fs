@@ -233,7 +233,6 @@ module Handler =
                 | 503 -> true
                 // do not retry other responses.
                 | _ -> false
-            | Panic (Oryx.JsonDecodeException _) -> false
             | Panic err ->
                 match err with
                 | :? Net.Http.HttpRequestException
