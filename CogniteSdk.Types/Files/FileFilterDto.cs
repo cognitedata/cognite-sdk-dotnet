@@ -64,6 +64,12 @@ namespace CogniteSdk.Files
         public TimeRange UploadedTime { get; set; }
 
         /// <summary>
+        /// Range between two timestamps. When the source was created.
+        /// </summary>
+        /// <value></value>
+        public TimeRange SourceCreatedTime { get; set; }
+
+        /// <summary>
         /// Range between two timestamps.
         /// </summary>
         public TimeRange SourceModifiedTime { get; set; }
