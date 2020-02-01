@@ -125,7 +125,7 @@ namespace Test.CSharp.Integration
             };
             var delete = new SequenceRowDeleteDto()
             {
-                ExternalId = externalIdString, 
+                ExternalId = externalIdString,
                 Rows = new List<long> { 1L }
             };
 
@@ -147,12 +147,12 @@ namespace Test.CSharp.Integration
         public async Task ListRowsAsync()
         {
             // Arrange
-            var rowQuery = new SequenceRowQuery
+            var rowQuery = new SequenceRowQueryDto
             {
                 Limit = 10,
                 ExternalId = "sdk-test"
             };
-            
+
             // Act
             var res = await WriteClient.Sequences.ListRowsAsync(rowQuery);
 
