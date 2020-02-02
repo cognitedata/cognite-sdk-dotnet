@@ -10,7 +10,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points DTO.
     /// </summary>
-    public class DataPointsReadDto : Stringable
+    public class DataPointsReadDto<T> : Stringable
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -43,6 +43,5 @@ namespace CogniteSdk.DataPoints
         /// </summary>
         [JsonPropertyName("datapoints")]
         public IEnumerable<DataPointDto> DataPoints { get; set; }
-
     }
 }

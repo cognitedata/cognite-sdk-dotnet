@@ -89,11 +89,11 @@ module Handler =
                 return error.ToException () |> Oryx.ResponseError
             with
             | ex ->
-                let exn = ResponseException(response.ReasonPhrase, ex)
+                let exn = ResponseException (response.ReasonPhrase, ex)
                 exn.Code <- int response.StatusCode
                 return Oryx.ResponseError exn
         else
-            let exn = ResponseException(response.ReasonPhrase)
+            let exn = ResponseException response.ReasonPhrase
             exn.Code <- int response.StatusCode
             return Oryx.ResponseError exn
     }
@@ -124,7 +124,7 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -136,7 +136,7 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> addQuery parms
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -199,7 +199,7 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> setResponseType ResponseType.Protobuf
-        >=> setContent (new JsonPushStreamContent<'a>(content, jsonOptions))
+        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> protobuf parser
@@ -209,7 +209,7 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> setContent (new ProtobufPushStreamContent(content))
+        >=> getContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -222,9 +222,6 @@ module Handler =
                 match err.Code with
                 // Rate limiting
                 | 429 -> true
-                // and I would like to say never on other 4xx, but we give 401 when we can't authenticate because
-                // we lose connection to db, so 401 can be transient
-                | 401 -> true
                 // 500 is hard to say, but we should avoid having those in the api
                 | 500 ->
                     true // we get random and transient 500 responses often enough that it's worth retrying them.
@@ -233,7 +230,6 @@ module Handler =
                 | 503 -> true
                 // do not retry other responses.
                 | _ -> false
-            | Panic (Oryx.JsonDecodeException _) -> false
             | Panic err ->
                 match err with
                 | :? Net.Http.HttpRequestException

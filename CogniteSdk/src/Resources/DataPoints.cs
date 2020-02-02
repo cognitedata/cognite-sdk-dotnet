@@ -74,9 +74,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The latest query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of latest data points.</returns>
-        public async Task<IEnumerable<DataPointsReadDto>> LatestAsync(DataPointsLatestQueryDto query, CancellationToken token = default)
+        public async Task<IEnumerable<DataPointsReadDto<DataPointDto>>> LatestAsync(DataPointsLatestQueryDto query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsReadDto>>(query);
+            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsReadDto<DataPointDto>>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }

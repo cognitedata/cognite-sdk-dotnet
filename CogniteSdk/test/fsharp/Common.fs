@@ -7,7 +7,9 @@ open CogniteSdk
 
 module Common =
     let createClient apiKey project url =
-        let httpClient = new HttpClient();
+        let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))
+        let httpClient = new HttpClient(handler);
+
         Client.Builder.Create(httpClient)
             .SetAppId("TestApp")
             .AddHeader("api-key", apiKey)
@@ -26,6 +28,16 @@ module Common =
             (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
             "fusiondotnet-tests"
             "https://greenfield.cognitedata.com"
+
+    let noAuthClient =
+        let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))
+        let httpClient = new HttpClient(handler);
+
+        Client.Builder.Create(httpClient)
+            .SetAppId("TestApp")
+            .SetProject("publicdata")
+            .SetServiceUrl(Uri("https://api.cognitedata.com"))
+            .Build();
 
     let optionToSeq (o: 'a option): 'a seq =
         match o with

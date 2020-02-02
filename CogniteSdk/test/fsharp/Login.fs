@@ -5,6 +5,9 @@ open Swensen.Unquote
 open Xunit
 
 open Common
+open System.Net.Http
+open CogniteSdk
+open System
 
 [<Fact>]
 let ``Login status is Ok`` () = task {
@@ -15,4 +18,15 @@ let ``Login status is Ok`` () = task {
 
     // Assert
     test <@ status.Project = "publicdata" @>
+}
+
+[<Fact>]
+let ``Login status not authenticated gives not loggedIn`` () = task {
+    // Arrange
+
+    // Act
+    let! status = noAuthClient.Login.StatusAsync ()
+
+    // Assert
+    test <@ not status.LoggedIn @>
 }
