@@ -18,276 +18,182 @@ open Common
 [<Fact>]
 let ``List Sequences with limit is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let query = [ SequenceQuery.Limit 10 ]
+    let query =
+        SequenceQueryDto(
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res = Items.listAsync query [] ctx
+    let! res = writeClient.Sequences.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
+    let dtos = res.Items
+    let len = Seq.length dtos
 
     // Assert
     test <@ len > 0 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences/list" @>
 }
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``List Sequences with limit and filter is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let query = [ SequenceQuery.Limit 10 ]
-    let filter = [ SequenceFilter.Name "sdk-test-sequence" ]
+    let query =
+        SequenceQueryDto(
+            Limit = Nullable 10,
+            Filter = SequenceFilterDto(Name="sdk-test-sequence")
+        )
 
     // Act
-    let! res = Items.listAsync query filter ctx
+    let! res = writeClient.Sequences.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    // Act
+    let! res = writeClient.Sequences.ListAsync query
 
-    let dtos = ctx'.Response
-    let len = Seq.length dtos.Items
+    let dtos = res.Items
+    let len = Seq.length dtos
 
     // Assert
-    test <@ len > 0 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences/list" @>
-}
+    test <@ len > 0 @>}
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Get sequences by ids is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let sequencesIds =
-        [ 5702374195409554L ]
-        |> Seq.map Identity.Id
+    let sequencesIds = [ 5702374195409554L ]
 
     // Act
-    let! res = Sequences.Retrieve.getByIdsAsync sequencesIds ctx
+    let! dtos = writeClient.Sequences.RetrieveAsync sequencesIds
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     test <@ len = 1 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences/byids" @>
 }
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Get sequence rows by ids is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let sequencesId = 5702374195409554L |> Identity.Id
-    let expectedRows =
-        [
-            { RowNumber = 1L; Values = [ RowValue.String "row1"] }
-            { RowNumber = 2L; Values = [ RowValue.String "row2"] }
-        ] |> Seq.ofList
+    let sequencesId = 5702374195409554L
+    let query =
+        SequenceRowQueryDto(
+            Id = Nullable sequencesId
+        )
+
     // Act
-    let! res = Sequences.Rows.Items.listRowsAsync sequencesId [] ctx
+    let! dto = writeClient.Sequences.ListRowsAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dto = ctx'.Response
     let colLength = Seq.length dto.Columns
     let rowLength = Seq.length dto.Rows
+    let values =
+        dto.Rows
+        |> Seq.collect (fun x -> x.Values)
+        |> Seq.map (fun value ->
+            match value with
+            | :? MultiValue.String as value -> value.Value
+            | _ -> failwith "Expected string value"
+        )
+        |> List.ofSeq
 
     test <@ rowLength = 2 @>
     test <@ colLength = 1 @>
-    test <@ dto.Id = 5702374195409554L @>
-    test <@ dto.Rows = expectedRows @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences/data/list" @>
+    test <@ dto.Id = Nullable 5702374195409554L @>
+    test <@ Seq.length dto.Rows = 2 @>
+    test <@ values = ["row1"; "row2"] @>
 }
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Create and delete sequences is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
     let columnExternalIdString = Guid.NewGuid().ToString()
     let externalIdString = Guid.NewGuid().ToString()
     let name = Guid.NewGuid().ToString()
-    let column: ColumnWriteDto = {
-        Name = Some "Create column sdk test"
-        ExternalId = columnExternalIdString
-        Description = Some "dotnet sdk test"
-        ValueType = ValueType.Double
-        Metadata = Map.empty
-    }
-    let dto: Sequences.SequenceWriteDto = {
-        ExternalId = Some externalIdString
-        Name = Some name
-        Description = Some "dotnet sdk test"
-        Metadata = Map.empty
-        AssetId = None
-        Columns = [column]
-    }
-    let externalId = Identity.ExternalId externalIdString
+    let column =
+        SequenceColumnWriteDto(
+            Name = "Create column sdk test",
+            ExternalId = columnExternalIdString,
+            Description = "dotnet sdk test",
+            ValueType = SequenceValueType.DOUBLE
+        )
+    let dto =
+        SequenceWriteDto(
+            ExternalId = externalIdString,
+            Name = name,
+            Description = "dotnet sdk test",
+            Columns = [column]
+        )
+    let externalId = Identity externalIdString
 
     // Act
-    let! res = Sequences.Create.createAsync [ dto ] ctx
-    let! delRes = Sequences.Delete.deleteAsync [ externalId ] ctx
+    let! dtos = writeClient.Sequences.CreateAsync [ dto ]
+    let! delRes = writeClient.Sequences.DeleteAsync [ externalId ]
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let delCtx' =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
     let resExternalId =
-        match res with
-        | Ok ctx' ->
-            let sequencesResponses = ctx'.Response
-            let h = Seq.tryHead sequencesResponses
-            match h with
-            | Some sequenceResponse -> sequenceResponse.ExternalId
-            | None -> None
-        | Error _ -> None
+        let h = Seq.tryHead dtos
+        match h with
+        | Some sequenceResponse -> sequenceResponse.ExternalId
+        | None -> null
 
     // Assert
-    test <@ resExternalId = Some externalIdString @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
-
-    test <@ delCtx'.Request.Method = HttpMethod.Post @>
-    test <@ delCtx'.Request.Extra.["resource"] = "/sequences/delete" @>
-    test <@ delCtx'.Request.Query.IsEmpty @>
+    test <@ resExternalId = externalIdString @>
 }
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Create and delete sequences rows is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
     let columnExternalIdString = Guid.NewGuid().ToString()
     let externalIdString = Guid.NewGuid().ToString()
-    let externalId = Identity.ExternalId externalIdString
+    let externalId = externalIdString
     let name = Guid.NewGuid().ToString()
-    let column: ColumnWriteDto = {
-        Name = Some "Create column sdk test"
-        ExternalId = columnExternalIdString
-        Description = Some "dotnet sdk test"
-        ValueType = ValueType.String
-        MetaData = Map.empty
-    }
-    let dto: Sequences.SequenceWriteDto = {
-        ExternalId = Some externalIdString
-        Name = Some name
-        Description = Some "dotnet sdk test"
-        MetaData = Map.empty
-        AssetId = None
-        Columns = [column]
-    }
-    let deleteDto: Sequences.Rows.Delete.SequenceDataDelete = {
-        Rows = []
-        Id = externalId
-    }
+    let column =
+        SequenceColumnWriteDto(
+            Name = "Create column sdk test",
+            ExternalId = columnExternalIdString,
+            Description = "dotnet sdk test",
+            ValueType = SequenceValueType.STRING
+        )
+    let dto =
+        SequenceWriteDto(
+            ExternalId = externalIdString,
+            Name = name,
+            Description = "dotnet sdk test",
+            Columns = [column]
+        )
+    let deleteDto =
+        SequenceRowDeleteDto(
+            Rows = [],
+            ExternalId = externalId
+        )
 
-    let rows: RowDto seq =
+
+    let rows =
         [
-            { RowNumber = 1L; Values = [RowValue.String "row1"] }
-            { RowNumber = 2L; Values = [RowValue.String "row2"] }
+            SequenceRowDto(RowNumber = 1L, Values = [MultiValue.Create "row1"])
+            SequenceRowDto(RowNumber = 2L, Values = [MultiValue.Create "row2"])
         ] |> Seq.ofList
-    let rowDto: Rows.Insert.SequenceDataWriteDto = {
-        Columns = ["sdk-column"]
-        Rows = rows
-        Id = Identity.Id 5702374195409554L
-    }
-    let externalId = Identity.ExternalId externalIdString
+
+    let rowDto =
+        SequenceDataWriteDto(
+            Columns = ["sdk-column"],
+            Rows = rows,
+            Id = Nullable 5702374195409554L
+        )
 
     // Act
-    let! res = Sequences.Create.createAsync [ dto ] ctx
-    let! rowRes = Sequences.Rows.Insert.insertRowsAsync [ rowDto ] ctx
-    let! rowDelRes = Sequences.Rows.Delete.deleteRowsAsync [ deleteDto ] ctx
-    let! delRes = Sequences.Delete.deleteAsync [ externalId ] ctx
+    let! res = writeClient.Sequences.CreateAsync [ dto ]
+    let! rowRes = writeClient.Sequences.CreateRowsAsync [ rowDto ]
+    let! rowDelRes = writeClient.Sequences.DeleteRowsAsync [ deleteDto ]
+    let! delRes = writeClient.Sequences.DeleteAsync [ externalId ]
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let delCtx' =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let rowCtx' =
-        match rowRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let rowDelCtx' =
-        match rowDelRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let resExternalId =
-        match res with
-        | Ok ctx' ->
-            let sequencesResponses = ctx'.Response
-            let h = Seq.tryHead sequencesResponses
-            match h with
-            | Some sequenceResponse -> sequenceResponse.ExternalId
-            | None -> None
-        | Error _ -> None
+    let resExternalId = (Seq.head res).ExternalId
 
     // Assert
-    test <@ resExternalId = Some externalIdString @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
-
-    test <@ delCtx'.Request.Method = HttpMethod.Post @>
-    test <@ delCtx'.Request.Extra.["resource"] = "/sequences/delete" @>
-    test <@ delCtx'.Request.Query.IsEmpty @>
-
-    test <@ resExternalId = Some externalIdString @>
-    test <@ rowCtx'.Request.Method = HttpMethod.Post @>
-    test <@ rowCtx'.Request.Extra.["resource"] = "/sequences/data" @>
-    test <@ rowCtx'.Request.Query.IsEmpty @>
-
-    test <@ rowDelCtx'.Request.Method = HttpMethod.Post @>
-    test <@ rowDelCtx'.Request.Extra.["resource"] = "/sequences/data/delete" @>
-    test <@ rowDelCtx'.Request.Query.IsEmpty @>
+    test <@ resExternalId = externalIdString @>
 }
+(*
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
@@ -494,3 +400,4 @@ let ``Update sequences is Ok`` () = task {
     test <@ delCtx.Request.Extra.["resource"] = "/sequences/delete" @>
     test <@ delCtx.Request.Query.IsEmpty @>
 }
+*)
