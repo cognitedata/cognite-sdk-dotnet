@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Sequences
 {
@@ -34,5 +35,8 @@ namespace CogniteSdk.Sequences
         /// Cursor to get the next page of results (if available).
         /// </summary>
         public string NextCursor { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceDataReadDto>(this);
     }
 }

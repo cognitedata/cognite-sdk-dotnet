@@ -10,7 +10,6 @@ using Com.Cognite.V1.Timeseries.Proto;
 using static Oryx.Cognite.HandlerModule;
 
 using CogniteSdk.DataPoints;
-using CogniteSdk.TimeSeries;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 

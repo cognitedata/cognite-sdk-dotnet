@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
@@ -49,6 +50,9 @@ namespace CogniteSdk.Assets
         /// External Id of parent asset provided by client. Must be unique within the project.
         /// </summary>
         public string ParentExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetWriteDto>(this);
     }
 }
 

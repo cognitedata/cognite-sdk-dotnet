@@ -1,6 +1,8 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Files
 {
     /// <summary>
@@ -12,5 +14,8 @@ namespace CogniteSdk.Files
         /// Prefix and fuzzy search on name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileSearchDto>(this);
     }
 }

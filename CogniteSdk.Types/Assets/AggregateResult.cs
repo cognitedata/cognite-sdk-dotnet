@@ -1,6 +1,8 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Assets
 {
     /// <summary>
@@ -12,5 +14,8 @@ namespace CogniteSdk.Assets
         /// Number of direct descendants for the asset.
         /// </summary>
         public int ChildCount { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AggregateResult>(this);
     }
 }

@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Assets
@@ -71,5 +72,8 @@ namespace CogniteSdk.Assets
         /// Filter by this (case-sensitive) prefix for the external ID.
         /// </summary>
         public string ExternalIdPrefix { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetFilterDto>(this);
     }
 }

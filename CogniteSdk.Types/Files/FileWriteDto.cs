@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
@@ -53,6 +54,9 @@ namespace CogniteSdk.Files
         /// Unix timestamp in milliseconds of when the source was last modified.
         /// </summary>
         public long? SourceModifiedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileWriteDto>(this);
     }
 }
 

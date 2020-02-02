@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -41,6 +42,9 @@ namespace CogniteSdk.DataPoints
         /// The list of datapoints.
         /// </summary>
         [JsonPropertyName("datapoints")]
-        public IEnumerable<T> DataPoints { get; set; }
+        public IEnumerable<DataPointDto> DataPoints { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsReadDto<T>>(this);
     }
 }

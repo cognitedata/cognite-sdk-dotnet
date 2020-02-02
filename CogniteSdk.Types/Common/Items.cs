@@ -1,9 +1,8 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CogniteSdk
 {
@@ -18,15 +17,10 @@ namespace CogniteSdk
         /// </summary>
         public IEnumerable<T> Items { get; set; }
 
-        /// <summary>
-        /// Returns a user friendly string for printing.
-        /// </summary>
-        /// <returns>String representation of the items.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
-            var props = Items.Select(item => item.ToString()).ToList();
-
-            return String.Join("/n", props);
+            return Stringable.ToString<ItemsWithoutCursor<T>>(this);
         }
     }
 
@@ -46,15 +40,10 @@ namespace CogniteSdk
         /// </summary>
         public string NextCursor { get; set; }
 
-        /// <summary>
-        /// Returns a user friendly string for printing.
-        /// </summary>
-        /// <returns>String representation of the items.</returns>
+        /// <inheritdoc />
         public override string ToString()
         {
-            var props = Items.Select(item => item.ToString()).ToList();
-
-            return string.Join("/n", props);
+            return Stringable.ToString<ItemsWithCursor<T>>(this);
         }
     }
 }

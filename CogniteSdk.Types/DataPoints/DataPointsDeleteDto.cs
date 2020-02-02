@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
@@ -29,6 +31,9 @@ namespace CogniteSdk.DataPoints
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<IdentityWithRange>(this);
     }
 
     /// <summary>

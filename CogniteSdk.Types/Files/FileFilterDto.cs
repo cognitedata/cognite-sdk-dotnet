@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Files
@@ -85,5 +86,8 @@ namespace CogniteSdk.Files
         /// </summary>
         /// <value></value>
         public bool? Uploaded { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileFilterDto>(this);
     }
 }

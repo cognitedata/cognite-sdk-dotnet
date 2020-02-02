@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.TimeSeries
@@ -73,5 +74,8 @@ namespace CogniteSdk.TimeSeries
         /// leap seconds.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesReadDto>(this);
     }
 }

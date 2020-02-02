@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Events
@@ -60,5 +61,8 @@ namespace CogniteSdk.Events
         /// The source of this event.
         /// </summary>
         public string Source { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventWriteDto>(this);
     }
 }

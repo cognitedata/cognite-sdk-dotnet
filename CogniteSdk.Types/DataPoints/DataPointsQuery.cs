@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.DataPoints
@@ -50,6 +51,9 @@ namespace CogniteSdk.DataPoints
         /// option is useful for interpolating data. It is not available for aggregates.
         /// </summary>
         public bool? IncludeOutsidePoints { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsQueryType>(this);
     }
 
     /// <summary>
@@ -66,6 +70,9 @@ namespace CogniteSdk.DataPoints
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsQueryItem>(this);
     }
 
     /// <summary>
@@ -82,5 +89,8 @@ namespace CogniteSdk.DataPoints
         /// If true, then ignore IDs and external IDs that are not found.
         /// </summary>
         public bool? IgnoreUnknownIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsQuery>(this);
     }
 }

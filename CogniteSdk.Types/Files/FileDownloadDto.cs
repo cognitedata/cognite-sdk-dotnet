@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System;
 
 namespace CogniteSdk.Files
@@ -24,5 +25,8 @@ namespace CogniteSdk.Files
         /// Url from which file can be downloaded.
         /// </summary>
         public Uri DownloadUrl { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileDownloadDto>(this);
     }
 }

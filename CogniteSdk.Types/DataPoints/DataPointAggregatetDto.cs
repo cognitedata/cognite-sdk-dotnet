@@ -1,12 +1,14 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
     /// The aggregate data point DTO.
     /// </summary>
-    public class DataPointAggregateDto 
+    public class DataPointAggregateDto
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -63,5 +65,8 @@ namespace CogniteSdk.DataPoints
         /// The total variation of the interpolated underlying function.
         /// </summary>
         public double TotalVariation { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointAggregateDto>(this);
     }
 }

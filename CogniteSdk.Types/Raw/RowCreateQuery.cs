@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CogniteSdk.Types.Common;
+using System.Collections.Generic;
 
 namespace CogniteSdk.Raw
 {
@@ -17,5 +18,8 @@ namespace CogniteSdk.Raw
         {
             return new List<(string, string)> { ("ensureParent", EnsureParent ? "true" : "false") };
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowCreateQuery>(this);
     }
 }

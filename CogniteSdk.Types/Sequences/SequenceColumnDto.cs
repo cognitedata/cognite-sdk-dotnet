@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
@@ -43,5 +44,8 @@ namespace CogniteSdk.Sequences
         /// The last time this column was updated in CDF, in milliseconds since Jan 1, 1970.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceColumnDto>(this);
     }
 }

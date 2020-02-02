@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Events
 {
     /// <summary>
@@ -13,6 +15,9 @@ namespace CogniteSdk.Events
         /// </summary>
         /// <value></value>
         public string Description { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DescriptionSearchDto>(this);
     }
 
     /// <summary>

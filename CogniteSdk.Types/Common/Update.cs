@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk
@@ -30,6 +31,12 @@ namespace CogniteSdk
         /// Contains the value to set.
         /// </summary>
         public T Set { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SetUpdate<T>>(this);
+        }
     }
 
     /// <summary>
@@ -54,6 +61,12 @@ namespace CogniteSdk
             {
                 SetNull = true;
             }
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<Update<T>>(this);
         }
     }
 
@@ -98,6 +111,12 @@ namespace CogniteSdk
             Add = addKeyValues;
             Remove = removeKeys;
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<CollectionUpdate<TCollection, TRemove>>(this);
+        }
     }
 
     /// <summary>
@@ -124,6 +143,12 @@ namespace CogniteSdk
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
         public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<DictUpdate<T>>(this);
+        }
     }
 
     /// <summary>
@@ -144,5 +169,11 @@ namespace CogniteSdk
         /// <param name="add">Values to add to the sequence.</param>
         /// <param name="remove">Values to remove from the sequence.</param>
         public SequenceUpdate(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SequenceUpdate<T>>(this);
+        }
     }
 }

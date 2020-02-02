@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Assets
 {
@@ -42,6 +42,9 @@ namespace CogniteSdk.Assets
         /// Change the external ID of the object.
         /// </summary>
         public SetUpdate<long?> ParentExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetUpdateDto>(this);
     }
 
     /// <summary>

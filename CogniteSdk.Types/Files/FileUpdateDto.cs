@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-using System;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Files
 {
@@ -46,6 +46,9 @@ namespace CogniteSdk.Files
         /// Set a new value for the end time, or remove the value.
         /// </summary>
         public Update<long?> SourceModifiedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileUpdateDto>(this);
     }
 
     /// <summary>
