@@ -37,6 +37,6 @@ namespace CogniteSdk.Sequences
         public string ExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceRowQuery>(this);
+        public override string ToString() => Stringable.ToString<SequenceRowQueryDto>(this);
     }
 }
