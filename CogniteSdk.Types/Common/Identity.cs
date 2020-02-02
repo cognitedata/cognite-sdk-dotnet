@@ -81,5 +81,19 @@ namespace CogniteSdk {
         {
             return new Identity(internalId);
         }
+
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            if (Id.HasValue)
+            {
+                return $"{{ Id = {Id} }}";
+            }
+            else
+            {
+                return $"{{ ExternalId = {ExternalId} }}";
+            }
+        }
     }
 }

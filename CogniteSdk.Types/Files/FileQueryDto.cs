@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Files
 {
     /// <summary>
@@ -12,5 +14,8 @@ namespace CogniteSdk.Files
         /// File filter.
         /// </summary>
         public FileFilterDto Filter { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileQueryDto>(this);
     }
 }

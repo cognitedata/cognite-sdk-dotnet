@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk
 {
     /// <summary>
@@ -19,5 +21,11 @@ namespace CogniteSdk
         /// leap seconds.
         /// </summary>
         public long Min { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<TimeRange>(this);
+        }
     }
 }

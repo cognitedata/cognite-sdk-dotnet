@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Events
@@ -25,7 +26,6 @@ namespace CogniteSdk.Events
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
         public Dictionary<string, string> Metadata { get; set; }
-
 
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.
@@ -82,5 +82,8 @@ namespace CogniteSdk.Events
         /// Filter by this (case-sensitive) prefix for the external ID.
         /// </summary>
         public string ExternalIdPrefix { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventFilterDto>(this);
     }
 }

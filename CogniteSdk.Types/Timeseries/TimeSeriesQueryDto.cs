@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.TimeSeries
 {
     /// <summary>
@@ -18,5 +20,8 @@ namespace CogniteSdk.TimeSeries
         /// receive all the data. Example: 1/10.
         /// </summary>
         public string Partition { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesQueryDto>(this);
     }
 }

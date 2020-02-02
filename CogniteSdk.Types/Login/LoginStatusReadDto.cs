@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Login
 {
     /// <summary>
@@ -33,6 +35,9 @@ namespace CogniteSdk.Login
         /// authentication.
         /// </summary>
         public long? ApiKeyId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<LoginStatusReadDto>(this);
     }
 }
 

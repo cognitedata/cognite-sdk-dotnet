@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
@@ -52,6 +54,9 @@ namespace CogniteSdk.DataPoints
         {
             return new IdentityWithBefore(internalId, null);
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<IdentityWithBefore>(this);
     }
 
     /// <summary>
@@ -63,5 +68,8 @@ namespace CogniteSdk.DataPoints
         /// If true, then ignore IDs and external IDs that are not found.
         /// </summary>
         public bool? IgnoreUnknownIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsLatestQueryDto>(this);
     }
 }

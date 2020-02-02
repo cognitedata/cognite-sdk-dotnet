@@ -1,12 +1,14 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Sequences
 {
     /// <summary>
     /// The Sequence row query base type. Either SequenceRowQueryByIdDto or SequenceRowQueryByExternalIdDto.
     /// </summary>
-    public class SequenceRowQuery : CursorQueryBase 
+    public class SequenceRowQuery : CursorQueryBase
     {
         /// <summary>
         /// Lowest row number included.
@@ -28,10 +30,13 @@ namespace CogniteSdk.Sequences
         /// A server-generated ID for the object.
         /// </summary>
         public long? Id { get; set; }
-    
+
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceRowQuery>(this);
     }
 }

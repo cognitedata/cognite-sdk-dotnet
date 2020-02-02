@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.TimeSeries
@@ -66,5 +67,8 @@ namespace CogniteSdk.TimeSeries
         /// The required security categories to access this time series.
         /// </summary>
         public IEnumerable<long> SecurityCategories { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesWriteDto>(this);
     }
 }

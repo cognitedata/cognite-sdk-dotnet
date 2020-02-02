@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
@@ -26,5 +26,11 @@ namespace CogniteSdk
         /// Fulltext search for items.
         /// </summary>
         public TSearch Search { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SearchQueryDto<TFilter, TSearch>>(this);
+        }
     }
 }

@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.TimeSeries
 {
@@ -43,6 +42,9 @@ namespace CogniteSdk.TimeSeries
         /// Change that will be applied to the array.
         /// </summary>
         public SequenceUpdate<long?> SecurityCategories { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesUpdateDto>(this);
     }
 
     /// <summary>

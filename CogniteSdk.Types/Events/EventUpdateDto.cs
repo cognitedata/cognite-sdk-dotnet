@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using CogniteSdk;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Events
 {
@@ -58,6 +57,9 @@ namespace CogniteSdk.Events
         /// Set a new value for the string, or remove the value.
         /// </summary>
         public Update<string> SubType { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventUpdateDto>(this);
     }
 
     /// <summary>

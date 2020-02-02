@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Sequences
@@ -39,5 +40,8 @@ namespace CogniteSdk.Sequences
         /// List of column definitions.
         /// </summary>
         public IEnumerable<SequenceColumnWriteDto> Columns { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceWriteDto>(this);
     }
 }

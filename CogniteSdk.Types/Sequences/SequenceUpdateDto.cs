@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 
 namespace CogniteSdk.Sequences
@@ -33,5 +33,11 @@ namespace CogniteSdk.Sequences
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
         public DictUpdate<string> Metadata { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SequenceUpdateDto>(this);
+        }
     }
 }

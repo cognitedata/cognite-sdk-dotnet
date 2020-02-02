@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.DataPoints
 {
     /// <summary>
@@ -17,5 +19,8 @@ namespace CogniteSdk.DataPoints
         /// The data value.
         /// </summary>
         public MultiValue Value { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointDto>(this);
     }
 }

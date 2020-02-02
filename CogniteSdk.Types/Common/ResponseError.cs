@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
+using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
 namespace CogniteSdk
@@ -31,6 +31,12 @@ namespace CogniteSdk
         /// The duplicated entries if any.
         /// </summary>
         public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<ResponseErrorDto>(this);
+        }
     }
 
     /// <summary>
@@ -62,6 +68,12 @@ namespace CogniteSdk
             };
 
             return exn;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<ApiResponseErrorDto>(this);
         }
     }
 }

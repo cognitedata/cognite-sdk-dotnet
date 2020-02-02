@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Sequences
 {
@@ -22,5 +22,8 @@ namespace CogniteSdk.Sequences
         /// The value type of the column. Enum STRING, DOUBLE, LONG
         /// </summary>
         public SequenceValueType ValueType { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceColumnInfoDto>(this);
     }
 }

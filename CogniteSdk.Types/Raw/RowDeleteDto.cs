@@ -1,8 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
-using System.Text.Json;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Raw
 {
@@ -15,5 +14,8 @@ namespace CogniteSdk.Raw
         /// Row key. Unique in table.
         /// </summary>
         public string Key { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowDeleteDto>(this);
     }
 }

@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Raw
 {
@@ -14,5 +14,8 @@ namespace CogniteSdk.Raw
         /// Name of the table. Unique in database.
         /// </summary>
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TableDto>(this);
     }
 }

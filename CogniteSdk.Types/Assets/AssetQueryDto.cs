@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Assets
 {
@@ -25,5 +26,8 @@ namespace CogniteSdk.Assets
         /// receive all the data. Example: 1/10.
         /// </summary>
         public string Partition { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetQueryDto>(this);
     }
 }
