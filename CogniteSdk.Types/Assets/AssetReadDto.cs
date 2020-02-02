@@ -9,7 +9,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// The Asset read DTO.
     /// </summary>
-    public class AssetReadDto : Stringable
+    public class AssetReadDto
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -91,6 +91,9 @@ namespace CogniteSdk.Assets
         {
             return 2108858624 + Id.GetHashCode();
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetReadDto>(this);
     }
 }
 

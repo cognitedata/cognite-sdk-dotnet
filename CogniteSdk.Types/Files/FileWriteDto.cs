@@ -10,7 +10,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File write response resource.
     /// </summary>
-    public class FileWriteDto : Stringable
+    public class FileWriteDto
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -54,6 +54,9 @@ namespace CogniteSdk.Files
         /// Unix timestamp in milliseconds of when the source was last modified.
         /// </summary>
         public long? SourceModifiedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileWriteDto>(this);
     }
 }
 

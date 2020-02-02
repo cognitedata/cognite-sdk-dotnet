@@ -8,11 +8,14 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// Raw table object.
     /// </summary>
-    public class TableDto : Stringable
+    public class TableDto
     {
         /// <summary>
         /// Name of the table. Unique in database.
         /// </summary>
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TableDto>(this);
     }
 }

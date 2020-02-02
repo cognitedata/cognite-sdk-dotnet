@@ -9,7 +9,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// TimeSeries read dto.
     /// </summary>
-    public class TimeSeriesReadDto : Stringable
+    public class TimeSeriesReadDto
     {
         /// <summary>
         /// Server-generated ID for the object
@@ -74,5 +74,8 @@ namespace CogniteSdk.TimeSeries
         /// leap seconds.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesReadDto>(this);
     }
 }

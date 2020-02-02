@@ -9,7 +9,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points write type
     /// </summary>
-    public class DataPointsWriteDto : Stringable
+    public class DataPointsWriteDto
     {
         /// <summary>
         /// The list of data points. The limit per request is 100000 data points.
@@ -25,5 +25,8 @@ namespace CogniteSdk.DataPoints
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public Identity ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsWriteDto>(this);
     }
 }

@@ -9,7 +9,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// The File query DTO.
     /// </summary>
-    public class FileFilterDto : Stringable
+    public class FileFilterDto
     {
         /// <summary>
         /// Name of the file.
@@ -86,5 +86,8 @@ namespace CogniteSdk.Files
         /// </summary>
         /// <value></value>
         public bool? Uploaded { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileFilterDto>(this);
     }
 }

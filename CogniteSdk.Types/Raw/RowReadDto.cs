@@ -10,7 +10,7 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// The row read DTO.
     /// </summary>
-    public class RowReadDto : Stringable
+    public class RowReadDto 
     {
         /// <summary>
         /// Row key. Unique in table.
@@ -26,5 +26,8 @@ namespace CogniteSdk.Raw
         /// Unix timestamp in milliseconds of when the row was last updated.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowReadDto>(this);
     }
 }

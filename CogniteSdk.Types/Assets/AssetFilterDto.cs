@@ -9,7 +9,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// The asset filter DTO.
     /// </summary>
-    public class AssetFilterDto : Stringable
+    public class AssetFilterDto
     {
         /// <summary>
         /// The name of the asset.
@@ -72,5 +72,8 @@ namespace CogniteSdk.Assets
         /// Filter by this (case-sensitive) prefix for the external ID.
         /// </summary>
         public string ExternalIdPrefix { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetFilterDto>(this);
     }
 }

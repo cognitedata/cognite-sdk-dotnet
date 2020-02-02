@@ -8,7 +8,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// The data point DTO for each individual data point.
     /// </summary>
-    public class DataPointDto : Stringable
+    public class DataPointDto
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -19,5 +19,8 @@ namespace CogniteSdk.DataPoints
         /// The data value.
         /// </summary>
         public MultiValue Value { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointDto>(this);
     }
 }

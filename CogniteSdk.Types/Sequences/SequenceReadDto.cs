@@ -10,7 +10,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// Sequence DTO for reading.
     /// </summary>
-    public class SequenceReadDto : Stringable
+    public class SequenceReadDto
     {
         /// <summary>
         /// The Id of the sequence
@@ -57,5 +57,11 @@ namespace CogniteSdk.Sequences
         /// The last time this sequence was updated in CDF, in milliseconds since Jan 1, 1970.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SequenceReadDto>(this);
+        }
     }
 }

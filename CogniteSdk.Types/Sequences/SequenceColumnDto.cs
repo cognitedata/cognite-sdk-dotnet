@@ -9,7 +9,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence column DTO.
     /// </summary>
-    public class SequenceColumnDto : Stringable
+    public class SequenceColumnDto
     {
         /// <summary>
         /// The name of the column.
@@ -44,5 +44,8 @@ namespace CogniteSdk.Sequences
         /// The last time this column was updated in CDF, in milliseconds since Jan 1, 1970.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceColumnDto>(this);
     }
 }

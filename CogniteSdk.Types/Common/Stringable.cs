@@ -10,21 +10,21 @@ namespace CogniteSdk.Types.Common
 	/// <summary>
 	/// Class implementing ToString() for generic dto class.
 	/// </summary>
-	public abstract class Stringable
+	public static class Stringable
 	{
-
 		/// <summary>Returns a string that represents the current object.</summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString()
+		public static string ToString<T>(T dto)
 		{
-			var className = this.GetType().Name;
+			var type = dto.GetType();
+			var className = type.Name;
 			var props = new List<string>();
 			var s = new StringBuilder(className);
 			s.Append("\n{\n");
-			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(this))
+			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(dto))
 			{
 				var name = descriptor.Name;
-				object value = descriptor.GetValue(this);
+				object value = descriptor.GetValue(type);
 				var t = value.GetType();
 				value ??= "null";
 				IEnumerable values = value as IEnumerable;

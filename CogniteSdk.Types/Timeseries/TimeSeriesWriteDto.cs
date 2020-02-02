@@ -9,7 +9,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// Timeseries write dto.
     /// </summary>
-    public class TimeSeriesWriteDto : Stringable
+    public class TimeSeriesWriteDto
     {
         /// <summary>
         /// Externally provided ID for the time series (optional, but recommended.)
@@ -67,5 +67,8 @@ namespace CogniteSdk.TimeSeries
         /// The required security categories to access this time series.
         /// </summary>
         public IEnumerable<long> SecurityCategories { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesWriteDto>(this);
     }
 }

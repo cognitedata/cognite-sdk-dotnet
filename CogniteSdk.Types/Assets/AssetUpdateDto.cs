@@ -5,7 +5,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// The Asset update DTO.
     /// </summary>
-    public class AssetUpdateDto : Stringable
+    public class AssetUpdateDto
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.
@@ -42,6 +42,9 @@ namespace CogniteSdk.Assets
         /// Change the external ID of the object.
         /// </summary>
         public SetUpdate<long?> ParentExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetUpdateDto>(this);
     }
 
     /// <summary>

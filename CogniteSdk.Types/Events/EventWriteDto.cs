@@ -9,7 +9,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The event write DTO.
     /// </summary>
-    public class EventWriteDto : Stringable
+    public class EventWriteDto
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -61,5 +61,8 @@ namespace CogniteSdk.Events
         /// The source of this event.
         /// </summary>
         public string Source { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventWriteDto>(this);
     }
 }

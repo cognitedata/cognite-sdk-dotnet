@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Sequences
 {
@@ -20,5 +21,8 @@ namespace CogniteSdk.Sequences
         /// missing values. String values must be no longer than 256 characters).
         /// </summary>
         public IEnumerable<MultiValue> Values { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceRowDto>(this);
     }
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Events
 {
@@ -28,5 +29,8 @@ namespace CogniteSdk.Events
         /// receive all the data. Example: 1/10.
         /// </summary>
         public string Partition { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventQueryDto>(this);
     }
 }

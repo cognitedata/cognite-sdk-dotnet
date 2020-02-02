@@ -9,7 +9,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File download response with Url.
     /// </summary>
-    public class FileDownloadDto : Stringable
+    public class FileDownloadDto
     {
         /// <summary>
         /// Id of the file object.
@@ -25,5 +25,8 @@ namespace CogniteSdk.Files
         /// Url from which file can be downloaded.
         /// </summary>
         public Uri DownloadUrl { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileDownloadDto>(this);
     }
 }

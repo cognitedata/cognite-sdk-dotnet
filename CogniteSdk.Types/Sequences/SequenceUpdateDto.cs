@@ -6,7 +6,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The sequence update DTO.
     /// </summary>
-    public class SequenceUpdateDto : Stringable
+    public class SequenceUpdateDto
     {
         /// <summary>
         /// Set a new value for the Name, or remove the value.
@@ -33,5 +33,11 @@ namespace CogniteSdk.Sequences
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
         public DictUpdate<string> Metadata { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SequenceUpdateDto>(this);
+        }
     }
 }

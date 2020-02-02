@@ -8,7 +8,7 @@ namespace CogniteSdk
     /// <summary>
     /// Search query DTO. Shared between the various resource search functions.
     /// </summary>
-    public class SearchDto : Stringable
+    public class SearchDto
     {
         /// <summary>
         /// Prefix and fuzzy search on name.
@@ -28,5 +28,11 @@ namespace CogniteSdk
         /// searched may be extended.
         /// </summary>
         public string Query { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SearchDto>(this);
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace CogniteSdk
     /// Update item for a given property.
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
-    public class UpdateItem<TUpdate> : Stringable
+    public class UpdateItem<TUpdate>
     {
         /// <summary>
         /// The update object.
@@ -25,5 +25,11 @@ namespace CogniteSdk
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<UpdateItem<TUpdate>>(this);
+        }
     }
 }

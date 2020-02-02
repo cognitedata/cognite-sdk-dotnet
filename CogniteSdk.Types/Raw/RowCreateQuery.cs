@@ -6,7 +6,7 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// Query parameter when creating a raw table.
     /// </summary>
-    public class RowCreateQuery : Stringable, IQueryParams
+    public class RowCreateQuery : IQueryParams
     {
         /// <summary>
         /// Create database/table if it doesn't exist already.
@@ -18,5 +18,8 @@ namespace CogniteSdk.Raw
         {
             return new List<(string, string)> { ("ensureParent", EnsureParent ? "true" : "false") };
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowCreateQuery>(this);
     }
 }

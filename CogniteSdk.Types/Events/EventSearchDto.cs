@@ -8,13 +8,16 @@ namespace CogniteSdk.Events
     /// <summary>
     /// Dto for description search
     /// </summary>
-    public class DescriptionSearchDto : Stringable
+    public class DescriptionSearchDto
     {
         /// <summary>
         /// Search on Description.
         /// </summary>
         /// <value></value>
         public string Description { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DescriptionSearchDto>(this);
     }
 
     /// <summary>

@@ -1,6 +1,8 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Assets
 {
     /// <summary>
@@ -17,5 +19,8 @@ namespace CogniteSdk.Assets
         /// Ignore IDs and external IDs that are not found. Default: false
         /// </summary>
         public bool? IgnoreUnknownIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetDeleteDto>(this);
     }
 }

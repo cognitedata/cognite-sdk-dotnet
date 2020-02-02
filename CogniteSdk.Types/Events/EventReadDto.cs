@@ -9,7 +9,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The Event read DTO.
     /// </summary>
-    public class EventReadDto : Stringable
+    public class EventReadDto
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -94,6 +94,9 @@ namespace CogniteSdk.Events
         {
             return 2108858624 + Id.GetHashCode();
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventReadDto>(this);
     }
 }
 

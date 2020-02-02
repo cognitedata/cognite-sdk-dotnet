@@ -10,7 +10,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File read response resource.
     /// </summary>
-    public class FileReadDto : Stringable
+    public class FileReadDto
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -79,6 +79,9 @@ namespace CogniteSdk.Files
         /// Unix timestamp in milliseconds of when the file was last updated.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileReadDto>(this);
     }
 }
 

@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// </summary>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <typeparam name="TSearch">Search type</typeparam>
-    public class SearchQueryDto<TFilter, TSearch> : Stringable
+    public class SearchQueryDto<TFilter, TSearch>
     {
         /// <summary>
         /// Filter on items with strict matching.
@@ -26,5 +26,11 @@ namespace CogniteSdk
         /// Fulltext search for items.
         /// </summary>
         public TSearch Search { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<SearchQueryDto<TFilter, TSearch>>(this);
+        }
     }
 }

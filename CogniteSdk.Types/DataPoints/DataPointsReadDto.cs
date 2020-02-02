@@ -10,7 +10,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Data Points DTO.
     /// </summary>
-    public class DataPointsReadDto<T> : Stringable
+    public class DataPointsReadDto<T>
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -43,5 +43,8 @@ namespace CogniteSdk.DataPoints
         /// </summary>
         [JsonPropertyName("datapoints")]
         public IEnumerable<DataPointDto> DataPoints { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<DataPointsReadDto<T>>(this);
     }
 }

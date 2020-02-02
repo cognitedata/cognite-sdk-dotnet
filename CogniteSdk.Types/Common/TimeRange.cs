@@ -8,7 +8,7 @@ namespace CogniteSdk
     /// <summary>
     /// Range between two timestamps.
     /// </summary>
-    public class TimeRange : Stringable
+    public class TimeRange
     {
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
@@ -21,5 +21,11 @@ namespace CogniteSdk
         /// leap seconds.
         /// </summary>
         public long Min { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<TimeRange>(this);
+        }
     }
 }

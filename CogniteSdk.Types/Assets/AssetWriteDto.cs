@@ -9,7 +9,7 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// Dto for creating a new asset.
     /// </summary>
-    public class AssetWriteDto : Stringable
+    public class AssetWriteDto
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -50,6 +50,9 @@ namespace CogniteSdk.Assets
         /// External Id of parent asset provided by client. Must be unique within the project.
         /// </summary>
         public string ParentExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<AssetWriteDto>(this);
     }
 }
 

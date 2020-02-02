@@ -8,11 +8,14 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File search query DTO.
     /// </summary>
-    public class FileSearchDto : Stringable
+    public class FileSearchDto
     {
         /// <summary>
         /// Prefix and fuzzy search on name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileSearchDto>(this);
     }
 }

@@ -8,11 +8,14 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// Dto with keys of rows to delete in table.
     /// </summary>
-    public class RowDeleteDto : Stringable
+    public class RowDeleteDto
     {
         /// <summary>
         /// Row key. Unique in table.
         /// </summary>
         public string Key { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowDeleteDto>(this);
     }
 }

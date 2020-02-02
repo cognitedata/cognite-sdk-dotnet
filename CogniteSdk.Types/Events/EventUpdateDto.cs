@@ -5,7 +5,7 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The event update DTO.
     /// </summary>
-    public class EventUpdateDto : Stringable
+    public class EventUpdateDto
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.
@@ -57,6 +57,9 @@ namespace CogniteSdk.Events
         /// Set a new value for the string, or remove the value.
         /// </summary>
         public Update<string> SubType { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<EventUpdateDto>(this);
     }
 
     /// <summary>

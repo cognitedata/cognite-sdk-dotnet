@@ -9,7 +9,7 @@ namespace CogniteSdk
     /// <summary>
     /// A base class for queries with cursor and limits.
     /// </summary>
-    public abstract class CursorQueryBase : Stringable, IQueryParams
+    public abstract class CursorQueryBase : IQueryParams
     {
         /// <summary>
         /// Limits the number of results to return.
@@ -21,6 +21,11 @@ namespace CogniteSdk
         /// </summary>
         public string Cursor { get; set; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<CursorQueryBase>(this);
+        }
 
         /// <inheritdoc/>
         public List<(string, string)> ToQueryParams()

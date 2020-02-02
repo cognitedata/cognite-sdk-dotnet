@@ -8,7 +8,7 @@ namespace CogniteSdk.DataPoints
     /// <summary>
     /// Identity class with time range.
     /// </summary>
-    public class IdentityWithRange : Stringable
+    public class IdentityWithRange
     {
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
@@ -31,6 +31,9 @@ namespace CogniteSdk.DataPoints
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<IdentityWithRange>(this);
     }
 
     /// <summary>

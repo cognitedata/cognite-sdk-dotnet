@@ -9,7 +9,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// The file update DTO.
     /// </summary>
-    public class FileUpdateDto : Stringable
+    public class FileUpdateDto
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.
@@ -46,6 +46,9 @@ namespace CogniteSdk.Files
         /// Set a new value for the end time, or remove the value.
         /// </summary>
         public Update<long?> SourceModifiedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<FileUpdateDto>(this);
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
     /// convert it directly to a ResponseException.
     /// </summary>
-    public class ResponseErrorDto : Stringable
+    public class ResponseErrorDto
     {
         /// <summary>
         ///  The API error code (HTTP error code)
@@ -31,13 +31,19 @@ namespace CogniteSdk
         /// The duplicated entries if any.
         /// </summary>
         public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<ResponseErrorDto>(this);
+        }
     }
 
     /// <summary>
     /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
     /// convert it directly to a ResponseException.
     /// </summary>
-    public class ApiResponseErrorDto : Stringable
+    public class ApiResponseErrorDto
     {
         /// <summary>
         /// Response error object.
@@ -62,6 +68,12 @@ namespace CogniteSdk
             };
 
             return exn;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Stringable.ToString<ApiResponseErrorDto>(this);
         }
     }
 }

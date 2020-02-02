@@ -9,7 +9,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence column DTO.
     /// </summary>
-    public class SequenceColumnWriteDto : Stringable
+    public class SequenceColumnWriteDto
     {
         /// <summary>
         /// The name of the column.
@@ -35,5 +35,8 @@ namespace CogniteSdk.Sequences
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         public IDictionary<string, string> MetaData { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceColumnWriteDto>(this);
     }
 }

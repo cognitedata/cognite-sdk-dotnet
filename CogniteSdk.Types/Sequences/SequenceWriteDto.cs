@@ -9,7 +9,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// Sequence DTO for writing.
     /// </summary>
-    public class SequenceWriteDto : Stringable
+    public class SequenceWriteDto
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -40,5 +40,8 @@ namespace CogniteSdk.Sequences
         /// List of column definitions.
         /// </summary>
         public IEnumerable<SequenceColumnWriteDto> Columns { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceWriteDto>(this);
     }
 }

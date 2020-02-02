@@ -5,7 +5,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series update DTO.
     /// </summary>
-    public class TimeSeriesUpdateDto : Stringable
+    public class TimeSeriesUpdateDto
     {
         /// <summary>
         /// Set a new value for the string, or remove the value.
@@ -42,6 +42,9 @@ namespace CogniteSdk.TimeSeries
         /// Change that will be applied to the array.
         /// </summary>
         public SequenceUpdate<long?> SecurityCategories { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesUpdateDto>(this);
     }
 
     /// <summary>

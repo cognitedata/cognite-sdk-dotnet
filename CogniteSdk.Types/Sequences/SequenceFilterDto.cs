@@ -9,7 +9,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The Sequence filter DTO.
     /// </summary>
-    public class SequenceFilterDto : Stringable
+    public class SequenceFilterDto
     {
         /// <summary>
         /// Return only sequences with this exact name.
@@ -52,5 +52,8 @@ namespace CogniteSdk.Sequences
         /// Range between two timestamps.
         /// </summary>
         public TimeRange LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SequenceFilterDto>(this);
     }
 }

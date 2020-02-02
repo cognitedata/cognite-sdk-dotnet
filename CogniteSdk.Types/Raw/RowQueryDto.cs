@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Raw
 {
@@ -42,5 +43,8 @@ namespace CogniteSdk.Raw
 
             return list;
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<RowQueryDto>(this);
     }
 }

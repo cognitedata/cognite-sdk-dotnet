@@ -9,7 +9,7 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series filter DTO.
     /// </summary>
-    public class TimeSeriesFilterDto : Stringable
+    public class TimeSeriesFilterDto
     {
         /// <summary>
         /// The name of the time series.
@@ -72,5 +72,8 @@ namespace CogniteSdk.TimeSeries
         /// Range between two timestamps.
         /// </summary>
         public TimeRange LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<TimeSeriesFilterDto>(this);
     }
 }
