@@ -1,28 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Types", "CogniteSdk.Types\CogniteSdk.Types.csproj", "{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Types", "CogniteSdk.Types\CogniteSdk.Types.csproj", "{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Oryx.Cognite", "Oryx.Cognite\src\Oryx.Cognite.fsproj", "{F5CEF2C3-2E62-4147-ADDB-108AB9AE27ED}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Oryx.Cognite", "Oryx.Cognite\src\Oryx.Cognite.fsproj", "{F5CEF2C3-2E62-4147-ADDB-108AB9AE27ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.Test", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk.Test.FSharp", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Test", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{45676171-B050-4E3F-9601-9390E7DA9AAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{45676171-B050-4E3F-9601-9390E7DA9AAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playground", "playground", "{794719BD-C548-42F8-BD47-10240779604A}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "playground\csharp\App.csproj", "{334BA0EF-EDCB-4085-81F4-3EDD43069D46}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{45D10DD8-59D9-4F4B-BF80-33C029CE770D}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpApp", "playground\csharp\App.csproj", "{334BA0EF-EDCB-4085-81F4-3EDD43069D46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +27,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -119,14 +117,8 @@ Global
 		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x86.ActiveCfg = Release|Any CPU
 		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE} = {794719BD-C548-42F8-BD47-10240779604A}
 		{334BA0EF-EDCB-4085-81F4-3EDD43069D46} = {794719BD-C548-42F8-BD47-10240779604A}
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {8DED6FEA-E676-440C-BE3A-D318AD55D2CD}
 	EndGlobalSection
 EndGlobal
