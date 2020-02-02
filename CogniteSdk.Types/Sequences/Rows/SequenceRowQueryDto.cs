@@ -6,9 +6,9 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk.Sequences
 {
     /// <summary>
-    /// The Sequence row query base type. Either SequenceRowQueryByIdDto or SequenceRowQueryByExternalIdDto.
+    /// The Sequence row query DTO.
     /// </summary>
-    public class SequenceRowQuery : CursorQueryBase
+    public class SequenceRowQueryDto : CursorQueryBase
     {
         /// <summary>
         /// Lowest row number included.
@@ -37,6 +37,6 @@ namespace CogniteSdk.Sequences
         public string ExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceRowQuery>(this);
+        public override string ToString() => Stringable.ToString<SequenceRowQueryDto>(this);
     }
 }

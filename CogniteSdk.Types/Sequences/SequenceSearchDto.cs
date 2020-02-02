@@ -1,21 +1,21 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Assets
+namespace CogniteSdk.Sequences
 {
     /// <summary>
     /// The sequence search DTO.
     /// </summary>
-    public class AssetSearchDto : SearchQueryDto<AssetFilterDto, SearchDto> {
+    public class SequenceSearchDto : SearchQueryDto<SequenceFilterDto, SearchDto> {
 
         /// <summary>
-        /// Create a new empty Asset search DTO with pre-initialized emtpy Filter and Search.
+        /// Create a new pre-initialized Asset search DTO.
         /// </summary>
         /// <returns>New instance of the AssetSearchDto.</returns>
-        public static AssetSearchDto Empty ()
+        public static SequenceSearchDto Empty ()
         {
-            return new AssetSearchDto {
-                Filter=new AssetFilterDto(),
+            return new SequenceSearchDto {
+                Filter=new SequenceFilterDto(),
                 Search=new SearchDto()
             };
         }

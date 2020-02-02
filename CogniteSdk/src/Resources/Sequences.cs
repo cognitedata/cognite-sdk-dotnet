@@ -131,7 +131,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<SequenceReadDto>> SearchAsync (SearchQueryDto<SequenceFilterDto, SearchDto> query, CancellationToken token = default)
+        public async Task<IEnumerable<SequenceReadDto>> SearchAsync (SequenceSearchDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.search<IEnumerable<SequenceReadDto>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -157,7 +157,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The sequence rows query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence read data.</returns>
-        public async Task<SequenceDataReadDto> ListRowsAsync(SequenceRowQuery query, CancellationToken token = default)
+        public async Task<SequenceDataReadDto> ListRowsAsync(SequenceRowQueryDto query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.listRows<SequenceDataReadDto>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

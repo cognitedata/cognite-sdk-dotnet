@@ -24,7 +24,7 @@ module Sequences =
         list query Url
 
     /// Processes data requests, and returns the result. NB - This operation uses a dynamic limit on the number of rows returned based on the number and type of columns, use the provided cursor to paginate and retrieve all data.
-    let listRows (query: SequenceRowQuery) : HttpHandler<HttpResponseMessage, SequenceDataReadDto, 'a> =
+    let listRows (query: SequenceRowQueryDto) : HttpHandler<HttpResponseMessage, SequenceDataReadDto, 'a> =
         Handler.list query RowsUrl
 
     /// Create new sequences in the given project. Returns list of created sequences.
@@ -49,7 +49,7 @@ module Sequences =
         retrieve ids Url
 
     /// Retrieves a list of sequences matching the given criteria. This operation does not support pagination. Returns list of sequences matching given criteria.
-    let search (query: SearchQueryDto<SequenceFilterDto, SearchDto>) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a> =
+    let search (query: SequenceSearchDto) : HttpHandler<HttpResponseMessage, SequenceReadDto seq, 'a> =
         search query Url
 
     /// Update one or more sequences. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated sequences.</returns>

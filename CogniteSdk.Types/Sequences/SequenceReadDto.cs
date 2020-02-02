@@ -1,4 +1,4 @@
-// Copyright 2019 Cognite AS
+// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using CogniteSdk.Types.Common;
@@ -8,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace CogniteSdk.Sequences
 {
     /// <summary>
-    /// Sequence DTO for reading.
+    /// Sequence DTO for reading sequences.
     /// </summary>
     public class SequenceReadDto
     {
