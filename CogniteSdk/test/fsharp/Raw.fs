@@ -126,6 +126,9 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     let! table = writeClient.Raw.CreateTablesAsync(dbName, [ tableName ], true)
     let! createRes = writeClient.Raw.CreateRowsAsync(dbName, tableName, [ rowDto ], true)
     let! res = writeClient.Raw.ListRowsAsync(dbName, tableName)
+    let! deleteRowRes = writeClient.Raw.DeleteRowsAsync(dbName, tableName, [
+        for row in res.Items do
+            RowDeleteDto(Key=row.Key)])
     let! deleteRes = writeClient.Raw.DeleteDatabasesAsync([ dbName ], true)
 
     // Assert

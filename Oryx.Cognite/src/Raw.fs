@@ -103,5 +103,6 @@ module Raw =
     /// <param name="dtos">The Rows to create.</param>
     /// <returns>The retrieved rows.</returns>
     let deleteRows (database: string) (table: string) (dtos: RowDeleteDto seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let query = ItemsWithoutCursor<RowDeleteDto>(Items=dtos)
         Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
-        |> delete dtos
+        |> post query
