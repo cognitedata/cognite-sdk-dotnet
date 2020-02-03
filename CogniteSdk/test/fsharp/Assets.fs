@@ -239,7 +239,7 @@ let ``Search assets is Ok`` () = task {
 [<Fact>]
 let ``Search assets on CreatedTime Ok`` () = task {
     // Arrange
-    let timerange = TimeRange(Min = 1567084348460L, Max = 1567084348480L)
+    let timerange = TimeRange(Min = Nullable 1567084348460L, Max = Nullable 1567084348480L)
     let filter = AssetFilterDto(CreatedTime = timerange)
     let query = AssetSearchDto(Limit = Nullable 10, Filter = filter)
 
@@ -258,7 +258,7 @@ let ``Search assets on CreatedTime Ok`` () = task {
 let ``Search assets on LastUpdatedTime Ok`` () = task {
 
     // Arrange
-    let timerange = TimeRange(Min = 1567084348460L, Max = 1567084348480L)
+    let timerange = TimeRange(Min = Nullable 1567084348460L, Max = Nullable 1567084348480L)
     let filter = AssetFilterDto(CreatedTime = timerange)
     let query = AssetSearchDto(Limit = Nullable 10, Filter = filter)
 

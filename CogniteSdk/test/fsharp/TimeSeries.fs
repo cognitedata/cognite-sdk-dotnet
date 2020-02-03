@@ -108,8 +108,8 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
     // Arrange
     let timerange =
         TimeRange(
-            Min = 1567707299032L,
-            Max = 1567707299052L
+            Min = Nullable 1567707299032L,
+            Max = Nullable 1567707299052L
         )
     let query =
         TimeSeriesSearchDto(
@@ -134,8 +134,8 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     // Arrange
     let timerange =
         TimeRange(
-            Min = 1567707299032L,
-            Max = 1567707299052L
+            Min = Nullable 1567707299032L,
+            Max = Nullable 1567707299052L
         )
 
     let query =
