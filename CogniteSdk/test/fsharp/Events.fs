@@ -109,7 +109,7 @@ let ``Update events is Ok`` () = task {
     let! updateRes =
         writeClient.Events.UpdateAsync [
             EventUpdateItem(
-                ExternalId = externalId,
+                externalId = externalId,
                 Update = EventUpdateDto(
                     Description = Update(newDescription),
                     Metadata = DictUpdate<string>(add=newMetadata, remove=[ "oldkey1" ])

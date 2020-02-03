@@ -195,9 +195,8 @@ namespace Test.CSharp.Integration {
 
             var update = new List<AssetUpdateItem>
             {
-                new AssetUpdateItem
+                new AssetUpdateItem(externalId: externalIdString)
                 {
-                    ExternalId = externalIdString,
                     Update = new AssetUpdateDto()
                     {
                         Name = new SetUpdate<string>(newName),

@@ -12,51 +12,50 @@ namespace CogniteSdk.Types.Common
 	/// </summary>
 	public static class Stringable
 	{
+		private static string Quoted(object value) => value is string ? $"\"{value}\"" : value.ToString();
+
 		/// <summary>Returns a string that represents the current object.</summary>
 		/// <returns>A string that represents the current object.</returns>
 		public static string ToString<T>(T dto)
 		{
-			var type = dto.GetType();
-			var className = type.Name;
-			var props = new List<string>();
-			var s = new StringBuilder(className);
-			s.Append("\n{\n");
+			var sb = new StringBuilder(dto.GetType().Name);
+
+			sb.Append(" {\n");
 			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(dto))
 			{
 				var name = descriptor.Name;
-				object value = descriptor.GetValue(type);
+				object value = descriptor.GetValue(dto);
+				if (value == null)
+				{
+					sb.Append($"\n\t{name} = null");
+					continue;
+				}
+
 				var t = value.GetType();
-				value ??= "null";
-				IEnumerable values = value as IEnumerable;
 				if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
 				{
-					var sb = new StringBuilder("\n\t{\n");
-					var props2 = new List<string>();
-
+					var sbd = new StringBuilder("{");
 					foreach (DictionaryEntry kvp in (IDictionary)value)
 					{
-						props2.Add("\t\t" + kvp.Key.ToString() + " = " + kvp.Value.ToString());
+						sbd.Append($"\n\t\t{kvp.Key} = {Quoted(kvp.Value)}");
 					}
 
-					sb.Append(String.Join("\n", props2));
-					sb.Append("\n\t}");
-					var res = sb.ToString();
-					props.Add($"\t{name} = {res}");
+					sbd.Append("\n\t}");
+					sb.Append($"\n\t{name} = {sbd}");
 				}
-				else if (values != null && !(value is string))
+				else if (value is IEnumerable && !(value is string))
 				{
+					var values = value as IEnumerable;
 					var xs = String.Join(", ", values.Cast<object>());
-					props.Add($"\t{name} = [{xs}]");
+					sb.Append($"\n\t{name} = [{xs}]");
 				}
 				else
 				{
-					props.Add($"\t{name} = {value}");
+					sb.Append($"\n\t{name} = {Quoted(value)}");
 				}
 			}
-			s.Append(String.Join("\n", props));
-			s.Append("\n}");
-
-			return s.ToString();
+			sb.Append("\n}");
+			return sb.ToString();
 		}
 	}
 }

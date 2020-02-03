@@ -9,22 +9,29 @@ namespace CogniteSdk
     /// Update item for a given property.
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
-    public class UpdateItem<TUpdate>
+    public class UpdateItem<TUpdate> : Identity
     {
+        /// <summary>
+        /// Initialize the update item with an external Id.
+        /// </summary>
+        /// <param name="externalId">External Id to set.</param>
+        public UpdateItem(string externalId) : base(externalId)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the update item with an internal Id.
+        /// </summary>
+        /// <param name="id">Internal Id to set.</param>
+        public UpdateItem(long id) : base(id)
+        {
+        }
+
         /// <summary>
         /// The update object.
         /// </summary>
         public TUpdate Update { get; set; }
 
-        /// <summary>
-        /// A server-generated ID for the object.
-        /// </summary>
-        public long? Id { get; set; }
-
-        /// <summary>
-        /// The external ID provided by the client. Must be unique for the resource type.
-        /// </summary>
-        public string ExternalId { get; set; }
 
         /// <inheritdoc />
         public override string ToString()

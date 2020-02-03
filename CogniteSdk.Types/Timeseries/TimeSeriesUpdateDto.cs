@@ -50,5 +50,22 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series update item DTO. Contains the update item for an <see cref="TimeSeriesUpdateDto">TimeSeriesUpdateDto</see>.
     /// </summary>
-    public class TimeSeriesUpdateItem : UpdateItem<TimeSeriesUpdateDto> { }
+    public class TimeSeriesUpdateItem : UpdateItem<TimeSeriesUpdateDto>
+    {
+        /// <summary>
+        /// Initialize the time series update item with an external Id.
+        /// </summary>
+        /// <param name="externalId">External Id to set.</param>
+        public TimeSeriesUpdateItem(string externalId) : base(externalId)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the time series update item with an internal Id.
+        /// </summary>
+        /// <param name="internalId">Internal Id to set.</param>
+        public TimeSeriesUpdateItem(long internalId) : base(internalId)
+        {
+        }
+    }
 }

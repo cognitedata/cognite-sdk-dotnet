@@ -571,7 +571,7 @@ let ``Update files is Ok`` () = task {
     let! updateRes =
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
-                ExternalId = externalId,
+                externalId = externalId,
                 Update =
                     FileUpdateDto(
                         Source =  Update<string>(newSource),
@@ -622,7 +622,7 @@ let ``Update files is Ok`` () = task {
     let! updateRes2 =
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
-                ExternalId = newExternalId,
+                externalId = newExternalId,
                 Update =
                     FileUpdateDto(
                         Metadata = DictUpdate<string>(dict ["newKey", "newValue"] |> Dictionary),
@@ -647,7 +647,7 @@ let ``Update files is Ok`` () = task {
     let! updateRes3 =
         writeClient.Files.UpdateAsync [
             FileUpdateItem(
-                Id = Nullable identity,
+                id = identity,
                 Update =
                     FileUpdateDto(
                         Metadata = DictUpdate(set=Dictionary()),

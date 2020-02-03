@@ -21,10 +21,10 @@ namespace CogniteSdk {
         /// <summary>
         /// Creates an identity with internalId set.
         /// </summary>
-        /// <param name="internalId">The internalId to set</param>
-        public Identity(long internalId)
+        /// <param name="id">The internalId to set</param>
+        public Identity(long id)
         {
-            Id = internalId;
+            Id = id;
         }
 
         /// <summary>

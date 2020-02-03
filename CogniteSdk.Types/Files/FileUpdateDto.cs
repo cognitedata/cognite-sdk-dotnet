@@ -52,7 +52,24 @@ namespace CogniteSdk.Files
     }
 
     /// <summary>
-    /// The asset update item DTO. Contains the update item for an <see cref="FileUpdateDto">FileUpdateDto</see>.
+    /// The file update item DTO. Contains the update item for an <see cref="FileUpdateDto">FileUpdateDto</see>.
     /// </summary>
-    public class FileUpdateItem : UpdateItem<FileUpdateDto> { }
+    public class FileUpdateItem : UpdateItem<FileUpdateDto>
+    {
+        /// <summary>
+        /// Initialize the file update item with an external Id.
+        /// </summary>
+        /// <param name="externalId">External Id to set.</param>
+        public FileUpdateItem(string externalId) : base(externalId)
+        {
+        }
+
+        /// <summary>
+        /// Initialize the file update item with an internal Id.
+        /// </summary>
+        /// <param name="id">Internal Id to set.</param>
+        public FileUpdateItem(long id) : base(id)
+        {
+        }
+    }
 }
