@@ -54,7 +54,8 @@ namespace CogniteSdk.Files
     /// <summary>
     /// The file update item DTO. Contains the update item for an <see cref="FileUpdateDto">FileUpdateDto</see>.
     /// </summary>
-    public class FileUpdateItem : UpdateItem<FileUpdateDto> {
+    public class FileUpdateItem : UpdateItem<FileUpdateDto>
+    {
         /// <summary>
         /// Initialize the file update item with an external Id.
         /// </summary>

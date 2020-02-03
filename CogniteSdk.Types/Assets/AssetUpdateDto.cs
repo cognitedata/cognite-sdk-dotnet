@@ -50,7 +50,8 @@ namespace CogniteSdk.Assets
     /// <summary>
     /// The asset update item DTO. Contains the update item for an <see cref="AssetUpdateDto">AssetUpdateDto</see>.
     /// </summary>
-    public class AssetUpdateItem : UpdateItem<AssetUpdateDto> {
+    public class AssetUpdateItem : UpdateItem<AssetUpdateDto>
+    {
         /// <summary>
         /// Initialize the asset update item with an external Id.
         /// </summary>

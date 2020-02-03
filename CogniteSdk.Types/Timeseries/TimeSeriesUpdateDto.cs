@@ -50,7 +50,8 @@ namespace CogniteSdk.TimeSeries
     /// <summary>
     /// The time series update item DTO. Contains the update item for an <see cref="TimeSeriesUpdateDto">TimeSeriesUpdateDto</see>.
     /// </summary>
-    public class TimeSeriesUpdateItem : UpdateItem<TimeSeriesUpdateDto> {
+    public class TimeSeriesUpdateItem : UpdateItem<TimeSeriesUpdateDto>
+    {
         /// <summary>
         /// Initialize the time series update item with an external Id.
         /// </summary>

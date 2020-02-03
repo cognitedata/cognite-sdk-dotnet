@@ -65,7 +65,8 @@ namespace CogniteSdk.Events
     /// <summary>
     /// The asset update item DTO. Contains the update item for an <see cref="EventUpdateDto">EventUpdateDto</see>.
     /// </summary>
-    public class EventUpdateItem : UpdateItem<EventUpdateDto> {
+    public class EventUpdateItem : UpdateItem<EventUpdateDto>
+    {
         /// <summary>
         /// Initialize the event update item with an external Id.
         /// </summary>
