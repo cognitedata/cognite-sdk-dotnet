@@ -13,6 +13,7 @@ open CogniteSdk
 open CogniteSdk.Sequences
 
 open Common
+open System.Collections.Generic
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
@@ -193,211 +194,144 @@ let ``Create and delete sequences rows is Ok`` () = task {
     // Assert
     test <@ resExternalId = externalIdString @>
 }
-(*
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Search sequences is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let options = [
-        Sequences.SequenceSearch.Name "sdk-test"
-    ]
+    let query =
+        SequenceSearchDto(
+            Search=SearchDto(Name = "sdk-test"),
+            Limit = Nullable 10
+        )
 
     // Act
-    let! res = Search.searchAsync 10 options [] ctx
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! dtos = writeClient.Sequences.SearchAsync query
 
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     // Assert
     test <@ len > 0 @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/sequences/search" @>
 }
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
 let ``Update sequences is Ok`` () = task {
     // Arrange
-    let wctx = writeCtx ()
-
-    let columnExternalIdString = Guid.NewGuid().ToString();
-    let externalIdString = Guid.NewGuid().ToString();
-    let newMetadata = ([
+    let columnExternalIdString = Guid.NewGuid().ToString()
+    let externalIdString = Guid.NewGuid().ToString()
+    let newMetadata = Dictionary(dict [
         "key1", "value1"
         "key2", "value2"
-    ]
-    |> Map.ofList)
-    let column: ColumnWriteDto = {
-        Name = Some "Create column sdk test"
-        ExternalId = columnExternalIdString
-        Description = Some "dotnet sdk test"
-        ValueType = ValueType.Double
-        Metadata = Map.empty
-    }
-    let dto: Sequences.SequenceWriteDto = {
-        ExternalId = Some externalIdString
-        Name = Some "Create Sequences sdk test"
-        Description = Some "dotnet sdk test"
-        Metadata = [
+    ])
+    let oldMetadata = Dictionary(dict [
             "oldkey1", "oldvalue1"
             "oldkey2", "oldvalue2"
-        ] |> Map.ofList
-        AssetId = Some 5409900891232494L
-        Columns = [column]
-    }
-    let externalId = Identity.ExternalId externalIdString
+        ])
+    let column =
+        SequenceColumnWriteDto(
+            Name = "Create column sdk test",
+            ExternalId = columnExternalIdString,
+            Description = "dotnet sdk test",
+            ValueType = SequenceValueType.DOUBLE
+        )
+    let dto =
+        SequenceWriteDto(
+            ExternalId = externalIdString,
+            Name = "Create Sequences sdk test",
+            Description = "dotnet sdk test",
+            Metadata = oldMetadata,
+            AssetId = Nullable 5409900891232494L,
+            Columns = [column]
+        )
+
     let newName = "UpdatedName"
     let newExternalId = Guid.NewGuid().ToString();
 
     // Act
-    let! createRes = Sequences.Create.createAsync [ dto ] wctx
+    let! createRes = writeClient.Sequences.CreateAsync [ dto ]
     let! updateRes =
-        Sequences.Update.updateAsync [
-            (externalId, [
-                Sequences.SequenceUpdate.SetName (Some newName)
-                Sequences.SequenceUpdate.ChangeMetaData (newMetadata, [ "oldkey1" ] |> Seq.ofList)
-                Sequences.SequenceUpdate.SetExternalId (Some newExternalId)
-            ])
-        ] wctx
-    let! getRes = Sequences.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
-
-    let getCtx' =
-        match getRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+        writeClient.Sequences.UpdateAsync [
+            SequenceUpdateItem(
+                externalId = externalIdString,
+                Update=SequenceUpdateDto(
+                    Name = Update(newName),
+                    ExternalId = Update(newExternalId),
+                    Metadata = DictUpdate(newMetadata, [ "oldkey1" ])
+                )
+            )
+        ]
+    let! getRes = writeClient.Sequences.RetrieveAsync [ Identity newExternalId ]
 
     let resName, resExternalId, resMetaData =
-        let sequencesResponses = getCtx'.Response
-        let h = Seq.tryHead sequencesResponses
+        let h = Seq.tryHead getRes
         match h with
-        | Some sequenceResponse -> sequenceResponse.Name, sequenceResponse.ExternalId, sequenceResponse.MetaData
-        | None -> Some "", Some "", Map.empty
-
-    let updateSuccsess = Result.isOk updateRes
+        | Some sequenceResponse -> sequenceResponse.Name, sequenceResponse.ExternalId, sequenceResponse.Metadata
+        | None -> "", "", Dictionary ()
 
     let metaDataOk =
-        (Map.tryFind "key1" resMetaData) = Some "value1"
-        && (Map.tryFind "key2" resMetaData) = Some "value2"
+        resMetaData.["key1"] = "value1"
+        && resMetaData.["key2"] = "value2"
         && resMetaData.ContainsKey "oldkey2"
         && not (resMetaData.ContainsKey "oldkey1")
 
-    let createCtx' =
-        match createRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let updateCtx' =
-        match updateRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    // Assert create
-    test <@ createCtx'.Request.Method = HttpMethod.Post @>
-    test <@ createCtx'.Request.Extra.["resource"] = "/sequences" @>
-    test <@ createCtx'.Request.Query.IsEmpty @>
-
-    // Assert update
-    test <@ updateSuccsess @>
-    test <@ updateCtx'.Request.Method = HttpMethod.Post @>
-    test <@ updateCtx'.Request.Extra.["resource"] = "/sequences/update" @>
-    test <@ updateCtx'.Request.Query.IsEmpty @>
-
     // Assert get
-    test <@ getCtx'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx'.Request.Extra.["resource"] = "/sequences/byids" @>
-    test <@ getCtx'.Request.Query.IsEmpty @>
-    test <@ resExternalId = Some newExternalId @>
-    test <@ resName = Some newName @>
+    test <@ resExternalId = newExternalId @>
+    test <@ resName = newName @>
     test <@ metaDataOk @>
 
     let newDescription = "updatedDescription"
+    let newMetadata = Dictionary (dict [("newKey", "newValue")])
 
     let! updateRes2 =
-        Sequences.Update.updateAsync [
-            (Identity.ExternalId newExternalId, [
-                Sequences.SequenceUpdate.SetMetaData (Map.ofList ["newKey", "newValue"])
-                Sequences.SequenceUpdate.SetDescription (Some newDescription)
-                Sequences.SequenceUpdate.SetAssetId (Some 5409900891232494L)
-            ])
-        ] wctx
+        writeClient.Sequences.UpdateAsync [
+            SequenceUpdateItem(
+                externalId = newExternalId,
+                Update=SequenceUpdateDto(
+                    Description = Update(newDescription),
+                    AssetId = Update(Nullable 5409900891232494L),
+                    Metadata = DictUpdate(newMetadata)
+                )
+            )]
 
-    let! getRes2 = Sequences.Retrieve.getByIdsAsync [ Identity.ExternalId newExternalId ] wctx
-
-    let getCtx2' =
-        match getRes2 with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! getRes2 = writeClient.Sequences.RetrieveAsync [ Identity newExternalId ]
 
     let resDescription, resAssetId, resMetaData2, identity =
-        let sequencesResponses = getCtx2'.Response
-        let h = Seq.tryHead sequencesResponses
+        let h = Seq.tryHead getRes2
         match h with
         | Some sequenceResponse ->
-            sequenceResponse.Description, sequenceResponse.AssetId, sequenceResponse.MetaData, sequenceResponse.Id
-        | None -> Some "", Some 0L, Map.empty, 0L
+            sequenceResponse.Description, sequenceResponse.AssetId, sequenceResponse.Metadata, sequenceResponse.Id
+        | None -> "", Nullable 0L, Dictionary(), 0L
 
     // Assert get2
-    test <@ getCtx2'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx2'.Request.Extra.["resource"] = "/sequences/byids" @>
-    test <@ getCtx2'.Request.Query.IsEmpty @>
-    test <@ resDescription = Some newDescription @>
-    test <@ resAssetId = Some 5409900891232494L @>
-    test <@ (Map.tryFind "newKey" resMetaData2) = Some "newValue" @>
+    test <@ resDescription = newDescription @>
+    test <@ resAssetId = Nullable 5409900891232494L @>
+    test <@ resMetaData2.["newKey"] = "newValue" @>
 
     let! updateRes3 =
-        Sequences.Update.updateAsync [
-            (Identity.Id identity, [
-                Sequences.SequenceUpdate.ChangeMetaData (Map.empty, ["newKey"])
-                Sequences.SequenceUpdate.ClearExternalId
-                Sequences.SequenceUpdate.SetAssetId None
-            ])
-        ] wctx
+        writeClient.Sequences.UpdateAsync [
+            SequenceUpdateItem(
+                id = identity,
+                Update=SequenceUpdateDto(
+                    ExternalId = Update(null),
+                    AssetId = Update(Nullable ()),
+                    Metadata = DictUpdate(Dictionary(), ["newKey"])
+                )
+            )]
 
-    let! getRes3 = Sequences.Retrieve.getByIdsAsync [ Identity.Id identity ] wctx
-    let! delRes = Sequences.Delete.deleteAsync [ Identity.Id identity] wctx
-
-    let getCtx3' =
-        match getRes3 with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    let! getRes3 = writeClient.Sequences.RetrieveAsync [ Identity identity ]
+    let! delRes = writeClient.Sequences.DeleteAsync [ Identity identity]
 
     let resExternalId2, resAssetId2, resMetaData3 =
-        let sequencesResponses = getCtx3'.Response
-        let h = Seq.tryHead sequencesResponses
+        let h = Seq.tryHead getRes3
         match h with
         | Some sequenceResponse ->
-            sequenceResponse.ExternalId, sequenceResponse.AssetId, sequenceResponse.MetaData
-        | None -> Some "", Some 0L, Map.empty
+            sequenceResponse.ExternalId, sequenceResponse.AssetId, sequenceResponse.Metadata
+        | None -> "", Nullable 0L, Dictionary ()
 
-    let delCtx =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
+    let hasValue = resAssetId2.HasValue
     // Assert get2
-    test <@ getCtx2'.Request.Method = HttpMethod.Post @>
-    test <@ getCtx2'.Request.Extra.["resource"] = "/sequences/byids" @>
-    test <@ getCtx2'.Request.Query.IsEmpty @>
-    test <@ resExternalId2 = None @>
-    test <@ resAssetId2 = None @>
-    test <@ Map.isEmpty resMetaData3 @>
-
-    // Assert delete
-    test <@ delCtx.Request.Method = HttpMethod.Post @>
-    test <@ delCtx.Request.Extra.["resource"] = "/sequences/delete" @>
-    test <@ delCtx.Request.Query.IsEmpty @>
+    test <@ isNull resExternalId2 @>
+    test <@ not hasValue @>
+    test <@ resMetaData3.Count = 0 @>
 }
-*)

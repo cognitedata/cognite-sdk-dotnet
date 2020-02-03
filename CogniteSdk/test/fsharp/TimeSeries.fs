@@ -346,7 +346,7 @@ let ``Update timeseries is Ok`` () = task {
     let! updateRes =
         writeClient.TimeSeries.UpdateAsync [
             TimeSeriesUpdateItem(
-                ExternalId = externalId,
+                externalId = externalId,
                 Update = TimeSeriesUpdateDto(
                     ExternalId = Update(newExternalId),
                     Metadata = DictUpdate(newMetadata, [ "oldkey1" ]),

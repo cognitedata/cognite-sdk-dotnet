@@ -354,7 +354,7 @@ let ``Update assets is Ok`` () = task {
 
     let update = seq {
         AssetUpdateItem(
-            ExternalId = externalId,
+            externalId = externalId,
             Update = AssetUpdateDto(
                 Name = SetUpdate(newName),
                 Metadata = DictUpdate(add=newMetadata, remove=["oldkey1"]),
@@ -392,7 +392,7 @@ let ``Update assets is Ok`` () = task {
     let! updateRes2 =
         writeClient.Assets.UpdateAsync [
             AssetUpdateItem(
-                ExternalId=newExternalId,
+                externalId=newExternalId,
                 Update=AssetUpdateDto(
                     Metadata = DictUpdate(Dictionary(dict["newKey", "newValue"])),
                     Description = Update(newDescription),
@@ -418,7 +418,7 @@ let ``Update assets is Ok`` () = task {
     let! updateRes3 =
         writeClient.Assets.UpdateAsync [
             AssetUpdateItem(
-                Id = Nullable identity,
+                id = identity,
                 Update = AssetUpdateDto(
                     Metadata = DictUpdate<string>(remove=["newKey"]),
                     ExternalId = Update<string>(null),
