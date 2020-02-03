@@ -139,7 +139,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     // Arrange
     let query =
         FileQueryDto(
-            Filter = FileFilterDto(CreatedTime = TimeRange(Min=1533213749083L, Max=1533213749099L)),
+            Filter = FileFilterDto(CreatedTime = TimeRange(Min=Nullable 1533213749083L, Max=Nullable 1533213749099L)),
             Limit = Nullable 10
         )
 
@@ -162,7 +162,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Arrange
     let query =
         FileQueryDto(
-            Filter = FileFilterDto(LastUpdatedTime = TimeRange(Min=1533213795975L, Max=1533213795995L)),
+            Filter = FileFilterDto(LastUpdatedTime = TimeRange(Min=Nullable 1533213795975L, Max=Nullable 1533213795995L)),
             Limit = Nullable 10
         )
 

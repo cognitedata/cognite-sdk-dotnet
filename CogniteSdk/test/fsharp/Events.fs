@@ -186,7 +186,7 @@ let ``Filter events on subtype is Ok`` () = task {
 [<Fact>]
 let ``Filter events on CreatedTime is Ok`` () = task {
     // Arrange
-    let timerange = TimeRange(Min = 1554973225688L, Max = 1554973225708L)
+    let timerange = TimeRange(Min = Nullable 1554973225688L, Max = Nullable 1554973225708L)
     let filter = EventFilterDto(CreatedTime = timerange)
     let query = EventQueryDto(Limit = Nullable 10, Filter = filter)
 
@@ -205,7 +205,7 @@ let ``Filter events on CreatedTime is Ok`` () = task {
 [<Fact>]
 let ``Filter events on LastUpdatedTime is Ok`` () = task {
     // Arrange
-    let timerange = TimeRange(Min = 1554973225688L, Max = 1554973225708L)
+    let timerange = TimeRange(Min = Nullable 1554973225688L, Max = Nullable 1554973225708L)
     let filter = EventFilterDto(LastUpdatedTime = timerange)
     let query = EventQueryDto(Limit = Nullable 10, Filter = filter)
 
@@ -223,7 +223,7 @@ let ``Filter events on LastUpdatedTime is Ok`` () = task {
 [<Fact>]
 let ``Filter events on StartTime is Ok`` () = task {
     // Arrange
-    let timerange = TimeRange(Min = 1565941319L, Max = 1565941339L)
+    let timerange = TimeRange(Min = Nullable 1565941319L, Max = Nullable 1565941339L)
     let filter = EventFilterDto(StartTime = timerange)
     let query = EventQueryDto(Limit = Nullable 10, Filter = filter)
 
@@ -242,7 +242,7 @@ let ``Filter events on StartTime is Ok`` () = task {
 [<Fact>]
 let ``Filter events on EndTime is Ok`` () = task {
     // Arrange
-    let timerange = TimeRange(Min = 1565941331L, Max = 1565941351L)
+    let timerange = TimeRange(Min = Nullable 1565941331L, Max = Nullable 1565941351L)
     let filter = EventFilterDto(EndTime = timerange)
     let query = EventQueryDto(Limit = Nullable 10, Filter = filter)
 
