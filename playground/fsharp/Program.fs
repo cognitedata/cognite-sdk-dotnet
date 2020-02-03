@@ -54,7 +54,7 @@ let getAssetsExample (ctx : HttpContext) = task {
 let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
-            Id = Nullable 84025677715833721L,
+            id = 84025677715833721L,
             Update = Assets.AssetUpdateDto(Name = SetUpdate("string3"))
         )
     ]
