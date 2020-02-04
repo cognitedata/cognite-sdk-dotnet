@@ -10,7 +10,7 @@ namespace CogniteSdk.Raw
     /// <summary>
     /// The row read DTO.
     /// </summary>
-    public class RowReadDto 
+    public class RowReadDto
     {
         /// <summary>
         /// Row key. Unique in table.
@@ -20,7 +20,7 @@ namespace CogniteSdk.Raw
         /// <summary>
         /// Row data stored as a JSON object.
         /// </summary>
-        public IDictionary<string, JsonElement> Columns { get; set; }
+        public Dictionary<string, JsonElement> Columns { get; set; }
 
         /// <summary>
         /// Unix timestamp in milliseconds of when the row was last updated.
