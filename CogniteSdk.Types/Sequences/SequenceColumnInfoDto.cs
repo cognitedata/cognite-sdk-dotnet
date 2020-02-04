@@ -21,7 +21,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// The value type of the column. Enum STRING, DOUBLE, LONG
         /// </summary>
-        public SequenceValueType ValueType { get; set; }
+        public MultiValueType ValueType { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SequenceColumnInfoDto>(this);

@@ -13,13 +13,18 @@ namespace CogniteSdk
     public abstract class MultiValue
     {
         /// <summary>
+        /// Type of multi value.
+        /// </summary>
+        public MultiValueType Type { get; private set; }
+
+        /// <summary>
         /// Create a double value.
         /// </summary>
         /// <param name="value">Double value to use.</param>
         /// <returns>New value.</returns>
         public static MultiValue Create(double value)
         {
-            return new MultiValue.Double() { Value = value };
+            return new MultiValue.Double(value);
         }
 
         /// <summary>
@@ -29,7 +34,7 @@ namespace CogniteSdk
         /// <returns>New value.</returns>
         public static MultiValue Create(string value)
         {
-            return new MultiValue.String() { Value = value };
+            return new MultiValue.String(value);
         }
 
         /// <summary>
@@ -39,15 +44,24 @@ namespace CogniteSdk
         /// <returns>New value.</returns>
         public static MultiValue Create(long value)
         {
-            return new MultiValue.Long() { Value = value };
+            return new MultiValue.Long(value);
         }
-
 
         /// <summary>
         /// Long (int64) error value
         /// </summary>
         public sealed class Long : MultiValue
         {
+            /// <summary>
+            /// Initialize new long value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public Long(long value)
+            {
+                Type = MultiValueType.LONG;
+                Value = value;
+            }
+
             /// <summary>
             /// The contained long value.
             /// </summary>
@@ -68,6 +82,16 @@ namespace CogniteSdk
         public sealed class Double : MultiValue
         {
             /// <summary>
+            /// Initialize new double value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public Double(double value)
+            {
+                Type = MultiValueType.DOUBLE;
+                Value = value;
+            }
+
+            /// <summary>
             /// The contained double value.
             /// </summary>
             public double Value { get; set; }
@@ -86,6 +110,16 @@ namespace CogniteSdk
         /// </summary>
         public sealed class String : MultiValue
         {
+            /// <summary>
+            /// Initialize new string value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public String(string value)
+            {
+                Type = MultiValueType.STRING;
+                Value = value;
+            }
+
             /// <summary>
             /// The contained string value.
             /// </summary>

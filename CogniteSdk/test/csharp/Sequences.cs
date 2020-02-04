@@ -76,7 +76,7 @@ namespace Test.CSharp.Integration
             var column = new SequenceColumnWriteDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
-                ValueType = SequenceValueType.DOUBLE
+                ValueType = MultiValueType.DOUBLE
             };
             var sequence = new SequenceWriteDto {
                 ExternalId = externalIdString,
@@ -105,7 +105,7 @@ namespace Test.CSharp.Integration
             var column = new SequenceColumnWriteDto {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
-                ValueType = SequenceValueType.DOUBLE
+                ValueType = MultiValueType.DOUBLE
             };
 
             var sequence = new SequenceWriteDto {
