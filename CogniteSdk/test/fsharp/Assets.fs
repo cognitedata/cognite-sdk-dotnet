@@ -133,7 +133,7 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on MetaData is Ok`` () = task {
     // Arrange
-    let meta = Map.ofList [("RES_ID", "525283")]
+    let meta = Dictionary (dict [("RES_ID", "525283")])
     let filter = AssetFilterDto(Metadata = meta)
     let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
 
