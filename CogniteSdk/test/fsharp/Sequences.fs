@@ -114,7 +114,7 @@ let ``Create and delete sequences is Ok`` () = task {
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
-            ValueType = SequenceValueType.DOUBLE
+            ValueType = MultiValueType.DOUBLE
         )
     let dto =
         SequenceWriteDto(
@@ -154,7 +154,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
-            ValueType = SequenceValueType.STRING
+            ValueType = MultiValueType.STRING
         )
     let dto =
         SequenceWriteDto(
@@ -233,7 +233,7 @@ let ``Update sequences is Ok`` () = task {
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
-            ValueType = SequenceValueType.DOUBLE
+            ValueType = MultiValueType.DOUBLE
         )
     let dto =
         SequenceWriteDto(

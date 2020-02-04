@@ -13,13 +13,18 @@ namespace CogniteSdk
     public abstract class MultiValue
     {
         /// <summary>
+        /// Type of multi value.
+        /// </summary>
+        public MultiValueType Type { get; private set; }
+
+        /// <summary>
         /// Create a double value.
         /// </summary>
         /// <param name="value">Double value to use.</param>
         /// <returns>New value.</returns>
         public static MultiValue Create(double value)
         {
-            return new MultiValue.Double() { Value = value };
+            return new MultiValue.Double() { Value = value, Type = MultiValueType.DOUBLE };
         }
 
         /// <summary>
@@ -29,7 +34,7 @@ namespace CogniteSdk
         /// <returns>New value.</returns>
         public static MultiValue Create(string value)
         {
-            return new MultiValue.String() { Value = value };
+            return new MultiValue.String() { Value = value, Type = MultiValueType.STRING };
         }
 
         /// <summary>
@@ -39,9 +44,8 @@ namespace CogniteSdk
         /// <returns>New value.</returns>
         public static MultiValue Create(long value)
         {
-            return new MultiValue.Long() { Value = value };
+            return new MultiValue.Long() { Value = value, Type = MultiValueType.LONG };
         }
-
 
         /// <summary>
         /// Long (int64) error value
