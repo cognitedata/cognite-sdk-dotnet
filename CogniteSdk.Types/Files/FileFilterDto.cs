@@ -87,6 +87,11 @@ namespace CogniteSdk.Files
         /// <value></value>
         public bool? Uploaded { get; set; }
 
+        /// <summary>
+        /// Only include assets that belong to these datasets.
+        /// </summary>
+        public IEnumerable<long> DataSetIds { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<FileFilterDto>(this);
     }
