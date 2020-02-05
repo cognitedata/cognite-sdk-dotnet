@@ -18,6 +18,11 @@ namespace CogniteSdk.Files
         public string ExternalId { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// Name of the file.
         /// </summary>
         public string Name { get; set; }

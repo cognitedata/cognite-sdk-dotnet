@@ -22,6 +22,11 @@ namespace CogniteSdk.TimeSeries
         public string ExternalId { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// The display short name of the time series.
         /// </summary>
         public string Name { get; set; }

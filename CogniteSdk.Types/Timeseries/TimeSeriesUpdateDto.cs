@@ -13,6 +13,11 @@ namespace CogniteSdk.TimeSeries
         public Update<string> ExternalId { get; set; }
 
         /// <summary>
+        /// Set a new value for the string, or remove the value.
+        /// </summary>
+        public Update<long?> DataSetId { get; set; }
+
+        /// <summary>
         /// Set a new value for the string.
         /// </summary>
         public Update<string> Name { get; set; }
