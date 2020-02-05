@@ -13,7 +13,7 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// For internal use. Contains all event methods.
+    /// Contains all the client methods for handling <see href="https://docs.cognite.com/api/v1/#tag/Events">Events</see>.
     /// </summary>
     public class EventsResource
     {

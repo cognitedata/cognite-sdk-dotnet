@@ -13,7 +13,9 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// For internal use. Contains all event methods.
+    /// Contains all the client methods for handling <see href="https://docs.cognite.com/api/v1/#tag/Files">Files</see>.
+    /// You need to access the methods in this class through <see cref="Client.Files" /> property of the <see
+    /// cref="Client" />.
     /// </summary>
     public class FilesResource
     {

@@ -13,7 +13,8 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// For internal use. Contains all asset methods.
+    /// Contains all the client methods for handling <see
+    /// href="https://docs.cognite.com/api/v1/#tag/Assets">Assets</see>.
     /// </summary>
     public class AssetsResource
     {

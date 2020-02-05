@@ -13,7 +13,7 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// Contains all raw methods.
+    /// Contains all the client methods for handling <see href="https://docs.cognite.com/api/v1/#tag/Raw">Raw</see>.
     /// </summary>
     public class RawResource
     {
