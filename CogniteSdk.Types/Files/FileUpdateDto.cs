@@ -19,6 +19,11 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
+        public Update<long?> DataSetId { get; set; }
+
+        /// <summary>
+        /// Set a new value for the string, or remove the value.
+        /// </summary>
         public Update<string> Source { get; set; }
 
         /// <summary>

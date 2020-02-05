@@ -22,6 +22,11 @@ namespace CogniteSdk.Sequences
         public string ExternalIdPrefix { get; set; }
 
         /// <summary>
+        /// Only include assets that belong to these datasets.
+        /// </summary>
+        public IEnumerable<long> DataSetIds { get; set; }
+
+        /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>

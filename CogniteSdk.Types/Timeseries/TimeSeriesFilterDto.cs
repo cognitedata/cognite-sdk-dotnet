@@ -64,6 +64,11 @@ namespace CogniteSdk.TimeSeries
         public string ExternalIdPrefix { get; set; }
 
         /// <summary>
+        /// Only include assets that belong to these datasets.
+        /// </summary>
+        public IEnumerable<long> DataSetIds { get; set; }
+
+        /// <summary>
         /// Range between two timestamps.
         /// </summary>
         public TimeRange CreatedTime { get; set; }

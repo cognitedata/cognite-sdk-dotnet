@@ -19,6 +19,11 @@ namespace CogniteSdk.Sequences
         public string ExternalId { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// The name of the sequence.
         /// </summary>
         public string Name { get; set; }
