@@ -50,7 +50,7 @@ namespace CogniteSdk.Events
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public IDictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.

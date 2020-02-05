@@ -42,7 +42,7 @@ namespace CogniteSdk.Sequences
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public IDictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// List of column definitions.
