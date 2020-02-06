@@ -5,12 +5,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
+using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using static Oryx.Cognite.ContextModule;
-using Microsoft.Extensions.Logging;
 
 namespace CogniteSdk
 {
