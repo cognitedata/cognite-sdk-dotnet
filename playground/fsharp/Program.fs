@@ -143,7 +143,7 @@ let asyncMain argv = task {
 
     use client = new HttpClient ()
     let ctx =
-        Context.defaultContext
+        Context.create ()
         |> Context.setAppId "playground"
         |> Context.setHttpClient client
         |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
