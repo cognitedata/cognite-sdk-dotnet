@@ -34,7 +34,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
-        public IDictionary<string, string> MetaData { get; set; }
+        public Dictionary<string, string> MetaData { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SequenceColumnWriteDto>(this);

@@ -37,22 +37,21 @@ type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 [<AutoOpen>]
 module Handler =
     let setResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", resource) } }
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", String resource) } }
 
     let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", version.ToString ()) } }
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", String (version.ToString ())) } }
 
     let setUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Extra
             let serviceUrl =
-                if Map.containsKey "serviceUrl" extra
-                then extra.["serviceUrl"]
-                else "https://api.cognitedata.com"
+                match Map.tryFind "serviceUrl" extra with
+                | Some (String url) -> url
+                | _ -> "https://api.cognitedata.com"
 
             if not (Map.containsKey "hasAppId" extra)
             then failwith "Client must set the Application ID (appId)"
-
             serviceUrl +/ url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 

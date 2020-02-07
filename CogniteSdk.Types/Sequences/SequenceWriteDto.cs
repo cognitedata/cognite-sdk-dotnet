@@ -19,6 +19,11 @@ namespace CogniteSdk.Sequences
         public string ExternalId { get; set; }
 
         /// <summary>
+        /// Javascript friendly internal ID given to the object.
+        /// </summary>
+        public long? DataSetId { get; set; }
+
+        /// <summary>
         /// The name of the sequence.
         /// </summary>
         public string Name { get; set; }
@@ -37,7 +42,7 @@ namespace CogniteSdk.Sequences
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public IDictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// List of column definitions.

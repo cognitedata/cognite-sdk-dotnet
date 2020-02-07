@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
+using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
 
@@ -13,6 +14,11 @@ using static Oryx.Cognite.ContextModule;
 
 namespace CogniteSdk
 {
+    /// <summary>
+    /// Metric interface.
+    /// </summary>
+    public interface IMetrics : Oryx.IMetrics { }
+
     /// <summary>
     /// The Cognite SDK client. This is the client you use to handle the different resources, i.e Assets, Events,
     /// TimeSeries. To create a new client you need to use the <see cref="Client.Builder" />.
@@ -164,6 +170,48 @@ namespace CogniteSdk
                 }
 
                 _context = setServiceUrl(serviceUrl.ToString(), _context);
+                return this;
+            }
+
+            /// <summary>
+            /// Set the logger to be used by the SDK.
+            /// </summary>
+            /// <param name="logger">The logger to use.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetLogger(ILogger logger)
+            {
+                if (logger is null)
+                {
+                    throw new ArgumentNullException(nameof(logger));
+                }
+
+                _context = Context.setLogger(logger, _context);
+                return this;
+            }
+
+            /// <summary>
+            /// Set the log level to be used by the SDK.
+            /// </summary>
+            /// <param name="logLevel">The log level to use.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetLogLevel(LogLevel logLevel)
+            {
+                _context = Context.setLoggerLevel(logLevel, _context);
+                return this;
+            }
+
+            /// <summary>
+            /// Set the metrics handler to be used by the SDK.
+            /// </summary>
+            /// <param name="metrics">The metrics handler to use.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetMetrics(IMetrics metrics)
+            {
+                if (metrics is null)
+                {
+                    throw new ArgumentNullException(nameof(metrics));
+                }
+                _context = Context.setMetrics(metrics, _context);
                 return this;
             }
 
