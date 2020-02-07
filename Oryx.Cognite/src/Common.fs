@@ -54,18 +54,27 @@ module Common =
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 module Context =
     let urlBuilder (request: HttpRequest) =
-        let extra = request.Extra
-        let version = extra.["apiVersion"]
-        let project =
-            if Map.containsKey "project" extra
-            then extra.["project"]
-            else failwith "Client must set project."
 
-        let resource = extra.["resource"]
+        let extra = request.Extra
+        let version =
+            match Map.tryFind "apiVersion" extra with
+            | Some (String version) -> version
+            | _ -> failwith "API version not set."
+
+        let project =
+            match Map.tryFind "project" extra with
+            | Some (String project) -> project
+            | _ -> failwith "Client must set project."
+
+        let resource =
+            match Map.tryFind "resource" extra with
+            | Some (String resource) -> resource
+            | _ -> failwith "Resource not set."
+
         let serviceUrl =
-            if Map.containsKey "serviceUrl" extra
-            then extra.["serviceUrl"]
-            else "https://api.cognitedata.com"
+            match Map.tryFind "serviceUrl" extra with
+            | Some (String url) -> url.ToString()
+            | _ -> "https://api.cognitedata.com"
 
         if not (Map.containsKey "hasAppId" extra)
         then failwith "Client must set the Application ID (appId)."
@@ -82,13 +91,13 @@ module Context =
 
     /// Set the project to connect to.
     let setProject (project: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", project) } }
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", String project) } }
 
     let setAppId (appId: string) (context: HttpContext) =
-        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", "true") } }
+        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
 
     let setServiceUrl (serviceUrl: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", serviceUrl) } }
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", String serviceUrl) } }
 
     let create () =
         let major, minor, build = version
