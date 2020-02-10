@@ -12,6 +12,9 @@ namespace CogniteSdk.Types.Common
 	/// </summary>
 	public static class Stringable
 	{
+		private const string S1 = "    ";
+		private const string S2 = S1+S1;
+
 		private static string Quoted(object value) => value is string ? $"\"{value}\"" : value.ToString();
 
 		/// <summary>Returns a string that represents the current object.</summary>
@@ -20,14 +23,14 @@ namespace CogniteSdk.Types.Common
 		{
 			var sb = new StringBuilder(dto.GetType().Name);
 
-			sb.Append(" {\n");
+			sb.Append(" {");
 			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(dto))
 			{
 				var name = descriptor.Name;
 				object value = descriptor.GetValue(dto);
 				if (value == null)
 				{
-					sb.Append($"\n\t{name} = null");
+					sb.Append($"\n{S1}{name} = null");
 					continue;
 				}
 
@@ -37,21 +40,26 @@ namespace CogniteSdk.Types.Common
 					var sbd = new StringBuilder("{");
 					foreach (DictionaryEntry kvp in (IDictionary)value)
 					{
-						sbd.Append($"\n\t\t{kvp.Key} = {Quoted(kvp.Value)}");
+						sbd.Append($"\n{S2}{kvp.Key} = {Quoted(kvp.Value)}");
 					}
 
-					sbd.Append("\n\t}");
-					sb.Append($"\n\t{name} = {sbd}");
+					sbd.Append($"\n{S1}}}");
+					sb.Append($"\n{S1}{name} = {sbd}");
 				}
 				else if (value is IEnumerable && !(value is string))
 				{
 					var values = value as IEnumerable;
-					var xs = String.Join(", ", values.Cast<object>());
-					sb.Append($"\n\t{name} = [{xs}]");
+					var xs = string.Join(", ", values.Cast<object>());
+					if (xs.Contains("\n")) {
+						var ys =xs.Replace("\n", $"\n{S2}");
+						sb.Append($"\n{S1}{name} = [\n{S2}{ys}]");
+					} else {
+						sb.Append($"\n{S1}{name} = [{xs}]");
+					}
 				}
 				else
 				{
-					sb.Append($"\n\t{name} = {Quoted(value)}");
+					sb.Append($"\n{S1}{name} = {Quoted(value)}");
 				}
 			}
 			sb.Append("\n}");
