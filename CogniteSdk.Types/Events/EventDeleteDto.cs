@@ -16,6 +16,6 @@ namespace CogniteSdk.Events
         public bool? IgnoreUnknownIds { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<EventDeleteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

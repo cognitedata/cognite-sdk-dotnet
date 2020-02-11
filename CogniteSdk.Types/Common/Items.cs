@@ -18,10 +18,7 @@ namespace CogniteSdk
         public IEnumerable<T> Items { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<ItemsWithoutCursor<T>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -41,9 +38,6 @@ namespace CogniteSdk
         public string NextCursor { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<ItemsWithCursor<T>>(this);
-        }
+        public override string ToString() => Stringable.ToString<ItemsWithCursor<T>>(this);
     }
 }

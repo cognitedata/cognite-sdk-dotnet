@@ -93,7 +93,7 @@ namespace CogniteSdk.Assets
         }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AssetReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

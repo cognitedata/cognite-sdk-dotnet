@@ -74,6 +74,6 @@ namespace CogniteSdk.TimeSeries
         public IEnumerable<long> SecurityCategories { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

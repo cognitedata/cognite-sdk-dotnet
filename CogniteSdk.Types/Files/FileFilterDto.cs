@@ -93,6 +93,6 @@ namespace CogniteSdk.Files
         public IEnumerable<long> DataSetIds { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileFilterDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

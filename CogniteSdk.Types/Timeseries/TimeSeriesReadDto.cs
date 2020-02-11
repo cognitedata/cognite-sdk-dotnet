@@ -37,9 +37,8 @@ namespace CogniteSdk.TimeSeries
         public bool IsString { get; set; }
 
         /// <summary>
-        /// Custom, application specific metadata.
-        /// Maximum length of key is 32 bytes,
-        /// value 512 bytes, up to 16 key-value pairs.
+        /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16
+        /// key-value pairs.
         /// </summary>
         public Dictionary<string, string> Metadata { get; set; }
 
@@ -81,6 +80,6 @@ namespace CogniteSdk.TimeSeries
         public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

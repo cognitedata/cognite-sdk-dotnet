@@ -16,6 +16,6 @@ namespace CogniteSdk.TimeSeries
         public bool? IgnoreUnknownIds { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesDeleteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

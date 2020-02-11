@@ -61,7 +61,7 @@ namespace CogniteSdk.Files
         public long? SourceModifiedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

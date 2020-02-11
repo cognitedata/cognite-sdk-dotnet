@@ -53,7 +53,7 @@ namespace CogniteSdk.Files
         public Update<long?> SourceModifiedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileUpdateDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

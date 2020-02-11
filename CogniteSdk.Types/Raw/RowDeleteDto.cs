@@ -16,6 +16,6 @@ namespace CogniteSdk.Raw
         public string Key { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RowDeleteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

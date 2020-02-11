@@ -46,6 +46,6 @@ namespace CogniteSdk.Sequences
         public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceColumnDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

@@ -33,10 +33,7 @@ namespace CogniteSdk
         public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<ResponseErrorDto>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -71,9 +68,6 @@ namespace CogniteSdk
         }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<ApiResponseErrorDto>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

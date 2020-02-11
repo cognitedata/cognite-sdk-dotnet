@@ -23,9 +23,6 @@ namespace CogniteSdk
         public long? Min { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<TimeRange>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

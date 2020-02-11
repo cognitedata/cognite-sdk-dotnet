@@ -16,6 +16,6 @@ namespace CogniteSdk.Files
         public FileFilterDto Filter { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileQueryDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

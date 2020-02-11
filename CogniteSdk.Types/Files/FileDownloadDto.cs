@@ -27,6 +27,6 @@ namespace CogniteSdk.Files
         public Uri DownloadUrl { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileDownloadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
