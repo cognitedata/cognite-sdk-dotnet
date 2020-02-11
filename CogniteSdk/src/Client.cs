@@ -15,7 +15,7 @@ using static Oryx.Cognite.ContextModule;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Metric interface.
+    /// Metrics interface.
     /// </summary>
     public interface IMetrics : Oryx.IMetrics { }
 
@@ -195,7 +195,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogLevel(LogLevel logLevel)
             {
-                _context = Context.setLoggerLevel(logLevel, _context);
+                _context = Context.setLogLevel(logLevel, _context);
                 return this;
             }
 
