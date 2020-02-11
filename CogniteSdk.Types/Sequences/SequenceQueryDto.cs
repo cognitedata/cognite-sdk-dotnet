@@ -16,6 +16,6 @@ namespace CogniteSdk.Sequences
         public SequenceFilterDto Filter { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceQueryDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

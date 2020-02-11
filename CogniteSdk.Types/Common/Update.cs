@@ -51,7 +51,7 @@ namespace CogniteSdk
         public bool? SetNull { get; set; }
 
         /// <summary>
-        /// Set a new value for the property.
+        /// Set a new value for the property. A value of null will clear the value.
         /// </summary>
         /// <param name="value">Value to set.</param>
         /// <returns>A new instance of the <see cref="Update{T}">Property{T}</see> class.</returns>
@@ -66,7 +66,7 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString()
         {
-            return Stringable.ToString<Update<T>>(this);
+            return Stringable.ToString(this);
         }
     }
 
@@ -113,10 +113,7 @@ namespace CogniteSdk
         }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<CollectionUpdate<TCollection, TRemove>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -145,10 +142,7 @@ namespace CogniteSdk
         public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<DictUpdate<T>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -171,9 +165,6 @@ namespace CogniteSdk
         public SequenceUpdate(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<SequenceUpdate<T>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

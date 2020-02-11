@@ -1,4 +1,6 @@
-﻿using CogniteSdk;
+﻿// Disable FxCop: <auto-genevrated />
+
+using CogniteSdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +8,9 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using CogniteSdk.Assets;
+using CogniteSdk.DataPoints;
+using CogniteSdk.TimeSeries;
+using Com.Cognite.V1.Timeseries.Proto;
 
 namespace csharp {
 
@@ -24,45 +29,48 @@ namespace csharp {
 
             Console.WriteLine(newAsset.Name);
         }
-        /*
+
         static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData) {
-            var fieldsToUpdate = new List<AssetUpdate>() {
-                AssetUpdate.ChangeMetaData(metaData, null),
-                AssetUpdate.SetName(newName)
+            var query = new List<AssetUpdateItem>() {
+                new AssetUpdateItem(externalId) {
+                    Update = new AssetUpdateDto {
+                        Metadata = new DictUpdate<string>(metaData),
+                        Name = new SetUpdate<string>(newName)
+                    }
+                }
             };
 
-            var result = await client.Assets.UpdateAsync(new List<(Identity, IEnumerable<AssetUpdate>)>() {
-                (Identity.ExternalId(externalId), fieldsToUpdate)
-            });
+            var result = await client.Assets.UpdateAsync(query).ConfigureAwait(false);
 
             var updatedAsset = result.FirstOrDefault();
             Console.WriteLine(updatedAsset.Name);
         }
-        */
+
         static async Task<AssetReadDto> GetAssetsExample(Client client, string assetName) {
             var query = new AssetQueryDto
             {
                 Filter = new AssetFilterDto { Name = assetName }
             };
 
-            var result = await client.Assets.ListAsync(query);
+            var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
 
             var asset = result.Items.FirstOrDefault();
             Console.WriteLine(asset.ParentId);
             Console.WriteLine(result);
             return asset;
         }
-        /*
+
         static async Task QueryTimeseriesDataExample(Client client) {
-            var aggregates = new List<Aggregate> { Aggregate.Average };
-            var defaultOptions = new List<AggregateQuery> {
-                AggregateQuery.Aggregates(aggregates)
-            };
-            var query = new List<AggregateMultipleQuery>() {
-                new AggregateMultipleQuery () { Id = Identity.Id(42L), AggregateQuery = new List<AggregateQuery> () }
+            var query = new DataPointsQuery() {
+                Items = new List<DataPointsQueryItem> {
+                    new DataPointsQueryItem {
+                        Id = 42L,
+                        Aggregates = new List<string> { "average" }
+                    }
+                }
             };
 
-            var result = await client.DataPoints.GetAggregatedMultipleAsync(query, defaultOptions);
+            var result = await client.DataPoints.ListAsync(query);
             var timeseries = result.Items.FirstOrDefault();
             var datapoints = timeseries.AggregateDatapoints.Datapoints.FirstOrDefault();
 
@@ -71,11 +79,11 @@ namespace csharp {
         }
 
         static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
-            var timeseries = new TimeSeriesEntity {
+            var timeseries = new TimeSeriesWriteDto {
                 Name = timeseriesName
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesEntity> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWriteDto> { timeseries });
 
             Console.WriteLine(result);
 
@@ -90,9 +98,9 @@ namespace csharp {
                     NumericDatapoints = dataPoints
                 }
             });
-            await client.DataPoints.InsertAsync(points);
+            await client.DataPoints.CreateAsync(points);
         }
-        */
+
         private static async Task Main(string[] args) {
             Console.WriteLine("C# Client");
 

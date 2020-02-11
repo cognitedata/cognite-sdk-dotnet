@@ -16,6 +16,6 @@ namespace CogniteSdk.Raw
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TableDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

@@ -24,6 +24,6 @@ namespace CogniteSdk.Sequences
         public MultiValueType ValueType { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceColumnInfoDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

@@ -40,9 +40,6 @@ namespace CogniteSdk.Sequences
         public DictUpdate<string> Metadata { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<SequenceUpdateDto>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

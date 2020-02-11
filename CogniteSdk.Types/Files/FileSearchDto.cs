@@ -16,6 +16,6 @@ namespace CogniteSdk.Files
         public string Name { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileSearchDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

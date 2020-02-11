@@ -20,6 +20,6 @@ namespace CogniteSdk.Raw
         }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RowCreateQuery>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

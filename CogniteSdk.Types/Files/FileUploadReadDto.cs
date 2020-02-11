@@ -17,7 +17,7 @@ namespace CogniteSdk.Files
         public Uri UploadUrl { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileUploadReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

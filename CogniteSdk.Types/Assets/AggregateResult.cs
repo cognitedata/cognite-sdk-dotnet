@@ -16,6 +16,6 @@ namespace CogniteSdk.Assets
         public int ChildCount { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AggregateResult>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

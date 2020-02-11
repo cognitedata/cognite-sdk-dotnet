@@ -74,6 +74,6 @@ namespace CogniteSdk.Assets
         public string ExternalIdPrefix { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AssetFilterDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

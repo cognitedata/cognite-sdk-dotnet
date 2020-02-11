@@ -52,7 +52,7 @@ namespace CogniteSdk.Assets
         public string ParentExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AssetWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

@@ -22,6 +22,6 @@ namespace CogniteSdk.TimeSeries
         public string Partition { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesQueryDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

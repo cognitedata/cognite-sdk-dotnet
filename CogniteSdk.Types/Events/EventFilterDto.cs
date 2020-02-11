@@ -84,6 +84,6 @@ namespace CogniteSdk.Events
         public string ExternalIdPrefix { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<EventFilterDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

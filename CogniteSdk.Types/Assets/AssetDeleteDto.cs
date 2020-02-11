@@ -21,6 +21,6 @@ namespace CogniteSdk.Assets
         public bool? IgnoreUnknownIds { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AssetDeleteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

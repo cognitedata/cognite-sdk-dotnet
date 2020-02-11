@@ -16,6 +16,6 @@ namespace CogniteSdk.Raw
         public bool? Recursive { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<DatabaseDeleteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
