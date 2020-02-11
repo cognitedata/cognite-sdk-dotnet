@@ -31,7 +31,7 @@ namespace CogniteSdk.Sequences
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<long?> DataSetId { get; set; }
+        public Update<Identity> DataSetId { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
