@@ -15,7 +15,7 @@ namespace CogniteSdk.Types.Common
 		private const string S1 = "    ";
 		private const string S2 = S1+S1;
 
-		private static string Quoted(object value) => value is string ? $"\"{value}\"" : value.ToString();
+		private static string Quote(object value) => value is string ? $"\"{value}\"" : value.ToString();
 
 		/// <summary>Returns a string that represents the current object.</summary>
 		/// <returns>A string that represents the current object.</returns>
@@ -40,7 +40,7 @@ namespace CogniteSdk.Types.Common
 					var sbd = new StringBuilder("{");
 					foreach (DictionaryEntry kvp in (IDictionary)value)
 					{
-						sbd.Append($"\n{S2}{kvp.Key} = {Quoted(kvp.Value)}");
+						sbd.Append($"\n{S2}{kvp.Key} = {Quote(kvp.Value)}");
 					}
 
 					sbd.Append($"\n{S1}}}");
@@ -51,7 +51,7 @@ namespace CogniteSdk.Types.Common
 					var values = value as IEnumerable;
 					var xs = string.Join(", ", values.Cast<object>());
 					if (xs.Contains("\n")) {
-						var ys =xs.Replace("\n", $"\n{S2}");
+						var ys = xs.Replace("\n", $"\n{S2}");
 						sb.Append($"\n{S1}{name} = [\n{S2}{ys}]");
 					} else {
 						sb.Append($"\n{S1}{name} = [{xs}]");
@@ -59,7 +59,7 @@ namespace CogniteSdk.Types.Common
 				}
 				else
 				{
-					sb.Append($"\n{S1}{name} = {Quoted(value)}");
+					sb.Append($"\n{S1}{name} = {Quote(value)}");
 				}
 			}
 			sb.Append("\n}");
