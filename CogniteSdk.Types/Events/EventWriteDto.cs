@@ -63,6 +63,6 @@ namespace CogniteSdk.Events
         public string Source { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<EventWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

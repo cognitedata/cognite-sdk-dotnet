@@ -96,7 +96,7 @@ namespace CogniteSdk.Events
         }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<EventReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

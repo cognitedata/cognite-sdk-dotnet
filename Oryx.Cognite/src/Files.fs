@@ -36,7 +36,7 @@ module Files =
             let! ret = post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownloadDto>, 'a> request url
             return ret.Items
         }
-        
+
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileReadDto>, 'a> =
         retrieve ids Url
 
@@ -45,7 +45,6 @@ module Files =
 
     let delete (files: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         Url +/ "delete" |> post files
-
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
     let update (query: IEnumerable<UpdateItem<FileUpdateDto>>) : HttpHandler<HttpResponseMessage, FileReadDto seq, 'a>  =

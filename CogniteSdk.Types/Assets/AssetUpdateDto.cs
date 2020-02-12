@@ -49,7 +49,7 @@ namespace CogniteSdk.Assets
         public SetUpdate<long?> ParentExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<AssetUpdateDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

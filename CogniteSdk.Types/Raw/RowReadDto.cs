@@ -28,6 +28,6 @@ namespace CogniteSdk.Raw
         public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RowReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

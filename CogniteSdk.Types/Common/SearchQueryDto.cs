@@ -28,9 +28,6 @@ namespace CogniteSdk
         public TSearch Search { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<SearchQueryDto<TFilter, TSearch>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

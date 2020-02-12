@@ -64,7 +64,7 @@ namespace CogniteSdk.Events
         public Update<string> SubType { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<EventUpdateDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

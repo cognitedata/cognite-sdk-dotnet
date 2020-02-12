@@ -79,6 +79,6 @@ namespace CogniteSdk.TimeSeries
         public TimeRange LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesFilterDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

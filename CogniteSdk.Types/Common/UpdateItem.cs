@@ -34,9 +34,6 @@ namespace CogniteSdk
 
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<UpdateItem<TUpdate>>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

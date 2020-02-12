@@ -49,7 +49,7 @@ namespace CogniteSdk.TimeSeries
         public SequenceUpdate<long?> SecurityCategories { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<TimeSeriesUpdateDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

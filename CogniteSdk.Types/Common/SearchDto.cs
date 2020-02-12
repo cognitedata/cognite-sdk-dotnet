@@ -30,9 +30,6 @@ namespace CogniteSdk
         public string Query { get; set; }
 
         /// <inheritdoc />
-        public override string ToString()
-        {
-            return Stringable.ToString<SearchDto>(this);
-        }
+        public override string ToString() => Stringable.ToString(this);
     }
 }

@@ -50,6 +50,6 @@ namespace CogniteSdk.Sequences
         public IEnumerable<SequenceColumnWriteDto> Columns { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

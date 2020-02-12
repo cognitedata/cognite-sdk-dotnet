@@ -86,7 +86,7 @@ namespace CogniteSdk.Files
         public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<FileReadDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 

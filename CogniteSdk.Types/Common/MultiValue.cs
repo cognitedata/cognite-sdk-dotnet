@@ -70,10 +70,7 @@ namespace CogniteSdk
             /// <summary>
             /// Return string representation of the long value.
             /// </summary>
-            public override string ToString()
-            {
-                return Value.ToString(CultureInfo.InvariantCulture);
-            }
+            public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -99,10 +96,7 @@ namespace CogniteSdk
             /// <summary>
             /// Return string representation of the double value.
             /// </summary>
-            public override string ToString()
-            {
-                return Value.ToString(CultureInfo.InvariantCulture);
-            }
+            public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -128,10 +122,7 @@ namespace CogniteSdk
             /// <summary>
             /// Return string representation of the string value, i.e the string itself.
             /// </summary>
-            public override string ToString()
-            {
-                return Value;
-            }
+            public override string ToString() => Value;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace CogniteSdk.Events
         public string Description { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<DescriptionSearchDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

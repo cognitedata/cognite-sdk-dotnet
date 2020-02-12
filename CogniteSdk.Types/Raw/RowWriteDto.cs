@@ -25,6 +25,6 @@ namespace CogniteSdk.Raw
         public Dictionary<string, JsonElement> Columns { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RowWriteDto>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

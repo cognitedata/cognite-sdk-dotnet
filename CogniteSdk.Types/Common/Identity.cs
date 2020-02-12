@@ -92,7 +92,7 @@ namespace CogniteSdk {
             }
             else
             {
-                return $"{{ ExternalId = {ExternalId} }}";
+                return $"{{ ExternalId = \"{ExternalId}\" }}";
             }
         }
     }

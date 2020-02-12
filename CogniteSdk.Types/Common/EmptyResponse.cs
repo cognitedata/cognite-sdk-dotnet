@@ -6,5 +6,8 @@ namespace CogniteSdk
     /// <summary>
     /// Empty object, by design contains no properties. Used for parsing the delete response.
     /// </summary>
-    public class EmptyResponse {}
+    public class EmptyResponse {
+        /// <inheritdoc />
+        public override string ToString() => "{ }";
+    }
 }
