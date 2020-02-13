@@ -51,7 +51,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Only include events that belong to these datasets.
         /// </summary>
-        public IEnumerable<long> DataSetIds { get; set; }
+        public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <summary>
         /// The source of the asset.

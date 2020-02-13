@@ -15,7 +15,7 @@ namespace CogniteSdk.Events
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<Identity> DataSetId { get; set; }
+        public Update<long?> DataSetId { get; set; }
 
         /// <summary>
         /// Set a new value for the start time, or remove the value.

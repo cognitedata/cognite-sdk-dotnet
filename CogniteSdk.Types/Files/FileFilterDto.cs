@@ -35,7 +35,7 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Only include files that have a related asset in a tree rooted at any of these root assetIds.
         /// </summary>
-        public IEnumerable<Identity> RootAssetIds { get; set; }
+        public IEnumerable<long> RootAssetIds { get; set; }
 
         /// <summary>
         /// Only include files that have a related asset in a subtree rooted at any of these assetIds (including the
