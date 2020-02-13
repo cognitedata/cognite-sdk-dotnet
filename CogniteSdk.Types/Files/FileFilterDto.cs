@@ -90,7 +90,7 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Only include assets that belong to these datasets.
         /// </summary>
-        public IEnumerable<long> DataSetIds { get; set; }
+        public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

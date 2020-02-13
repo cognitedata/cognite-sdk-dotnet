@@ -66,7 +66,7 @@ namespace CogniteSdk.TimeSeries
         /// <summary>
         /// Only include assets that belong to these datasets.
         /// </summary>
-        public IEnumerable<long> DataSetIds { get; set; }
+        public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <summary>
         /// Range between two timestamps.
