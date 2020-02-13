@@ -35,7 +35,7 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Only include files that have a related asset in a tree rooted at any of these root assetIds.
         /// </summary>
-        public IEnumerable<long> RootAssetIds { get; set; }
+        public IEnumerable<Identity> RootAssetIds { get; set; }
 
         /// <summary>
         /// Only include files that have a related asset in a subtree rooted at any of these assetIds (including the
@@ -90,7 +90,7 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Only include assets that belong to these datasets.
         /// </summary>
-        public IEnumerable<long> DataSetIds { get; set; }
+        public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
