@@ -132,8 +132,8 @@ namespace csharp {
                     .SetLogLevel(LogLevel.Debug)
                     .Build();
 
-            //var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
-            var data = await QueryTimeseriesDataExample(client);
+            var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
+            //var data = await QueryTimeseriesDataExample(client);
         }
     }
 }

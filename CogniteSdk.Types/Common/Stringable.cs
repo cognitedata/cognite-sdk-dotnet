@@ -59,7 +59,8 @@ namespace CogniteSdk.Types.Common
 				}
 				else
 				{
-					sb.Append($"\n{S1}{name} = {Quote(value)}");
+					var indented = Quote(value).Replace("\n", $"\n{S2}");
+					sb.Append($"\n{S1}{name} = {indented}");
 				}
 			}
 			sb.Append("\n}");
