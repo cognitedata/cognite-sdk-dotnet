@@ -104,8 +104,9 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
-    let inline getById<'a, 'b> (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
+    let inline getById (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         url +/ sprintf "%d" id |> get
 
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
@@ -118,15 +119,17 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let post<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
@@ -135,12 +138,13 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> addQuery parms
-        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
-    let inline list<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
+    let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "list" |> post content
 
     let search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
@@ -198,7 +202,7 @@ module Handler =
         >=> setVersion V10
         >=> setResource url
         >=> setResponseType ResponseType.Protobuf
-        >=> getContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> protobuf parser
@@ -208,7 +212,7 @@ module Handler =
         POST
         >=> setVersion V10
         >=> setResource url
-        >=> getContent (fun () -> new ProtobufPushStreamContent(content) :> _)
+        >=> setContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -221,19 +225,19 @@ module Handler =
                 match err.Code with
                 // Rate limiting
                 | 429 -> true
-                // 500 is hard to say, but we should avoid having those in the api
-                | 500 ->
-                    true // we get random and transient 500 responses often enough that it's worth retrying them.
+                // 500 is hard to say, but we should avoid having those in the api. We get random and transient 500
+                // responses often enough that it's worth retrying them.
+                | 500 -> true
                 // 502 and 503 are usually transient.
                 | 502 -> true
                 | 503 -> true
-                // do not retry other responses.
+                // Do not retry other responses.
                 | _ -> false
             | Panic err ->
                 match err with
                 | :? Net.Http.HttpRequestException
                 | :? System.Net.WebException -> true
                 // do not retry other exceptions.
-                | _ -> true
+                | _ -> false
 
         retry shouldRetry initialDelay maxRetries next ctx
