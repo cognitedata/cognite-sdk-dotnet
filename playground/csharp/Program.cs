@@ -62,12 +62,13 @@ namespace csharp {
             return asset;
         }
 
-        static async Task QueryTimeseriesDataExample(Client client) {
+        static async Task<AggregateDatapoint> QueryTimeseriesDataExample(Client client) {
             var query = new DataPointsQuery() {
                 Items = new List<DataPointsQueryItem> {
                     new DataPointsQueryItem {
-                        Id = 42L,
-                        Aggregates = new List<string> { "average" }
+                        Id = 592785165400753L,
+                        Aggregates = new List<string> { "average" },
+                        Granularity="1d"
                     }
                 }
             };
@@ -76,8 +77,7 @@ namespace csharp {
             var timeseries = result.Items.FirstOrDefault();
             var datapoints = timeseries.AggregateDatapoints.Datapoints.FirstOrDefault();
 
-            Console.WriteLine(datapoints.Average);
-            Console.WriteLine(result);
+            return datapoints;
         }
 
         static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
@@ -132,7 +132,8 @@ namespace csharp {
                     .SetLogLevel(LogLevel.Debug)
                     .Build();
 
-            var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
+            //var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
+            var data = await QueryTimeseriesDataExample(client);
         }
     }
 }
