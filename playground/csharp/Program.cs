@@ -103,7 +103,7 @@ namespace csharp {
             await client.DataPoints.CreateAsync(points);
         }
 
-        private static async Task Main(string[] _) {
+        private static async Task Main() {
             Console.WriteLine("C# Client");
 
             var apiKey = Environment.GetEnvironmentVariable("API_KEY");
