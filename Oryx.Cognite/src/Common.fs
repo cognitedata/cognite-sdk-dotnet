@@ -105,4 +105,3 @@ module Context =
         |> Context.setUrlBuilder urlBuilder
         |> Context.addHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
         |> Context.setLogFormat "CDF ({Message}): {Uri}\n→ {RequestContent}\n← {ResponseContent}"
-
