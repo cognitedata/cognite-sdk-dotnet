@@ -56,6 +56,9 @@ group Playground
     nuget Oryx.Protobuf prerelease
     nuget Oryx.SystemTextJson prerelease
     nuget CogniteSdk.Protobuf
+    nuget Serilog
+    nuget Serilog.Extensions.Logging
+    nuget Serilog.Sinks.Console
 
 group FSharp
     source https://www.nuget.org/api/v2

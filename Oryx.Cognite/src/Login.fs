@@ -20,10 +20,13 @@ module Login =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
+        >=> logWithMessage "Login:get"
+
 
     /// Returns the authentication information about the asking entity.
     let status () : HttpHandler<HttpResponseMessage, LoginStatusReadDto, 'a> =
         req {
             let! data = get<LoginDataReadDto, 'a> "/login/status"
             return data.Data
-        }
+        } >=> logWithMessage "Login:status"
+

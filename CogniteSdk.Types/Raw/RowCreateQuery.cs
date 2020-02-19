@@ -1,5 +1,6 @@
-﻿using CogniteSdk.Types.Common;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Raw
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,28 +22,28 @@ namespace CogniteSdk.Types.Common
 		{
 			var sb = new StringBuilder(dto.GetType().Name);
 
-			sb.Append(" {");
+			sb.Append(" {\n");
 			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(dto))
 			{
 				var name = descriptor.Name;
 				object value = descriptor.GetValue(dto);
 				if (value == null)
 				{
-					sb.Append($"\n{S1}{name} = null");
+					sb.Append($"{S1}{name} = null\n");
 					continue;
 				}
 
 				var t = value.GetType();
 				if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
 				{
-					var sbd = new StringBuilder("{");
+					var sbd = new StringBuilder("{\n");
 					foreach (DictionaryEntry kvp in (IDictionary)value)
 					{
-						sbd.Append($"\n{S2}{kvp.Key} = {Quote(kvp.Value)}");
+						sbd.Append($"{S2}{kvp.Key} = {Quote(kvp.Value)}\n");
 					}
 
-					sbd.Append($"\n{S1}}}");
-					sb.Append($"\n{S1}{name} = {sbd}");
+					sbd.Append($"{S1}}}");
+					sb.Append($"{S1}{name} = {sbd}\n");
 				}
 				else if (value is IEnumerable && !(value is string))
 				{
@@ -52,17 +51,18 @@ namespace CogniteSdk.Types.Common
 					var xs = string.Join(", ", values.Cast<object>());
 					if (xs.Contains("\n")) {
 						var ys = xs.Replace("\n", $"\n{S2}");
-						sb.Append($"\n{S1}{name} = [\n{S2}{ys}]");
+						sb.Append($"{S1}{name} = [\n{S2}{ys}]\n");
 					} else {
-						sb.Append($"\n{S1}{name} = [{xs}]");
+						sb.Append($"{S1}{name} = [{xs}]\n");
 					}
 				}
 				else
 				{
-					sb.Append($"\n{S1}{name} = {Quote(value)}");
+					var indented = Quote(value).Replace("\n", $"\n{S1}");
+					sb.Append($"{S1}{name} = {indented}\n");
 				}
 			}
-			sb.Append("\n}");
+			sb.Append("}");
 			return sb.ToString();
 		}
 	}

@@ -1,2 +1,5 @@
 group Playground
     FSharp.Core
+    Serilog
+    Serilog.Sinks.Console
+    Serilog.Extensions.Logging

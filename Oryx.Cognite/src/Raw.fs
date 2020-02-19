@@ -5,6 +5,7 @@ namespace Oryx.Cognite
 
 open System.Net.Http
 
+open Oryx
 open Oryx.Cognite
 
 open System.Collections.Generic
@@ -26,6 +27,7 @@ module Raw =
     /// <returns>databases in project.</returns>
     let listDatabases (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<DatabaseDto>, 'a> =
         getWithQuery query Url
+        >=> logWithMessage "Raw:get"
 
     /// <summary>
     /// Create new databases in the given project.
@@ -34,6 +36,7 @@ module Raw =
     /// <returns>List of created databases.</returns>
     let createDatabases (items: IEnumerable<DatabaseDto>) : HttpHandler<HttpResponseMessage, IEnumerable<DatabaseDto>, 'a> =
         create items Url
+        >=> logWithMessage "Raw:createDatabases"
 
     /// <summary>
     /// Delete multiple databases in the same project.
@@ -42,6 +45,7 @@ module Raw =
     /// <returns>Empty result.</returns>
     let deleteDatabases (query: DatabaseDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete query Url
+        >=> logWithMessage "Raw:deleteDatabases"
 
     /// <summary>
     /// List tables in database.
@@ -52,6 +56,7 @@ module Raw =
     let listTables (database: string) (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TableDto>, 'a> =
         Url +/ database +/ "tables"
         |> getWithQuery query
+        >=> logWithMessage "Raw:listTables"
 
     /// <summary>
     /// Create tables in database.
@@ -62,6 +67,7 @@ module Raw =
     let createTables (database: string) (items: TableDto seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, TableDto seq, 'a> =
         let query = TableCreateQuery(EnsureParent = ensureParent)
         Url +/ database +/ "tables" |> createWithQuery items query
+        >=> logWithMessage "Raw:createTables"
 
     /// <summary>
     /// Delete multiple tables in the same database.
@@ -70,6 +76,7 @@ module Raw =
     /// <returns>Empty result.</returns>
     let deleteTables (database: string) (items: TableDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         Url +/ database +/ "tables/delete" |> post items
+        >=> logWithMessage "Raw:deleteTables"
 
     /// <summary>
     /// Retrieve rows from a table.
@@ -81,6 +88,7 @@ module Raw =
     let listRows (database: string) (table: string) (query: RowQueryDto): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowReadDto>, 'a> =
         Url +/ database +/ "tables" +/ table +/ "rows"
         |> getWithQuery query
+        >=> logWithMessage "Raw:listRows"
 
     /// <summary>
     /// Create rows in a table.
@@ -94,6 +102,7 @@ module Raw =
         let query = RowCreateQuery(EnsureParent = ensureParent)
         Url +/ database +/ "tables" +/ table +/ "rows"
         |> createWithQueryEmpty dtos query
+        >=> logWithMessage "Raw:createRows"
 
     /// <summary>
     /// Delete rows in a table.
@@ -106,3 +115,4 @@ module Raw =
         let query = ItemsWithoutCursor<RowDeleteDto>(Items=dtos)
         Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
         |> post query
+        >=> logWithMessage "Raw:deleteRows"
