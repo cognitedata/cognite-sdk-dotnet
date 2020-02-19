@@ -7,6 +7,7 @@ using System.Net.Http;
 
 using Microsoft.Extensions.Logging;
 using Oryx;
+using Oryx.Cognite;
 using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
@@ -68,11 +69,9 @@ namespace CogniteSdk
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
-        /// <param name="context">Context to use for this session.</param>
-        private Client(HttpContext context)
+        /// <param name="ctx">Context to use for this session.</param>
+        private Client(HttpContext ctx)
         {
-            var ctx = setUrlBuilder(context);
-
             // Setup resources.
             Assets = new AssetsResource(ctx);
             TimeSeries = new TimeSeriesResource(ctx);
@@ -90,7 +89,7 @@ namespace CogniteSdk
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
-            private HttpContext _context = Context.defaultContext;
+            private HttpContext _context = ContextModule.create ();
 
             /// <summary>
             /// Create Client builder.
@@ -196,6 +195,17 @@ namespace CogniteSdk
             public Builder SetLogLevel(LogLevel logLevel)
             {
                 _context = Context.setLogLevel(logLevel, _context);
+                return this;
+            }
+
+            /// <summary>
+            /// Set the log format string to be used by the SDK.
+            /// </summary>
+            /// <param name="format">The log level to use.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetLogFormat(string format)
+            {
+                _context = Context.setLogFormat(format, _context);
                 return this;
             }
 
