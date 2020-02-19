@@ -50,9 +50,9 @@ NUGET
       Google.Protobuf (>= 3.11.3)
       Oryx (>= 1.0.0-alpha-009)
       TaskBuilder.fs (>= 2.1)
-    Oryx.SystemTextJson (1.0.0-alpha-008)
+    Oryx.SystemTextJson (1.0.0-alpha-009)
       FSharp.Core (>= 4.7)
-      Oryx (>= 1.0.0-alpha-008)
+      Oryx (>= 1.0.0-alpha-009)
       System.Text.Json (>= 4.7)
       TaskBuilder.fs (>= 2.1)
     System.Buffers (4.5)
@@ -718,7 +718,7 @@ NUGET
     Microsoft.NetFramework.Analyzers (2.9.8)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
-    Oryx (1.0.0-alpha-008)
+    Oryx (1.0.0-alpha-009)
       FSharp.Core (>= 4.7)
       Microsoft.Extensions.Logging (>= 3.1.1)
       TaskBuilder.fs (>= 2.1)
@@ -857,9 +857,9 @@ NUGET
       Google.Protobuf (>= 3.11.3) - restriction: >= netstandard2.0
       Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (1.0.0-alpha-008)
+    Oryx.SystemTextJson (1.0.0-alpha-009)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
-      Oryx (>= 1.0.0-alpha-008) - restriction: >= netstandard2.0
+      Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
       System.Text.Json (>= 4.7) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (>= netcoreapp1.0) (< netstandard1.2)) (&& (>= netcoreapp1.0) (< netstandard1.3)) (&& (>= netcoreapp1.0) (< netstandard1.4)) (&& (>= netcoreapp1.0) (< netstandard1.5)) (&& (>= netcoreapp1.0) (< netstandard1.6)) (&& (>= netcoreapp1.0) (< netstandard2.0))

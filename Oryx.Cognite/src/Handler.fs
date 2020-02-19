@@ -104,7 +104,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        >=> log
 
     let inline getById (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         url +/ sprintf "%d" id |> get
@@ -119,7 +118,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        >=> log
 
     let post<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         POST
@@ -129,7 +127,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        >=> log
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
@@ -142,7 +139,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        >=> log
 
     let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "list" |> post content
@@ -206,7 +202,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> protobuf parser
-        >=> log
 
     /// Create content using protocol buffers
     let createProtobuf<'a, 'b> (content: Google.Protobuf.IMessage) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
@@ -217,7 +212,6 @@ module Handler =
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
-        >=> log
 
     /// Retry handler. May be used by F# clients. C# clients should use Polly instead.
     let retry (initialDelay: int<ms>) (maxRetries : int) (next: NextFunc<'a,'r>) (ctx: Context<'a>) : HttpFuncResult<'r> =
