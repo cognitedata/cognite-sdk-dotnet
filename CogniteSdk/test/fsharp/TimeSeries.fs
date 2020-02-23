@@ -253,7 +253,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
     let units = Seq.map (fun (d: TimeSeriesReadDto) -> d.Unit) dtos
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len = 2 @>
     test <@ Seq.forall ((=) "et") units @>
 }
 

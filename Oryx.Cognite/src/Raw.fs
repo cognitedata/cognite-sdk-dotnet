@@ -114,5 +114,5 @@ module Raw =
     let deleteRows (database: string) (table: string) (dtos: RowDeleteDto seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = ItemsWithoutCursor<RowDeleteDto>(Items=dtos)
         Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
-        |> post query
+        |> postV10 query
         >=> logWithMessage "Raw:deleteRows"
