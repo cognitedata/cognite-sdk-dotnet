@@ -17,6 +17,7 @@
     <Compile Include="DataPoints.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Raw.fs" />
+    <Compile Include="Relationships.fs" />
     <Compile Include="Files.fs" />
     <Compile Include="Sequences.fs" />
     <Compile Include="Login.fs" />
