@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Relationships
 {
     /// <summary>
@@ -9,6 +12,7 @@ namespace CogniteSdk.Relationships
         /// Key of the vertex.
         /// </summary>
         public string Key { get; set; }
+
         /// <summary>
         /// Value of the vertex.
         /// </summary>

@@ -18,7 +18,7 @@ let ``Get relationship by ids is Ok`` () = task {
     let relationshipIds = [ "relationship-test" ]
 
     // Act
-    let! res = writeClient.Relationships.RetrieveAsync relationshipIds
+    let! res = writeClient.Playground.Relationships.RetrieveAsync relationshipIds
 
     let len = Seq.length res.Items
 
@@ -35,7 +35,7 @@ let ``Filter relationships on sources is Ok`` () = task {
     let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Relationships.ListAsync query
+    let! res = writeClient.Playground.Relationships.ListAsync query
 
     let len = Seq.length res.Items
 
@@ -52,7 +52,7 @@ let ``Filter relationships on targets is Ok`` () = task {
     let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Relationships.ListAsync query
+    let! res = writeClient.Playground.Relationships.ListAsync query
 
     let len = Seq.length res.Items
 
@@ -77,8 +77,8 @@ let ``Create and delete Relationships is Ok`` () = task {
         )
 
     // Act
-    let! res = writeClient.Relationships.CreateAsync [ dto ]
-    let! delRes = writeClient.Relationships.DeleteAsync [ externalId ]
+    let! res = writeClient.Playground.Relationships.CreateAsync [ dto ]
+    let! delRes = writeClient.Playground.Relationships.DeleteAsync [ externalId ]
 
     let resExternalId = (Seq.head res.Items).ExternalId
 

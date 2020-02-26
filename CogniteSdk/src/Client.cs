@@ -66,9 +66,10 @@ namespace CogniteSdk
         public SequencesResource Sequences  { get; }
 
         /// <summary>
-        /// Client Relationships extension methods
+        /// Client playground extension methods
         /// </summary>
-        public RelationshipResource Relationships  { get; }
+        public PlaygroundResource Playground  { get; }
+
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
@@ -81,10 +82,12 @@ namespace CogniteSdk
             DataPoints =new DataPointsResource(ctx);
             Events = new EventsResource(ctx);
             Sequences = new SequencesResource(ctx);
-            Relationships = new RelationshipResource(ctx);
             Raw = new RawResource(ctx);
             Files = new FilesResource(ctx);
             Login = new LoginResource(ctx);
+
+            // Playground features (experimental)
+            Playground = new PlaygroundResource(ctx);
         }
 
         /// <summary>
