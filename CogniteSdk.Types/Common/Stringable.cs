@@ -20,46 +20,47 @@ namespace CogniteSdk.Types.Common
 		/// <returns>A string that represents the current object.</returns>
 		public static string ToString<T>(T dto)
 		{
+			var nl = System.Environment.NewLine;
 			var sb = new StringBuilder(dto.GetType().Name);
 
-			sb.Append(" {\n");
+			sb.Append(" {{nl}");
 			foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(dto))
 			{
 				var name = descriptor.Name;
 				object value = descriptor.GetValue(dto);
 				if (value == null)
 				{
-					sb.Append($"{S1}{name} = null\n");
+					sb.Append($"{S1}{name} = null{nl}");
 					continue;
 				}
 
 				var t = value.GetType();
 				if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
 				{
-					var sbd = new StringBuilder("{\n");
+					var sbd = new StringBuilder("{{nl}");
 					foreach (DictionaryEntry kvp in (IDictionary)value)
 					{
-						sbd.Append($"{S2}{kvp.Key} = {Quote(kvp.Value)}\n");
+						sbd.Append($"{S2}{kvp.Key} = {Quote(kvp.Value)}{nl}");
 					}
 
 					sbd.Append($"{S1}}}");
-					sb.Append($"{S1}{name} = {sbd}\n");
+					sb.Append($"{S1}{name} = {sbd}{nl}");
 				}
 				else if (value is IEnumerable && !(value is string))
 				{
 					var values = value as IEnumerable;
 					var xs = string.Join(", ", values.Cast<object>());
-					if (xs.Contains("\n")) {
-						var ys = xs.Replace("\n", $"\n{S2}");
-						sb.Append($"{S1}{name} = [\n{S2}{ys}]\n");
+					if (xs.Contains(nl)) {
+						var ys = xs.Replace("{nl}", $"{nl}{S2}");
+						sb.Append($"{S1}{name} = [{nl}{S2}{ys}]{nl}");
 					} else {
-						sb.Append($"{S1}{name} = [{xs}]\n");
+						sb.Append($"{S1}{name} = [{xs}]{nl}");
 					}
 				}
 				else
 				{
-					var indented = Quote(value).Replace("\n", $"\n{S1}");
-					sb.Append($"{S1}{name} = {indented}\n");
+					var indented = Quote(value).Replace(nl, $"{nl}{S1}");
+					sb.Append($"{S1}{name} = {indented}{nl}");
 				}
 			}
 			sb.Append("}");

@@ -1,3 +1,6 @@
+// Copyright 2019 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 namespace CogniteSdk.Relationships
 {
     /// <summary>
@@ -9,6 +12,7 @@ namespace CogniteSdk.Relationships
         /// The type of resource, Enum: "asset" "timeSeries" "file" "threeD" "threeDRevision" "event" "sequence".
         /// </summary>
         public string Resource { get; set; }
+
         /// <summary>
         /// ExternalId of the resource.
         /// </summary>
