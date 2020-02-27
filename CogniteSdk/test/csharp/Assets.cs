@@ -131,7 +131,7 @@ namespace Test.CSharp.Integration {
         public async Task CreateAndDeleteAssetWorkAsExpectedAsync() {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
-            var newAsset = new AssetWrite
+            var newAsset = new AssetCreate
             {
                 ExternalId = externalIdString,
                 Name = "Create Assets c# sdk test",
@@ -143,7 +143,7 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetWrite>() { newAsset });
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { newAsset });
             await WriteClient.Assets.DeleteAsync(deletes);
 
             // Assert
@@ -184,7 +184,7 @@ namespace Test.CSharp.Integration {
                 { "key1", "value1" },
                 { "key2", "value2" }
             };
-            var newAsset = new AssetWrite
+            var newAsset = new AssetCreate
             {
                 ExternalId = externalIdString,
                 Name = "Update Assets c# sdk test",
@@ -206,7 +206,7 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            _ = await WriteClient.Assets.CreateAsync(new List<AssetWrite>() { newAsset }).ConfigureAwait(false);
+            _ = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { newAsset }).ConfigureAwait(false);
             await WriteClient.Assets.UpdateAsync(update);
 
             var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });

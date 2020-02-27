@@ -17,17 +17,17 @@ module Files =
     let Url = "/files"
 
     /// Retrieves information about a file given a file id.
-    let get (fileId: int64) : HttpHandler<HttpResponseMessage, FileRead, 'a> =
+    let get (fileId: int64) : HttpHandler<HttpResponseMessage, File, 'a> =
         Url +/ sprintf "%d" fileId |> getV10
         >=> logWithMessage "Files:get"
 
     /// Retrieves list of files matching filter, and a cursor if given limit is exceeded. Returns list of files matching given filters and optional cursor</returns>
-    let list (query: FileQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<FileRead>, 'a> =
+    let list (query: FileQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<File>, 'a> =
         list query Url
         >=> logWithMessage "Files:list"
 
     /// Upload new file in the given project.
-    let upload (file: FileWrite) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadRead, 'a> =
+    let upload (file: FileCreate) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadRead, 'a> =
         postV10 file Url
         >=> logWithMessage "Files:upload"
 
@@ -40,12 +40,12 @@ module Files =
             return ret.Items
         } >=> logWithMessage "Files:download"
 
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileRead>, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<File>, 'a> =
         retrieve ids Url
         >=> logWithMessage "Files:retrieve"
 
 
-    let search (query: SearchQueryDto<FileFilter, FileSearch>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FileRead>, 'a> =
+    let search (query: SearchQueryDto<FileFilter, FileSearch>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<File>, 'a> =
         Url +/ "search" |> postV10 query
         >=> logWithMessage "Files:search"
 
@@ -54,6 +54,6 @@ module Files =
         >=> logWithMessage "Files:delete"
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
-    let update (query: IEnumerable<UpdateItem<FileUpdate>>) : HttpHandler<HttpResponseMessage, FileRead seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<FileUpdate>>) : HttpHandler<HttpResponseMessage, File seq, 'a>  =
         update query Url
         >=> logWithMessage "Files:update"

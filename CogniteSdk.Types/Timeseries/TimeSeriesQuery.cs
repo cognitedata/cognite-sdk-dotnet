@@ -3,12 +3,12 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk
 {
     /// <summary>
     /// The time series query DTO.
     /// </summary>
-    public class TimeSeriesQueryDto : CursorQueryBase
+    public class TimeSeriesQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on time series with strict matching.

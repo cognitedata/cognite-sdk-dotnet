@@ -65,7 +65,7 @@ let ``Get files by ids is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let ids = Seq.map (fun (d: FileRead) -> d.Id) dtos
+    let ids = Seq.map (fun (d: File) -> d.Id) dtos
 
     // Assert
     test <@ len = 3 @>
@@ -103,7 +103,7 @@ let ``Get files by externalIds is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let ids = Seq.map (fun (d: FileRead) -> d.ExternalId) dtos
+    let ids = Seq.map (fun (d: File) -> d.ExternalId) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -126,7 +126,7 @@ let ``Filter Files on AssetIds is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let assetIds = Seq.collect (fun (e: FileRead) -> e.AssetIds) dtos
+    let assetIds = Seq.collect (fun (e: File) -> e.AssetIds) dtos
 
     // Assert
     test <@ len > 0 @>
@@ -149,7 +149,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let createdTimes = Seq.map (fun (e: FileRead) -> e.CreatedTime) dtos
+    let createdTimes = Seq.map (fun (e: File) -> e.CreatedTime) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -172,7 +172,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let lastUpdatedTimes = Seq.map (fun (e: FileRead) -> e.LastUpdatedTime) dtos
+    let lastUpdatedTimes = Seq.map (fun (e: File) -> e.LastUpdatedTime) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -194,7 +194,7 @@ let ``Filter Files on ExternalIdPrefix is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let externalIds = Seq.map (fun (e: FileRead) -> e.ExternalId) dtos
+    let externalIds = Seq.map (fun (e: File) -> e.ExternalId) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -217,7 +217,7 @@ let ``Filter Files on MetaData is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let ms = Seq.map (fun (e: FileRead) -> e.Metadata) dtos
+    let ms = Seq.map (fun (e: File) -> e.Metadata) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -240,7 +240,7 @@ let ``Filter Files on Source is Ok`` () = task {
     let dtos = res.Items
     let len = Seq.length dtos
 
-    let sources = Seq.map (fun (e: FileRead) -> e.Source) dtos
+    let sources = Seq.map (fun (e: File) -> e.Source) dtos
 
     // Assert
     test <@ len = 10 @>
@@ -271,7 +271,7 @@ let ``Filter Files on Name is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let names = Seq.map (fun (e: FileRead) -> e.Name) dtos.Items
+    let names = Seq.map (fun (e: File) -> e.Name) dtos.Items
 
     // Assert
     test <@ len = 1 @>
@@ -304,7 +304,7 @@ let ``Filter Files on MimeType is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let mimeTypes = Seq.collect (fun (e: FileRead) -> e.MimeType |> optionToSeq) dtos.Items
+    let mimeTypes = Seq.collect (fun (e: File) -> e.MimeType |> optionToSeq) dtos.Items
 
     // Assert
     test <@ len = 7 @>
@@ -341,7 +341,7 @@ let ``Filter Files on UploadedTime is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let uploadedTimes = Seq.collect (fun (e: FileRead) -> e.UploadedTime |> optionToSeq) dtos.Items
+    let uploadedTimes = Seq.collect (fun (e: File) -> e.UploadedTime |> optionToSeq) dtos.Items
 
     // Assert
     test <@ len = 1 @>
@@ -378,7 +378,7 @@ let ``Filter Files on SourceCreatedTime is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let sourceCreatedTimes = Seq.collect (fun (e: FileRead) -> e.SourceCreatedTime |> optionToSeq) dtos.Items
+    let sourceCreatedTimes = Seq.collect (fun (e: File) -> e.SourceCreatedTime |> optionToSeq) dtos.Items
 
     // Assert
     test <@ len = 1 @>
@@ -415,7 +415,7 @@ let ``Filter Files on SourceModifiedTime is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let sourceModifiedTimes = Seq.collect (fun (e: FileRead) -> e.SourceModifiedTime |> optionToSeq) dtos.Items
+    let sourceModifiedTimes = Seq.collect (fun (e: File) -> e.SourceModifiedTime |> optionToSeq) dtos.Items
 
     // Assert
     test <@ len = 1 @>
@@ -448,7 +448,7 @@ let ``Filter Files on Uploaded is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let uploadeds = Seq.map (fun (e: FileRead) -> e.Uploaded) dtos.Items
+    let uploadeds = Seq.map (fun (e: File) -> e.Uploaded) dtos.Items
 
     // Assert
     test <@ len = 10 @>
@@ -478,7 +478,7 @@ let ``Search Files on Name is Ok`` () = task {
     let dtos = ctx'.Response
     let len = Seq.length dtos
 
-    let names = Seq.map (fun (e: FileRead) -> e.Name) dtos
+    let names = Seq.map (fun (e: File) -> e.Name) dtos
 
     // Assert
     test <@ len > 0 @>
@@ -493,7 +493,7 @@ let ``Create and delete files is Ok`` () = task {
     // Arrange
     let ctx = writeCtx ()
     let externalIdString = Guid.NewGuid().ToString()
-    let dto: Files.FileWrite = {
+    let dto: Files.FileCreate = {
         Name = "testFile"
         ExternalId = Some externalIdString
         MimeType = None
@@ -551,7 +551,7 @@ let ``Update files is Ok`` () = task {
     ] |> Dictionary)
 
     let dto =
-        FileWrite(
+        FileCreate(
             ExternalId = externalIdString,
             Name = "testName",
             SourceCreatedTime = Nullable 123L,

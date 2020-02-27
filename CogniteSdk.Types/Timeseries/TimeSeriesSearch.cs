@@ -1,7 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk
 {
     /// <summary>
     /// The timeseries search DTO.

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Events
+namespace CogniteSdk
 {
     /// <summary>
     /// The Event query DTO.

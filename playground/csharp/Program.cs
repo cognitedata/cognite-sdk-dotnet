@@ -14,19 +14,18 @@ using Serilog.Extensions.Logging;
 using CogniteSdk;
 using CogniteSdk.Assets;
 using CogniteSdk.DataPoints;
-using CogniteSdk.TimeSeries;
 
 namespace csharp {
 
     class Program {
 
         static async Task CreateAssetsExample(Client client, string externalId, string name) {
-            var asset = new AssetWrite
+            var asset = new AssetCreate
             {
                 ExternalId = externalId,
                 Name = name
             };
-            var assets = new List<AssetWrite> {asset};
+            var assets = new List<AssetCreate> {asset};
 
             var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
@@ -50,7 +49,7 @@ namespace csharp {
             Console.WriteLine(updatedAsset.Name);
         }
 
-        static async Task<AssetRead> GetAssetsExample(Client client, string assetName) {
+        static async Task<Asset> GetAssetsExample(Client client, string assetName) {
             var query = new AssetQuery
             {
                 Filter = new AssetFilter { Name = assetName }

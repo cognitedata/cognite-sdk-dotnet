@@ -1,16 +1,13 @@
 module Tests.Integration.Datapoints
 
 open System
-open System.Net.Http
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Oryx
 open Swensen.Unquote
 open Xunit
 open Com.Cognite.V1.Timeseries.Proto
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 open CogniteSdk.DataPoints
 
 
@@ -43,8 +40,8 @@ let ``Get datapoints by id with options is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in dtos do
-                for dp in DataPoint.NumericDatapoints.Datapoints do
+            for dps in dtos do
+                for dp in dps.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -74,8 +71,8 @@ let ``Get datapoints by id with limit is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in dtos.Items do
-                for dp in DataPoint.NumericDatapoints.Datapoints do
+            for dps in dtos.Items do
+                for dp in dps.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -109,8 +106,8 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in dtos.Items do
-                for dp in DataPoint.NumericDatapoints.Datapoints do
+            for dps in dtos.Items do
+                for dp in dps.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -142,8 +139,8 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in response.Items do
-                for dp in DataPoint.NumericDatapoints.Datapoints do
+            for dps in response.Items do
+                for dp in dps.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -179,8 +176,8 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in res.Items do
-                for dp in DataPoint.AggregateDatapoints.Datapoints do
+            for dps in res.Items do
+                for dp in dps.AggregateDatapoints.Datapoints do
                     yield dp
         }
 
@@ -219,8 +216,8 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 
     let datapoints =
         seq {
-            for DataPoint in dtos do
-                yield! DataPoint.DataPoints
+            for dps in dtos do
+                yield! dps.DataPoints
         }
 
     // Assert

@@ -13,7 +13,7 @@ namespace CogniteSdk.Login
         /// <summary>
         /// Represents the current authentication status of the request
         /// </summary>
-        public LoginStatusRead Data { get; set; }
+        public LoginStatus Data { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<LoginDataRead>(this);

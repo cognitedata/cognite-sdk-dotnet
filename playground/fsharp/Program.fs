@@ -77,7 +77,7 @@ let searchAssetsExample (ctx : HttpContext) = task {
 let createAssetsExample ctx = task {
 
     let assets = [
-        Assets.AssetWrite(
+        Assets.AssetCreate(
             Name = "My new asset",
             Description = "My description"
        )

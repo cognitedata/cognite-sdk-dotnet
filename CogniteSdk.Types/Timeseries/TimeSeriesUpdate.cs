@@ -1,6 +1,6 @@
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk
 {
     /// <summary>
     /// The time series update DTO.

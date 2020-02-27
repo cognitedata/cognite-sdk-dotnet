@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk
 {
     /// <summary>
     /// TimeSeries delete DTO.

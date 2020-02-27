@@ -8,7 +8,7 @@ namespace CogniteSdk.Login
     /// <summary>
     /// The Login Status Read DTO.
     /// </summary>
-    public class LoginStatusRead
+    public class LoginStatus
     {
         /// <summary>
         /// The user principal, e.g john.doe@corporation.com.
@@ -37,7 +37,7 @@ namespace CogniteSdk.Login
         public long? ApiKeyId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<LoginStatusRead>(this);
+        public override string ToString() => Stringable.ToString<LoginStatus>(this);
     }
 }
 

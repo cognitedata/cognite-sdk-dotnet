@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Events
+namespace CogniteSdk
 {
     /// <summary>
-    /// The Event read DTO.
+    /// The event write DTO.
     /// </summary>
-    public class EventRead
+    public class EventCreate
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -47,7 +47,6 @@ namespace CogniteSdk.Events
         /// </summary>
         public string Description { get; set; }
 
-
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
@@ -64,40 +63,7 @@ namespace CogniteSdk.Events
         /// </summary>
         public string Source { get; set; }
 
-        /// <summary>
-        /// The Id of the asset.
-        /// </summary>
-        public long Id { get; set; }
-
-        /// <summary>
-        /// Time when this asset was created in CDF in milliseconds since Jan 1, 1970.
-        /// </summary>
-        public long CreatedTime { get; set; }
-
-        /// <summary>
-        /// The last time this asset was updated in CDF, in milliseconds since Jan 1, 1970.
-        /// </summary>
-        /// <value></value>
-        public long LastUpdatedTime { get; set; }
-
-        /// <summary>Determines whether the specified object is equal to the current object.</summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
-        public override bool Equals(object obj)
-        {
-            return obj is EventRead dto &&
-                   Id == dto.Id;
-        }
-
-        /// <summary>Serves as the default hash function.</summary>
-        /// <returns>A hash code for the current object.</returns>
-        public override int GetHashCode()
-        {
-            return 2108858624 + Id.GetHashCode();
-        }
-
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
 }
-

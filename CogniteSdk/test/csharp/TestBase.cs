@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net.Http;
 
 using CogniteSdk;
-using CogniteSdk.Events;
 
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace Test.CSharp.Integration
 
         protected static Client ReadClient;
         protected static Client WriteClient;
-        protected static EventRead TestEvent;
+        protected static Event TestEvent;
 
         public TestFixture() {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
@@ -44,10 +43,10 @@ namespace Test.CSharp.Integration
             }
         }
 
-        private EventRead CreateTestEventAsync()
+        private Event CreateTestEventAsync()
         {
-            var items = new List<EventWrite> {
-                new EventWrite
+            var items = new List<EventCreate> {
+                new EventCreate
                 {
                     ExternalId = "TestEvent",
                     StartTime = 1565941329,

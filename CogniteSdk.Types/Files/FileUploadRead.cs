@@ -9,7 +9,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File upload read response resource.
     /// </summary>
-    public class FileUploadRead : FileRead
+    public class FileUploadRead : File
     {
         /// <summary>
         /// The URL where the file contents should be uploaded.

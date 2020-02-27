@@ -11,7 +11,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File write response resource.
     /// </summary>
-    public class FileWrite
+    public class FileCreate
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.

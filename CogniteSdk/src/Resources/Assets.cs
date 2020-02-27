@@ -34,9 +34,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<AssetRead>> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.list<ItemsWithCursor<AssetRead>>(query);
+            var req = Oryx.Cognite.Assets.list<ItemsWithCursor<Asset>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -46,9 +46,9 @@ namespace CogniteSdk.Resources
         /// <param name="assets">Assets to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence of created assets.</returns>
-        public async Task<IEnumerable<AssetRead>> CreateAsync(IEnumerable<AssetWrite> assets, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> CreateAsync(IEnumerable<AssetCreate> assets, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.create<IEnumerable<AssetRead>>(assets);
+            var req = Oryx.Cognite.Assets.create<IEnumerable<Asset>>(assets);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -58,9 +58,9 @@ namespace CogniteSdk.Resources
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Asset with the given id.</returns>
-        public async Task<AssetRead> GetAsync(long assetId, CancellationToken token = default)
+        public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.get<AssetRead>(assetId);
+            var req = Oryx.Cognite.Assets.get<Asset>(assetId);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -118,9 +118,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<AssetRead>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.retrieve<IEnumerable<AssetRead>>(ids);
+            var req = Oryx.Cognite.Assets.retrieve<IEnumerable<Asset>>(ids);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -130,7 +130,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<AssetRead>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
@@ -142,7 +142,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<AssetRead>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
@@ -155,9 +155,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<AssetRead>> SearchAsync (AssetSearch query, CancellationToken token = default )
+        public async Task<IEnumerable<Asset>> SearchAsync (AssetSearch query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Assets.search<IEnumerable<AssetRead>>(query);
+            var req = Oryx.Cognite.Assets.search<IEnumerable<Asset>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -168,9 +168,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<AssetRead>> UpdateAsync (IEnumerable<AssetUpdateItem> query, CancellationToken token = default )
+        public async Task<IEnumerable<Asset>> UpdateAsync (IEnumerable<AssetUpdateItem> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Assets.update<IEnumerable<AssetRead>>(query);
+            var req = Oryx.Cognite.Assets.update<IEnumerable<Asset>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }

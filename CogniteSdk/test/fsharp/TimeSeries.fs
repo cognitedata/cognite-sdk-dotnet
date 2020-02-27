@@ -1,24 +1,20 @@
 module Tests.Integration.Timeseries
 
 open System
-open System.Net.Http
+open System.Collections.Generic
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Oryx
 open Swensen.Unquote
 open Xunit
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
-open Tests
 open Common
-open System.Collections.Generic
 
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
     // Arrange
-    let query = TimeSeriesQueryDto(Limit = Nullable 10)
+    let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
     let! response = readClient.TimeSeries.ListAsync query
@@ -169,7 +165,7 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let assetIds = Seq.map (fun (d : TimeSeriesRead) -> d.AssetId.Value) dtos
+    let assetIds = Seq.map (fun (d : TimeSeries) -> d.AssetId.Value) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -189,7 +185,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
-    let externalIds = Seq.map (fun (d : TimeSeriesRead) -> d.ExternalId) dtos
+    let externalIds = Seq.map (fun (d : TimeSeries) -> d.ExternalId) dtos
 
     // Assert
     test <@ len = 10 @>
@@ -210,7 +206,7 @@ let ``Search timeseries on IsStep is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let isSteps = Seq.map (fun (d : TimeSeriesRead) -> d.IsStep) dtos
+    let isSteps = Seq.map (fun (d : TimeSeries) -> d.IsStep) dtos
 
     // Assert
     test <@ len = 5 @>
@@ -230,7 +226,7 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
-    let isStrings = Seq.map (fun (d: TimeSeriesRead) -> d.IsString) dtos
+    let isStrings = Seq.map (fun (d: TimeSeries) -> d.IsString) dtos
 
     // Assert
     test <@ len = 6 @>
@@ -250,7 +246,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let units = Seq.map (fun (d: TimeSeriesRead) -> d.Unit) dtos
+    let units = Seq.map (fun (d: TimeSeries) -> d.Unit) dtos
 
     // Assert
     test <@ len = 2 @>
@@ -269,7 +265,7 @@ let ``Search timeseries on MetaData is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
-    let ms = Seq.map (fun (d: TimeSeriesRead)  -> d.Metadata) dtos
+    let ms = Seq.map (fun (d: TimeSeries)  -> d.Metadata) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -289,7 +285,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let names = Seq.map (fun (d: TimeSeriesRead) -> d.Name) dtos
+    let names = Seq.map (fun (d: TimeSeries) -> d.Name) dtos
 
     // Assert
     test <@ len = 9 @>
@@ -310,7 +306,7 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let descriptions = Seq.map (fun (d: TimeSeriesRead) -> d.Description) dtos
+    let descriptions = Seq.map (fun (d: TimeSeries) -> d.Description) dtos
 
     // Assert
     test <@ len = 10 @>

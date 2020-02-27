@@ -1,6 +1,6 @@
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Events
+namespace CogniteSdk
 {
     /// <summary>
     /// The event update DTO.

@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Events
+namespace CogniteSdk
 {
     /// <summary>
     /// Events delete DTO.

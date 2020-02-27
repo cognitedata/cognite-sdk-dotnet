@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.TimeSeries
+namespace CogniteSdk
 {
     /// <summary>
     /// Timeseries write dto.
@@ -46,6 +46,7 @@ namespace CogniteSdk.TimeSeries
         /// Custom, application specific metadata. String key -> String value.
         /// Limits: Maximum length of key is 32 bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>

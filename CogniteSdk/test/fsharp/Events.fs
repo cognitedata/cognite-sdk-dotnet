@@ -10,14 +10,13 @@ open Swensen.Unquote
 open Common
 
 open CogniteSdk
-open CogniteSdk.Events
 
 [<Fact>]
 let ``Create and delete events is Ok`` () = task {
     // Arrange
     let externalId = Guid.NewGuid().ToString()
     let dto =
-        EventWrite(
+        EventCreate(
             ExternalId = externalId,
             StartTime = Nullable 1565941329L,
             EndTime = Nullable 1565941341L,
@@ -96,7 +95,7 @@ let ``Update events is Ok`` () = task {
         "key2", "value2"
     ])
     let dto =
-        EventWrite(
+        EventCreate(
             ExternalId = externalId,
             StartTime = Nullable 1566815994L,
             EndTime = Nullable 1566816009L,
@@ -158,7 +157,7 @@ let ``Filter events on AssetIds is Ok`` () = task {
     let! res = readClient.Events.ListAsync query
 
     let len = Seq.length res.Items
-    let assetIds = Seq.collect (fun (e: EventRead) -> e.AssetIds) res.Items
+    let assetIds = Seq.collect (fun (e: Event) -> e.AssetIds) res.Items
 
     // Assert
     test <@ len = 10 @>
@@ -195,7 +194,7 @@ let ``Filter events on CreatedTime is Ok`` () = task {
 
     let len = Seq.length res.Items
 
-    let createdTimes = Seq.map (fun (e: EventRead) -> e.CreatedTime) res.Items
+    let createdTimes = Seq.map (fun (e: Event) -> e.CreatedTime) res.Items
 
     // Assert
     test <@ len = 1 @>
@@ -213,7 +212,7 @@ let ``Filter events on LastUpdatedTime is Ok`` () = task {
     let! res = readClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let lastUpdatedTimes = Seq.map (fun (e: EventRead) -> e.CreatedTime) res.Items
+    let lastUpdatedTimes = Seq.map (fun (e: Event) -> e.CreatedTime) res.Items
 
     // Assert
     test <@ len = 1 @>
@@ -232,7 +231,7 @@ let ``Filter events on StartTime is Ok`` () = task {
 
     let len = Seq.length res.Items
 
-    let startTimes = Seq.map (fun (e: EventRead) -> e.StartTime) res.Items
+    let startTimes = Seq.map (fun (e: Event) -> e.StartTime) res.Items
 
     // Assert
     test <@ len = 1 @>
@@ -250,7 +249,7 @@ let ``Filter events on EndTime is Ok`` () = task {
     let! res = writeClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let endTimes = Seq.map (fun (e: EventRead) -> e.EndTime) res.Items
+    let endTimes = Seq.map (fun (e: Event) -> e.EndTime) res.Items
 
     // Assert
     test <@ len = 1 @>
@@ -266,7 +265,7 @@ let ``Filter events on ExternalIdPrefix is Ok`` () = task {
     // Act
     let! res = writeClient.Events.ListAsync query
 
-    let externalIds = Seq.map (fun (e: EventRead) -> e.ExternalId) res.Items
+    let externalIds = Seq.map (fun (e: Event) -> e.ExternalId) res.Items
 
     // Assert
     test <@ Seq.length externalIds = 3 @>
@@ -283,7 +282,7 @@ let ``Filter events on Metadata is Ok`` () = task {
     let! res = readClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let ms = Seq.map (fun (e: EventRead) -> e.Metadata) res.Items
+    let ms = Seq.map (fun (e: Event) -> e.Metadata) res.Items
 
     // Assert
     test <@ len = 1 @>
@@ -300,7 +299,7 @@ let ``Filter events on Source is Ok`` () = task {
     let! res = readClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let sources = Seq.map (fun (e: EventRead) -> e.Source) res.Items
+    let sources = Seq.map (fun (e: Event) -> e.Source) res.Items
 
     // Assert
     test <@ len = 10 @>
@@ -316,7 +315,7 @@ let ``Filter events on Type is Ok`` () = task {
     let! res = writeClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let types = Seq.map (fun (e: EventRead) -> e.Type) res.Items
+    let types = Seq.map (fun (e: Event) -> e.Type) res.Items
 
     // Assert
     test <@ len = 1 @>

@@ -123,7 +123,7 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
 
     let externalids =
         res.Items
-        |> Seq.map (fun (dto: AssetRead) -> dto.ExternalId)
+        |> Seq.map (fun (dto: Asset) -> dto.ExternalId)
 
     // Assert
     test <@ len = 1 @>
@@ -141,7 +141,7 @@ let ``Filter assets on MetaData is Ok`` () = task {
     let! res = readClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
-    let ms = Seq.map (fun (dto: AssetRead) -> dto.Metadata) res.Items
+    let ms = Seq.map (fun (dto: Asset) -> dto.Metadata) res.Items
 
     // Assert
     test <@ len = 10 @>
@@ -161,7 +161,7 @@ let ``Filter assets on ParentIds is Ok`` () = task {
 
     let parentIds =
         res.Items
-        |> Seq.map (fun (dto: AssetRead) -> dto.ParentId)
+        |> Seq.map (fun (dto: Asset) -> dto.ParentId)
 
     // Assert
     test <@ len = 10 @>
@@ -195,7 +195,7 @@ let ``Filter assets on RootIds is Ok`` () = task {
     let len = Seq.length res.Items
     let rootIds =
         res.Items
-        |> Seq.map (fun (dto: AssetRead) -> dto.RootId)
+        |> Seq.map (fun (dto: Asset) -> dto.RootId)
 
 
     // Assert
@@ -215,7 +215,7 @@ let ``Filter assets on Source is Ok`` () = task {
     let len = Seq.length res.Items
     let sources =
         res.Items
-        |> Seq.map (fun (dto: AssetRead) -> dto.Source)
+        |> Seq.map (fun (dto: Asset) -> dto.Source)
 
     // Assert
     test <@ len = 1 @>
@@ -285,7 +285,7 @@ let ``Search assets on Description is Ok`` () = task {
     let len = Seq.length res
     let descriptions =
         res
-        |> Seq.map (fun (dto: AssetRead) -> dto.Description)
+        |> Seq.map (fun (dto: Asset) -> dto.Description)
 
     // Assert
     test <@ len = 10 @>
@@ -304,7 +304,7 @@ let ``Search assets on Name is Ok`` () = task {
     let len = Seq.length res
     let names =
         res
-        |> Seq.map (fun (dto: AssetRead) -> dto.Name)
+        |> Seq.map (fun (dto: Asset) -> dto.Name)
 
     // Assert
     test <@ len = 10 @>
@@ -315,7 +315,7 @@ let ``Search assets on Name is Ok`` () = task {
 let ``Create and delete assets is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
-    let dto = AssetWrite(ExternalId = externalIdString, Name = "Create Assets sdk test")
+    let dto = AssetCreate(ExternalId = externalIdString, Name = "Create Assets sdk test")
     let externalId = Identity externalIdString
 
     // Act
@@ -338,7 +338,7 @@ let ``Update assets is Ok`` () = task {
     ])
 
     let dto =
-        AssetWrite(
+        AssetCreate(
             ExternalId = externalIdString,
             Name = "Create Assets sdk test",
             Description = "dotnet sdk test",

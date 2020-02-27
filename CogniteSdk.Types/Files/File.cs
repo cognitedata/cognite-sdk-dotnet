@@ -11,7 +11,7 @@ namespace CogniteSdk.Files
     /// <summary>
     /// File read response resource.
     /// </summary>
-    public class FileRead
+    public class File
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
