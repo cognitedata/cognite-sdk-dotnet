@@ -25,7 +25,7 @@ module Relationships =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
-    let list (query: RelationshipQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RelationshipReadDto>, 'a> =
+    let list (query: RelationshipQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RelationshipRead>, 'a> =
         listPlayground query Url
         >=> logWithMessage "Relationships:list"
 
@@ -34,7 +34,7 @@ module Relationships =
     /// </summary>
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
-    let create (items: RelationshipWriteDto seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipReadDto>, 'a> =
+    let create (items: RelationshipWriteDto seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipRead>, 'a> =
         createPlayground items Url
         >=> logWithMessage "Relationships:create"
 
@@ -55,7 +55,7 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipReadDto>, 'a> =
+    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipRead>, 'a> =
         let relationships = ids |> Seq.map Identity.Create
         retrievePlayground relationships Url
         >=> logWithMessage "Relationships:retrieve"
@@ -65,7 +65,7 @@ module Relationships =
     /// </summary>
     /// <param name="query">relationships search query.</param>
     /// <returns>List of relationships matching given criteria.</returns>
-    let search (query: RestrictedGraphQueryDto) : HttpHandler<HttpResponseMessage, RestrictedGraphQueryResultDto, 'a> =
+    let search (query: RestrictedGraphQuery) : HttpHandler<HttpResponseMessage, RestrictedGraphQueryResult, 'a> =
         searchPlayground query Url
         >=> logWithMessage "Relationships:search"
 

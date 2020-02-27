@@ -21,12 +21,12 @@ namespace csharp {
     class Program {
 
         static async Task CreateAssetsExample(Client client, string externalId, string name) {
-            var asset = new AssetWriteDto
+            var asset = new AssetWrite
             {
                 ExternalId = externalId,
                 Name = name
             };
-            var assets = new List<AssetWriteDto> {asset};
+            var assets = new List<AssetWrite> {asset};
 
             var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
@@ -37,7 +37,7 @@ namespace csharp {
         static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData) {
             var query = new List<AssetUpdateItem>() {
                 new AssetUpdateItem(externalId) {
-                    Update = new AssetUpdateDto {
+                    Update = new AssetUpdate {
                         Metadata = new DictUpdate<string>(metaData),
                         Name = new SetUpdate<string>(newName)
                     }
@@ -50,10 +50,10 @@ namespace csharp {
             Console.WriteLine(updatedAsset.Name);
         }
 
-        static async Task<AssetReadDto> GetAssetsExample(Client client, string assetName) {
-            var query = new AssetQueryDto
+        static async Task<AssetRead> GetAssetsExample(Client client, string assetName) {
+            var query = new AssetQuery
             {
-                Filter = new AssetFilterDto { Name = assetName }
+                Filter = new AssetFilter { Name = assetName }
             };
 
             var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
@@ -81,11 +81,11 @@ namespace csharp {
         }
 
         static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
-            var timeseries = new TimeSeriesWriteDto {
+            var timeseries = new TimeSeriesWrite {
                 Name = timeseriesName
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWriteDto> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWrite> { timeseries });
 
             Console.WriteLine(result);
 

@@ -34,9 +34,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of databases matching given filters, and optional cursor</returns>
-        public async Task<ItemsWithCursor<DatabaseDto>> ListDatabasesAsync(DatabaseQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Database>> ListDatabasesAsync(DatabaseQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<DatabaseDto>>(query);
+            var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<Database>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -45,10 +45,10 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of databases matching given filters, and optional cursor</returns>
-        public async Task<ItemsWithCursor<DatabaseDto>> ListDatabasesAsync(CancellationToken token = default)
+        public async Task<ItemsWithCursor<Database>> ListDatabasesAsync(CancellationToken token = default)
         {
             var query = new DatabaseQuery();
-            var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<DatabaseDto>>(query);
+            var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<Database>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -58,9 +58,9 @@ namespace CogniteSdk.Resources
         /// <param name="items">Databases to create.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of created databases.</returns>
-        public async Task<IEnumerable<DatabaseDto>> CreateDatabasesAsync(IEnumerable<DatabaseDto> items, CancellationToken token = default)
+        public async Task<IEnumerable<Database>> CreateDatabasesAsync(IEnumerable<Database> items, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.createDatabases<IEnumerable<DatabaseDto>>(items);
+            var req = Oryx.Cognite.Raw.createDatabases<IEnumerable<Database>>(items);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -70,9 +70,9 @@ namespace CogniteSdk.Resources
         /// <param name="names">Names of databases to create.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of created databases.</returns>
-        public async Task<IEnumerable<DatabaseDto>> CreateDatabasesAsync(IEnumerable<string> names, CancellationToken token = default)
+        public async Task<IEnumerable<Database>> CreateDatabasesAsync(IEnumerable<string> names, CancellationToken token = default)
         {
-            var items = names.Select(name => new DatabaseDto() { Name = name });
+            var items = names.Select(name => new Database() { Name = name });
             return await CreateDatabasesAsync(items, token).ConfigureAwait(false);
         }
 
@@ -82,7 +82,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of databases to delete.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Empty response.</returns>
-        public async Task<EmptyResponse> DeleteDatabasesAsync(DatabaseDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteDatabasesAsync(DatabaseDelete query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Raw.deleteDatabases<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -97,10 +97,10 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteDatabasesAsync(IEnumerable<string> databaseNames, bool recursive = false, CancellationToken token = default)
         {
-            var dto = new DatabaseDeleteDto()
+            var dto = new DatabaseDelete()
             {
                 Recursive = recursive,
-                Items = databaseNames.Select(name => new DatabaseDto() { Name = name })
+                Items = databaseNames.Select(name => new Database() { Name = name })
             };
             return await DeleteDatabasesAsync(dto, token).ConfigureAwait(false);
         }
@@ -112,9 +112,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query with optional limit and cursor.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of tables.</returns>
-        public async Task<ItemsWithCursor<TableDto>> ListTablesAsync(string database, DatabaseQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Table>> ListTablesAsync(string database, DatabaseQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.listTables<ItemsWithCursor<TableDto>>(database, query);
+            var req = Oryx.Cognite.Raw.listTables<ItemsWithCursor<Table>>(database, query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -124,7 +124,7 @@ namespace CogniteSdk.Resources
         /// <param name="database">The database to list tables from.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of tables.</returns>
-        public async Task<ItemsWithCursor<TableDto>> ListTablesAsync(string database, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Table>> ListTablesAsync(string database, CancellationToken token = default)
         {
             var query = new DatabaseQuery();
             return await ListTablesAsync(database, query, token).ConfigureAwait(false);
@@ -138,9 +138,9 @@ namespace CogniteSdk.Resources
         /// <param name="ensureParent">Default: false. Create database if it doesn't exist already</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of created tables.</returns>
-        public async Task<IEnumerable<TableDto>> CreateTablesAsync(string database, IEnumerable<TableDto> items, bool ensureParent, CancellationToken token = default)
+        public async Task<IEnumerable<Table>> CreateTablesAsync(string database, IEnumerable<Table> items, bool ensureParent, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.createTables<IEnumerable<TableDto>>(database, items, ensureParent);
+            var req = Oryx.Cognite.Raw.createTables<IEnumerable<Table>>(database, items, ensureParent);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -152,9 +152,9 @@ namespace CogniteSdk.Resources
         /// <param name="ensureParent">Default: false. Create database if it doesn't exist already</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of created tables.</returns>
-        public async Task<IEnumerable<TableDto>> CreateTablesAsync(string database, IEnumerable<string> tables, bool ensureParent, CancellationToken token = default)
+        public async Task<IEnumerable<Table>> CreateTablesAsync(string database, IEnumerable<string> tables, bool ensureParent, CancellationToken token = default)
         {
-            var items = tables.Select(name => new TableDto() { Name = name });
+            var items = tables.Select(name => new Table() { Name = name });
             return await CreateTablesAsync(database, items, ensureParent, token).ConfigureAwait(false);
         }
 
@@ -165,7 +165,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query with tables to delete.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Empty result.</returns>
-        public async Task<EmptyResponse> DeleteTablesAsync(string database, TableDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteTablesAsync(string database, TableDelete query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Raw.deleteTables<EmptyResponse>(database, query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -181,7 +181,7 @@ namespace CogniteSdk.Resources
 
         public async Task<EmptyResponse> DeleteTablesAsync(string database, IEnumerable<string> tables, CancellationToken token = default)
         {
-            var dto = new TableDeleteDto() { Items = tables.Select(table => new TableDto() { Name = table })};
+            var dto = new TableDelete() { Items = tables.Select(table => new Table() { Name = table })};
             return await DeleteTablesAsync(database, dto, token).ConfigureAwait(false);
         }
 
@@ -193,9 +193,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The Row query.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The retrieved rows.</returns>
-        public async Task<ItemsWithCursor<RowReadDto>> ListRowsAsync(string database, string table, RowQueryDto query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<RowRead>> ListRowsAsync(string database, string table, RowQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Raw.listRows<ItemsWithCursor<RowReadDto>>(database, table, query);
+            var req = Oryx.Cognite.Raw.listRows<ItemsWithCursor<RowRead>>(database, table, query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -206,9 +206,9 @@ namespace CogniteSdk.Resources
         /// <param name="table">The table to list rows from.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The retrieved rows.</returns>
-        public async Task<ItemsWithCursor<RowReadDto>> ListRowsAsync(string database, string table, CancellationToken token = default)
+        public async Task<ItemsWithCursor<RowRead>> ListRowsAsync(string database, string table, CancellationToken token = default)
         {
-            var query = new RowQueryDto();
+            var query = new RowQuery();
             return await ListRowsAsync(database, table, query, token).ConfigureAwait(false);
         }
 
@@ -221,7 +221,7 @@ namespace CogniteSdk.Resources
         /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>An empty response.</returns>
-        public async Task<EmptyResponse> CreateRowsAsync(string database, string table, IEnumerable<RowWriteDto> dtos, bool ensureParent = false, CancellationToken token = default)
+        public async Task<EmptyResponse> CreateRowsAsync(string database, string table, IEnumerable<RowWrite> dtos, bool ensureParent = false, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Raw.createRows<EmptyResponse>(database, table, dtos, ensureParent);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -235,7 +235,7 @@ namespace CogniteSdk.Resources
         /// <param name="dtos">The rows to delete</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>An empty response</returns>
-        public async Task<EmptyResponse> DeleteRowsAsync(string database, string table, IEnumerable<RowDeleteDto> dtos, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteRowsAsync(string database, string table, IEnumerable<RowDelete> dtos, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Raw.deleteRows<EmptyResponse>(database, table, dtos);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

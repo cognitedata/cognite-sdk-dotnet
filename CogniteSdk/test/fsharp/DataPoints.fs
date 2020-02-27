@@ -43,8 +43,8 @@ let ``Get datapoints by id with options is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in dtos do
-                for dp in datapointDto.NumericDatapoints.Datapoints do
+            for DataPoint in dtos do
+                for dp in DataPoint.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -74,8 +74,8 @@ let ``Get datapoints by id with limit is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in dtos.Items do
-                for dp in datapointDto.NumericDatapoints.Datapoints do
+            for DataPoint in dtos.Items do
+                for dp in DataPoint.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -109,8 +109,8 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in dtos.Items do
-                for dp in datapointDto.NumericDatapoints.Datapoints do
+            for DataPoint in dtos.Items do
+                for dp in DataPoint.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -142,8 +142,8 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in response.Items do
-                for dp in datapointDto.NumericDatapoints.Datapoints do
+            for DataPoint in response.Items do
+                for dp in DataPoint.NumericDatapoints.Datapoints do
                     yield dp
         }
 
@@ -179,8 +179,8 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in res.Items do
-                for dp in datapointDto.AggregateDatapoints.Datapoints do
+            for DataPoint in res.Items do
+                for dp in DataPoint.AggregateDatapoints.Datapoints do
                     yield dp
         }
 
@@ -201,7 +201,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Arrange
     let id = 613312137748079L
     let query =
-        DataPointsLatestQueryDto(
+        DataPointsLatestQuery(
             Items = [
                 IdentityWithBefore(id, "2w-ago")
             ]
@@ -219,8 +219,8 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 
     let datapoints =
         seq {
-            for datapointDto in dtos do
-                yield! datapointDto.DataPoints
+            for DataPoint in dtos do
+                yield! DataPoint.DataPoints
         }
 
     // Assert
@@ -232,7 +232,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 let ``Insert datapoints is Ok`` () = task {
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWriteDto(
+        TimeSeriesWrite(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",
@@ -262,7 +262,7 @@ let ``Delete datapoints is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWriteDto(
+        TimeSeriesWrite(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",
@@ -283,7 +283,7 @@ let ``Delete datapoints is Ok`` () = task {
     ]
 
     let delete =
-        DataPointsDeleteDto(
+        DataPointsDelete(
             Items=[
                 IdentityWithRange(
                     ExternalId = externalIdString,

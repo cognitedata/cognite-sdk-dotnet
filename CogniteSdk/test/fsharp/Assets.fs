@@ -15,7 +15,7 @@ open Common
 [<Fact>]
 let ``List assets with limit is Ok`` () = task {
     // Arrange
-    let query = AssetQueryDto(Limit= Nullable 10)
+    let query = AssetQuery(Limit= Nullable 10)
 
     // // Act
     let! res = readClient.Assets.ListAsync(query)
@@ -81,8 +81,8 @@ let ``Get asset by ids is Ok`` () = task {
 [<Fact>]
 let ``Filter assets is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(RootIds = [ Identity.Create(6687602007296940L) ])
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(RootIds = [ Identity.Create(6687602007296940L) ])
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
@@ -96,8 +96,8 @@ let ``Filter assets is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Name is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(Name = "23-TE-96116-04")
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(Name = "23-TE-96116-04")
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
@@ -113,8 +113,8 @@ let ``Filter assets on Name is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(ExternalIdPrefix = "odata")
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(ExternalIdPrefix = "odata")
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.ListAsync query
@@ -123,7 +123,7 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
 
     let externalids =
         res.Items
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.ExternalId)
+        |> Seq.map (fun (dto: AssetRead) -> dto.ExternalId)
 
     // Assert
     test <@ len = 1 @>
@@ -134,14 +134,14 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
 let ``Filter assets on MetaData is Ok`` () = task {
     // Arrange
     let meta = Dictionary (dict [("RES_ID", "525283")])
-    let filter = AssetFilterDto(Metadata = meta)
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(Metadata = meta)
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
-    let ms = Seq.map (fun (dto: AssetReadDto) -> dto.Metadata) res.Items
+    let ms = Seq.map (fun (dto: AssetRead) -> dto.Metadata) res.Items
 
     // Assert
     test <@ len = 10 @>
@@ -151,8 +151,8 @@ let ``Filter assets on MetaData is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on ParentIds is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(ParentIds = [3117826349444493L])
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(ParentIds = [3117826349444493L])
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
@@ -161,7 +161,7 @@ let ``Filter assets on ParentIds is Ok`` () = task {
 
     let parentIds =
         res.Items
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.ParentId)
+        |> Seq.map (fun (dto: AssetRead) -> dto.ParentId)
 
     // Assert
     test <@ len = 10 @>
@@ -171,8 +171,8 @@ let ``Filter assets on ParentIds is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Root is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(Root = Nullable true)
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(Root = Nullable true)
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
@@ -186,8 +186,8 @@ let ``Filter assets on Root is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on RootIds is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(RootIds = [Identity 6687602007296940L])
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(RootIds = [Identity 6687602007296940L])
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = readClient.Assets.ListAsync query
@@ -195,7 +195,7 @@ let ``Filter assets on RootIds is Ok`` () = task {
     let len = Seq.length res.Items
     let rootIds =
         res.Items
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.RootId)
+        |> Seq.map (fun (dto: AssetRead) -> dto.RootId)
 
 
     // Assert
@@ -206,8 +206,8 @@ let ``Filter assets on RootIds is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Source is Ok`` () = task {
     // Arrange
-    let filter = AssetFilterDto(Source = "cillum irure ex cupidatat dolore")
-    let query = AssetQueryDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(Source = "cillum irure ex cupidatat dolore")
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.ListAsync query
@@ -215,7 +215,7 @@ let ``Filter assets on Source is Ok`` () = task {
     let len = Seq.length res.Items
     let sources =
         res.Items
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.Source)
+        |> Seq.map (fun (dto: AssetRead) -> dto.Source)
 
     // Assert
     test <@ len = 1 @>
@@ -225,8 +225,8 @@ let ``Filter assets on Source is Ok`` () = task {
 [<Fact>]
 let ``Search assets is Ok`` () = task {
     // Arrange
-    let search = SearchDto(Name = "23")
-    let query = AssetSearchDto(Limit = Nullable 10, Search = search)
+    let search = Search(Name = "23")
+    let query = AssetSearch(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query
@@ -240,8 +240,8 @@ let ``Search assets is Ok`` () = task {
 let ``Search assets on CreatedTime Ok`` () = task {
     // Arrange
     let timerange = TimeRange(Min = Nullable 1567084348460L, Max = Nullable 1567084348480L)
-    let filter = AssetFilterDto(CreatedTime = timerange)
-    let query = AssetSearchDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(CreatedTime = timerange)
+    let query = AssetSearch(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.SearchAsync query
@@ -259,8 +259,8 @@ let ``Search assets on LastUpdatedTime Ok`` () = task {
 
     // Arrange
     let timerange = TimeRange(Min = Nullable 1567084348460L, Max = Nullable 1567084348480L)
-    let filter = AssetFilterDto(CreatedTime = timerange)
-    let query = AssetSearchDto(Limit = Nullable 10, Filter = filter)
+    let filter = AssetFilter(CreatedTime = timerange)
+    let query = AssetSearch(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Assets.SearchAsync query
@@ -276,8 +276,8 @@ let ``Search assets on LastUpdatedTime Ok`` () = task {
 [<Fact>]
 let ``Search assets on Description is Ok`` () = task {
     // Arrange
-    let search = SearchDto(Description = "1STSTGGEAR THRUST")
-    let query = AssetSearchDto(Limit = Nullable 10, Search = search)
+    let search = Search(Description = "1STSTGGEAR THRUST")
+    let query = AssetSearch(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query
@@ -285,7 +285,7 @@ let ``Search assets on Description is Ok`` () = task {
     let len = Seq.length res
     let descriptions =
         res
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.Description)
+        |> Seq.map (fun (dto: AssetRead) -> dto.Description)
 
     // Assert
     test <@ len = 10 @>
@@ -295,8 +295,8 @@ let ``Search assets on Description is Ok`` () = task {
 [<Fact>]
 let ``Search assets on Name is Ok`` () = task {
     // Arrange
-    let search = SearchDto(Name = "TE-96116")
-    let query = AssetSearchDto(Limit = Nullable 10, Search = search)
+    let search = Search(Name = "TE-96116")
+    let query = AssetSearch(Limit = Nullable 10, Search = search)
 
     // Act
     let! res = readClient.Assets.SearchAsync query
@@ -304,7 +304,7 @@ let ``Search assets on Name is Ok`` () = task {
     let len = Seq.length res
     let names =
         res
-        |> Seq.map (fun (dto: AssetReadDto) -> dto.Name)
+        |> Seq.map (fun (dto: AssetRead) -> dto.Name)
 
     // Assert
     test <@ len = 10 @>
@@ -315,7 +315,7 @@ let ``Search assets on Name is Ok`` () = task {
 let ``Create and delete assets is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
-    let dto = AssetWriteDto(ExternalId = externalIdString, Name = "Create Assets sdk test")
+    let dto = AssetWrite(ExternalId = externalIdString, Name = "Create Assets sdk test")
     let externalId = Identity externalIdString
 
     // Act
@@ -338,7 +338,7 @@ let ``Update assets is Ok`` () = task {
     ])
 
     let dto =
-        AssetWriteDto(
+        AssetWrite(
             ExternalId = externalIdString,
             Name = "Create Assets sdk test",
             Description = "dotnet sdk test",
@@ -355,7 +355,7 @@ let ``Update assets is Ok`` () = task {
     let update = seq {
         AssetUpdateItem(
             externalId = externalId,
-            Update = AssetUpdateDto(
+            Update = AssetUpdate(
                 Name = SetUpdate(newName),
                 Metadata = DictUpdate(add=newMetadata, remove=["oldkey1"]),
                 ExternalId = Update(newExternalId)
@@ -393,7 +393,7 @@ let ``Update assets is Ok`` () = task {
         writeClient.Assets.UpdateAsync [
             AssetUpdateItem(
                 externalId=newExternalId,
-                Update=AssetUpdateDto(
+                Update=AssetUpdate(
                     Metadata = DictUpdate(Dictionary(dict["newKey", "newValue"])),
                     Description = Update(newDescription),
                     Source = Update(newSource)
@@ -419,7 +419,7 @@ let ``Update assets is Ok`` () = task {
         writeClient.Assets.UpdateAsync [
             AssetUpdateItem(
                 id = identity,
-                Update = AssetUpdateDto(
+                Update = AssetUpdate(
                     Metadata = DictUpdate<string>(remove=["newKey"]),
                     ExternalId = Update<string>(null),
                     Source = Update<string>(null)

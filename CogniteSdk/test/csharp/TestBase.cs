@@ -15,7 +15,7 @@ namespace Test.CSharp.Integration
 
         protected static Client ReadClient;
         protected static Client WriteClient;
-        protected static EventReadDto TestEvent;
+        protected static EventRead TestEvent;
 
         public TestFixture() {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
@@ -44,10 +44,10 @@ namespace Test.CSharp.Integration
             }
         }
 
-        private EventReadDto CreateTestEventAsync()
+        private EventRead CreateTestEventAsync()
         {
-            var items = new List<EventWriteDto> {
-                new EventWriteDto
+            var items = new List<EventWrite> {
+                new EventWrite
                 {
                     ExternalId = "TestEvent",
                     StartTime = 1565941329,

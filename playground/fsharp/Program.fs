@@ -35,15 +35,13 @@ let getDatapointsExample (ctx : HttpContext) = task {
  }
 
 let getAssetsExample (ctx : HttpContext) = task {
-    printfn "FIRST **********************************"
     let! res =
-        Assets.AssetQueryDto(Limit = Nullable 2)
+        Assets.AssetQuery(Limit = Nullable 2)
         |> Assets.list
         |> runUnsafeAsync ctx CancellationToken.None
 
-    printfn "SECOND **********************************"
     let! res =
-        Assets.AssetQueryDto(Limit = Nullable 2)
+        Assets.AssetQuery(Limit = Nullable 2)
         |> Assets.list
         |> runAsync ctx
     match res with
@@ -55,7 +53,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
             id = 84025677715833721L,
-            Update = Assets.AssetUpdateDto(Name = SetUpdate("string3"))
+            Update = Assets.AssetUpdate(Name = SetUpdate("string3"))
         )
     ]
     let! res = Assets.update query |> runAsync ctx
@@ -67,8 +65,8 @@ let updateAssetsExample (ctx : HttpContext) = task {
 let searchAssetsExample (ctx : HttpContext) = task {
 
     let query =
-        Assets.AssetSearchDto(
-            Search = SearchDto(Name = "VAL"),
+        Assets.AssetSearch(
+            Search = Search(Name = "VAL"),
             Limit = Nullable 10
         )
     let! res = Assets.search query |> runAsync ctx
@@ -79,7 +77,7 @@ let searchAssetsExample (ctx : HttpContext) = task {
 let createAssetsExample ctx = task {
 
     let assets = [
-        Assets.AssetWriteDto(
+        Assets.AssetWrite(
             Name = "My new asset",
             Description = "My description"
        )

@@ -3,7 +3,7 @@ namespace CogniteSdk.Sequences
     /// <summary>
     /// The sequence update items DTO base class.
     /// </summary>
-    public class SequenceUpdateItem : UpdateItem<SequenceUpdateDto>
+    public class SequenceUpdateItem : UpdateItem<SequenceUpdate>
     {
         /// <summary>
         /// Initialize the sequence update item with an external Id.

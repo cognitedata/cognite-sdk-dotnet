@@ -23,7 +23,7 @@ module Events =
     /// </summary>
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
-    let get (eventId: int64) : HttpHandler<HttpResponseMessage, EventReadDto, 'a> =
+    let get (eventId: int64) : HttpHandler<HttpResponseMessage, EventRead, 'a> =
         getById eventId Url
         >=> logWithMessage "Events:get"
 
@@ -32,7 +32,7 @@ module Events =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
-    let list (query: EventQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventReadDto>, 'a> =
+    let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<EventRead>, 'a> =
         list query Url
         >=> logWithMessage "Events:list"
 
@@ -41,7 +41,7 @@ module Events =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
-    let create (items: EventWriteDto seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
+    let create (items: EventWrite seq) : HttpHandler<HttpResponseMessage, EventRead seq, 'a> =
         create items Url
         >=> logWithMessage "Events:create"
 
@@ -50,7 +50,7 @@ module Events =
     /// </summary>
     /// <param name="items">The list of events to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (items: EventDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (items: EventDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete items Url
         >=> logWithMessage "Events:delete"
 
@@ -60,7 +60,7 @@ module Events =
     /// </summary>
     /// <param name="ids">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, EventRead seq, 'a> =
         retrieve ids Url
         >=> logWithMessage "Events:retrieve"
 
@@ -69,7 +69,7 @@ module Events =
     /// </summary>
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
-    let search (query: EventSearchDto) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a> =
+    let search (query: EventSearch) : HttpHandler<HttpResponseMessage, EventRead seq, 'a> =
         search query Url
         >=> logWithMessage "Events:search"
 
@@ -78,7 +78,7 @@ module Events =
     /// </summary>
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let update (query: UpdateItem<EventUpdateDto> seq) : HttpHandler<HttpResponseMessage, EventReadDto seq, 'a>  =
+    let update (query: UpdateItem<EventUpdate> seq) : HttpHandler<HttpResponseMessage, EventRead seq, 'a>  =
         update query Url
         >=> logWithMessage "Events:update"
 

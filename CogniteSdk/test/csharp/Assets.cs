@@ -19,7 +19,7 @@ namespace Test.CSharp.Integration {
         public void ListingAssetsRespectsLimit() {
             // Arrange
             const int limit = 10;
-            var option = new AssetQueryDto
+            var option = new AssetQuery
             {
                 Limit = limit
             };
@@ -88,10 +88,10 @@ namespace Test.CSharp.Integration {
         public async Task AssetSearchReturnsExpectedNumberOfAssetsAsync() {
             // Arrange
             var numOfAssets = 10;
-            var query = new AssetSearchDto()
+            var query = new AssetSearch()
             {
                 Limit = numOfAssets,
-                Search = new SearchDto()
+                Search = new Search()
                 {
                     Name = "23"
                 }
@@ -111,9 +111,9 @@ namespace Test.CSharp.Integration {
             // Arrange
             var numOfAssets = 10;
             var id = 6687602007296940;
-            var query = new AssetQueryDto() {
+            var query = new AssetQuery() {
                 Limit = numOfAssets,
-                Filter = new AssetFilterDto() {
+                Filter = new AssetFilter() {
                     RootIds = new List<Identity>() { Identity.Create(id) }
                 }
             };
@@ -131,19 +131,19 @@ namespace Test.CSharp.Integration {
         public async Task CreateAndDeleteAssetWorkAsExpectedAsync() {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
-            var newAsset = new AssetWriteDto
+            var newAsset = new AssetWrite
             {
                 ExternalId = externalIdString,
                 Name = "Create Assets c# sdk test",
                 Description = "Just a test"
             };
-            var deletes = new AssetDeleteDto
+            var deletes = new AssetDelete
             {
                 Items = new List<Identity>() {Identity.Create(externalIdString)}
             };
 
             // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset });
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetWrite>() { newAsset });
             await WriteClient.Assets.DeleteAsync(deletes);
 
             // Assert
@@ -159,7 +159,7 @@ namespace Test.CSharp.Integration {
             var id = 0;
             var caughtException = false;
 
-            var query = new AssetDeleteDto
+            var query = new AssetDelete
             {
                 Items = new List<Identity> { Identity.Create(id) }
             };
@@ -184,7 +184,7 @@ namespace Test.CSharp.Integration {
                 { "key1", "value1" },
                 { "key2", "value2" }
             };
-            var newAsset = new AssetWriteDto
+            var newAsset = new AssetWrite
             {
                 ExternalId = externalIdString,
                 Name = "Update Assets c# sdk test",
@@ -197,7 +197,7 @@ namespace Test.CSharp.Integration {
             {
                 new AssetUpdateItem(externalId: externalIdString)
                 {
-                    Update = new AssetUpdateDto()
+                    Update = new AssetUpdate()
                     {
                         Name = new SetUpdate<string>(newName),
                         Metadata = new DictUpdate<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
@@ -206,7 +206,7 @@ namespace Test.CSharp.Integration {
             };
 
             // Act
-            _ = await WriteClient.Assets.CreateAsync(new List<AssetWriteDto>() { newAsset }).ConfigureAwait(false);
+            _ = await WriteClient.Assets.CreateAsync(new List<AssetWrite>() { newAsset }).ConfigureAwait(false);
             await WriteClient.Assets.UpdateAsync(update);
 
             var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });

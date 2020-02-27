@@ -47,7 +47,7 @@ let ``List Rows with limit is Ok`` () = task {
       "sdk-test-col", "sdk-test-value"
       "sdk-test-col2", "sdk-test-value2"
     }
-    let query = Raw.RowQueryDto(Limit = Nullable 10)
+    let query = Raw.RowQuery(Limit = Nullable 10)
 
     // Act
     let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)
@@ -64,7 +64,7 @@ let ``List Rows with limit is Ok`` () = task {
 [<Fact>]
 let ``List Rows with limit and choose columns isOk`` () = task {
     // Arrange
-    let query = RowQueryDto(Limit = Nullable 10, Columns = ["sdk-test-col2"])
+    let query = RowQuery(Limit = Nullable 10, Columns = ["sdk-test-col2"])
     let expectedCols = """{
   "sdk-test-col2": "sdk-test-value2"
 }"""
@@ -120,7 +120,7 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     let rowKey = Guid.NewGuid().ToString().[..31]
     let doc = JsonDocument.Parse("42")
     let column = Dictionary(dict [ ("test column", doc.RootElement) ])
-    let rowDto = RowWriteDto(Key = rowKey, Columns = column)
+    let rowDto = RowWrite(Key = rowKey, Columns = column)
 
     // Act
     let! table = writeClient.Raw.CreateTablesAsync(dbName, [ tableName ], true)
@@ -128,7 +128,7 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     let! res = writeClient.Raw.ListRowsAsync(dbName, tableName)
     let! deleteRowRes = writeClient.Raw.DeleteRowsAsync(dbName, tableName, [
         for row in res.Items do
-            RowDeleteDto(Key=row.Key)])
+            RowDelete(Key=row.Key)])
     let! deleteRes = writeClient.Raw.DeleteDatabasesAsync([ dbName ], true)
 
     // Assert

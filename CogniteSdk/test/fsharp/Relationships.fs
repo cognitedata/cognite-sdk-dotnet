@@ -31,7 +31,7 @@ let ``Filter relationships on sources is Ok`` () = task {
     // Arrange
     let sources = RelationshipResource(Resource="asset", ResourceId="relationship-asset") |> Seq.singleton
     let sourcesList = new List<RelationshipResource>(sources)
-    let filter = RelationshipFilterDto(Sources=sourcesList)
+    let filter = RelationshipFilter(Sources=sourcesList)
     let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act
@@ -48,7 +48,7 @@ let ``Filter relationships on targets is Ok`` () = task {
     // Arrange
     let targets = RelationshipResource(Resource="timeseries", ResourceId="timeseries-relationship") |> Seq.singleton
     let targetsList = new List<RelationshipResource>(targets)
-    let filter = RelationshipFilterDto(Targets=targetsList)
+    let filter = RelationshipFilter(Targets=targetsList)
     let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
 
     // Act

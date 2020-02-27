@@ -59,7 +59,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Empty response.</returns>
-        public async Task<EmptyResponse> DeleteAsync(DataPointsDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(DataPointsDelete query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.DataPoints.delete<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -71,9 +71,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The latest query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of latest data points.</returns>
-        public async Task<IEnumerable<DataPointsReadDto<DataPointDto>>> LatestAsync(DataPointsLatestQueryDto query, CancellationToken token = default)
+        public async Task<IEnumerable<DataPointsRead<DataPoint>>> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsReadDto<DataPointDto>>>(query);
+            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsRead<DataPoint>>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
