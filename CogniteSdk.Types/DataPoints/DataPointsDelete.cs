@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// Identity class with time range.

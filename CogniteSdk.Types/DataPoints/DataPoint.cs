@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// The data point DTO for each individual data point.

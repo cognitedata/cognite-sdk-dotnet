@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// The data points query for each individual data point query within the top-level <see cref="DataPointsQuery">DataPointsQuery</see>.

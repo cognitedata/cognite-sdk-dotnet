@@ -5,12 +5,12 @@ using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// Data Points DTO.
     /// </summary>
-    public class DataPointsRead<T>
+    public class DataPointsItem<T>
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -45,6 +45,6 @@ namespace CogniteSdk.DataPoints
         public IEnumerable<DataPoint> DataPoints { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<DataPointsRead<T>>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

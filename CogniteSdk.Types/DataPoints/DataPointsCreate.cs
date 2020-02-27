@@ -4,12 +4,12 @@
 using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// Data Points write type
     /// </summary>
-    public class DataPointsWrite
+    public class DataPointsCreate
     {
         /// <summary>
         /// The list of data points. The limit per request is 100000 data points.
@@ -27,6 +27,6 @@ namespace CogniteSdk.DataPoints
         public Identity ExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<DataPointsWrite>(this);
+        public override string ToString() => Stringable.ToString<DataPointsCreate>(this);
     }
 }

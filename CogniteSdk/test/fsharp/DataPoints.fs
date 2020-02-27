@@ -8,8 +8,6 @@ open Xunit
 open Com.Cognite.V1.Timeseries.Proto
 
 open CogniteSdk
-open CogniteSdk.DataPoints
-
 
 open Common
 open Tests

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
 using static Oryx.Cognite.HandlerModule;
-using CogniteSdk.DataPoints;
+using CogniteSdk;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -71,9 +71,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The latest query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of latest data points.</returns>
-        public async Task<IEnumerable<DataPointsRead<DataPoint>>> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
+        public async Task<IEnumerable<DataPointsItem<DataPoint>>> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsRead<DataPoint>>>(query);
+            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsItem<DataPoint>>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }

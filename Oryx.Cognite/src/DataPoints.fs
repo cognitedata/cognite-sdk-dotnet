@@ -11,7 +11,6 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open CogniteSdk.DataPoints
 
 
 /// Various time series data points HTTP handlers
@@ -42,9 +41,9 @@ module DataPoints =
         >=> logWithMessage "DataPoints:delete"
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsRead<DataPoint>>, 'a> =
+    let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsItem<DataPoint>>, 'a> =
         req {
             let url = Url +/ "latest"
-            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsRead<DataPoint>>, 'a> query url
+            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> query url
             return ret.Items
         } >=> logWithMessage "DataPoints:latest"
