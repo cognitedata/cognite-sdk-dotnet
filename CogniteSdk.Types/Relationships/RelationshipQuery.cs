@@ -3,12 +3,12 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Relationships
+namespace CogniteSdk
 {
     /// <summary>
     /// Query parameters for list relationships.
     /// </summary>
-    public class RelationshipQueryDto : CursorQueryBase
+    public class RelationshipQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on relationships.
@@ -16,6 +16,6 @@ namespace CogniteSdk.Relationships
         public RelationshipFilter Filter { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RelationshipQueryDto>(this);
+        public override string ToString() => Stringable.ToString<RelationshipQuery>(this);
     }
 }

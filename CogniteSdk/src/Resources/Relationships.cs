@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk.Relationships;
+using CogniteSdk;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -33,9 +33,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of Relationships matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<RelationshipRead>> ListAsync(RelationshipQueryDto query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Relationship>> ListAsync(RelationshipQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<RelationshipRead>>(query);
+            var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<Relationship>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -45,9 +45,9 @@ namespace CogniteSdk.Resources
         /// <param name="relationships">Relationships to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence of created Relationships.</returns>
-        public async Task<ItemsWithoutCursor<RelationshipRead>> CreateAsync(IEnumerable<RelationshipWriteDto> relationships, CancellationToken token = default)
+        public async Task<ItemsWithoutCursor<Relationship>> CreateAsync(IEnumerable<RelationshipCreate> relationships, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Relationships.create<ItemsWithoutCursor<RelationshipRead>>(relationships);
+            var req = Oryx.Cognite.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -69,9 +69,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of relationships identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<ItemsWithoutCursor<RelationshipRead>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
+        public async Task<ItemsWithoutCursor<Relationship>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Relationships.retrieve<ItemsWithoutCursor<RelationshipRead>>(ids);
+            var req = Oryx.Cognite.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 

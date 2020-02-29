@@ -9,7 +9,6 @@ open Oryx
 open Xunit
 
 open CogniteSdk
-open CogniteSdk.Relationships
 open Common
 
 [<Fact>]
@@ -32,7 +31,7 @@ let ``Filter relationships on sources is Ok`` () = task {
     let sources = RelationshipResource(Resource="asset", ResourceId="relationship-asset") |> Seq.singleton
     let sourcesList = new List<RelationshipResource>(sources)
     let filter = RelationshipFilter(Sources=sourcesList)
-    let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
+    let query = RelationshipQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Playground.Relationships.ListAsync query
@@ -49,7 +48,7 @@ let ``Filter relationships on targets is Ok`` () = task {
     let targets = RelationshipResource(Resource="timeseries", ResourceId="timeseries-relationship") |> Seq.singleton
     let targetsList = new List<RelationshipResource>(targets)
     let filter = RelationshipFilter(Targets=targetsList)
-    let query = RelationshipQueryDto(Limit = Nullable 10, Filter = filter)
+    let query = RelationshipQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Playground.Relationships.ListAsync query
@@ -67,7 +66,7 @@ let ``Create and delete Relationships is Ok`` () = task {
     let source = RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
     let target = RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
     let dto =
-        RelationshipWriteDto(
+        RelationshipCreate(
             ExternalId = externalId,
             Source = source,
             Target = target,
