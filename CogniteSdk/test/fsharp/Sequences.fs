@@ -20,7 +20,7 @@ open System.Collections.Generic
 let ``List Sequences with limit is Ok`` () = task {
     // Arrange
     let query =
-        SequenceQueryDto(
+        SequenceQuery(
             Limit = Nullable 10
         )
 
@@ -39,9 +39,9 @@ let ``List Sequences with limit is Ok`` () = task {
 let ``List Sequences with limit and filter is Ok`` () = task {
     // Arrange
     let query =
-        SequenceQueryDto(
+        SequenceQuery(
             Limit = Nullable 10,
-            Filter = SequenceFilterDto(Name="sdk-test-sequence")
+            Filter = SequenceFilter(Name="sdk-test-sequence")
         )
 
     // Act
@@ -76,7 +76,7 @@ let ``Get sequence rows by ids is Ok`` () = task {
     // Arrange
     let sequencesId = 5702374195409554L
     let query =
-        SequenceRowQueryDto(
+        SequenceRowQuery(
             Id = Nullable sequencesId
         )
 
@@ -110,14 +110,14 @@ let ``Create and delete sequences is Ok`` () = task {
     let externalIdString = Guid.NewGuid().ToString()
     let name = Guid.NewGuid().ToString()
     let column =
-        SequenceColumnWriteDto(
+        SequenceColumnWrite(
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
             ValueType = MultiValueType.DOUBLE
         )
     let dto =
-        SequenceWriteDto(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = name,
             Description = "dotnet sdk test",
@@ -150,21 +150,21 @@ let ``Create and delete sequences rows is Ok`` () = task {
     let externalId = externalIdString
     let name = Guid.NewGuid().ToString()
     let column =
-        SequenceColumnWriteDto(
+        SequenceColumnWrite(
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
             ValueType = MultiValueType.STRING
         )
     let dto =
-        SequenceWriteDto(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = name,
             Description = "dotnet sdk test",
             Columns = [column]
         )
     let deleteDto =
-        SequenceRowDeleteDto(
+        SequenceRowDelete(
             Rows = [],
             ExternalId = externalId
         )
@@ -172,12 +172,12 @@ let ``Create and delete sequences rows is Ok`` () = task {
 
     let rows =
         [
-            SequenceRowDto(RowNumber = 1L, Values = [MultiValue.Create "row1"])
-            SequenceRowDto(RowNumber = 2L, Values = [MultiValue.Create "row2"])
+            SequenceRow(RowNumber = 1L, Values = [MultiValue.Create "row1"])
+            SequenceRow(RowNumber = 2L, Values = [MultiValue.Create "row2"])
         ] |> Seq.ofList
 
     let rowDto =
-        SequenceDataWriteDto(
+        SequenceDataWrite(
             Columns = ["sdk-column"],
             Rows = rows,
             Id = Nullable 5702374195409554L
@@ -200,8 +200,8 @@ let ``Create and delete sequences rows is Ok`` () = task {
 let ``Search sequences is Ok`` () = task {
     // Arrange
     let query =
-        SequenceSearchDto(
-            Search=SearchDto(Name = "sdk-test"),
+        SequenceSearch(
+            Search=Search(Name = "sdk-test"),
             Limit = Nullable 10
         )
 
@@ -229,14 +229,14 @@ let ``Update sequences is Ok`` () = task {
             "oldkey2", "oldvalue2"
         ])
     let column =
-        SequenceColumnWriteDto(
+        SequenceColumnWrite(
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
             ValueType = MultiValueType.DOUBLE
         )
     let dto =
-        SequenceWriteDto(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = "Create Sequences sdk test",
             Description = "dotnet sdk test",
@@ -254,10 +254,10 @@ let ``Update sequences is Ok`` () = task {
         writeClient.Sequences.UpdateAsync [
             SequenceUpdateItem(
                 externalId = externalIdString,
-                Update=SequenceUpdateDto(
-                    Name = Update(newName),
-                    ExternalId = Update(newExternalId),
-                    Metadata = DictUpdate(newMetadata, [ "oldkey1" ])
+                Update=SequenceUpdate(
+                    Name = UpdateNullable(newName),
+                    ExternalId = UpdateNullable(newExternalId),
+                    Metadata = UpdateDictionary(newMetadata, [ "oldkey1" ])
                 )
             )
         ]
@@ -287,10 +287,10 @@ let ``Update sequences is Ok`` () = task {
         writeClient.Sequences.UpdateAsync [
             SequenceUpdateItem(
                 externalId = newExternalId,
-                Update=SequenceUpdateDto(
-                    Description = Update(newDescription),
-                    AssetId = Update(Nullable 5409900891232494L),
-                    Metadata = DictUpdate(newMetadata)
+                Update=SequenceUpdate(
+                    Description = UpdateNullable(newDescription),
+                    AssetId = UpdateNullable(Nullable 5409900891232494L),
+                    Metadata = UpdateDictionary(newMetadata)
                 )
             )]
 
@@ -312,10 +312,10 @@ let ``Update sequences is Ok`` () = task {
         writeClient.Sequences.UpdateAsync [
             SequenceUpdateItem(
                 id = identity,
-                Update=SequenceUpdateDto(
-                    ExternalId = Update(null),
-                    AssetId = Update(Nullable ()),
-                    Metadata = DictUpdate(Dictionary(), ["newKey"])
+                Update=SequenceUpdate(
+                    ExternalId = UpdateNullable(null),
+                    AssetId = UpdateNullable(Nullable ()),
+                    Metadata = UpdateDictionary(Dictionary(), ["newKey"])
                 )
             )]
 

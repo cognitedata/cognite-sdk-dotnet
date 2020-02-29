@@ -88,9 +88,9 @@ var client =
         .Build();
 
 // your logic using the client
-var query = new Assets.AssetQueryDto
+var query = new Assets.AssetQuery
 {
-    Filter = new Assets.AssetFilterDto { Name = assetName }
+    Filter = new Assets.AssetFilter { Name = assetName }
 };
 var result = await client.Assets.ListAsync(query);
 ```

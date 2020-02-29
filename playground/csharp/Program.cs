@@ -7,26 +7,22 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Extensions.Logging;
 
 using CogniteSdk;
-using CogniteSdk.Assets;
-using CogniteSdk.DataPoints;
-using CogniteSdk.TimeSeries;
 
 namespace csharp {
 
     class Program {
 
         static async Task CreateAssetsExample(Client client, string externalId, string name) {
-            var asset = new AssetWriteDto
+            var asset = new AssetCreate
             {
                 ExternalId = externalId,
                 Name = name
             };
-            var assets = new List<AssetWriteDto> {asset};
+            var assets = new List<AssetCreate> {asset};
 
             var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
@@ -37,9 +33,9 @@ namespace csharp {
         static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData) {
             var query = new List<AssetUpdateItem>() {
                 new AssetUpdateItem(externalId) {
-                    Update = new AssetUpdateDto {
-                        Metadata = new DictUpdate<string>(metaData),
-                        Name = new SetUpdate<string>(newName)
+                    Update = new AssetUpdate {
+                        Metadata = new UpdateDictionary<string>(metaData),
+                        Name = new Update<string>(newName)
                     }
                 }
             };
@@ -50,10 +46,10 @@ namespace csharp {
             Console.WriteLine(updatedAsset.Name);
         }
 
-        static async Task<AssetReadDto> GetAssetsExample(Client client, string assetName) {
-            var query = new AssetQueryDto
+        static async Task<Asset> GetAssetsExample(Client client, string assetName) {
+            var query = new AssetQuery
             {
-                Filter = new AssetFilterDto { Name = assetName }
+                Filter = new AssetFilter { Name = assetName }
             };
 
             var result = await client.Assets.ListAsync(query).ConfigureAwait(false);
@@ -81,11 +77,11 @@ namespace csharp {
         }
 
         static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
-            var timeseries = new TimeSeriesWriteDto {
+            var timeseries = new TimeSeriesWrite {
                 Name = timeseriesName
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWriteDto> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWrite> { timeseries });
 
             Console.WriteLine(result);
 
@@ -103,6 +99,11 @@ namespace csharp {
             await client.DataPoints.CreateAsync(points);
         }
 
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLogging(configure => configure.AddConsole());
+        }
+
         private static async Task Main() {
             Console.WriteLine("C# Client");
 
@@ -113,12 +114,10 @@ namespace csharp {
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-
-            var log = new LoggerConfiguration()
-                .WriteTo.Console()
-                .MinimumLevel.Debug()
-                .CreateLogger();
-            var logger = new SerilogLoggerProvider(log).CreateLogger(nameof(Program));
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Program>>();
 
             using var httpClient = new HttpClient(handler);
             var builder = new Client.Builder();

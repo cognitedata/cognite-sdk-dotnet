@@ -1,24 +1,20 @@
 module Tests.Integration.Timeseries
 
 open System
-open System.Net.Http
+open System.Collections.Generic
 
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open Oryx
 open Swensen.Unquote
 open Xunit
 
 open CogniteSdk
-open CogniteSdk.TimeSeries
 
-open Tests
 open Common
-open System.Collections.Generic
 
 [<Fact>]
 let ``Get timeseries is Ok`` () = task {
     // Arrange
-    let query = TimeSeriesQueryDto(Limit = Nullable 10)
+    let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
     let! response = readClient.TimeSeries.ListAsync query
@@ -65,7 +61,7 @@ let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWriteDto(
+        TimeSeriesWrite(
             ExternalId = externalIdString,
             Name = "Create Timeseries sdk test",
             Description = "dotnet sdk test",
@@ -90,8 +86,8 @@ let ``Create and delete timeseries is Ok`` () = task {
 let ``Search timeseries is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(Name = "VAL_23-TT-96136-08:Z.X.Value"),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(Name = "VAL_23-TT-96136-08:Z.X.Value"),
             Limit = Nullable 10
         )
 
@@ -112,8 +108,8 @@ let ``Search timeseries on CreatedTime Ok`` () = task {
             Max = Nullable 1567707299052L
         )
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(CreatedTime = timerange),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(CreatedTime = timerange),
             Limit = Nullable 10
         )
 
@@ -139,8 +135,8 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
         )
 
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(LastUpdatedTime = timerange),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(LastUpdatedTime = timerange),
             Limit = Nullable 10
         )
 
@@ -159,8 +155,8 @@ let ``Search timeseries on LastUpdatedTime Ok`` () = task {
 let ``Search timeseries on AssetIds is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(AssetIds = [ 4293345866058133L ]),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(AssetIds = [ 4293345866058133L ]),
             Limit = Nullable 10
         )
 
@@ -169,7 +165,7 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let assetIds = Seq.map (fun (d : TimeSeriesReadDto) -> d.AssetId.Value) dtos
+    let assetIds = Seq.map (fun (d : TimeSeries) -> d.AssetId.Value) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -180,8 +176,8 @@ let ``Search timeseries on AssetIds is Ok`` () = task {
 let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(ExternalIdPrefix = "VAL_45"),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(ExternalIdPrefix = "VAL_45"),
             Limit = Nullable 10
         )
 
@@ -189,7 +185,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
-    let externalIds = Seq.map (fun (d : TimeSeriesReadDto) -> d.ExternalId) dtos
+    let externalIds = Seq.map (fun (d : TimeSeries) -> d.ExternalId) dtos
 
     // Assert
     test <@ len = 10 @>
@@ -200,8 +196,8 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
 let ``Search timeseries on IsStep is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(IsStep = Nullable true),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(IsStep = Nullable true),
             Limit = Nullable 10
         )
 
@@ -210,7 +206,7 @@ let ``Search timeseries on IsStep is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let isSteps = Seq.map (fun (d : TimeSeriesReadDto) -> d.IsStep) dtos
+    let isSteps = Seq.map (fun (d : TimeSeries) -> d.IsStep) dtos
 
     // Assert
     test <@ len = 5 @>
@@ -221,8 +217,8 @@ let ``Search timeseries on IsStep is Ok`` () = task {
 let ``Search timeseries on IsString is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(IsString = Nullable true),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(IsString = Nullable true),
             Limit = Nullable 10
         )
 
@@ -230,7 +226,7 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
-    let isStrings = Seq.map (fun (d: TimeSeriesReadDto) -> d.IsString) dtos
+    let isStrings = Seq.map (fun (d: TimeSeries) -> d.IsString) dtos
 
     // Assert
     test <@ len = 6 @>
@@ -241,8 +237,8 @@ let ``Search timeseries on IsString is Ok`` () = task {
 let ``Search timeseries on Unit is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(Unit = "et"),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(Unit = "et"),
             Limit = Nullable 10
         )
     // Act
@@ -250,7 +246,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let units = Seq.map (fun (d: TimeSeriesReadDto) -> d.Unit) dtos
+    let units = Seq.map (fun (d: TimeSeries) -> d.Unit) dtos
 
     // Assert
     test <@ len = 2 @>
@@ -261,15 +257,15 @@ let ``Search timeseries on Unit is Ok`` () = task {
 let ``Search timeseries on MetaData is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Filter = TimeSeriesFilterDto(Metadata = (dict ["pointid", "160909"] |> Dictionary)),
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(Metadata = (dict ["pointid", "160909"] |> Dictionary)),
             Limit = Nullable 10
         )
     // Act
     let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
-    let ms = Seq.map (fun (d: TimeSeriesReadDto)  -> d.Metadata) dtos
+    let ms = Seq.map (fun (d: TimeSeries)  -> d.Metadata) dtos
 
     // Assert
     test <@ len = 1 @>
@@ -280,8 +276,8 @@ let ``Search timeseries on MetaData is Ok`` () = task {
 let ``FuzzySearch timeseries on Name is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Search = SearchDto(Name = "92529_SILch0"),
+        TimeSeriesSearch(
+            Search = Search(Name = "92529_SILch0"),
             Limit = Nullable 10
         )
     // Act
@@ -289,7 +285,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let names = Seq.map (fun (d: TimeSeriesReadDto) -> d.Name) dtos
+    let names = Seq.map (fun (d: TimeSeries) -> d.Name) dtos
 
     // Assert
     test <@ len = 9 @>
@@ -300,8 +296,8 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
 let ``FuzzySearch timeseries on Description is Ok`` () = task {
     // Arrange
     let query =
-        TimeSeriesSearchDto(
-            Search = SearchDto(Description = "Tube y"),
+        TimeSeriesSearch(
+            Search = Search(Description = "Tube y"),
             Limit = Nullable 10
         )
 
@@ -310,7 +306,7 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
 
     let len = Seq.length dtos
 
-    let descriptions = Seq.map (fun (d: TimeSeriesReadDto) -> d.Description) dtos
+    let descriptions = Seq.map (fun (d: TimeSeries) -> d.Description) dtos
 
     // Assert
     test <@ len = 10 @>
@@ -327,7 +323,7 @@ let ``Update timeseries is Ok`` () = task {
             "key2", "value2"
         ] |> Dictionary
     let dto =
-        TimeSeriesWriteDto(
+        TimeSeriesWrite(
             Metadata = (dict [
                 "oldkey1", "oldvalue1"
                 "oldkey2", "oldvalue2"
@@ -347,12 +343,12 @@ let ``Update timeseries is Ok`` () = task {
         writeClient.TimeSeries.UpdateAsync [
             TimeSeriesUpdateItem(
                 externalId = externalId,
-                Update = TimeSeriesUpdateDto(
-                    ExternalId = Update(newExternalId),
-                    Metadata = DictUpdate(newMetadata, [ "oldkey1" ]),
-                    Description = Update(newDescription),
-                    Name = Update(null),
-                    Unit = Update("unit")
+                Update = TimeSeriesUpdate(
+                    ExternalId = UpdateNullable(newExternalId),
+                    Metadata = UpdateDictionary(newMetadata, [ "oldkey1" ]),
+                    Description = UpdateNullable(newDescription),
+                    Name = UpdateNullable(null),
+                    Unit = UpdateNullable("unit")
                 )
             )
         ]

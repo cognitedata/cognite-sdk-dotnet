@@ -31,9 +31,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The current authentication status of the request</returns>
-        public async Task<LoginStatusReadDto> StatusAsync(CancellationToken token = default)
+        public async Task<LoginStatus> StatusAsync(CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Login.status<LoginStatusReadDto>();
+            var req = Oryx.Cognite.Login.status<LoginStatus>();
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }

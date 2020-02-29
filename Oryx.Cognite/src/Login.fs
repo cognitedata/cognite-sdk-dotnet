@@ -24,9 +24,9 @@ module Login =
 
 
     /// Returns the authentication information about the asking entity.
-    let status () : HttpHandler<HttpResponseMessage, LoginStatusReadDto, 'a> =
+    let status () : HttpHandler<HttpResponseMessage, LoginStatus, 'a> =
         req {
-            let! data = get<LoginDataReadDto, 'a> "/login/status"
+            let! data = get<LoginDataRead, 'a> "/login/status"
             return data.Data
         } >=> logWithMessage "Login:status"
 

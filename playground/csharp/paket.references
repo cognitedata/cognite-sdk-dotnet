@@ -1,5 +1,8 @@
 group Playground
     FSharp.Core
-    Serilog
-    Serilog.Sinks.Console
-    Serilog.Extensions.Logging
+    Microsoft.AspNetCore.Hosting
+    Microsoft.Extensions.DependencyInjection
+    Microsoft.Extensions.Configuration
+    Microsoft.Extensions.Hosting
+    Microsoft.Extensions.Logging
+    Microsoft.Extensions.Logging.EventLog

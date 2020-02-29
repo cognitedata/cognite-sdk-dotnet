@@ -10,7 +10,6 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Assets
 
 /// Various asset HTTP handlers.
 
@@ -20,7 +19,7 @@ module Assets =
     let Url = "/assets"
 
     /// Retrieves information about an asset given an asset id. Returns asset with the given id.
-    let get (assetId: int64) : HttpHandler<HttpResponseMessage, AssetReadDto, 'a> =
+    let get (assetId: int64) : HttpHandler<HttpResponseMessage, Asset, 'a> =
         getById assetId Url
         >=> logWithMessage "Assets:get"
 
@@ -29,7 +28,7 @@ module Assets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (query: AssetQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<AssetReadDto>, 'a> =
+    let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Asset>, 'a> =
         list query Url
         >=> logWithMessage "Assets:list"
 
@@ -38,7 +37,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (items: AssetWriteDto seq) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
+    let create (items: AssetCreate seq) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
         create items Url
         >=> logWithMessage "Assets:create"
 
@@ -47,7 +46,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (assets: AssetDeleteDto) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (assets: AssetDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         delete assets Url
         >=> logWithMessage "Assets:delete"
 
@@ -57,7 +56,7 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
         retrieve ids Url
         >=> logWithMessage "Assets:retrieve"
 
@@ -66,12 +65,12 @@ module Assets =
     /// </summary>
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: AssetSearchDto) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a> =
+    let search (query: AssetSearch) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
         search query Url
         >=> logWithMessage "Assets:search"
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
-    let update (query: IEnumerable<UpdateItem<AssetUpdateDto>>) : HttpHandler<HttpResponseMessage, AssetReadDto seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<AssetUpdate>>) : HttpHandler<HttpResponseMessage, Asset seq, 'a>  =
         update query Url
         >=> logWithMessage "Assets:update"
 

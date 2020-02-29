@@ -34,9 +34,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<FileReadDto>> ListAsync(FileQueryDto query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<File>> ListAsync(FileQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.list<ItemsWithCursor<FileReadDto>>(query);
+            var req = Oryx.Cognite.Files.list<ItemsWithCursor<File>>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -46,9 +46,9 @@ namespace CogniteSdk.Resources
         /// <param name="fileId">The id of the file to get.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>File with the given id.</returns>
-        public async Task<FileReadDto> GetAsync(long fileId, CancellationToken token = default)
+        public async Task<File> GetAsync(long fileId, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.get<FileReadDto>(fileId);
+            var req = Oryx.Cognite.Files.get<File>(fileId);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -59,9 +59,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of file identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<FileReadDto>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.retrieve<IEnumerable<FileReadDto>>(ids);
+            var req = Oryx.Cognite.Files.retrieve<IEnumerable<File>>(ids);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -71,7 +71,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="internalIds">The list of file internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<FileReadDto>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
@@ -83,7 +83,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="externalIds">The list of file internal identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<FileReadDto>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
@@ -99,9 +99,9 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of file download URLs.</returns>
         #region Download overloads
-        public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.download<IEnumerable<FileDownloadDto>>(ids);
+            var req = Oryx.Cognite.Files.download<IEnumerable<FileDownload>>(ids);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -113,7 +113,7 @@ namespace CogniteSdk.Resources
         /// <param name="internalIds">List of file internal IDs to retrieve the download URL for.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of file download URLs.</returns>
-        public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
             return await DownloadAsync(ids, token).ConfigureAwait(false);
@@ -128,7 +128,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of file download URLs.</returns>
 
-        public async Task<IEnumerable<FileDownloadDto>> DownloadAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
             return await DownloadAsync(ids, token).ConfigureAwait(false);
@@ -155,9 +155,9 @@ namespace CogniteSdk.Resources
         /// </param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>The Updated file.</returns>
-        public async Task<FileUploadReadDto> UploadAsync(FileWriteDto file, bool overwrite=false, CancellationToken token = default)
+        public async Task<FileUploadRead> UploadAsync(FileCreate file, bool overwrite=false, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.upload<FileUploadReadDto>(file, overwrite);
+            var req = Oryx.Cognite.Files.upload<FileUploadRead>(file, overwrite);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -167,9 +167,9 @@ namespace CogniteSdk.Resources
         /// <param name="update">The update for the files.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>The updated files.</returns>
-        public async Task<IEnumerable<FileReadDto>> UpdateAsync(IEnumerable<FileUpdateItem> update, CancellationToken token = default)
+        public async Task<IEnumerable<File>> UpdateAsync(IEnumerable<FileUpdateItem> update, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.update<IEnumerable<FileReadDto>>(update);
+            var req = Oryx.Cognite.Files.update<IEnumerable<File>>(update);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -180,7 +180,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of events to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Empty response.</returns>
-        public async Task<EmptyResponse> DeleteAsync(FileDeleteDto query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(FileDelete query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.delete<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
@@ -193,7 +193,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> identities, CancellationToken token = default)
         {
-            var query = new FileDeleteDto { Items = identities };
+            var query = new FileDelete { Items = identities };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
 
@@ -204,7 +204,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
         {
-            var query = new FileDeleteDto { Items = ids.Select(Identity.Create) };
+            var query = new FileDelete { Items = ids.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
 
@@ -215,7 +215,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
-            var query = new FileDeleteDto { Items = externalIds.Select(Identity.Create) };
+            var query = new FileDelete { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
 

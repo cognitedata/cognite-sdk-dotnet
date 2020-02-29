@@ -18,7 +18,7 @@ namespace Test.CSharp.Integration
         public async Task ListSequenceWithLimit()
         {
             // Arrange
-            var query = new SequenceQueryDto
+            var query = new SequenceQuery
             {
                 Limit = 10
             };
@@ -34,10 +34,10 @@ namespace Test.CSharp.Integration
         public async Task ListSequenceWithLimitAndFilter()
         {
             // Arrange
-            var query = new SequenceQueryDto
+            var query = new SequenceQuery
             {
                 Limit = 10,
-                Filter = new SequenceFilterDto()
+                Filter = new SequenceFilter()
                 {
                     ExternalIdPrefix = "sdk-test"
                 }
@@ -73,19 +73,19 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new SequenceColumnWriteDto {
+            var column = new SequenceColumnWrite {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = MultiValueType.DOUBLE
             };
-            var sequence = new SequenceWriteDto {
+            var sequence = new SequenceCreate {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
-                Columns = new List<SequenceColumnWriteDto> { column }
+                Columns = new List<SequenceColumnWrite> { column }
             };
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWriteDto> { sequence });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
             await WriteClient.Sequences.DeleteAsync(new List<string> { externalIdString });
 
             // Assert
@@ -102,38 +102,38 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new SequenceColumnWriteDto {
+            var column = new SequenceColumnWrite {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = MultiValueType.DOUBLE
             };
 
-            var sequence = new SequenceWriteDto {
+            var sequence = new SequenceCreate {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
-                Columns = new List<SequenceColumnWriteDto> { column }
+                Columns = new List<SequenceColumnWrite> { column }
             };
 
-            var data = new SequenceDataWriteDto() {
+            var data = new SequenceDataWrite() {
                 Columns = new List<string> { columnExternalIdString },
-                Rows = new List<SequenceRowDto>
+                Rows = new List<SequenceRow>
                 {
-                    new SequenceRowDto() { RowNumber=1, Values=new List<MultiValue>() { MultiValue.Create(42.0) } }
+                    new SequenceRow() { RowNumber=1, Values=new List<MultiValue>() { MultiValue.Create(42.0) } }
                 },
                 ExternalId = externalIdString
             };
-            var delete = new SequenceRowDeleteDto()
+            var delete = new SequenceRowDelete()
             {
                 ExternalId = externalIdString,
                 Rows = new List<long> { 1L }
             };
 
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWriteDto> { sequence });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
 
-            await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataWriteDto> { data });
-            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDeleteDto> { delete });
+            await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataWrite> { data });
+            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDelete> { delete });
             await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert
@@ -147,7 +147,7 @@ namespace Test.CSharp.Integration
         public async Task ListRowsAsync()
         {
             // Arrange
-            var rowQuery = new SequenceRowQueryDto
+            var rowQuery = new SequenceRowQuery
             {
                 Limit = 10,
                 ExternalId = "sdk-test"

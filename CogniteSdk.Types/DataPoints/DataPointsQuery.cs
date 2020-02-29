@@ -4,7 +4,7 @@
 using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
-namespace CogniteSdk.DataPoints
+namespace CogniteSdk
 {
     /// <summary>
     /// The data points query base class.
