@@ -1,7 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// The sequence search DTO.

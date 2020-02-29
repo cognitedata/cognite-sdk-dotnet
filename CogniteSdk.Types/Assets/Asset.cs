@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Assets
+namespace CogniteSdk
 {
     /// <summary>
     /// The Asset read DTO.
@@ -40,6 +40,7 @@ namespace CogniteSdk.Assets
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>

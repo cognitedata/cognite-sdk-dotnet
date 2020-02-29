@@ -21,7 +21,7 @@ module Sequences =
     let RowsUrl = Url +/ "data"
 
     /// Retrieves list of sequences matching filter, and a cursor if given limit is exceeded.
-    let list (query: SequenceQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<SequenceRead>, 'a> =
+    let list (query: SequenceQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Sequence>, 'a> =
         list query Url
         >=> logWithMessage "Sequences:get"
 
@@ -31,7 +31,7 @@ module Sequences =
         >=> logWithMessage "Sequences:listRows"
 
     /// Create new sequences in the given project. Returns list of created sequences.
-    let create (items: SequenceWrite seq) : HttpHandler<HttpResponseMessage, SequenceDataRead seq, 'a> =
+    let create (items: SequenceCreate seq) : HttpHandler<HttpResponseMessage, SequenceDataRead seq, 'a> =
         create items Url
         >=> logWithMessage "Sequences:create"
 
@@ -52,17 +52,17 @@ module Sequences =
 
     /// Retrieves information about multiple sequences in the same project. A maximum of 1000 event IDs may be listed per
     /// request and all of them must be unique. Returns sequences with given ids.
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, SequenceRead seq, 'a> =
+    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Sequence seq, 'a> =
         retrieve ids Url
         >=> logWithMessage "Sequences:retrieve"
 
     /// Retrieves a list of sequences matching the given criteria. This operation does not support pagination. Returns list of sequences matching given criteria.
-    let search (query: SequenceSearch) : HttpHandler<HttpResponseMessage, SequenceRead seq, 'a> =
+    let search (query: SequenceSearch) : HttpHandler<HttpResponseMessage, Sequence seq, 'a> =
         search query Url
         >=> logWithMessage "Sequences:search"
 
     /// Update one or more sequences. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated sequences.</returns>
-    let update (query: IEnumerable<UpdateItem<SequenceUpdate>>) : HttpHandler<HttpResponseMessage, SequenceRead seq, 'a>  =
+    let update (query: IEnumerable<UpdateItem<SequenceUpdate>>) : HttpHandler<HttpResponseMessage, Sequence seq, 'a>  =
         update query Url
         >=> logWithMessage "Sequences:update"
 

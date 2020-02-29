@@ -344,11 +344,11 @@ let ``Update timeseries is Ok`` () = task {
             TimeSeriesUpdateItem(
                 externalId = externalId,
                 Update = TimeSeriesUpdate(
-                    ExternalId = Update(newExternalId),
-                    Metadata = DictUpdate(newMetadata, [ "oldkey1" ]),
-                    Description = Update(newDescription),
-                    Name = Update(null),
-                    Unit = Update("unit")
+                    ExternalId = UpdateNullable(newExternalId),
+                    Metadata = UpdateDictionary(newMetadata, [ "oldkey1" ]),
+                    Description = UpdateNullable(newDescription),
+                    Name = UpdateNullable(null),
+                    Unit = UpdateNullable("unit")
                 )
             )
         ]

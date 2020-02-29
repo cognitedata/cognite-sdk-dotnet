@@ -23,8 +23,8 @@ type Config = {
 
 let getDatapointsExample (ctx : HttpContext) = task {
     let query =
-        DataPoints.DataPointsQuery(
-            Items = [ DataPoints.DataPointsQueryItem(Id=Nullable 20713436708L) ],
+        DataPointsQuery(
+            Items = [ DataPointsQueryItem(Id=Nullable 20713436708L) ],
             Start = "1524851819000",
             End = "1524859650000"
         )
@@ -36,12 +36,12 @@ let getDatapointsExample (ctx : HttpContext) = task {
 
 let getAssetsExample (ctx : HttpContext) = task {
     let! res =
-        Assets.AssetQuery(Limit = Nullable 2)
+        AssetQuery(Limit = Nullable 2)
         |> Assets.list
         |> runUnsafeAsync ctx CancellationToken.None
 
     let! res =
-        Assets.AssetQuery(Limit = Nullable 2)
+        AssetQuery(Limit = Nullable 2)
         |> Assets.list
         |> runAsync ctx
     match res with
@@ -53,7 +53,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
             id = 84025677715833721L,
-            Update = Assets.AssetUpdate(Name = SetUpdate("string3"))
+            Update = AssetUpdate(Name = Update("string3"))
         )
     ]
     let! res = Assets.update query |> runAsync ctx
@@ -65,7 +65,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
 let searchAssetsExample (ctx : HttpContext) = task {
 
     let query =
-        Assets.AssetSearch(
+        AssetSearch(
             Search = Search(Name = "VAL"),
             Limit = Nullable 10
         )
@@ -77,7 +77,7 @@ let searchAssetsExample (ctx : HttpContext) = task {
 let createAssetsExample ctx = task {
 
     let assets = [
-        Assets.AssetCreate(
+        AssetCreate(
             Name = "My new asset",
             Description = "My description"
        )

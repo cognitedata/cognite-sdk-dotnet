@@ -3,15 +3,15 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
-    /// Raw database object.
+    /// Raw table object.
     /// </summary>
-    public class Database
+    public class RawTable
     {
         /// <summary>
-        /// Unique name of a database.
+        /// Name of the table. Unique in database.
         /// </summary>
         public string Name { get; set; }
 

@@ -2,7 +2,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// Query parameter when creating a raw table.

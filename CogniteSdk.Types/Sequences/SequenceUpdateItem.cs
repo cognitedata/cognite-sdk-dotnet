@@ -1,4 +1,4 @@
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// The sequence update items DTO base class.

@@ -52,6 +52,12 @@ group Playground
     nuget FSharp.Core ~> 4.7
     nuget FsConfig ~> 2
     nuget Microsoft.Extensions.Configuration ~> 3
+    nuget Microsoft.AspNetCore.Hosting
+    nuget Microsoft.Extensions.DependencyInjection
+    nuget Microsoft.Extensions.Configuration
+    nuget Microsoft.Extensions.Hosting
+    nuget Microsoft.Extensions.Logging
+    nuget Microsoft.Extensions.Logging.EventLog
     nuget Oryx prerelease
     nuget Oryx.Protobuf prerelease
     nuget Oryx.SystemTextJson prerelease

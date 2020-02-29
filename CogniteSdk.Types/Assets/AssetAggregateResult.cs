@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Assets
+namespace CogniteSdk
 {
     /// <summary>
     /// Aggregated metrics of the asset.

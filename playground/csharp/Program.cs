@@ -7,13 +7,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Extensions.Logging;
 
 using CogniteSdk;
-using CogniteSdk.Assets;
-using CogniteSdk.DataPoints;
 
 namespace csharp {
 
@@ -37,8 +34,8 @@ namespace csharp {
             var query = new List<AssetUpdateItem>() {
                 new AssetUpdateItem(externalId) {
                     Update = new AssetUpdate {
-                        Metadata = new DictUpdate<string>(metaData),
-                        Name = new SetUpdate<string>(newName)
+                        Metadata = new UpdateDictionary<string>(metaData),
+                        Name = new Update<string>(newName)
                     }
                 }
             };
@@ -102,6 +99,11 @@ namespace csharp {
             await client.DataPoints.CreateAsync(points);
         }
 
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLogging(configure => configure.AddConsole());
+        }
+
         private static async Task Main() {
             Console.WriteLine("C# Client");
 
@@ -112,12 +114,10 @@ namespace csharp {
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
-
-            var log = new LoggerConfiguration()
-                .WriteTo.Console()
-                .MinimumLevel.Debug()
-                .CreateLogger();
-            var logger = new SerilogLoggerProvider(log).CreateLogger(nameof(Program));
+            var serviceCollection = new ServiceCollection();
+            ConfigureServices(serviceCollection);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var logger = serviceProvider.GetService<ILogger<Program>>();
 
             using var httpClient = new HttpClient(handler);
             var builder = new Client.Builder();

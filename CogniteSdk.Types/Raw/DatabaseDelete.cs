@@ -3,12 +3,12 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// Databases delete DTO.
     /// </summary>
-    public class DatabaseDelete : ItemsWithoutCursor<Database>
+    public class DatabaseDelete : ItemsWithoutCursor<RawDatabase>
     {
         /// <summary>
         /// When true, tables of this database are deleted with the database.

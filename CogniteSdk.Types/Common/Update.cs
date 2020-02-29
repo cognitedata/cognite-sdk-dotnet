@@ -9,20 +9,22 @@ namespace CogniteSdk
     /// <summary>
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
-    /// <typeparam name="T">The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.</typeparam>
-    public class SetUpdate<T>
+    /// <typeparam name="T">
+    /// The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.
+    /// </typeparam>
+    public class Update<T>
     {
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public SetUpdate() { }
+        public Update() { }
 
         /// <summary>
         /// Set a new value for the property.
         /// </summary>
         /// <param name="value">Value to set.</param>
-        /// <returns>A new instance of the <see cref="SetUpdate{T}">SetProperty{T}</see> class.</returns>
-        public SetUpdate(T value)
+        /// <returns>A new instance of the <see cref="Update{T}">SetProperty{T}</see> class.</returns>
+        public Update(T value)
         {
             Set = value;
         }
@@ -35,15 +37,17 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString()
         {
-            return Stringable.ToString<SetUpdate<T>>(this);
+            return Stringable.ToString(this);
         }
     }
 
     /// <summary>
     /// Used for setting a new value for the update property. Or for removing the property.
     /// </summary>
-    /// <typeparam name="T">The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.</typeparam>
-    public class Update<T> : SetUpdate<T>
+    /// <typeparam name="T">
+    /// The type of the property being updated. Must be a "nullable" type i.e reference or Nullable.
+    /// </typeparam>
+    public class UpdateNullable<T> : Update<T>
     {
         /// <summary>
         /// True if the value should be cleared.
@@ -55,7 +59,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="value">Value to set.</param>
         /// <returns>A new instance of the <see cref="Update{T}">Property{T}</see> class.</returns>
-        public Update(T value) : base(value)
+        public UpdateNullable(T value) : base(value)
         {
             if (value is null)
             {
@@ -73,13 +77,8 @@ namespace CogniteSdk
     /// <summary>
     /// Used for setting, updating and removing Metadata entries.
     /// </summary>
-    public class CollectionUpdate<TCollection, TRemove>
+    public abstract class UpdateCollection<TCollection, TRemove> : Update<TCollection>
     {
-        /// <summary>
-        /// Set the key-value pairs. All existing key-value pairs will be removed.
-        /// </summary>
-        public TCollection Set { get; set; }
-
         /// <summary>
         /// Add the key-value pairs. Values for existing keys will be overwritten.
         /// </summary>
@@ -94,19 +93,23 @@ namespace CogniteSdk
         /// Set the key-value pairs. All existing key-value pairs will be removed.
         /// </summary>
         /// <param name="value">Values to set (overwrite).</param>
-        /// <returns>A new instance of the <see cref="CollectionUpdate{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see> class.</returns>
-        public CollectionUpdate(TCollection value)
+        /// <returns>
+        /// A new instance of the <see cref="UpdateCollection{TCollection, TRemove}">CollectionProperty{TCollection, TRemove}</see>
+        /// class.
+        /// </returns>
+        public UpdateCollection(TCollection value)
         {
             Set = value;
         }
 
         /// <summary>
-        /// Add the key-value pairs. Values for existing keys will be overwritten. Remove the key-value pairs with the specified keys.
+        /// Add the key-value pairs. Values for existing keys will be overwritten. Remove the key-value pairs with the
+        /// specified keys.
         /// </summary>
         /// <param name="addKeyValues">Values to update.</param>
         /// <param name="removeKeys">Keys to remove.</param>
         /// <returns></returns>
-        public CollectionUpdate(TCollection addKeyValues, IEnumerable<TRemove> removeKeys)
+        public UpdateCollection(TCollection addKeyValues, IEnumerable<TRemove> removeKeys)
         {
             Add = addKeyValues;
             Remove = removeKeys;
@@ -120,26 +123,26 @@ namespace CogniteSdk
     /// The dictionary update used i.e for Metadata properties. Inner type is Dictionary{string, T}.
     /// </summary>
     /// <typeparam name="T">The type of the dictionary value.</typeparam>
-    public class DictUpdate<T> : CollectionUpdate<Dictionary<string, T>, T>
+    public class UpdateDictionary<T> : UpdateCollection<Dictionary<string, T>, T>
     {
         /// <summary>
         /// Initialize the object property and set a new value.
         /// </summary>
         /// <param name="set">Set the new value.</param>
-        public DictUpdate(Dictionary<string, T> set) : base(set) { }
+        public UpdateDictionary(Dictionary<string, T> set) : base(set) { }
 
         /// <summary>
         /// Initialize the object property and remove values.
         /// </summary>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public DictUpdate(IEnumerable<T> remove) : base(null, remove) { }
+        public UpdateDictionary(IEnumerable<T> remove) : base(null, remove) { }
 
         /// <summary>
         /// Initialize the object property and add and remove values.
         /// </summary>
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public DictUpdate(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
+        public UpdateDictionary(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
@@ -149,20 +152,20 @@ namespace CogniteSdk
     /// A sequence property to use for array properties.
     /// </summary>
     /// <typeparam name="T">The type of the sequence items.</typeparam>
-    public class SequenceUpdate<T> : CollectionUpdate<IEnumerable<T>, T>
+    public class UpdateEnumerable<T> : UpdateCollection<IEnumerable<T>, T>
     {
         /// <summary>
         /// Replace sequence with given sequence.
         /// </summary>
         /// <param name="set">Values to set.</param>
-        public SequenceUpdate(IEnumerable<T> set) : base(set) { }
+        public UpdateEnumerable(IEnumerable<T> set) : base(set) { }
 
         /// <summary>
         /// Initialize sequence property.
         /// </summary>
         /// <param name="add">Values to add to the sequence.</param>
         /// <param name="remove">Values to remove from the sequence.</param>
-        public SequenceUpdate(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
+        public UpdateEnumerable(IEnumerable<T> add, IEnumerable<T> remove) : base(add, remove) { }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

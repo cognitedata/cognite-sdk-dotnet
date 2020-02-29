@@ -10,7 +10,6 @@ open Common
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open CogniteSdk
-open CogniteSdk.Files
 
 [<Trait("resource", "files")>]
 [<Fact>]
@@ -574,12 +573,12 @@ let ``Update files is Ok`` () = task {
                 externalId = externalId,
                 Update =
                     FileUpdate(
-                        Source =  Update<string>(newSource),
-                        AssetIds = SequenceUpdate<int64>([ newAssetId ]),
-                        Metadata = DictUpdate<string>(newMetadata, [ "oldkey1" ]),
-                        ExternalId = Update<string>(newExternalId),
-                        SourceCreatedTime = Update<Nullable<int64>>(Nullable 321L),
-                        SourceModifiedTime = Update<Nullable<int64>>(Nullable 654L)
+                        Source =  UpdateNullable<string>(newSource),
+                        AssetIds = UpdateEnumerable<int64>([ newAssetId ]),
+                        Metadata = UpdateDictionary<string>(newMetadata, [ "oldkey1" ]),
+                        ExternalId = UpdateNullable<string>(newExternalId),
+                        SourceCreatedTime = UpdateNullable<Nullable<int64>>(Nullable 321L),
+                        SourceModifiedTime = UpdateNullable<Nullable<int64>>(Nullable 654L)
                     )
                 )
             ]
@@ -625,8 +624,8 @@ let ``Update files is Ok`` () = task {
                 externalId = newExternalId,
                 Update =
                     FileUpdate(
-                        Metadata = DictUpdate<string>(dict ["newKey", "newValue"] |> Dictionary),
-                        AssetIds = SequenceUpdate<int64>([newAssetId2], [newAssetId])
+                        Metadata = UpdateDictionary<string>(dict ["newKey", "newValue"] |> Dictionary),
+                        AssetIds = UpdateEnumerable<int64>([newAssetId2], [newAssetId])
                     )
            )
         ]
@@ -650,12 +649,12 @@ let ``Update files is Ok`` () = task {
                 id = identity,
                 Update =
                     FileUpdate(
-                        Metadata = DictUpdate(set=Dictionary()),
-                        ExternalId = Update(null),
-                        Source = Update(null),
-                        SourceCreatedTime = Update(Nullable ()),
-                        SourceModifiedTime = Update(Nullable ()),
-                        AssetIds = SequenceUpdate([])
+                        Metadata = UpdateDictionary(set=Dictionary()),
+                        ExternalId = UpdateNullable(null),
+                        Source = UpdateNullable(null),
+                        SourceCreatedTime = UpdateNullable(Nullable ()),
+                        SourceModifiedTime = UpdateNullable(Nullable ()),
+                        AssetIds = UpdateEnumerable([])
                     )
             )]
 

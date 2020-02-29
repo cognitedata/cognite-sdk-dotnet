@@ -1,7 +1,7 @@
 ﻿using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// Query parameter when creating a raw table.

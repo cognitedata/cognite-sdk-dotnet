@@ -110,8 +110,8 @@ let ``Update events is Ok`` () = task {
             EventUpdateItem(
                 externalId = externalId,
                 Update = EventUpdate(
-                    Description = Update(newDescription),
-                    Metadata = DictUpdate<string>(add=newMetadata, remove=[ "oldkey1" ])
+                    Description = UpdateNullable(newDescription),
+                    Metadata = UpdateDictionary<string>(add=newMetadata, remove=[ "oldkey1" ])
                 )
             )
         ]
@@ -130,7 +130,7 @@ let ``Update events is Ok`` () = task {
     // Assert get
     test <@ getDto.ExternalId = externalId @>
     test <@ getDto.Description = newDescription @>
-    test <@ getDto.Metadata |> fun a -> true && metaDataOk @>
+    test <@ getDto.Metadata |> fun a -> metaDataOk @>
 }
 
 [<Fact>]

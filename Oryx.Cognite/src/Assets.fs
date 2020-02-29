@@ -10,7 +10,6 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Assets
 
 /// Various asset HTTP handlers.
 

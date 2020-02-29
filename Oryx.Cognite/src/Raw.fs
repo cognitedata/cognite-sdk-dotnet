@@ -10,7 +10,6 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Raw
 
 /// Various event HTTP handlers.
 
@@ -25,7 +24,7 @@ module Raw =
     /// </summary>
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
-    let listDatabases (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Database>, 'a> =
+    let listDatabases (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawDatabase>, 'a> =
         getWithQuery query Url
         >=> logWithMessage "Raw:get"
 
@@ -34,7 +33,7 @@ module Raw =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created databases.</returns>
-    let createDatabases (items: IEnumerable<Database>) : HttpHandler<HttpResponseMessage, IEnumerable<Database>, 'a> =
+    let createDatabases (items: IEnumerable<RawDatabase>) : HttpHandler<HttpResponseMessage, IEnumerable<RawDatabase>, 'a> =
         create items Url
         >=> logWithMessage "Raw:createDatabases"
 
@@ -53,7 +52,7 @@ module Raw =
     /// <param name="database">The database to list tables from.</param>
     /// <param name="query">The query with optional limit and cursor.</param>
     /// <returns>List of tables.</returns>
-    let listTables (database: string) (query: DatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Table>, 'a> =
+    let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawTable>, 'a> =
         Url +/ database +/ "tables"
         |> getWithQuery query
         >=> logWithMessage "Raw:listTables"
@@ -64,7 +63,7 @@ module Raw =
     /// <param name="database">The database to list tables from.</param>
     /// <param name="items">The tables to create.</param>
     /// <returns>List of created tables.</returns>
-    let createTables (database: string) (items: Table seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, Table seq, 'a> =
+    let createTables (database: string) (items: RawTable seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, RawTable seq, 'a> =
         let query = TableCreateQuery(EnsureParent = ensureParent)
         Url +/ database +/ "tables" |> createWithQuery items query
         >=> logWithMessage "Raw:createTables"
@@ -85,7 +84,7 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="query">The Row query.</param>
     /// <returns>The retrieved rows.</returns>
-    let listRows (database: string) (table: string) (query: RowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RowRead>, 'a> =
+    let listRows (database: string) (table: string) (query: RowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RawRow>, 'a> =
         Url +/ database +/ "tables" +/ table +/ "rows"
         |> getWithQuery query
         >=> logWithMessage "Raw:listRows"

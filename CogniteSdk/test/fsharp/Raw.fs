@@ -9,7 +9,6 @@ open Xunit
 open Swensen.Unquote
 
 open CogniteSdk
-open CogniteSdk.Raw
 
 open Common
 
@@ -17,7 +16,7 @@ open Common
 [<Fact>]
 let ``List Databases with limit is Ok`` () = task {
     // Arrange
-    let query = DatabaseQuery(Limit = Nullable 10)
+    let query = RawDatabaseQuery(Limit = Nullable 10)
 
     // Act
     let! res = writeClient.Raw.ListDatabasesAsync query
@@ -30,7 +29,7 @@ let ``List Databases with limit is Ok`` () = task {
 [<Fact>]
 let ``List Tables with limit is Ok`` () = task {
     // Arrange
-    let query = DatabaseQuery(Limit = Nullable 10)
+    let query = RawDatabaseQuery(Limit = Nullable 10)
 
     // Act
     let! res = writeClient.Raw.ListTablesAsync("sdk-test-database", query)
@@ -47,7 +46,7 @@ let ``List Rows with limit is Ok`` () = task {
       "sdk-test-col", "sdk-test-value"
       "sdk-test-col2", "sdk-test-value2"
     }
-    let query = Raw.RowQuery(Limit = Nullable 10)
+    let query = RowQuery(Limit = Nullable 10)
 
     // Act
     let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)

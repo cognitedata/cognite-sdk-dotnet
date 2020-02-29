@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using Xunit;
 
-using CogniteSdk.Assets;
 using CogniteSdk;
 
 namespace Test.CSharp.Integration {
@@ -199,8 +198,8 @@ namespace Test.CSharp.Integration {
                 {
                     Update = new AssetUpdate()
                     {
-                        Name = new SetUpdate<string>(newName),
-                        Metadata = new DictUpdate<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
+                        Name = new Update<string>(newName),
+                        Metadata = new UpdateDictionary<string>(add: newMetadata, remove: new List<string> { "oldkey1" })
                     }
                 }
             };

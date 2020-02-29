@@ -4,7 +4,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Files
+namespace CogniteSdk
 {
     /// <summary>
     /// The file update DTO.
@@ -14,43 +14,43 @@ namespace CogniteSdk.Files
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<string> ExternalId { get; set; }
+        public UpdateNullable<string> ExternalId { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<long?> DataSetId { get; set; }
+        public UpdateNullable<long?> DataSetId { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<string> Source { get; set; }
+        public UpdateNullable<string> Source { get; set; }
 
         /// <summary>
         /// Change that will be applied to the array.
         /// </summary>
-        public SequenceUpdate<long> AssetIds { get; set; }
+        public UpdateEnumerable<long> AssetIds { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public DictUpdate<string> Metadata { get; set; }
+        public UpdateDictionary<string> Metadata { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.
         /// </summary>
-        public Update<string> MimeType { get; set; }
+        public UpdateNullable<string> MimeType { get; set; }
 
         /// <summary>
         /// Set a new value for the start time, or remove the value.
         /// </summary>
-        public Update<long?> SourceCreatedTime { get; set; }
+        public UpdateNullable<long?> SourceCreatedTime { get; set; }
 
         /// <summary>
         /// Set a new value for the end time, or remove the value.
         /// </summary>
-        public Update<long?> SourceModifiedTime { get; set; }
+        public UpdateNullable<long?> SourceModifiedTime { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

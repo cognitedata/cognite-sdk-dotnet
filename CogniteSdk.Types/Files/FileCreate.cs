@@ -6,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Files
+namespace CogniteSdk
 {
     /// <summary>
     /// File write response resource.

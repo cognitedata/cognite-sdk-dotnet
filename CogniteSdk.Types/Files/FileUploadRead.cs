@@ -4,7 +4,7 @@
 using System;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Files
+namespace CogniteSdk
 {
     /// <summary>
     /// File upload read response resource.

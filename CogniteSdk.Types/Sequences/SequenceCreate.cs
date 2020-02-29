@@ -6,12 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// Sequence DTO for writing.
     /// </summary>
-    public class SequenceWrite
+    public class SequenceCreate
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.

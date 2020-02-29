@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// Dto with keys of rows to delete in table.

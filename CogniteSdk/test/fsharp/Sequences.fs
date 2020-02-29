@@ -117,7 +117,7 @@ let ``Create and delete sequences is Ok`` () = task {
             ValueType = MultiValueType.DOUBLE
         )
     let dto =
-        SequenceWrite(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = name,
             Description = "dotnet sdk test",
@@ -157,7 +157,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
             ValueType = MultiValueType.STRING
         )
     let dto =
-        SequenceWrite(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = name,
             Description = "dotnet sdk test",
@@ -236,7 +236,7 @@ let ``Update sequences is Ok`` () = task {
             ValueType = MultiValueType.DOUBLE
         )
     let dto =
-        SequenceWrite(
+        SequenceCreate(
             ExternalId = externalIdString,
             Name = "Create Sequences sdk test",
             Description = "dotnet sdk test",
@@ -255,9 +255,9 @@ let ``Update sequences is Ok`` () = task {
             SequenceUpdateItem(
                 externalId = externalIdString,
                 Update=SequenceUpdate(
-                    Name = Update(newName),
-                    ExternalId = Update(newExternalId),
-                    Metadata = DictUpdate(newMetadata, [ "oldkey1" ])
+                    Name = UpdateNullable(newName),
+                    ExternalId = UpdateNullable(newExternalId),
+                    Metadata = UpdateDictionary(newMetadata, [ "oldkey1" ])
                 )
             )
         ]
@@ -288,9 +288,9 @@ let ``Update sequences is Ok`` () = task {
             SequenceUpdateItem(
                 externalId = newExternalId,
                 Update=SequenceUpdate(
-                    Description = Update(newDescription),
-                    AssetId = Update(Nullable 5409900891232494L),
-                    Metadata = DictUpdate(newMetadata)
+                    Description = UpdateNullable(newDescription),
+                    AssetId = UpdateNullable(Nullable 5409900891232494L),
+                    Metadata = UpdateDictionary(newMetadata)
                 )
             )]
 
@@ -313,9 +313,9 @@ let ``Update sequences is Ok`` () = task {
             SequenceUpdateItem(
                 id = identity,
                 Update=SequenceUpdate(
-                    ExternalId = Update(null),
-                    AssetId = Update(Nullable ()),
-                    Metadata = DictUpdate(Dictionary(), ["newKey"])
+                    ExternalId = UpdateNullable(null),
+                    AssetId = UpdateNullable(Nullable ()),
+                    Metadata = UpdateDictionary(Dictionary(), ["newKey"])
                 )
             )]
 

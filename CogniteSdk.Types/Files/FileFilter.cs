@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-
+using System.Diagnostics.CodeAnalysis;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Files
+namespace CogniteSdk
 {
     /// <summary>
     /// The File query DTO.
@@ -26,6 +26,7 @@ namespace CogniteSdk.Files
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
+        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>

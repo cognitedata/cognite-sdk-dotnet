@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Files
+namespace CogniteSdk
 {
     /// <summary>
     /// The File query DTO.

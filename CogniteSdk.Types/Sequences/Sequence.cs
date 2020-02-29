@@ -6,12 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// Sequence DTO for reading sequences.
     /// </summary>
-    public class SequenceRead
+    public class Sequence
     {
         /// <summary>
         /// The Id of the sequence

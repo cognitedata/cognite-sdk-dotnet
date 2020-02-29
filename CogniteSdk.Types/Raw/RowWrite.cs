@@ -7,7 +7,7 @@ using System.Text.Json;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// Dto to write a row to a table in Raw.

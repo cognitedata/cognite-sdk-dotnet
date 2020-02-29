@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// The row query DTO.

@@ -78,14 +78,14 @@ namespace Test.CSharp.Integration
                 Name = "Create column C# test",
                 ValueType = MultiValueType.DOUBLE
             };
-            var sequence = new SequenceWrite {
+            var sequence = new SequenceCreate {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
                 Columns = new List<SequenceColumnWrite> { column }
             };
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWrite> { sequence });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
             await WriteClient.Sequences.DeleteAsync(new List<string> { externalIdString });
 
             // Assert
@@ -108,7 +108,7 @@ namespace Test.CSharp.Integration
                 ValueType = MultiValueType.DOUBLE
             };
 
-            var sequence = new SequenceWrite {
+            var sequence = new SequenceCreate {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
@@ -130,7 +130,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceWrite> { sequence });
+            var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
 
             await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataWrite> { data });
             await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDelete> { delete });

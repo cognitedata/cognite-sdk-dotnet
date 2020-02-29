@@ -1,10 +1,10 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Raw
+namespace CogniteSdk
 {
     /// <summary>
     /// The database query DTO.
     /// </summary>
-    public class DatabaseQuery : CursorQueryBase { }
+    public class RawDatabaseQuery : CursorQueryBase { }
 }

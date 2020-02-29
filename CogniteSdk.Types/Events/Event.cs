@@ -8,8 +8,9 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event read DTO.
+    /// The Event read entity.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
     public class Event
     {
         /// <summary>

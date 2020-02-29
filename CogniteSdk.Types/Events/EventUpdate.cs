@@ -36,12 +36,12 @@ namespace CogniteSdk
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>
-        public DictUpdate<string> Metadata { get; set; }
+        public UpdateDictionary<string> Metadata { get; set; }
 
         /// <summary>
         /// Change that will be applied to the array.
         /// </summary>
-        public SequenceUpdate<long?> AssetIds { get; set; }
+        public UpdateEnumerable<long?> AssetIds { get; set; }
 
         /// <summary>
         /// Set a new value for the string, or remove the value.

@@ -9,7 +9,6 @@ open Oryx
 open Xunit
 
 open CogniteSdk
-open CogniteSdk.Assets
 open Common
 
 [<Fact>]
@@ -356,9 +355,9 @@ let ``Update assets is Ok`` () = task {
         AssetUpdateItem(
             externalId = externalId,
             Update = AssetUpdate(
-                Name = SetUpdate(newName),
-                Metadata = DictUpdate(add=newMetadata, remove=["oldkey1"]),
-                ExternalId = Update(newExternalId)
+                Name = Update(newName),
+                Metadata = UpdateDictionary(add=newMetadata, remove=["oldkey1"]),
+                ExternalId = UpdateNullable(newExternalId)
             )
         )
     }
@@ -394,9 +393,9 @@ let ``Update assets is Ok`` () = task {
             AssetUpdateItem(
                 externalId=newExternalId,
                 Update=AssetUpdate(
-                    Metadata = DictUpdate(Dictionary(dict["newKey", "newValue"])),
-                    Description = Update(newDescription),
-                    Source = Update(newSource)
+                    Metadata = UpdateDictionary(Dictionary(dict["newKey", "newValue"])),
+                    Description = UpdateNullable(newDescription),
+                    Source = UpdateNullable(newSource)
                 )
             )
         ]
@@ -420,9 +419,9 @@ let ``Update assets is Ok`` () = task {
             AssetUpdateItem(
                 id = identity,
                 Update = AssetUpdate(
-                    Metadata = DictUpdate<string>(remove=["newKey"]),
-                    ExternalId = Update<string>(null),
-                    Source = Update<string>(null)
+                    Metadata = UpdateDictionary<string>(remove=["newKey"]),
+                    ExternalId = UpdateNullable<string>(null),
+                    Source = UpdateNullable<string>(null)
                 )
             )
         ]
