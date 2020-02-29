@@ -31,6 +31,11 @@ namespace CogniteSdk
         public IEnumerable<string> DataSets { get; set; }
 
         /// <summary>
+        /// External id must be unique within the project.
+        /// </summary>
+        public string ExternalId { get; set; }
+
+        /// <summary>
         /// Range for startTime.
         /// </summary>
         public TimeRange StartTime { get; set; }
