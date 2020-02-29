@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace CogniteSdk.Relationships
+namespace CogniteSdk
 {
     /// <summary>
     /// Dto to perform a graph query.

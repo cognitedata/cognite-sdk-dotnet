@@ -10,7 +10,6 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Relationships
 open CogniteSdk.Types.Common
 
 /// Various asset HTTP handlers.
@@ -25,7 +24,7 @@ module Relationships =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
-    let list (query: RelationshipQueryDto) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RelationshipRead>, 'a> =
+    let list (query: RelationshipQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Relationship>, 'a> =
         listPlayground query Url
         >=> logWithMessage "Relationships:list"
 
@@ -34,7 +33,7 @@ module Relationships =
     /// </summary>
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
-    let create (items: RelationshipWriteDto seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipRead>, 'a> =
+    let create (items: RelationshipCreate seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
         createPlayground items Url
         >=> logWithMessage "Relationships:create"
 
@@ -55,7 +54,7 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<RelationshipRead>, 'a> =
+    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
         let relationships = ids |> Seq.map Identity.Create
         retrievePlayground relationships Url
         >=> logWithMessage "Relationships:retrieve"
