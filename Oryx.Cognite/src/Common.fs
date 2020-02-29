@@ -88,11 +88,11 @@ module Context =
         let version = Assembly.GetExecutingAssembly().GetName().Version
         (version.Major, version.Minor, version.Build)
 
-    let setUrlBuilder ctx =
-        Context.setUrlBuilder urlBuilder ctx
+    let withUrlBuilder ctx =
+        Context.withUrlBuilder urlBuilder ctx
 
     /// Set the project to connect to.
-    let setProject (project: string) (context: HttpContext) =
+    let withProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", String project) } }
 
     let setAppId (appId: string) (context: HttpContext) =
@@ -104,7 +104,7 @@ module Context =
     let create () =
         let major, minor, build = version
         Context.defaultContext
-        |> Context.setUrlBuilder urlBuilder
-        |> Context.addHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
-        |> Context.setLogFormat "CDF ({Message}): {Uri}\n→ {RequestContent}\n← {ResponseContent}"
+        |> Context.withUrlBuilder urlBuilder
+        |> Context.withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
+        |> Context.withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
 

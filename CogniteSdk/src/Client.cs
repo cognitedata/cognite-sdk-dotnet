@@ -104,7 +104,7 @@ namespace CogniteSdk
             /// <param name="httpClient">Optional HttpClient to use for HTTP requests.</param>
             public Builder(HttpClient httpClient = null)
             {
-                _context = httpClient == null ? _context : Context.setHttpClient(httpClient, _context);
+                _context = httpClient == null ? _context : Context.withHttpClient(httpClient, _context);
             }
 
             /// <summary>
@@ -115,7 +115,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder AddHeader(string name, string value)
             {
-                _context = Context.addHeader(name, value, _context);
+                _context = Context.withHeader(name, value, _context);
                 return this;
             }
 
@@ -136,7 +136,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetProject(string project)
             {
-                _context = setProject(project, _context);
+                _context = withProject(project, _context);
                 return this;
             }
 
@@ -158,7 +158,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetHttpClient(HttpClient client)
             {
-                _context = Context.setHttpClient(client, _context);
+                _context = Context.withHttpClient(client, _context);
                 return this;
             }
 
@@ -190,7 +190,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(logger));
                 }
 
-                _context = Context.setLogger(logger, _context);
+                _context = Context.withLogger(logger, _context);
                 return this;
             }
 
@@ -201,7 +201,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogLevel(LogLevel logLevel)
             {
-                _context = Context.setLogLevel(logLevel, _context);
+                _context = Context.withLogLevel(logLevel, _context);
                 return this;
             }
 
@@ -212,7 +212,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogFormat(string format)
             {
-                _context = Context.setLogFormat(format, _context);
+                _context = Context.withLogFormat(format, _context);
                 return this;
             }
 
@@ -227,7 +227,7 @@ namespace CogniteSdk
                 {
                     throw new ArgumentNullException(nameof(metrics));
                 }
-                _context = Context.setMetrics(metrics, _context);
+                _context = Context.withMetrics(metrics, _context);
                 return this;
             }
 

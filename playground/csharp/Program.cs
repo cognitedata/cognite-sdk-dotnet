@@ -101,7 +101,7 @@ namespace csharp {
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging(configure => configure.AddConsole());
+            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
         }
 
         private static async Task Main() {
@@ -117,7 +117,8 @@ namespace csharp {
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            var logger = serviceProvider.GetService<ILogger<Program>>();
+
+            var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
 
             using var httpClient = new HttpClient(handler);
             var builder = new Client.Builder();
@@ -132,6 +133,7 @@ namespace csharp {
                     .Build();
 
             var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
+            Console.WriteLine($"{asset}");
             //var data = await QueryTimeseriesDataExample(client);
         }
     }

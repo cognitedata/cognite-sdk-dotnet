@@ -69,7 +69,7 @@ All SDK methods are called with a `Client` object. A valid client requires:
 - `API Key` - key used for authentication with CDF.
 - `Project Name` - the name of your CDF project e.g `publicdata`.
 - `App ID` - an identifier for your application. It is a free text string. Example: `asset-hierarchy-extractor`
-- `HTTP Client` - The [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netcore-3.1) that will be used for the remote connection. Having this separete from the SDK have many benefits like using e.g [Polly](https://github.com/App-vNext/Polly) for policy handling.
+- `HTTP Client` - The [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netcore-3.1) that will be used for the remote connection. Having this separate from the SDK have many benefits like using e.g [Polly](https://github.com/App-vNext/Polly) for policy handling.
 
 ```c#
 using CogniteSdk;
