@@ -54,7 +54,6 @@ group Playground
     nuget Microsoft.Extensions.Configuration ~> 3
     nuget Microsoft.AspNetCore.Hosting
     nuget Microsoft.Extensions.DependencyInjection
-    nuget Microsoft.Extensions.Configuration
     nuget Microsoft.Extensions.Hosting
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
