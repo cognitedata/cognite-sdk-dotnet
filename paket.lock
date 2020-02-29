@@ -41,18 +41,18 @@ NUGET
     Microsoft.NETCore.Platforms (3.1)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
-    Oryx (1.0.0-alpha-009)
+    Oryx (1.0.0-alpha-010)
       FSharp.Core (>= 4.7)
       Microsoft.Extensions.Logging (>= 3.1.1)
       TaskBuilder.fs (>= 2.1)
-    Oryx.Protobuf (1.0.0-alpha-009)
+    Oryx.Protobuf (1.0.0-alpha-010)
       FSharp.Core (>= 4.7)
       Google.Protobuf (>= 3.11.3)
-      Oryx (>= 1.0.0-alpha-009)
+      Oryx (>= 1.0.0-alpha-010)
       TaskBuilder.fs (>= 2.1)
-    Oryx.SystemTextJson (1.0.0-alpha-009)
+    Oryx.SystemTextJson (1.0.0-alpha-010)
       FSharp.Core (>= 4.7)
-      Oryx (>= 1.0.0-alpha-009)
+      Oryx (>= 1.0.0-alpha-010)
       System.Text.Json (>= 4.7)
       TaskBuilder.fs (>= 2.1)
     System.Buffers (4.5)
@@ -280,18 +280,18 @@ NUGET
       System.Threading.Timer (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
       System.Xml.ReaderWriter (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.1) (< netstandard1.2) (< win8)) (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (>= net46) (< netstandard1.4)) (&& (>= netstandard1.0) (< portable-net45+win8+wpa81) (< wp8)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
       System.Xml.XDocument (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.1) (< netstandard1.2) (< win8)) (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (>= netstandard1.0) (< portable-net45+win8+wpa81) (< wp8)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
-    Oryx (1.0.0-alpha-009)
+    Oryx (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging (>= 3.1.1) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
-    Oryx.Protobuf (1.0.0-alpha-009)
+    Oryx.Protobuf (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
       Google.Protobuf (>= 3.11.3) - restriction: >= netstandard2.0
-      Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
+      Oryx (>= 1.0.0-alpha-010) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (1.0.0-alpha-009)
+    Oryx.SystemTextJson (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
-      Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
+      Oryx (>= 1.0.0-alpha-010) - restriction: >= netstandard2.0
       System.Text.Json (>= 4.7) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net45) (< netstandard1.2) (>= netstandard1.6) (< win8)) (&& (< monoandroid) (< net45) (< netstandard1.3) (>= netstandard1.6) (< win8) (< wpa81)) (&& (< monoandroid) (< net45) (< netstandard1.4) (>= netstandard1.6) (< win8) (< wpa81)) (&& (< monoandroid) (< net45) (< netstandard1.5) (>= netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= net46) (< netstandard1.3) (>= netstandard1.6)) (&& (< net45) (>= net46) (< netstandard1.4) (>= netstandard1.6)) (&& (< netstandard1.3) (>= netstandard1.6) (>= uap10.0)) (&& (< netstandard1.5) (>= netstandard1.6) (>= uap10.0))
@@ -835,7 +835,7 @@ NUGET
     Microsoft.NetFramework.Analyzers (2.9.8)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
-    Oryx (1.0.0-alpha-009)
+    Oryx (1.0.0-alpha-010)
       FSharp.Core (>= 4.7)
       Microsoft.Extensions.Logging (>= 3.1.1)
       TaskBuilder.fs (>= 2.1)
@@ -965,18 +965,18 @@ NUGET
       System.Runtime.Serialization.Primitives (>= 4.3) - restriction: || (&& (< net20) (>= netstandard1.0) (< netstandard1.3)) (&& (< net20) (>= netstandard1.3) (< netstandard2.0))
       System.Xml.XmlDocument (>= 4.3) - restriction: && (< net20) (>= netstandard1.3) (< netstandard2.0)
     NuGet.Frameworks (5.4) - restriction: >= netcoreapp2.1
-    Oryx (1.0.0-alpha-009)
+    Oryx (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging (>= 3.1.1) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
-    Oryx.Protobuf (1.0.0-alpha-009)
+    Oryx.Protobuf (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
       Google.Protobuf (>= 3.11.3) - restriction: >= netstandard2.0
-      Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
+      Oryx (>= 1.0.0-alpha-010) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (1.0.0-alpha-009)
+    Oryx.SystemTextJson (1.0.0-alpha-010)
       FSharp.Core (>= 4.7) - restriction: >= netstandard2.0
-      Oryx (>= 1.0.0-alpha-009) - restriction: >= netstandard2.0
+      Oryx (>= 1.0.0-alpha-010) - restriction: >= netstandard2.0
       System.Text.Json (>= 4.7) - restriction: >= netstandard2.0
       TaskBuilder.fs (>= 2.1) - restriction: >= netstandard2.0
     runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl (4.3.3) - restriction: || (&& (>= netcoreapp1.0) (< netstandard1.2)) (&& (>= netcoreapp1.0) (< netstandard1.3)) (&& (>= netcoreapp1.0) (< netstandard1.4)) (&& (>= netcoreapp1.0) (< netstandard1.5)) (&& (>= netcoreapp1.0) (< netstandard1.6)) (&& (>= netcoreapp1.0) (< netstandard2.0))

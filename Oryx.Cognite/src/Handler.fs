@@ -36,13 +36,13 @@ type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
-    let setResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
+    let withResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", String resource) } }
 
-    let setVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
+    let withVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", String (version.ToString ())) } }
 
-    let setUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
+    let withUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Extra
             let serviceUrl =
@@ -66,7 +66,7 @@ module Handler =
     let runUnsafeAsync (ctx : HttpContext) (token: CancellationToken) (handler: HttpHandler<HttpResponseMessage, 'r,'r>) : Task<'r> = task {
         let runUnsafe  =
             ctx
-            |> Context.setCancellationToken token
+            |> Context.withCancellationToken token
             |> runAsync
 
         match! runUnsafe handler with
@@ -99,16 +99,16 @@ module Handler =
 
     let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         GET
-        >=> setResource url
+        >=> withResource url
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
 
     let getV10<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        setVersion V10 >=> get url
+        withVersion V10 >=> get url
 
     let getPlayground<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        setVersion Playground >=> get url
+        withVersion Playground >=> get url
 
     let inline getById (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         url +/ sprintf "%d" id |> getV10
@@ -116,35 +116,35 @@ module Handler =
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
         let parms = query.ToQueryParams ()
         GET
-        >=> setVersion V10
-        >=> setResource url
-        >=> addQuery parms
+        >=> withVersion V10
+        >=> withResource url
+        >=> withQuery parms
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
 
     let post<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         POST
-        >=> setResource url
-        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> withResource url
+        >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
 
     let postV10<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        setVersion V10 >=> post content url
+        withVersion V10 >=> post content url
 
     let postPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        setVersion Playground >=> post content url
+        withVersion Playground >=> post content url
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
 
         POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> addQuery parms
-        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> withVersion V10
+        >=> withResource url
+        >=> withQuery parms
+        >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
@@ -232,10 +232,10 @@ module Handler =
     let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =
         let url = url +/ "list"
         POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setResponseType ResponseType.Protobuf
-        >=> setContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
+        >=> withVersion V10
+        >=> withResource url
+        >=> withResponseType ResponseType.Protobuf
+        >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
         >=> withError decodeError
         >=> protobuf parser
@@ -243,9 +243,9 @@ module Handler =
     /// Create content using protocol buffers
     let createProtobuf<'a, 'b> (content: Google.Protobuf.IMessage) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         POST
-        >=> setVersion V10
-        >=> setResource url
-        >=> setContent (fun () -> new ProtobufPushStreamContent(content) :> _)
+        >=> withVersion V10
+        >=> withResource url
+        >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

@@ -143,9 +143,9 @@ let asyncMain argv = task {
     let ctx =
         Context.create ()
         |> Context.setAppId "playground"
-        |> Context.setHttpClient client
-        |> Context.addHeader ("api-key", Uri.EscapeDataString config.ApiKey)
-        |> Context.setProject (Uri.EscapeDataString config.Project)
+        |> Context.withHttpClient client
+        |> Context.withHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+        |> Context.withProject (Uri.EscapeDataString config.Project)
 
     do! getAssetsExample ctx
 }

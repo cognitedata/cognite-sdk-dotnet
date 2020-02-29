@@ -15,8 +15,8 @@ open CogniteSdk.Login
 module Login =
     let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         GET
-        >=> setVersion V10
-        >=> setUrl url
+        >=> withVersion V10
+        >=> withUrl url
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions
