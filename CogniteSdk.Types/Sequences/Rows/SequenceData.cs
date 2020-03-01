@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// The Sequence Data Read DTO.
     /// </summary>
-    public class SequenceDataRead
+    public class SequenceData
     {
         /// <summary>
         /// A server-generated ID for the object.
@@ -38,6 +38,6 @@ namespace CogniteSdk.Sequences
         public string NextCursor { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceDataRead>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

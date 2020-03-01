@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// The Sequence row delete DTO.

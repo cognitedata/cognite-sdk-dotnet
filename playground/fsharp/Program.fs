@@ -142,7 +142,7 @@ let asyncMain argv = task {
     use client = new HttpClient ()
     let ctx =
         Context.create ()
-        |> Context.setAppId "playground"
+        |> Context.withAppId "playground"
         |> Context.withHttpClient client
         |> Context.withHeader ("api-key", Uri.EscapeDataString config.ApiKey)
         |> Context.withProject (Uri.EscapeDataString config.Project)
