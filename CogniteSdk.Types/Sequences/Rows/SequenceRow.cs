@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
     /// The Sequence row DTO. Contains row number and values in the order defined by the columns.

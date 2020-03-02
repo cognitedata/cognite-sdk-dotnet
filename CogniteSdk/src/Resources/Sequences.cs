@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk.Sequences;
+using CogniteSdk;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -46,9 +46,9 @@ namespace CogniteSdk.Resources
         /// <param name="sequences">Sequences to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<SequenceDataRead>> CreateAsync(IEnumerable<SequenceCreate> sequences, CancellationToken token = default)
+        public async Task<IEnumerable<SequenceData>> CreateAsync(IEnumerable<SequenceCreate> sequences, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Sequences.create<IEnumerable<SequenceDataRead>>(sequences);
+            var req = Oryx.Cognite.Sequences.create<IEnumerable<SequenceData>>(sequences);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -157,9 +157,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The sequence rows query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence read data.</returns>
-        public async Task<SequenceDataRead> ListRowsAsync(SequenceRowQuery query, CancellationToken token = default)
+        public async Task<SequenceData> ListRowsAsync(SequenceRowQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Sequences.listRows<SequenceDataRead>(query);
+            var req = Oryx.Cognite.Sequences.listRows<SequenceData>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
 
@@ -169,7 +169,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Query of rows to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Empty response.</returns>
-        public async Task<EmptyResponse> CreateRowsAsync(IEnumerable<SequenceDataWrite> query, CancellationToken token = default)
+        public async Task<EmptyResponse> CreateRowsAsync(IEnumerable<SequenceDataCreate> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.createRows<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

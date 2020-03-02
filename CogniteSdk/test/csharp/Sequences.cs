@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Xunit;
 
 using CogniteSdk;
-using CogniteSdk.Sequences;
 
 namespace Test.CSharp.Integration
 {
@@ -115,7 +114,7 @@ namespace Test.CSharp.Integration
                 Columns = new List<SequenceColumnWrite> { column }
             };
 
-            var data = new SequenceDataWrite() {
+            var data = new SequenceDataCreate() {
                 Columns = new List<string> { columnExternalIdString },
                 Rows = new List<SequenceRow>
                 {
@@ -132,7 +131,7 @@ namespace Test.CSharp.Integration
             // Act
             var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
 
-            await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataWrite> { data });
+            await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataCreate> { data });
             await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDelete> { delete });
             await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
 

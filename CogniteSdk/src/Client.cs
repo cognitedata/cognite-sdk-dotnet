@@ -147,7 +147,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetAppId(string appId)
             {
-                _context = setAppId(appId, _context);
+                _context = withAppId(appId, _context);
                 return this;
             }
 
@@ -174,7 +174,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(serviceUrl));
                 }
 
-                _context = setServiceUrl(serviceUrl.ToString(), _context);
+                _context = withServiceUrl(serviceUrl.ToString(), _context);
                 return this;
             }
 

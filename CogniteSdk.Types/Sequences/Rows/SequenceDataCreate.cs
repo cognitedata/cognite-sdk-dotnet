@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Sequences
+namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence Data write DTO base class.
+    /// The Sequence Data create class
     /// </summary>
-    public class SequenceDataWrite
+    public class SequenceDataCreate
     {
         /// <summary>
         /// Column external ids in the same order as the values for each row.
@@ -33,6 +33,6 @@ namespace CogniteSdk.Sequences
         public string ExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceDataWrite>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

@@ -10,7 +10,6 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open CogniteSdk.Sequences
 
 /// Various event HTTP handlers.
 
@@ -26,16 +25,16 @@ module Sequences =
         >=> logWithMessage "Sequences:get"
 
     /// Processes data requests, and returns the result. NB - This operation uses a dynamic limit on the number of rows returned based on the number and type of columns, use the provided cursor to paginate and retrieve all data.
-    let listRows (query: SequenceRowQuery) : HttpHandler<HttpResponseMessage, SequenceDataRead, 'a> =
+    let listRows (query: SequenceRowQuery) : HttpHandler<HttpResponseMessage, SequenceData, 'a> =
         Handler.list query RowsUrl
         >=> logWithMessage "Sequences:listRows"
 
     /// Create new sequences in the given project. Returns list of created sequences.
-    let create (items: SequenceCreate seq) : HttpHandler<HttpResponseMessage, SequenceDataRead seq, 'a> =
+    let create (items: SequenceCreate seq) : HttpHandler<HttpResponseMessage, SequenceData seq, 'a> =
         create items Url
         >=> logWithMessage "Sequences:create"
 
-    let createRows(items: SequenceDataWrite seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let createRows(items: SequenceDataCreate seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         Handler.createEmpty items RowsUrl
         >=> logWithMessage "Sequences:createRows"
 

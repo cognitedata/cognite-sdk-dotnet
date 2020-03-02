@@ -1,19 +1,16 @@
 module Tests.Integration.Sequences
 
 open System
+open System.Collections.Generic
 open System.Net.Http
 open FSharp.Control.Tasks.V2.ContextInsensitive
 
 open Xunit
 open Swensen.Unquote
 
-open Oryx
-
 open CogniteSdk
-open CogniteSdk.Sequences
 
 open Common
-open System.Collections.Generic
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
@@ -177,7 +174,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
         ] |> Seq.ofList
 
     let rowDto =
-        SequenceDataWrite(
+        SequenceDataCreate(
             Columns = ["sdk-column"],
             Rows = rows,
             Id = Nullable 5702374195409554L

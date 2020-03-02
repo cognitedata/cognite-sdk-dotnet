@@ -95,10 +95,10 @@ module Context =
     let withProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", String project) } }
 
-    let setAppId (appId: string) (context: HttpContext) =
+    let withAppId (appId: string) (context: HttpContext) =
         { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
 
-    let setServiceUrl (serviceUrl: string) (context: HttpContext) =
+    let withServiceUrl (serviceUrl: string) (context: HttpContext) =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", String serviceUrl) } }
 
     let create () =
