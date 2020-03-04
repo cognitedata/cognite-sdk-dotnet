@@ -37,7 +37,7 @@ type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 [<AutoOpen>]
 module Handler =
     let withResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("resource", String resource) } }
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("Resource", String resource) } }
 
     let withVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", String (version.ToString ())) } }

@@ -1,4 +1,4 @@
 group Sdk
 
-Microsoft.CodeAnalysis.FxCopAnalyzers
+#Microsoft.CodeAnalysis.FxCopAnalyzers
 Oryx

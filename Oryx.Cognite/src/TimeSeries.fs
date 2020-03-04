@@ -24,7 +24,7 @@ module TimeSeries =
         >=> logWithMessage "TimeSeries:get"
 
     /// Create one or more new time series. Returns list of created time series.
-    let create (items: IEnumerable<TimeSeriesWrite>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeries>, 'a> =
+    let create (items: IEnumerable<TimeSeriesCreate>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeries>, 'a> =
         create items Url
         >=> logWithMessage "TimeSeries:create"
 

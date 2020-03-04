@@ -12,7 +12,7 @@ namespace CogniteSdk
     /// <summary>
     /// Dto to write a row to a table in Raw.
     /// </summary>
-    public class RowWrite
+    public class RawRowCreate
     {
         /// <summary>
         /// Row key. Unique in table.

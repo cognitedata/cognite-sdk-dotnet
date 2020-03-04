@@ -227,7 +227,7 @@ let ``Retrieve latest datapoints by id is Ok`` () = task {
 let ``Insert datapoints is Ok`` () = task {
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWrite(
+        TimeSeriesCreate(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",
@@ -257,7 +257,7 @@ let ``Delete datapoints is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWrite(
+        TimeSeriesCreate(
             ExternalId = externalIdString,
             Name = "Delete datapoints test",
             Description = "dotnet sdk test",

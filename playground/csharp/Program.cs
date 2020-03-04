@@ -77,11 +77,11 @@ namespace csharp {
         }
 
         static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
-            var timeseries = new TimeSeriesWrite {
+            var timeseries = new TimeSeriesCreate {
                 Name = timeseriesName
             };
 
-            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesWrite> { timeseries });
+            var result = await client.TimeSeries.CreateAsync(new List<TimeSeriesCreate> { timeseries });
 
             Console.WriteLine(result);
 

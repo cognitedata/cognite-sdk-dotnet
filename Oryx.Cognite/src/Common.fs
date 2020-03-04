@@ -4,6 +4,7 @@
 /// Common types for the SDK.
 namespace Oryx.Cognite
 
+open System
 open System.Reflection
 open System.Text.Json
 
@@ -64,25 +65,25 @@ module Context =
             | _ -> failwith "API version not set."
 
         let project =
-            match Map.tryFind "project" extra with
+            match Map.tryFind "Project" extra with
             | Some (String project) -> project
             | _ -> failwith "Client must set project."
 
         let resource =
-            match Map.tryFind "resource" extra with
+            match Map.tryFind "Resource" extra with
             | Some (String resource) -> resource
             | _ -> failwith "Resource not set."
 
-        let serviceUrl =
-            match Map.tryFind "serviceUrl" extra with
-            | Some (String url) -> url.ToString()
+        let baseUrl =
+            match Map.tryFind "BaseUrl" extra with
+            | Some (Url url) -> url.ToString()
             | _ -> "https://api.cognitedata.com"
 
         if not (Map.containsKey "hasAppId" extra)
         then failwith "Client must set the Application ID (appId)."
 
         sprintf "api/%s/projects/%s%s" version project resource
-        |> combine serviceUrl
+        |> combine baseUrl
 
     let private version =
         let version = Assembly.GetExecutingAssembly().GetName().Version
@@ -93,13 +94,13 @@ module Context =
 
     /// Set the project to connect to.
     let withProject (project: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("project", String project) } }
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("Project", String project) } }
 
     let withAppId (appId: string) (context: HttpContext) =
         { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
 
-    let withServiceUrl (serviceUrl: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("serviceUrl", String serviceUrl) } }
+    let withBaseUrl (serviceUrl: Uri) (context: HttpContext) =
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("BaseUrl", Url serviceUrl) } }
 
     let create () =
         let major, minor, build = version

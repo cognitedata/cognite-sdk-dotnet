@@ -6,14 +6,14 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Databases delete DTO.
+    /// Dto with keys of rows to delete in table.
     /// </summary>
-    public class DatabaseDelete : ItemsWithoutCursor<RawDatabase>
+    public class RawRowDelete
     {
         /// <summary>
-        /// When true, tables of this database are deleted with the database.
+        /// Row key. Unique in table.
         /// </summary>
-        public bool? Recursive { get; set; }
+        public string Key { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

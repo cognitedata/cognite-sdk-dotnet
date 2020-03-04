@@ -21,6 +21,6 @@ namespace CogniteSdk
         public MultiValue Value { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<DataPoint>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
