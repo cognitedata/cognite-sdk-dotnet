@@ -72,7 +72,9 @@ let ``Create and delete Relationships is Ok`` () = task {
             Target = target,
             Confidence = 1.0F,
             DataSet = "test",
-            RelationshipType = "flowsTo"
+            RelationshipType = "flowsTo",
+            StartTime = 0L,
+            EndTime = 1L
         )
 
     // Act
