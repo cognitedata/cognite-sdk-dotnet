@@ -6,7 +6,7 @@ group Sdk
     framework: netstandard2.0
 
     nuget Oryx prerelease
-    nuget Microsoft.CodeAnalysis.FxCopAnalyzers
+    #nuget Microsoft.CodeAnalysis.FxCopAnalyzers
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
@@ -26,7 +26,7 @@ group Types
     framework: netstandard2.0
 
     nuget System.Text.Json
-    nuget Microsoft.CodeAnalysis.FxCopAnalyzers
+    #nuget Microsoft.CodeAnalysis.FxCopAnalyzers
 
 group Test
     source https://www.nuget.org/api/v2

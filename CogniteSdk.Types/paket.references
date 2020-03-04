@@ -1,4 +1,4 @@
 group Types
 
 System.Text.Json
-Microsoft.CodeAnalysis.FxCopAnalyzers
+#Microsoft.CodeAnalysis.FxCopAnalyzers
