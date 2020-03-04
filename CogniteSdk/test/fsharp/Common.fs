@@ -36,7 +36,7 @@ module Common =
         Client.Builder.Create(httpClient)
             .SetAppId("TestApp")
             .SetProject("publicdata")
-            .SetServiceUrl(Uri("https://api.cognitedata.com"))
+            .SetBaseUrl(Uri("https://api.cognitedata.com"))
             .Build();
 
     let optionToSeq (o: 'a option): 'a seq =

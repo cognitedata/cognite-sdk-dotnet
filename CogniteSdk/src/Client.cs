@@ -163,18 +163,18 @@ namespace CogniteSdk
             }
 
             /// <summary>
-            /// Set the service URL to be used by the client.
+            /// Set the base URL to be used by the client.
             /// </summary>
-            /// <param name="serviceUrl">The service URL to use.</param>
+            /// <param name="baseUrl">The base URL to use.</param>
             /// <returns>Updated builder.</returns>
-            public Builder SetServiceUrl(Uri serviceUrl)
+            public Builder SetBaseUrl(Uri baseUrl)
             {
-                if (serviceUrl is null)
+                if (baseUrl is null)
                 {
-                    throw new ArgumentNullException(nameof(serviceUrl));
+                    throw new ArgumentNullException(nameof(baseUrl));
                 }
 
-                _context = withServiceUrl(serviceUrl.ToString(), _context);
+                _context = withBaseUrl(baseUrl, _context);
                 return this;
             }
 
