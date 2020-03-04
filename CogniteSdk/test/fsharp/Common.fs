@@ -14,7 +14,7 @@ module Common =
             .SetAppId("TestApp")
             .AddHeader("api-key", apiKey)
             .SetProject(project)
-            .SetServiceUrl(Uri(url))
+            .SetBaseUrl(Uri(url))
             .Build();
 
     let readClient =
