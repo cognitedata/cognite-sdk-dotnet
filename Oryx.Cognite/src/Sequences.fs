@@ -44,7 +44,7 @@ module Sequences =
         delete req Url
         >=> logWithMessage "Sequences:delete"
 
-    let deleteRows (items: SequenceRawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let deleteRows (items: SequenceRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let req = ItemsWithoutCursor(Items=items)
         Handler.delete req RowsUrl
         >=> logWithMessage "Sequences:deleteRows"

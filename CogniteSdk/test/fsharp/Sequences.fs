@@ -161,7 +161,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
             Columns = [column]
         )
     let deleteDto =
-        SequenceRawRowDelete(
+        SequenceRowDelete(
             Rows = [],
             ExternalId = externalId
         )
