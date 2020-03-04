@@ -61,7 +61,7 @@ let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
-        TimeSeriesWrite(
+        TimeSeriesCreate(
             ExternalId = externalIdString,
             Name = "Create Timeseries sdk test",
             Description = "dotnet sdk test",
@@ -323,7 +323,7 @@ let ``Update timeseries is Ok`` () = task {
             "key2", "value2"
         ] |> Dictionary
     let dto =
-        TimeSeriesWrite(
+        TimeSeriesCreate(
             Metadata = (dict [
                 "oldkey1", "oldvalue1"
                 "oldkey2", "oldvalue2"

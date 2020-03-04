@@ -181,7 +181,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Sequence of rows to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Empty response.</returns>
-        public async Task<EmptyResponse> DeleteRowsAsync(IEnumerable<SequenceRowDelete> query, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteRowsAsync(IEnumerable<SequenceRawRowDelete> query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Sequences.deleteRows<EmptyResponse>(query);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

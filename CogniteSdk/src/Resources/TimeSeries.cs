@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
         /// <param name="timeseries">Time series to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<TimeSeries>> CreateAsync(IEnumerable<TimeSeriesWrite> timeseries, CancellationToken token = default)
+        public async Task<IEnumerable<TimeSeries>> CreateAsync(IEnumerable<TimeSeriesCreate> timeseries, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeries>>(timeseries);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);

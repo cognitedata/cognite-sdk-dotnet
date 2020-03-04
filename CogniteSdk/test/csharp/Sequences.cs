@@ -122,7 +122,7 @@ namespace Test.CSharp.Integration
                 },
                 ExternalId = externalIdString
             };
-            var delete = new SequenceRowDelete()
+            var delete = new SequenceRawRowDelete()
             {
                 ExternalId = externalIdString,
                 Rows = new List<long> { 1L }
@@ -132,7 +132,7 @@ namespace Test.CSharp.Integration
             var res = await WriteClient.Sequences.CreateAsync(new List<SequenceCreate> { sequence });
 
             await WriteClient.Sequences.CreateRowsAsync(new List<SequenceDataCreate> { data });
-            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRowDelete> { delete });
+            await WriteClient.Sequences.DeleteRowsAsync(new List<SequenceRawRowDelete> { delete });
             await WriteClient.Sequences.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert

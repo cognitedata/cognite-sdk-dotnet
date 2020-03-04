@@ -6,5 +6,5 @@ namespace CogniteSdk
     /// <summary>
     /// Query for listing tables.
     /// </summary>
-    public class TableQuery : CursorQueryBase { }
+    public class RawTableQuery : CursorQueryBase { }
 }

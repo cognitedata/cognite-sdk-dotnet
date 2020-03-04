@@ -6,5 +6,5 @@ namespace CogniteSdk
     /// <summary>
     /// Databases delete DTO.
     /// </summary>
-    public class TableDelete : ItemsWithoutCursor<RawTable> { }
+    public class RawTableDelete : ItemsWithoutCursor<RawTable> { }
 }

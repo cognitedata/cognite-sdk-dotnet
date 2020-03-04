@@ -44,7 +44,7 @@ Install-Package CogniteSdk -IncludePrerelease
 
 Using .NET CLI:
 ```sh
-dotnet add package CogniteSdk -v 1.0.0-alpha-014
+dotnet add package CogniteSdk -v 1.0.0-beta-002
 ```
 
 Or [directly in Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).

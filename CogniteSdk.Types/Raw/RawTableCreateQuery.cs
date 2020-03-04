@@ -6,7 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// Query parameter when creating a raw table.
     /// </summary>
-    public class TableCreateQuery : IQueryParams
+    public class RawTableCreateQuery : IQueryParams
     {
         /// <summary>
         /// Create database if it doesn't exist already.

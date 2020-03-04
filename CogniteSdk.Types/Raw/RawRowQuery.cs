@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// <summary>
     /// The row query DTO.
     /// </summary>
-    public class RowQuery : CursorQueryBase
+    public class RawRowQuery : CursorQueryBase
     {
         /// <summary>
         /// Example: columns=column1,column2 Ordered list of column keys, separated by commas. Leave empty for all, use

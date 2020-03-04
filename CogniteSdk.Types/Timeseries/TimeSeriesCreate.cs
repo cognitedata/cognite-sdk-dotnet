@@ -9,7 +9,7 @@ namespace CogniteSdk
     /// <summary>
     /// Timeseries write dto.
     /// </summary>
-    public class TimeSeriesWrite
+    public class TimeSeriesCreate
     {
         /// <summary>
         /// Externally provided ID for the time series (optional, but recommended.)

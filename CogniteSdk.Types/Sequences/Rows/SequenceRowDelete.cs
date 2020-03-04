@@ -9,7 +9,7 @@ namespace CogniteSdk
     /// <summary>
     /// The Sequence row delete DTO.
     /// </summary>
-    public class SequenceRowDelete
+    public class SequenceRawRowDelete
     {
         /// <summary>
         /// Rows to delete.
@@ -28,6 +28,6 @@ namespace CogniteSdk
         public string ExternalId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SequenceRowDelete>(this);
+        public override string ToString() => Stringable.ToString<SequenceRawRowDelete>(this);
     }
 }
