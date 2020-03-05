@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
@@ -44,5 +45,8 @@ namespace CogniteSdk
         /// Integer results of query.
         /// </summary>
         public IEnumerable<int> IntegerResults { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 }

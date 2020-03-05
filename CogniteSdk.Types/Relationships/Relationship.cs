@@ -63,5 +63,8 @@ namespace CogniteSdk
         /// Time when this relationship was last updated.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 }

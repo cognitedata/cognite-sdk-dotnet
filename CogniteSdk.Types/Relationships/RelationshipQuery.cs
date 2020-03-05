@@ -16,6 +16,6 @@ namespace CogniteSdk
         public RelationshipFilter Filter { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<RelationshipQuery>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

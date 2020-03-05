@@ -1,6 +1,8 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk
 {
     /// <summary>
@@ -12,9 +14,13 @@ namespace CogniteSdk
         /// The id of a label.
         /// </summary>
         public int Id { get; set; }
+
         /// <summary>
         /// The label for the object.
         /// </summary>
         public string Label { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 }
