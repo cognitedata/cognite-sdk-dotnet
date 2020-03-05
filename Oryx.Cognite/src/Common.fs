@@ -24,8 +24,26 @@ type ApiVersion =
         | V10 -> "v1"
         | Playground -> "playground"
 
+/// Place holders that may be used in debug messages.
+module PlaceHolder =
+    [<Literal>]
+    let BaseUrl = "BaseUrl"
+
+    [<Literal>]
+    let Resource = "Resource"
+
+    [<Literal>]
+    let ApiVersion = "ApiVersion"
+
+    [<Literal>]
+    let Project = "Project"
+
+    [<Literal>]
+    let HasAppId = "HasAppId"
+
 [<AutoOpen>]
 module Common =
+
     /// Combines two URI string fragments.
     let combine (path1: string) (path2: string) =
         if path2.Length = 0 then
@@ -60,26 +78,26 @@ module Context =
 
         let extra = request.Extra
         let version =
-            match Map.tryFind "apiVersion" extra with
+            match Map.tryFind PlaceHolder.ApiVersion extra with
             | Some (String version) -> version
             | _ -> failwith "API version not set."
 
         let project =
-            match Map.tryFind "Project" extra with
+            match Map.tryFind PlaceHolder.Project extra with
             | Some (String project) -> project
             | _ -> failwith "Client must set project."
 
         let resource =
-            match Map.tryFind "Resource" extra with
+            match Map.tryFind PlaceHolder.Resource extra with
             | Some (String resource) -> resource
             | _ -> failwith "Resource not set."
 
         let baseUrl =
-            match Map.tryFind "BaseUrl" extra with
+            match Map.tryFind PlaceHolder.BaseUrl extra with
             | Some (Url url) -> url.ToString()
             | _ -> "https://api.cognitedata.com"
 
-        if not (Map.containsKey "hasAppId" extra)
+        if not (Map.containsKey PlaceHolder.HasAppId extra)
         then failwith "Client must set the Application ID (appId)."
 
         sprintf "api/%s/projects/%s%s" version project resource
@@ -94,13 +112,13 @@ module Context =
 
     /// Set the project to connect to.
     let withProject (project: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("Project", String project) } }
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.Project, String project) } }
 
     let withAppId (appId: string) (context: HttpContext) =
-        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
+        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add(PlaceHolder.HasAppId, String "true") } }
 
-    let withBaseUrl (serviceUrl: Uri) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("BaseUrl", Url serviceUrl) } }
+    let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
 
     let create () =
         let major, minor, build = version
