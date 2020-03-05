@@ -99,8 +99,8 @@ module Context =
     let withAppId (appId: string) (context: HttpContext) =
         { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
 
-    let withBaseUrl (serviceUrl: Uri) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add("BaseUrl", Url serviceUrl) } }
+    let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
+        { context with Request = { context.Request with Extra = context.Request.Extra.Add("BaseUrl", Url baseUrl) } }
 
     let create () =
         let major, minor, build = version

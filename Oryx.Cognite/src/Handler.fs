@@ -45,14 +45,14 @@ module Handler =
     let withUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Extra
-            let serviceUrl =
-                match Map.tryFind "serviceUrl" extra with
-                | Some (String url) -> url
+            let baseUrl =
+                match Map.tryFind "BaseUrl" extra with
+                | Some (Url url) -> url.ToString ()
                 | _ -> "https://api.cognitedata.com"
 
             if not (Map.containsKey "hasAppId" extra)
             then failwith "Client must set the Application ID (appId)"
-            serviceUrl +/ url
+            baseUrl +/ url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
