@@ -115,7 +115,7 @@ module Context =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.Project, String project) } }
 
     let withAppId (appId: string) (context: HttpContext) =
-        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add("hasAppId", String "true") } }
+        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add(PlaceHolder.HasAppId, String "true") } }
 
     let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
         { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.BaseUrl, Url baseUrl) } }

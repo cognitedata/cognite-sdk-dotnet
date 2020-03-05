@@ -51,7 +51,7 @@ module Handler =
                 | Some (Url url) -> url.ToString ()
                 | _ -> "https://api.cognitedata.com"
 
-            if not (Map.containsKey "hasAppId" extra)
+            if not (Map.containsKey PlaceHolder.HasAppId extra)
             then failwith "Client must set the Application ID (appId)"
             baseUrl +/ url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
