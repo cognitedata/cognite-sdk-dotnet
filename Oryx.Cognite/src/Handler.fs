@@ -36,23 +36,24 @@ type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
+
     let withResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("Resource", String resource) } }
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.Resource, String resource) } }
 
     let withVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add("apiVersion", String (version.ToString ())) } }
+        next { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.ApiVersion, String (version.ToString ())) } }
 
     let withUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Extra
-            let serviceUrl =
-                match Map.tryFind "serviceUrl" extra with
-                | Some (String url) -> url
+            let baseUrl =
+                match Map.tryFind PlaceHolder.BaseUrl extra with
+                | Some (Url url) -> url.ToString ()
                 | _ -> "https://api.cognitedata.com"
 
-            if not (Map.containsKey "hasAppId" extra)
+            if not (Map.containsKey PlaceHolder.HasAppId extra)
             then failwith "Client must set the Application ID (appId)"
-            serviceUrl +/ url
+            baseUrl +/ url
         next { context with Request = { context.Request with UrlBuilder = urlBuilder } }
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't

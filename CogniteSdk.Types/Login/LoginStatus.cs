@@ -37,7 +37,7 @@ namespace CogniteSdk.Login
         public long? ApiKeyId { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<LoginStatus>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 
