@@ -130,6 +130,17 @@ namespace CogniteSdk
             }
 
             /// <summary>
+            /// Set authorization bearer token.
+            /// </summary>
+            /// <param name="token">Bearer token to set.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetBearerToken(string token)
+            {
+                _context = Context.withBearerToken(token, _context);
+                return this;
+            }
+
+            /// <summary>
             /// Set project for accessing the API.
             /// </summary>
             /// <param name="project">Name of project.</param>
