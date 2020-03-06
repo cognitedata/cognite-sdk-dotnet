@@ -268,7 +268,7 @@ let ``Filter events on ExternalIdPrefix is Ok`` () = task {
     let externalIds = Seq.map (fun (e: Event) -> e.ExternalId) res.Items
 
     // Assert
-    test <@ Seq.length externalIds = 3 @>
+    test <@ Seq.length externalIds > 0 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("odata")) externalIds @>
 }
 
@@ -318,7 +318,7 @@ let ``Filter events on Type is Ok`` () = task {
     let types = Seq.map (fun (e: Event) -> e.Type) res.Items
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len > 0 @>
     test <@ Seq.forall ((=) "Monad") types @>
 }
 
@@ -333,5 +333,5 @@ let ``Search events is Ok`` () = task {
     let len = Seq.length res
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len > 0 @>
 }
