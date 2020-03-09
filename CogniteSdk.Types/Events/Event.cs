@@ -86,8 +86,7 @@ namespace CogniteSdk
         /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is Event dto &&
-                   Id == dto.Id;
+            return obj is Event dto && Id == dto.Id;
         }
 
         /// <summary>Serves as the default hash function.</summary>

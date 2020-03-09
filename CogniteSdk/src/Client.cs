@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Oryx;
@@ -12,6 +13,7 @@ using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using static Oryx.Cognite.ContextModule;
+using System.Threading;
 
 namespace CogniteSdk
 {
@@ -73,21 +75,22 @@ namespace CogniteSdk
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for this session.</param>
-        private Client(HttpContext ctx)
+        private Client(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx)
         {
             // Setup resources.
-            Assets = new AssetsResource(ctx);
-            TimeSeries = new TimeSeriesResource(ctx);
-            DataPoints =new DataPointsResource(ctx);
-            Events = new EventsResource(ctx);
-            Sequences = new SequencesResource(ctx);
-            Raw = new RawResource(ctx);
-            Files = new FilesResource(ctx);
-            Login = new LoginResource(ctx);
+            Assets = new AssetsResource(authHandler, ctx);
+            TimeSeries = new TimeSeriesResource(authHandler, ctx);
+            DataPoints = new DataPointsResource(authHandler, ctx);
+            Events = new EventsResource(authHandler, ctx);
+            Sequences = new SequencesResource(authHandler, ctx);
+            Raw = new RawResource(authHandler, ctx);
+            Files = new FilesResource(authHandler, ctx);
+            Login = new LoginResource(authHandler, ctx);
 
             // Playground features (experimental)
-            Playground = new PlaygroundResource(ctx);
+            Playground = new PlaygroundResource(authHandler, ctx);
         }
 
         /// <summary>
@@ -96,7 +99,8 @@ namespace CogniteSdk
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
-            private HttpContext _context = ContextModule.create ();
+            private HttpContext _context = create();
+            private Func<CancellationToken, Task<string>> _authHandler;
 
             /// <summary>
             /// Create Client builder.
@@ -115,6 +119,16 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder AddHeader(string name, string value)
             {
+                if (name is null)
+                {
+                    throw new ArgumentNullException(nameof(name));
+                }
+
+                if (value is null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
                 _context = Context.withHeader(name, value, _context);
                 return this;
             }
@@ -126,7 +140,28 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetApiKey(string apiKey)
             {
+                if (apiKey is null)
+                {
+                    throw new ArgumentNullException(nameof(apiKey));
+                }
+
                 return AddHeader("api-key", apiKey);
+            }
+
+            /// <summary>
+            /// Set authentication handler.
+            /// </summary>
+            /// <param name="tokenProvider">Token provider for getting bearer token to use for the request.</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetTokenProvider(Func<CancellationToken, Task<string>> tokenProvider)
+            {
+                if (tokenProvider is null)
+                {
+                    throw new ArgumentNullException(nameof(tokenProvider));
+                }
+
+                _authHandler = tokenProvider;
+                return this;
             }
 
             /// <summary>
@@ -136,6 +171,11 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetProject(string project)
             {
+                if (project is null)
+                {
+                    throw new ArgumentNullException(nameof(project));
+                }
+
                 _context = withProject(project, _context);
                 return this;
             }
@@ -147,6 +187,11 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetAppId(string appId)
             {
+                if (appId is null)
+                {
+                    throw new ArgumentNullException(nameof(appId));
+                }
+
                 _context = withAppId(appId, _context);
                 return this;
             }
@@ -158,6 +203,11 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetHttpClient(HttpClient client)
             {
+                if (client is null)
+                {
+                    throw new ArgumentNullException(nameof(client));
+                }
+
                 _context = Context.withHttpClient(client, _context);
                 return this;
             }
@@ -212,6 +262,11 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogFormat(string format)
             {
+                if (format is null)
+                {
+                    throw new ArgumentNullException(nameof(format));
+                }
+
                 _context = Context.withLogFormat(format, _context);
                 return this;
             }
@@ -227,6 +282,7 @@ namespace CogniteSdk
                 {
                     throw new ArgumentNullException(nameof(metrics));
                 }
+
                 _context = Context.withMetrics(metrics, _context);
                 return this;
             }
@@ -239,8 +295,12 @@ namespace CogniteSdk
             {
                 // Check for optional fields etc here
                 HttpContext ctx = _context;
-                _context = null; // Builder is invalid after this
-                return new Client(ctx);
+                Func<CancellationToken, Task<string>> authHandler = _authHandler;
+
+                // Builder is invalid after this
+                _context = null;
+                _authHandler = null;
+                return new Client(authHandler, ctx);
             }
 
             /// <summary>

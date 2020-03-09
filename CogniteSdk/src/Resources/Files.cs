@@ -1,12 +1,12 @@
 ﻿// Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk.Files;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -15,17 +15,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all event methods.
     /// </summary>
-    public class FilesResource
+    public class FilesResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authetication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal FilesResource(HttpContext ctx)
+        internal FilesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -37,7 +35,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<File>> ListAsync(FileQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.list<ItemsWithCursor<File>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace CogniteSdk.Resources
         public async Task<File> GetAsync(long fileId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.get<File>(fileId);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Retrieve overloads
@@ -62,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.retrieve<IEnumerable<File>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,7 +100,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.download<IEnumerable<FileDownload>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -157,8 +155,13 @@ namespace CogniteSdk.Resources
         /// <returns>The Updated file.</returns>
         public async Task<FileUploadRead> UploadAsync(FileCreate file, bool overwrite=false, CancellationToken token = default)
         {
+            if (file is null)
+            {
+                throw new ArgumentNullException(nameof(file));
+            }
+
             var req = Oryx.Cognite.Files.upload<FileUploadRead>(file, overwrite);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -169,8 +172,13 @@ namespace CogniteSdk.Resources
         /// <returns>The updated files.</returns>
         public async Task<IEnumerable<File>> UpdateAsync(IEnumerable<FileUpdateItem> update, CancellationToken token = default)
         {
+            if (update is null)
+            {
+                throw new ArgumentNullException(nameof(update));
+            }
+
             var req = Oryx.Cognite.Files.update<IEnumerable<File>>(update);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -182,8 +190,13 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteAsync(FileDelete query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Files.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -193,6 +206,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> identities, CancellationToken token = default)
         {
+            if (identities is null)
+            {
+                throw new ArgumentNullException(nameof(identities));
+            }
+
             var query = new FileDelete { Items = identities };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -204,6 +222,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
         {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
             var query = new FileDelete { Items = ids.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -215,6 +238,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var query = new FileDelete { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }

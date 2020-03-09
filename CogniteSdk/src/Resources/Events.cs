@@ -1,12 +1,12 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -15,17 +15,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all event methods.
     /// </summary>
-    public class EventsResource
+    public class EventsResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal EventsResource(HttpContext ctx)
+        internal EventsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -36,8 +34,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Events.list<ItemsWithCursor<Event>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -48,8 +51,13 @@ namespace CogniteSdk.Resources
         /// <returns></returns>
         public async Task<IEnumerable<Event>> CreateAsync(IEnumerable<EventCreate> events, CancellationToken token = default)
         {
+            if (events is null)
+            {
+                throw new ArgumentNullException(nameof(events));
+            }
+
             var req = Oryx.Cognite.Events.create<IEnumerable<Event>>(events);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,7 +69,7 @@ namespace CogniteSdk.Resources
         public async Task<Event> GetAsync(long eventId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.get<Event>(eventId);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
 
@@ -73,8 +81,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(EventDelete query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Events.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,6 +97,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> identities, CancellationToken token = default)
         {
+            if (identities is null)
+            {
+                throw new ArgumentNullException(nameof(identities));
+            }
+
             var query = new EventDelete { Items = identities };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -95,6 +113,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
         {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
             var query = new EventDelete { Items = ids.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -106,6 +129,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var query = new EventDelete { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -121,8 +149,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
             var req = Oryx.Cognite.Events.retrieve<IEnumerable<Event>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -133,6 +166,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
+            if (internalIds is null)
+            {
+                throw new ArgumentNullException(nameof(internalIds));
+            }
+
             var req = internalIds.Select(Identity.Create);
             return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
@@ -145,6 +183,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var req = externalIds.Select(Identity.Create);
             return await RetrieveAsync(req, token).ConfigureAwait(false);
         }
@@ -158,8 +201,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given criteria.</returns>
         public async Task<IEnumerable<Event>> SearchAsync (EventSearch query, CancellationToken token = default )
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Events.search<IEnumerable<Event>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -171,8 +219,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of updated assets.</returns>
         public async Task<IEnumerable<Event>> UpdateAsync (IEnumerable<EventUpdateItem> query, CancellationToken token = default )
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Events.update<IEnumerable<Event>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

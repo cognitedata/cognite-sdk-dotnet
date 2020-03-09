@@ -1,6 +1,9 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -8,10 +11,8 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all Playground resources.
     /// </summary>
-    public class PlaygroundResource
+    public class PlaygroundResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Client Relationships extension methods
         /// </summary>
@@ -20,11 +21,11 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authntication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal PlaygroundResource(HttpContext ctx)
+        internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
-            Relationships = new RelationshipResource(ctx);
+            Relationships = new RelationshipResource(authHandler, ctx);
         }
     }
 }
