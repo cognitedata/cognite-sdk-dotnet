@@ -27,7 +27,7 @@ open CogniteSdk
 type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
 type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
 type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
-type HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
+type public HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
 type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseException>
 type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseException>
 type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
@@ -63,6 +63,22 @@ module Handler =
         | ResponseError error -> raise error
         | Panic err -> raise err
 
+    /// Authorize the given handler. TODO: Simplify with authorize from Oryx.
+    let withAuth<'TResult, 'TNext, 'TError> (authorize: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
+        let authorize (next : HttpFunc<HttpResponseMessage, 'TResult, 'TError>) (ctx: Context<HttpResponseMessage>) = task {
+            let! ctx' =
+                match ctx.Request.CancellationToken with
+                | Some ct -> task {
+                    let! token = authorize.Invoke ct
+                    match Option.ofObj token with
+                    | Some token -> return Context.withBearerToken token ctx
+                    | _ -> return ctx }
+                | _ -> ctx |> Task.FromResult
+            return! next ctx'
+        }
+
+        authorize >=> handler
+
     /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
     let runUnsafeAsync (ctx : HttpContext) (token: CancellationToken) (handler: HttpHandler<HttpResponseMessage, 'r,'r>) : Task<'r> = task {
         let runUnsafe  =
@@ -97,6 +113,7 @@ module Handler =
             exn.Code <- int response.StatusCode
             return Oryx.ResponseError exn
     }
+
 
     let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         GET

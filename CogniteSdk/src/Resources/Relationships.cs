@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,17 +15,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all relationship methods.
     /// </summary>
-    public class RelationshipResource
+    public class RelationshipResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal RelationshipResource(HttpContext ctx)
+        internal RelationshipResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -35,8 +34,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of Relationships matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<Relationship>> ListAsync(RelationshipQuery query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<Relationship>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,8 +51,13 @@ namespace CogniteSdk.Resources
         /// <returns>Sequence of created Relationships.</returns>
         public async Task<ItemsWithoutCursor<Relationship>> CreateAsync(IEnumerable<RelationshipCreate> relationships, CancellationToken token = default)
         {
+            if (relationships is null)
+            {
+                throw new ArgumentNullException(nameof(relationships));
+            }
+
             var req = Oryx.Cognite.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -59,8 +68,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var req = Oryx.Cognite.Relationships.delete<EmptyResponse>(externalIds);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -71,8 +85,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<ItemsWithoutCursor<Relationship>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
         {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
             var req = Oryx.Cognite.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,8 +102,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of relationships matching given criteria.</returns>
         public async Task<RestrictedGraphQueryResult> SearchAsync (RestrictedGraphQuery query, CancellationToken token = default )
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Relationships.search<RestrictedGraphQueryResult>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }

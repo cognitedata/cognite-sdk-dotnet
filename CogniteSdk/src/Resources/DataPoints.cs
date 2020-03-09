@@ -1,13 +1,13 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
 using static Oryx.Cognite.HandlerModule;
-using CogniteSdk;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -15,17 +15,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all data points methods.
     /// </summary>
-    public class DataPointsResource
+    public class DataPointsResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal DataPointsResource(HttpContext ctx)
+        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -36,8 +34,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<DataPointListResponse> ListAsync(DataPointsQuery query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -48,8 +51,13 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> CreateAsync(DataPointInsertionRequest points, CancellationToken token = default)
         {
+            if (points is null)
+            {
+                throw new ArgumentNullException(nameof(points));
+            }
+
             var req = Oryx.Cognite.DataPoints.create<EmptyResponse>(points);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,8 +69,13 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteAsync(DataPointsDelete query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.DataPoints.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,8 +86,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of latest data points.</returns>
         public async Task<IEnumerable<DataPointsItem<DataPoint>>> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsItem<DataPoint>>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }

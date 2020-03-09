@@ -10,23 +10,22 @@ using static Oryx.Cognite.HandlerModule;
 using CogniteSdk;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
+using System;
 
 namespace CogniteSdk.Resources
 {
     /// <summary>
     /// For internal use. Contains all data points methods.
     /// </summary>
-    public class TimeSeriesResource
+    public class TimeSeriesResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal TimeSeriesResource(HttpContext ctx)
+        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.list<ItemsWithCursor<TimeSeries>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,7 +49,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeries>> CreateAsync(IEnumerable<TimeSeriesCreate> timeseries, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.create<IEnumerable<TimeSeries>>(timeseries);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDelete query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,7 +72,7 @@ namespace CogniteSdk.Resources
         {
             var query = new TimeSeriesDelete { Items=internalIds.Select(Identity.Create) };
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace CogniteSdk.Resources
         {
             var query = new TimeSeriesDelete { Items=externalIds.Select(Identity.Create) };
             var req = Oryx.Cognite.TimeSeries.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -97,7 +96,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -110,7 +109,7 @@ namespace CogniteSdk.Resources
         {
             var ids = internalIds.Select(Identity.Create);
             var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -123,7 +122,7 @@ namespace CogniteSdk.Resources
         {
             var ids = externalIds.Select(Identity.Create);
             var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -134,8 +133,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given criteria.</returns>
         public async Task<IEnumerable<TimeSeries>> SearchAsync (TimeSeriesSearch query, CancellationToken token = default )
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.TimeSeries.search<IEnumerable<TimeSeries>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -147,8 +151,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of updated timeseries.</returns>
         public async Task<IEnumerable<TimeSeries>> UpdateAsync (IEnumerable<TimeSeriesUpdateItem> query, CancellationToken token = default )
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.TimeSeries.update<IEnumerable<TimeSeries>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }

@@ -1,12 +1,13 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk;
+using Oryx.Cognite;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -15,17 +16,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all asset methods.
     /// </summary>
-    public class AssetsResource
+    public class AssetsResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal AssetsResource(HttpContext ctx)
+        internal AssetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -36,8 +35,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.list<ItemsWithCursor<Asset>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.list<ItemsWithCursor<Asset>>(query);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -48,8 +52,13 @@ namespace CogniteSdk.Resources
         /// <returns>Sequence of created assets.</returns>
         public async Task<IEnumerable<Asset>> CreateAsync(IEnumerable<AssetCreate> assets, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.create<IEnumerable<Asset>>(assets);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (assets is null)
+            {
+                throw new ArgumentNullException(nameof(assets));
+            }
+
+            var req = Assets.create<IEnumerable<Asset>>(assets);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -60,8 +69,8 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.get<Asset>(assetId);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            var req = Assets.get<Asset>(assetId);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -73,8 +82,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(AssetDelete query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.delete<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.delete<EmptyResponse>(query);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,6 +98,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> items, CancellationToken token = default)
         {
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var query = new AssetDelete() { Items = items };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -95,6 +114,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
+            if (internalIds is null)
+            {
+                throw new ArgumentNullException(nameof(internalIds));
+            }
+
             var query = new AssetDelete() { Items = internalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -106,6 +130,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var query = new AssetDelete() { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
@@ -120,8 +149,13 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Assets.retrieve<IEnumerable<Asset>>(ids);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Assets.retrieve<IEnumerable<Asset>>(ids);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -132,6 +166,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
+            if (internalIds is null)
+            {
+                throw new ArgumentNullException(nameof(internalIds));
+            }
+
             var ids = internalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
         }
@@ -144,6 +183,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
             var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, token).ConfigureAwait(false);
         }
@@ -157,8 +201,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given criteria.</returns>
         public async Task<IEnumerable<Asset>> SearchAsync (AssetSearch query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Assets.search<IEnumerable<Asset>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.search<IEnumerable<Asset>>(query);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -170,8 +219,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of updated assets.</returns>
         public async Task<IEnumerable<Asset>> UpdateAsync (IEnumerable<AssetUpdateItem> query, CancellationToken token = default )
         {
-            var req = Oryx.Cognite.Assets.update<IEnumerable<Asset>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.update<IEnumerable<Asset>>(query);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }

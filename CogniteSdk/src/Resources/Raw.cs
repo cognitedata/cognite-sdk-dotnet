@@ -1,12 +1,12 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk;
 using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
@@ -15,17 +15,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// Contains all raw methods.
     /// </summary>
-    public class RawResource
+    public class RawResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal RawResource(HttpContext ctx)
+        internal RawResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -36,8 +34,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of databases matching given filters, and optional cursor</returns>
         public async Task<ItemsWithCursor<RawDatabase>> ListDatabasesAsync(RawDatabaseQuery query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<RawDatabase>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -49,7 +52,7 @@ namespace CogniteSdk.Resources
         {
             var query = new RawDatabaseQuery();
             var req = Oryx.Cognite.Raw.listDatabases<ItemsWithCursor<RawDatabase>>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -60,8 +63,13 @@ namespace CogniteSdk.Resources
         /// <returns>List of created databases.</returns>
         public async Task<IEnumerable<RawDatabase>> CreateDatabasesAsync(IEnumerable<RawDatabase> items, CancellationToken token = default)
         {
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var req = Oryx.Cognite.Raw.createDatabases<IEnumerable<RawDatabase>>(items);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -72,6 +80,11 @@ namespace CogniteSdk.Resources
         /// <returns>List of created databases.</returns>
         public async Task<IEnumerable<RawDatabase>> CreateDatabasesAsync(IEnumerable<string> names, CancellationToken token = default)
         {
+            if (names is null)
+            {
+                throw new ArgumentNullException(nameof(names));
+            }
+
             var items = names.Select(name => new RawDatabase() { Name = name });
             return await CreateDatabasesAsync(items, token).ConfigureAwait(false);
         }
@@ -84,8 +97,13 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteDatabasesAsync(RawDatabaseDelete query, CancellationToken token = default)
         {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Raw.deleteDatabases<EmptyResponse>(query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -97,6 +115,11 @@ namespace CogniteSdk.Resources
         /// <returns>Empty response.</returns>
         public async Task<EmptyResponse> DeleteDatabasesAsync(IEnumerable<string> databaseNames, bool recursive = false, CancellationToken token = default)
         {
+            if (databaseNames is null)
+            {
+                throw new ArgumentNullException(nameof(databaseNames));
+            }
+
             var dto = new RawDatabaseDelete()
             {
                 Recursive = recursive,
@@ -114,8 +137,18 @@ namespace CogniteSdk.Resources
         /// <returns>List of tables.</returns>
         public async Task<ItemsWithCursor<RawTable>> ListTablesAsync(string database, RawDatabaseQuery query, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Raw.listTables<ItemsWithCursor<RawTable>>(database, query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -126,6 +159,11 @@ namespace CogniteSdk.Resources
         /// <returns>List of tables.</returns>
         public async Task<ItemsWithCursor<RawTable>> ListTablesAsync(string database, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
             var query = new RawDatabaseQuery();
             return await ListTablesAsync(database, query, token).ConfigureAwait(false);
         }
@@ -140,8 +178,18 @@ namespace CogniteSdk.Resources
         /// <returns>List of created tables.</returns>
         public async Task<IEnumerable<RawTable>> CreateTablesAsync(string database, IEnumerable<RawTable> items, bool ensureParent, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
             var req = Oryx.Cognite.Raw.createTables<IEnumerable<RawTable>>(database, items, ensureParent);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -154,6 +202,16 @@ namespace CogniteSdk.Resources
         /// <returns>List of created tables.</returns>
         public async Task<IEnumerable<RawTable>> CreateTablesAsync(string database, IEnumerable<string> tables, bool ensureParent, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (tables is null)
+            {
+                throw new ArgumentNullException(nameof(tables));
+            }
+
             var items = tables.Select(name => new RawTable() { Name = name });
             return await CreateTablesAsync(database, items, ensureParent, token).ConfigureAwait(false);
         }
@@ -167,8 +225,18 @@ namespace CogniteSdk.Resources
         /// <returns>Empty result.</returns>
         public async Task<EmptyResponse> DeleteTablesAsync(string database, RawTableDelete query, CancellationToken token = default)
         {
+            if (database is null)
+            {
+                throw new ArgumentNullException(nameof(database));
+            }
+
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Raw.deleteTables<EmptyResponse>(database, query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -181,6 +249,16 @@ namespace CogniteSdk.Resources
 
         public async Task<EmptyResponse> DeleteTablesAsync(string database, IEnumerable<string> tables, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (tables is null)
+            {
+                throw new ArgumentNullException(nameof(tables));
+            }
+
             var dto = new RawTableDelete() { Items = tables.Select(table => new RawTable() { Name = table })};
             return await DeleteTablesAsync(database, dto, token).ConfigureAwait(false);
         }
@@ -195,8 +273,23 @@ namespace CogniteSdk.Resources
         /// <returns>The retrieved rows.</returns>
         public async Task<ItemsWithCursor<RawRow>> ListRowsAsync(string database, string table, RawRowQuery query, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
             var req = Oryx.Cognite.Raw.listRows<ItemsWithCursor<RawRow>>(database, table, query);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -208,6 +301,16 @@ namespace CogniteSdk.Resources
         /// <returns>The retrieved rows.</returns>
         public async Task<ItemsWithCursor<RawRow>> ListRowsAsync(string database, string table, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
             var query = new RawRowQuery();
             return await ListRowsAsync(database, table, query, token).ConfigureAwait(false);
         }
@@ -223,8 +326,23 @@ namespace CogniteSdk.Resources
         /// <returns>An empty response.</returns>
         public async Task<EmptyResponse> CreateRowsAsync(string database, string table, IEnumerable<RawRowCreate> dtos, bool ensureParent = false, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (dtos is null)
+            {
+                throw new ArgumentNullException(nameof(dtos));
+            }
+
             var req = Oryx.Cognite.Raw.createRows<EmptyResponse>(database, table, dtos, ensureParent);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -237,8 +355,23 @@ namespace CogniteSdk.Resources
         /// <returns>An empty response</returns>
         public async Task<EmptyResponse> DeleteRowsAsync(string database, string table, IEnumerable<RawRowDelete> dtos, CancellationToken token = default)
         {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (dtos is null)
+            {
+                throw new ArgumentNullException(nameof(dtos));
+            }
+
             var req = Oryx.Cognite.Raw.deleteRows<EmptyResponse>(database, table, dtos);
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }

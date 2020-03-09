@@ -39,7 +39,7 @@ let ``List Tables with limit is Ok`` () = task {
 }
 
 [<Trait("resource", "raw")>]
-[<Fact(Skip="Failing in greenfield. Disable until it's working again.")>]
+[<Fact>]
 let ``List Rows with limit is Ok`` () = task {
     // Arrange
     let expectedCols = seq {
@@ -60,7 +60,7 @@ let ``List Rows with limit is Ok`` () = task {
 }
 
 [<Trait("resource", "raw")>]
-[<Fact(Skip="Failing in greenfield. Disable until it's working again.")>]
+[<Fact>]
 let ``List Rows with limit and choose columns isOk`` () = task {
     // Arrange
     let query = RawRowQuery(Limit = Nullable 10, Columns = ["sdk-test-col2"])
@@ -94,7 +94,7 @@ let ``Create and delete database is Ok`` () = task {
 }
 
 [<Trait("resource", "raw")>]
-[<Fact(Skip="Failing in greenfield. Disable until it's working again.")>]
+[<Fact>]
 let ``Create and delete table in database is Ok`` () = task {
     // Arrange
     let dbName = Guid.NewGuid().ToString().[..31]
@@ -111,7 +111,7 @@ let ``Create and delete table in database is Ok`` () = task {
 }
 
 [<Trait("resource", "raw")>]
-[<Fact(Skip="Failing in greenfield. Disable until it's working again.")>]
+[<Fact>]
 let ``Create and delete rows from table in database is Ok`` () = task {
     // Arrange
     let dbName = Guid.NewGuid().ToString().[..31]

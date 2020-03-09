@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,17 +14,15 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all event methods.
     /// </summary>
-    public class LoginResource
+    public class LoginResource : Resource
     {
-        private readonly HttpContext _ctx;
-
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal LoginResource(HttpContext ctx)
+        internal LoginResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            _ctx = ctx;
         }
 
         /// <summary>
@@ -34,7 +33,7 @@ namespace CogniteSdk.Resources
         public async Task<LoginStatus> StatusAsync(CancellationToken token = default)
         {
             var req = Oryx.Cognite.Login.status<LoginStatus>();
-            return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
+            return await Run(req, token).ConfigureAwait(false);
         }
     }
 }
