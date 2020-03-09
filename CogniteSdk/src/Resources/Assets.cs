@@ -41,7 +41,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.list<ItemsWithCursor<Asset>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.create<IEnumerable<Asset>>(assets);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace CogniteSdk.Resources
         public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
             var req = Assets.get<Asset>(assetId);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -88,7 +88,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.delete<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.retrieve<IEnumerable<Asset>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.search<IEnumerable<Asset>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Assets.update<IEnumerable<Asset>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

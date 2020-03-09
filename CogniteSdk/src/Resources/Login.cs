@@ -33,7 +33,7 @@ namespace CogniteSdk.Resources
         public async Task<LoginStatus> StatusAsync(CancellationToken token = default)
         {
             var req = Oryx.Cognite.Login.status<LoginStatus>();
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

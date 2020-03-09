@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.list<ItemsWithCursor<Event>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.create<IEnumerable<Event>>(events);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace CogniteSdk.Resources
         public async Task<Event> GetAsync(long eventId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Events.get<Event>(eventId);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
 
@@ -87,7 +87,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.delete<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.retrieve<IEnumerable<Event>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.search<IEnumerable<Event>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Events.update<IEnumerable<Event>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

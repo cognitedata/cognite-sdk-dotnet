@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.list<ItemsWithCursor<Sequence>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.create<IEnumerable<SequenceData>>(sequences);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.delete<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.retrieve<IEnumerable<Sequence>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.search<IEnumerable<Sequence>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.update<IEnumerable<Sequence>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.listRows<SequenceData>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.createRows<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Sequences.deleteRows<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<Relationship>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Relationships.delete<EmptyResponse>(externalIds);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Relationships.search<RestrictedGraphQueryResult>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

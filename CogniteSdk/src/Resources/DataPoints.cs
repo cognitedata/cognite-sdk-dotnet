@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.DataPoints.create<EmptyResponse>(points);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.DataPoints.delete<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsItem<DataPoint>>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }

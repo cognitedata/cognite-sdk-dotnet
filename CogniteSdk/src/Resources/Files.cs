@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<File>> ListAsync(FileQuery query, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.list<ItemsWithCursor<File>>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
         public async Task<File> GetAsync(long fileId, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.get<File>(fileId);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Retrieve overloads
@@ -60,7 +60,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.retrieve<IEnumerable<File>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Files.download<IEnumerable<FileDownload>>(ids);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Files.upload<FileUploadRead>(file, overwrite);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Files.update<IEnumerable<File>>(update);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -196,7 +196,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Files.delete<EmptyResponse>(query);
-            return await Run(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
