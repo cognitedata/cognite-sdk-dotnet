@@ -76,28 +76,28 @@ module Common =
 module Context =
     let urlBuilder (request: HttpRequest) =
 
-        let extra = request.Extra
+        let items = request.Items
         let version =
-            match Map.tryFind PlaceHolder.ApiVersion extra with
+            match Map.tryFind PlaceHolder.ApiVersion items with
             | Some (String version) -> version
             | _ -> failwith "API version not set."
 
         let project =
-            match Map.tryFind PlaceHolder.Project extra with
+            match Map.tryFind PlaceHolder.Project items with
             | Some (String project) -> project
             | _ -> failwith "Client must set project."
 
         let resource =
-            match Map.tryFind PlaceHolder.Resource extra with
+            match Map.tryFind PlaceHolder.Resource items with
             | Some (String resource) -> resource
             | _ -> failwith "Resource not set."
 
         let baseUrl =
-            match Map.tryFind PlaceHolder.BaseUrl extra with
+            match Map.tryFind PlaceHolder.BaseUrl items with
             | Some (Url url) -> url.ToString()
             | _ -> "https://api.cognitedata.com"
 
-        if not (Map.containsKey PlaceHolder.HasAppId extra)
+        if not (Map.containsKey PlaceHolder.HasAppId items)
         then failwith "Client must set the Application ID (appId)."
 
         sprintf "api/%s/projects/%s%s" version project resource
@@ -112,13 +112,13 @@ module Context =
 
     /// Set the project to connect to.
     let withProject (project: string) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.Project, String project) } }
+        { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.Project, String project) } }
 
     let withAppId (appId: string) (context: HttpContext) =
-        { context with Request = { context.Request with Headers =  ("x-cdp-app", appId) :: context.Request.Headers; Extra = context.Request.Extra.Add(PlaceHolder.HasAppId, String "true") } }
+        { context with Request = { context.Request with Headers = context.Request.Headers.Add ("x-cdp-app", appId); Items = context.Request.Items.Add(PlaceHolder.HasAppId, String "true") } }
 
     let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
-        { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
+        { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
 
     let create () =
         let major, minor, build = version

@@ -27,7 +27,7 @@ open CogniteSdk
 type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
 type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
 type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
-type public HttpHandler<'a, 'b, 'r> = NextFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
+type public HttpHandler<'a, 'b, 'r> = HttpFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
 type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseException>
 type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseException>
 type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
@@ -38,14 +38,14 @@ type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 module Handler =
 
     let withResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.Resource, String resource) } }
+        next { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.Resource, String resource) } }
 
     let withVersion (version: ApiVersion) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Extra = context.Request.Extra.Add(PlaceHolder.ApiVersion, String (version.ToString ())) } }
+        next { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.ApiVersion, String (version.ToString ())) } }
 
     let withUrl (url: string) (next: NextFunc<_,_>) (context: HttpContext) =
         let urlBuilder (request: HttpRequest) =
-            let extra = request.Extra
+            let extra = request.Items
             let baseUrl =
                 match Map.tryFind PlaceHolder.BaseUrl extra with
                 | Some (Url url) -> url.ToString ()
@@ -63,21 +63,14 @@ module Handler =
         | ResponseError error -> raise error
         | Panic err -> raise err
 
-    /// Use the given handler token provider for the request. TODO: Simplify with authorize from Oryx.
+    /// Use the given handler token provider for the request.
     let withTokenProvider<'TResult, 'TNext, 'TError> (tokenProvider: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
-        let authorize (next : HttpFunc<HttpResponseMessage, 'TResult, 'TError>) (ctx: Context<HttpResponseMessage>) = task {
-            let! ctx' =
-                match ctx.Request.CancellationToken with
-                | Some ct -> task {
-                    let! token = tokenProvider.Invoke ct
-                    match Option.ofObj token with
-                    | Some token -> return Context.withBearerToken token ctx
-                    | _ -> return ctx }
-                | _ -> ctx |> Task.FromResult
-            return! next ctx'
+        let provider ct = task {
+            let! token = tokenProvider.Invoke ct
+            return Option.ofObj token
         }
 
-        authorize >=> handler
+        withTokenProvider provider >=> handler
 
     /// Runs handler and returns the Ok result. Throws exception if any errors occured. Used by C# SDK.
     let runUnsafeAsync (ctx : HttpContext) (token: CancellationToken) (handler: HttpHandler<HttpResponseMessage, 'r,'r>) : Task<'r> = task {
