@@ -151,16 +151,16 @@ namespace CogniteSdk
             /// <summary>
             /// Set authentication handler.
             /// </summary>
-            /// <param name="authHandler">Authorization handler for getting bearer token.</param>
+            /// <param name="tokenProvider">Token provider for getting bearer token to use for the request.</param>
             /// <returns>Updated builder.</returns>
-            public Builder SetAuthHandler(Func<CancellationToken, Task<string>> authHandler)
+            public Builder SetTokenProvider(Func<CancellationToken, Task<string>> tokenProvider)
             {
-                if (authHandler is null)
+                if (tokenProvider is null)
                 {
-                    throw new ArgumentNullException(nameof(authHandler));
+                    throw new ArgumentNullException(nameof(tokenProvider));
                 }
 
-                _authHandler = authHandler;
+                _authHandler = tokenProvider;
                 return this;
             }
 
