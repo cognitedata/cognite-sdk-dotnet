@@ -39,12 +39,12 @@ CogniteSdk is available as a [NuGet package](https://www.nuget.org/packages/Cogn
 
 Using Package Manager:
 ```sh
-Install-Package CogniteSdk -IncludePrerelease
+Install-Package CogniteSdk
 ```
 
 Using .NET CLI:
 ```sh
-dotnet add package CogniteSdk -v 1.0.0-beta-002
+dotnet add package CogniteSdk
 ```
 
 Or [directly in Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart/install-and-use-a-package-in-visual-studio).

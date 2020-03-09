@@ -22,7 +22,6 @@ module Login =
         >=> json jsonOptions
         >=> logWithMessage "Login:get"
 
-
     /// Returns the authentication information about the asking entity.
     let status () : HttpHandler<HttpResponseMessage, LoginStatus, 'a> =
         req {
