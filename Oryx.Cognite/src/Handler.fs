@@ -63,13 +63,13 @@ module Handler =
         | ResponseError error -> raise error
         | Panic err -> raise err
 
-    /// Authorize the given handler. TODO: Simplify with authorize from Oryx.
-    let withAuth<'TResult, 'TNext, 'TError> (authorize: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
+    /// Use the given handler token provider for the request. TODO: Simplify with authorize from Oryx.
+    let withTokenProvider<'TResult, 'TNext, 'TError> (tokenProvider: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
         let authorize (next : HttpFunc<HttpResponseMessage, 'TResult, 'TError>) (ctx: Context<HttpResponseMessage>) = task {
             let! ctx' =
                 match ctx.Request.CancellationToken with
                 | Some ct -> task {
-                    let! token = authorize.Invoke ct
+                    let! token = tokenProvider.Invoke ct
                     match Option.ofObj token with
                     | Some token -> return Context.withBearerToken token ctx
                     | _ -> return ctx }
