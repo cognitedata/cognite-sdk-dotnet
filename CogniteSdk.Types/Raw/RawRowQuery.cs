@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The row query DTO.
+    /// The Raw row query type.
     /// </summary>
     public class RawRowQuery : CursorQueryBase
     {

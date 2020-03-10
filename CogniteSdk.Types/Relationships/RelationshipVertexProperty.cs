@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Vertex property dto.
+    /// Relationships Vertex property.
     /// </summary>
     public class RelationshipVertexProperty
     {

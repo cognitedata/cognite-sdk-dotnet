@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The database query DTO.
+    /// The Raw database query type.
     /// </summary>
     public class RawDatabaseQuery : CursorQueryBase { }
 }

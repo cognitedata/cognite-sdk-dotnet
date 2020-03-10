@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence Data Read DTO.
+    /// The Sequence Data Read.
     /// </summary>
     public class SequenceData
     {

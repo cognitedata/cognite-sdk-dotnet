@@ -4,12 +4,12 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The sequence search DTO.
+    /// The sequence search.
     /// </summary>
     public class SequenceSearch : SearchQuery<SequenceFilter, Search> {
 
         /// <summary>
-        /// Create a new pre-initialized Asset search DTO.
+        /// Create a new pre-initialized Asset search.
         /// </summary>
         /// <returns>New instance of the AssetSearch.</returns>
         public static SequenceSearch Empty ()

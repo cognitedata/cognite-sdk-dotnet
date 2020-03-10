@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk.Login
 {
     /// <summary>
-    /// The Login Status Read DTO.
+    /// The Login Status Read type.
     /// </summary>
     public class LoginStatus
     {

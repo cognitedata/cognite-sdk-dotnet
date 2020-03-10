@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The file update DTO.
+    /// The file update type.
     /// </summary>
     public class FileUpdate
     {

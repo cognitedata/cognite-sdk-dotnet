@@ -3,7 +3,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Asset update DTO.
+    /// The Asset update type.
     /// </summary>
     public class AssetUpdate
     {
@@ -53,7 +53,7 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The asset update item DTO. Contains the update item for an <see cref="AssetUpdate">AssetUpdate</see>.
+    /// The asset update item type. Contains the update item for an <see cref="AssetUpdate">AssetUpdate</see>.
     /// </summary>
     public class AssetUpdateItem : UpdateItem<AssetUpdate>
     {

@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The File query DTO.
+    /// The File query type.
     /// </summary>
     public class FileQuery : CursorQueryBase
     {

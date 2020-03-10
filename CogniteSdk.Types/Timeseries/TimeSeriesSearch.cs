@@ -4,13 +4,13 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The timeseries search DTO.
+    /// The timeseries search type.
     /// </summary>
     public class TimeSeriesSearch : SearchQuery<TimeSeriesFilter, Search> {
         /// <summary>
-        /// Create a new empty TimeSeries search DTO with pre-initialized emtpy Filter and Search.
+        /// Create a new empty TimeSeries search with pre-initialized emtpy Filter and Search.
         /// </summary>
-        /// <returns>New instance of the EventSearch.</returns>
+        /// <returns>New instance of the TimeSeriesSearch.</returns>
         public static TimeSeriesSearch Empty ()
         {
             return new TimeSeriesSearch {

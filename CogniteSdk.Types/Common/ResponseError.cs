@@ -8,10 +8,10 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
-    /// convert it directly to a ResponseException.
+    /// Class for handling errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK
+    /// will convert it directly to a ResponseException.
     /// </summary>
-    public class ResponseErrorDto
+    public class ResponseError
     {
         /// <summary>
         ///  The API error code (HTTP error code)
@@ -38,15 +38,15 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The DTO for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
+    /// The type for errors received from CDF. Used for decoding API errors. Should not be used in user code. SDK will
     /// convert it directly to a ResponseException.
     /// </summary>
-    public class ApiResponseErrorDto
+    public class ApiResponseError
     {
         /// <summary>
         /// Response error object.
         /// </summary>
-        public ResponseErrorDto Error { get; set; }
+        public ResponseError Error { get; set; }
 
         /// <summary>
         /// Unique id for the request.

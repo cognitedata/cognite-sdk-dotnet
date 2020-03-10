@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The time series query DTO.
+    /// The time series query.
     /// </summary>
     public class TimeSeriesQuery : CursorQueryBase
     {

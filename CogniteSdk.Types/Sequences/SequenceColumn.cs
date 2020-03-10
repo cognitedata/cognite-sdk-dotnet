@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence column DTO.
+    /// The Sequence column.
     /// </summary>
     public class SequenceColumn
     {

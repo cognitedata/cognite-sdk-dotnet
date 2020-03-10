@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// TimeSeries delete DTO.
+    /// TimeSeries delete.
     /// </summary>
     public class TimeSeriesDelete : ItemsWithoutCursor<Identity>
     {

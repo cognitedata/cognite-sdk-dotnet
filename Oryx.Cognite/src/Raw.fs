@@ -94,13 +94,13 @@ module Raw =
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>
     /// <param name="table">The ids of the events to get.</param>
-    /// <param name="dtos">The Rows to create.</param>
+    /// <param name="rows">The Rows to create.</param>
     /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
     /// <returns>The retrieved rows.</returns>
-    let createRows (database: string) (table: string) (dtos: RawRowCreate seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let createRows (database: string) (table: string) (rows: RawRowCreate seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         Url +/ database +/ "tables" +/ table +/ "rows"
-        |> createWithQueryEmpty dtos query
+        |> createWithQueryEmpty rows query
         >=> logWithMessage "Raw:createRows"
 
     /// <summary>
@@ -108,10 +108,10 @@ module Raw =
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>
     /// <param name="table">The ids of the events to get.</param>
-    /// <param name="dtos">The Rows to create.</param>
+    /// <param name="rows">The Rows to create.</param>
     /// <returns>The retrieved rows.</returns>
-    let deleteRows (database: string) (table: string) (dtos: RawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        let query = ItemsWithoutCursor<RawRowDelete>(Items=dtos)
+    let deleteRows (database: string) (table: string) (rows: RawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let query = ItemsWithoutCursor<RawRowDelete>(Items=rows)
         Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
         |> postV10 query
         >=> logWithMessage "Raw:deleteRows"

@@ -3,7 +3,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The time series update DTO.
+    /// The time series update type.
     /// </summary>
     public class TimeSeriesUpdate
     {

@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto to perform a graph query.
+    /// Type to perform a graph query.
     /// </summary>
     public class RestrictedGraphQueryResult
     {
