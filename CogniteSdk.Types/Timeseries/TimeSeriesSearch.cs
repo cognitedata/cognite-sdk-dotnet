@@ -6,7 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// The timeseries search DTO.
     /// </summary>
-    public class TimeSeriesSearch : SearchQueryDto<TimeSeriesFilter, Search> {
+    public class TimeSeriesSearch : SearchQuery<TimeSeriesFilter, Search> {
         /// <summary>
         /// Create a new empty TimeSeries search DTO with pre-initialized emtpy Filter and Search.
         /// </summary>

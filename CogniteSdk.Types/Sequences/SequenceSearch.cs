@@ -6,7 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// The sequence search DTO.
     /// </summary>
-    public class SequenceSearch : SearchQueryDto<SequenceFilter, Search> {
+    public class SequenceSearch : SearchQuery<SequenceFilter, Search> {
 
         /// <summary>
         /// Create a new pre-initialized Asset search DTO.

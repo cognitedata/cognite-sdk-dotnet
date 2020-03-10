@@ -248,6 +248,23 @@ namespace CogniteSdk.Resources
         }
 
         #endregion
+
+        /// <summary>
+        /// Retrieves a list of files matching the given criteria. This operation does not support pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public async Task<IEnumerable<File>> SearchAsync (FileSearch query, CancellationToken token = default )
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.Files.search<IEnumerable<File>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
     }
 }
 

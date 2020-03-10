@@ -6,7 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// The sequence search DTO.
     /// </summary>
-    public class AssetSearch : SearchQueryDto<AssetFilter, Search> {
+    public class AssetSearch : SearchQuery<AssetFilter, Search> {
 
         /// <summary>
         /// Create a new empty Asset search DTO with pre-initialized emtpy Filter and Search.
