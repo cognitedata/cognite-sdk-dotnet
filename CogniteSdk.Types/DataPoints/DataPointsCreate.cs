@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Data Points write type
+    /// Data Points write class.
     /// </summary>
     public class DataPointsCreate
     {

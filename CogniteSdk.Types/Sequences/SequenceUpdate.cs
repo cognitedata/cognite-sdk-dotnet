@@ -4,7 +4,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The sequence update DTO.
+    /// The sequence update class.
     /// </summary>
     public class SequenceUpdate
     {

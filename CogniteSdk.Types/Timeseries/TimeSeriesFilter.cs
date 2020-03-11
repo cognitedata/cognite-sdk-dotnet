@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The time series filter DTO.
+    /// The time series filter class.
     /// </summary>
     public class TimeSeriesFilter
     {

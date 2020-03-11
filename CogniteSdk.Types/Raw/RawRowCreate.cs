@@ -10,7 +10,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto to write a row to a table in Raw.
+    /// Class to write a row to a table in Raw.
     /// </summary>
     public class RawRowCreate
     {

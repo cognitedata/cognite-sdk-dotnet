@@ -6,7 +6,6 @@ open Oryx
 open Oryx.Cognite
 open Oryx.SystemTextJson.ResponseReader
 
-open CogniteSdk
 open CogniteSdk.Login
 
 /// Various event HTTP handlers.

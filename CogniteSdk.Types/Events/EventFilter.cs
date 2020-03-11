@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event filter DTO.
+    /// The Event filter class.
     /// </summary>
     public class EventFilter
     {

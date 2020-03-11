@@ -9,7 +9,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Sequence DTO for writing.
+    /// Sequence class for writing.
     /// </summary>
     public class SequenceCreate
     {

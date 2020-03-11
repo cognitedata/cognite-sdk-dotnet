@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// File upload read response resource.
+    /// File upload read response class.
     /// </summary>
     public class FileUploadRead : File
     {

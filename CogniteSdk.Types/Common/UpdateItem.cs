@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Update item for a given property.
+    /// Update class for a given property.
     /// </summary>
     /// <typeparam name="TUpdate">Type of object to update.</typeparam>
     public class UpdateItem<TUpdate> : Identity

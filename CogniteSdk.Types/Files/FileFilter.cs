@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The File query DTO.
+    /// The File query class.
     /// </summary>
     public class FileFilter
     {

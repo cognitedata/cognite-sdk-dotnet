@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The row read DTO.
+    /// The row read class.
     /// </summary>
     public class RawRow
     {

@@ -1,13 +1,12 @@
 namespace Oryx.Cognite
 
+open System.Collections.Generic
 open System.Net.Http
 
 open Oryx
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Files
 
 /// Various event HTTP handlers.
 
@@ -44,13 +43,12 @@ module Files =
         retrieve ids Url
         >=> logWithMessage "Files:retrieve"
 
-
-    let search (query: SearchQueryDto<FileFilter, FileSearch>) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<File>, 'a> =
-        Url +/ "search" |> postV10 query
+    let search (query: FileSearch) : HttpHandler<HttpResponseMessage, File seq, 'a> =
+        search query Url
         >=> logWithMessage "Files:search"
 
     let delete (files: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        Url +/ "delete" |> postV10 files
+        delete files Url
         >=> logWithMessage "Files:delete"
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.

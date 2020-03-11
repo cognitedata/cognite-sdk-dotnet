@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence row DTO. Contains row number and values in the order defined by the columns.
+    /// The Sequence row class. Contains row number and values in the order defined by the columns.
     /// </summary>
     public class SequenceRow
     {

@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Events delete DTO.
+    /// Events delete class.
     /// </summary>
     public class EventDelete : ItemsWithoutCursor<Identity>
     {

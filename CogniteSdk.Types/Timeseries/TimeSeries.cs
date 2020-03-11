@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// TimeSeries read entity.
+    /// TimeSeries read class.
     /// </summary>
     public class TimeSeries
     {

@@ -3,7 +3,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The event update DTO.
+    /// The event update class.
     /// </summary>
     public class EventUpdate
     {

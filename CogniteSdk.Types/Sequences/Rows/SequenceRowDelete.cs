@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence row delete DTO.
+    /// The Sequence row delete class.
     /// </summary>
     public class SequenceRowDelete
     {

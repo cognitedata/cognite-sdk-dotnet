@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Search query DTO. Shared between the various resource search functions.
+    /// Search query class. Shared between the various resource search functions.
     /// </summary>
     public class Search
     {

@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The aggregate data point DTO.
+    /// The aggregate data point class.
     /// </summary>
     public class DataPointAggregate
     {
