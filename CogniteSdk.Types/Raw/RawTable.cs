@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Raw table object.
+    /// Raw table class.
     /// </summary>
     public class RawTable
     {

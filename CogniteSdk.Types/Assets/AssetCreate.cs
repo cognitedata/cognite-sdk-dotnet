@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto for creating a new asset.
+    /// Class for creating a new asset.
     /// </summary>
     public class AssetCreate
     {

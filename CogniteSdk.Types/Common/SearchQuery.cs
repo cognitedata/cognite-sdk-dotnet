@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// </summary>
     /// <typeparam name="TFilter">Filter type</typeparam>
     /// <typeparam name="TSearch">Search type</typeparam>
-    public class SearchQueryDto<TFilter, TSearch>
+    public class SearchQuery<TFilter, TSearch>
     {
         /// <summary>
         /// Filter on items with strict matching.

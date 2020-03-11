@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Asset read DTO.
+    /// The Asset read class.
     /// </summary>
     public class Asset
     {

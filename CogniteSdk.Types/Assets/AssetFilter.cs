@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The asset filter DTO.
+    /// The asset filter class.
     /// </summary>
     public class AssetFilter
     {

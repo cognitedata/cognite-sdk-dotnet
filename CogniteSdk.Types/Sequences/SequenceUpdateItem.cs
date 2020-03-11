@@ -1,7 +1,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The sequence update items DTO base class.
+    /// The sequence update items class base class.
     /// </summary>
     public class SequenceUpdateItem : UpdateItem<SequenceUpdate>
     {

@@ -9,7 +9,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// File write response resource.
+    /// File write response class.
     /// </summary>
     public class FileCreate
     {

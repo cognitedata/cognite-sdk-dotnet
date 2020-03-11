@@ -5,9 +5,6 @@ open Swensen.Unquote
 open Xunit
 
 open Common
-open System.Net.Http
-open CogniteSdk
-open System
 
 [<Fact>]
 let ``Login status is Ok`` () = task {

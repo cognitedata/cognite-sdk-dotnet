@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto for filtering relationships.
+    /// Class for filtering relationships.
     /// </summary>
     public class RelationshipFilter
     {

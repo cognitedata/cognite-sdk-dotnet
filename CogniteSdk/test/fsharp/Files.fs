@@ -245,29 +245,16 @@ let ``Filter Files on Source is Ok`` () = task {
     test <@ len = 10 @>
     test <@ Seq.forall ((=) "Documentum") sources @>
 }
-(*
+
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on Name is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.Name "PH-ME-P-0003-001"
-    ]
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(Name="PH-ME-P-0003-001"))
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
     let names = Seq.map (fun (e: File) -> e.Name) dtos.Items
@@ -275,176 +262,107 @@ let ``Filter Files on Name is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall ((=) "PH-ME-P-0003-001") names @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on MimeType is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.MimeType "pdf"
-    ]
+
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(MimeType="pdf"))
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let mimeTypes = Seq.collect (fun (e: File) -> e.MimeType |> optionToSeq) dtos.Items
+    let mimeTypes = Seq.map (fun (e: File) -> e.MimeType) dtos.Items
 
     // Assert
     test <@ len = 7 @>
     test <@ Seq.forall ((=) "pdf") mimeTypes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on UploadedTime is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(1533213278669L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(1533213278689L)
-    }
-    let filters = [
-        FileFilter.UploadedTime timerange
-    ]
+    let timerange =
+        TimeRange(
+            Min = Nullable 1533213278669L,
+            Max = Nullable 1533213278689L
+        )
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(UploadedTime=timerange))
+
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let uploadedTimes = Seq.collect (fun (e: File) -> e.UploadedTime |> optionToSeq) dtos.Items
+    let uploadedTimes = Seq.map (fun (e: File) -> e.UploadedTime.Value) dtos.Items
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1533213278689L && t > 1533213278669L) uploadedTimes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on SourceCreatedTime is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(73125430L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(73125450L)
-    }
-    let filters = [
-        FileFilter.SourceCreatedTime timerange
-    ]
+    let timerange =
+        TimeRange(
+            Min = Nullable 73125430L,
+            Max = Nullable 73125450L
+        )
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(SourceCreatedTime=timerange))
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = writeClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
+    let len = Seq.length dtos.Items
     let len = Seq.length dtos.Items
 
-    let sourceCreatedTimes = Seq.collect (fun (e: File) -> e.SourceCreatedTime |> optionToSeq) dtos.Items
+    let sourceCreatedTimes = Seq.map (fun (e: File) -> e.SourceCreatedTime.Value) dtos.Items
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 73125450L && t > 73125430L) sourceCreatedTimes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on SourceModifiedTime is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let timerange = {
-        Min = DateTimeOffset.FromUnixTimeMilliseconds(99304940L)
-        Max = DateTimeOffset.FromUnixTimeMilliseconds(99304960L)
-    }
-    let filters = [
-        FileFilter.SourceModifiedTime timerange
-    ]
+    let timerange =
+        TimeRange(
+            Min = Nullable 99304940L,
+            Max = Nullable 99304960L
+        )
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(SourceModifiedTime=timerange))
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = writeClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
-    let sourceModifiedTimes = Seq.collect (fun (e: File) -> e.SourceModifiedTime |> optionToSeq) dtos.Items
+    let sourceModifiedTimes = Seq.map (fun (e: File) -> e.SourceModifiedTime.Value) dtos.Items
 
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 99304960L && t > 99304940L) sourceModifiedTimes @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on Uploaded is Ok`` () = task {
     // Arrange
-    let ctx = readCtx ()
-    let options = [
-        FileQuery.Limit 10
-    ]
-    let filters = [
-        FileFilter.Uploaded true
-    ]
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(Uploaded=Nullable true))
 
     // Act
-    let! res = Files.Items.listAsync options filters ctx
+    let! dtos = readClient.Files.ListAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos.Items
 
     let uploadeds = Seq.map (fun (e: File) -> e.Uploaded) dtos.Items
@@ -452,29 +370,17 @@ let ``Filter Files on Uploaded is Ok`` () = task {
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall id uploadeds @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/list" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Search Files on Name is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let searches = [
-        FileSearch.Name "test"
-    ]
+    let query = FileSearch(Search=NameSearch(Name="test"))
 
     // Act
-    let! res = Files.Search.searchAsync 10 searches [] ctx
+    let! dtos = writeClient.Files.SearchAsync query
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    let dtos = ctx'.Response
     let len = Seq.length dtos
 
     let names = Seq.map (fun (e: File) -> e.Name) dtos
@@ -482,62 +388,33 @@ let ``Search Files on Name is Ok`` () = task {
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files/search" @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Create and delete files is Ok`` () = task {
     // Arrange
-    let ctx = writeCtx ()
-    let externalIdString = Guid.NewGuid().ToString()
-    let dto: Files.FileCreate = {
-        Name = "testFile"
-        ExternalId = Some externalIdString
-        MimeType = None
-        Metadata = Map.empty
-        AssetIds = Seq.empty
-        Source = None
-        SourceCreatedTime = Some 999L
-        SourceModifiedTime = Some 888L
-    }
-    let externalId = Identity.ExternalId externalIdString
+    let query = FileSearch(Search=NameSearch(Name="test"))
 
     // Act
-    let! res = Files.Create.createAsync dto ctx
-    let! delRes = Files.Delete.deleteAsync ([ externalId ]) ctx
+    let externalIdString = Guid.NewGuid().ToString()
+    let dto =
+        FileCreate(
+            Name = "testFile",
+            ExternalId = externalIdString,
+            SourceCreatedTime = Nullable 999L,
+            SourceModifiedTime = Nullable 888L
+        )
 
-    let ctx' =
-        match res with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
+    // Act
+    let! dto = writeClient.Files.UploadAsync dto
+    let! delRes = writeClient.Files.DeleteAsync ([ externalIdString ])
 
-    let dtos = ctx'.Response
-
-    let filesResponse = ctx'.Response
-    let resExternalId = filesResponse.ExternalId
+    let resExternalId = dto.ExternalId
 
     // Assert
-    test <@ resExternalId = Some externalIdString @>
-    test <@ ctx'.Request.Method = HttpMethod.Post @>
-    test <@ ctx'.Request.Extra.["resource"] = "/files" @>
-    test <@ ctx'.Request.Query.IsEmpty @>
-
-    let ctx'' =
-        match delRes with
-        | Ok ctx -> ctx
-        | Error (ResponseError error) -> raise <| error.ToException ()
-        | Error (Panic error) -> raise error
-
-    test <@ Result.isOk delRes @>
-    test <@ ctx''.Request.Method = HttpMethod.Post @>
-    test <@ ctx''.Request.Extra.["resource"] = "/files/delete" @>
-    test <@ ctx''.Request.Query.IsEmpty @>
+    test <@ resExternalId = externalIdString @>
 }
-
-*)
 
 [<Trait("resource", "files")>]
 [<Fact>]

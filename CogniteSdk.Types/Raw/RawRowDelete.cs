@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto with keys of rows to delete in table.
+    /// Class with keys of rows to delete in table.
     /// </summary>
     public class RawRowDelete
     {

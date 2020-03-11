@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence row query DTO.
+    /// The Sequence row query class.
     /// </summary>
     public class SequenceRowQuery : CursorQueryBase
     {

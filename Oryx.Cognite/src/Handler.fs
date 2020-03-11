@@ -89,7 +89,7 @@ module Handler =
         if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
             try
-                let! error = JsonSerializer.DeserializeAsync<ApiResponseErrorDto>(stream, jsonOptions)
+                let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
                 let _, requestId = response.Headers.TryGetValues "x-request-id"
                 match Seq.tryExactlyOne requestId with
                 | Some requestId -> error.RequestId <- requestId
