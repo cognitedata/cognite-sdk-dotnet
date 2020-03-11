@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// Databases delete type.
+    /// Databases delete class.
     /// </summary>
     public class RawTableDelete : ItemsWithoutCursor<RawTable> { }
 }

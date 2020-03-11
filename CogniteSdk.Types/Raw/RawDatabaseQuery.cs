@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Raw database query type.
+    /// The Raw database query class.
     /// </summary>
     public class RawDatabaseQuery : CursorQueryBase { }
 }

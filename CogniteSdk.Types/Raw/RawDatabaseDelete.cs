@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Databases delete DTO.
+    /// Databases delete class.
     /// </summary>
     public class RawDatabaseDelete : ItemsWithoutCursor<RawDatabase>
     {

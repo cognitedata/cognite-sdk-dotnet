@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The data point DTO for each individual data point.
+    /// The data point class for each individual data point.
     /// </summary>
     public class DataPoint
     {

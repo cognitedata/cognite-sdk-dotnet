@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Timeseries write.
+    /// Timeseries write class.
     /// </summary>
     public class TimeSeriesCreate
     {

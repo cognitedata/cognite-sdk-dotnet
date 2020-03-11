@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence filter.
+    /// The Sequence filter class.
     /// </summary>
     public class SequenceFilter
     {

@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The event write DTO.
+    /// The event write class.
     /// </summary>
     public class EventCreate
     {

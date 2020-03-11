@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The sequence search.
+    /// The sequence search class.
     /// </summary>
     public class SequenceSearch : SearchQuery<SequenceFilter, Search> {
 

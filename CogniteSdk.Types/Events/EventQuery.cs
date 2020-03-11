@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event query DTO.
+    /// The Event query class.
     /// </summary>
     public class EventQuery : CursorQueryBase
     {

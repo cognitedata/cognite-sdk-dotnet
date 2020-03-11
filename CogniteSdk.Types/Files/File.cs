@@ -9,7 +9,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// File read response resource.
+    /// File read response class.
     /// </summary>
     public class File
     {

@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// File download response with Url.
+    /// File download response class with Url.
     /// </summary>
     public class FileDownload
     {

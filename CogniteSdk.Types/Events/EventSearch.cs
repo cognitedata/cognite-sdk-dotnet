@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto for description search
+    /// The description search class.
     /// </summary>
     public class DescriptionSearch
     {
@@ -21,7 +21,7 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The event search DTO.
+    /// The event search class.
     /// </summary>
     public class EventSearch : SearchQuery<EventFilter, DescriptionSearch> {
 

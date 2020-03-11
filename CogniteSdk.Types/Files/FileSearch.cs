@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// File search name query.
+    /// File search name query class.
     /// </summary>
     public class NameSearch
     {
@@ -20,7 +20,7 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// File search query.
+    /// File search query class.
     /// </summary>
     public class FileSearch : SearchQuery<FileFilter, NameSearch>
     {

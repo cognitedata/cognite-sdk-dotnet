@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// The timeseries search type.
+    /// The timeseries search type class.
     /// </summary>
     public class TimeSeriesSearch : SearchQuery<TimeSeriesFilter, Search> {
         /// <summary>

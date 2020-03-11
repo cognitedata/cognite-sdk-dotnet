@@ -4,7 +4,7 @@
 namespace CogniteSdk
 {
     /// <summary>
-    /// FIle delete type.
+    /// File delete class.
     /// </summary>
     public class FileDelete : ItemsWithoutCursor<Identity> { }
 }

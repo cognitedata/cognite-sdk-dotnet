@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Raw database object.
+    /// Raw database class.
     /// </summary>
     public class RawDatabase
     {

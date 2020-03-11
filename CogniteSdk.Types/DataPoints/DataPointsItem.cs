@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Data Points item type.
+    /// Data Points item class.
     /// </summary>
     public class DataPointsItem<T>
     {

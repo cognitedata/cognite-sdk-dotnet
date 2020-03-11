@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Sequence Data create class
+    /// The Sequence data create class
     /// </summary>
     public class SequenceDataCreate
     {

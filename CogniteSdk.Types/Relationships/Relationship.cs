@@ -6,7 +6,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Dto for reading relationship.
+    /// Class for reading relationship.
     /// </summary>
     public class Relationship
     {

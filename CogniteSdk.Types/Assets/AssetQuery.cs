@@ -7,7 +7,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Asset query DTO.
+    /// The Asset query class.
     /// </summary>
     public class AssetQuery : CursorQueryBase
     {
