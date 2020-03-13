@@ -63,16 +63,14 @@ module Handler =
         | ResponseError error -> raise error
         | Panic err -> raise err
 
-    /// Use the given handler token provider for the request. Adapts a C# function to F#.
-    let withTokenRenewer<'TResult, 'TNext, 'TError> (tokenProvider: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
+    /// Composes the given handler token provider with the request. Adapts a C# renewer function to F#.
+    let withTokenRenewer<'TResult, 'TNext, 'TError> (tokenRenewer: Func<CancellationToken, Task<string>>) (handler: HttpHandler<HttpResponseMessage, 'TNext, 'TResult, 'TError>) =
         let renewer ct = task {
             try
-                let! token = tokenProvider.Invoke ct
+                let! token = tokenRenewer.Invoke ct
                 match Option.ofObj token with
-                | Some token ->
-                    return Ok token
-                | None ->
-                    return Panic (NullReferenceException "No token received.") |> Error
+                | Some token -> return Ok token
+                | None -> return Panic (ArgumentNullException "No token received.") |> Error
             with
             | ex -> return Panic ex |> Error
         }
