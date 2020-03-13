@@ -48,8 +48,7 @@ namespace CogniteSdk.Resources
         /// <returns>Result.</returns>
         protected async Task<T> RunAsync<T>(Microsoft.FSharp.Core.FSharpFunc<Microsoft.FSharp.Core.FSharpFunc<Oryx.Context<T>, Task<Microsoft.FSharp.Core.FSharpResult<Oryx.Context<T>, Oryx.HandlerError<ResponseException>>>>, Microsoft.FSharp.Core.FSharpFunc<HttpContext, Task<Microsoft.FSharp.Core.FSharpResult<Oryx.Context<T>, Oryx.HandlerError<ResponseException>>>>> handler, CancellationToken token)
         {
-
-            var req = _authHandler is null ? handler : withTokenProvider(_authHandler, handler);
+            var req = _authHandler is null ? handler : withTokenRenewer(_authHandler, handler);
             return await runUnsafeAsync(_ctx, token, req).ConfigureAwait(false);
         }
     }
