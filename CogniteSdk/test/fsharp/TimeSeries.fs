@@ -288,7 +288,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
     let names = Seq.map (fun (d: TimeSeries) -> d.Name) dtos
 
     // Assert
-    test <@ len = 9 @>
+    test <@ len > 0 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("SILch0") || n.Contains("92529")) names @>
 }
 
