@@ -142,7 +142,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="add">Add the key-value pairs. Values for existing keys will be overwritten.</param>
         /// <param name="remove">Remove the key-value pairs with the specified keys.</param>
-        public UpdateDictionary(Dictionary<string, T> add, IEnumerable<T> remove=null) : base(add, remove) { }
+        public UpdateDictionary(Dictionary<string, T> add, IEnumerable<T> remove) : base(add, remove) { }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
