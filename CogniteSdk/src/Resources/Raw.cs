@@ -346,6 +346,36 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Create rows in a table.
+        /// </summary>
+        /// <param name="database">The database to create rows from.</param>
+        /// <param name="table">The table to create rows from.</param>
+        /// <param name="dtos">The rows to create</param>
+        /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>An empty response.</returns>
+        public async Task<EmptyResponse> CreateRowsJsonAsync(string database, string table, IEnumerable<RawRowCreateJson> dtos, bool ensureParent = false, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (dtos is null)
+            {
+                throw new ArgumentNullException(nameof(dtos));
+            }
+
+            var req = Oryx.Cognite.Raw.createRowsJson<EmptyResponse>(database, table, dtos, ensureParent);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Delete rows in a table.
         /// </summary>
         /// <param name="database">The database to delete rows from.</param>

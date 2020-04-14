@@ -104,6 +104,20 @@ module Raw =
         >=> logWithMessage "Raw:createRows"
 
     /// <summary>
+    /// Create rows in a table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="rows">The Rows to create.</param>
+    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+    /// <returns>The retrieved rows.</returns>
+    let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let query = RawRowCreateQuery(EnsureParent = ensureParent)
+        Url +/ database +/ "tables" +/ table +/ "rows"
+        |> createWithQueryEmpty rows query
+        >=> logWithMessage "Raw:createRows"
+
+    /// <summary>
     /// Delete rows in a table.
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>
