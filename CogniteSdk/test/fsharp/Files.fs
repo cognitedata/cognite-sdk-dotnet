@@ -30,7 +30,7 @@ let ``List Files with limit is Ok`` () = task {
 [<Fact>]
 let ``Get file by id is Ok`` () = task {
     // Arrange
-    let fileId = 2013333184649590L
+    let fileId = 230063753840368L
 
     // Act
     let! dto = readClient.Files.GetAsync fileId
@@ -57,7 +57,7 @@ let ``Get file by missing id is Error`` () = task {
 let ``Get files by ids is Ok`` () = task {
     // Arrange
     let fileIds =
-        [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
+        [ 230063753840368L; 748012071562569L; 1296220000699223L ]
 
     // Act
     let! dtos = readClient.Files.RetrieveAsync fileIds
@@ -76,7 +76,7 @@ let ``Get files by ids is Ok`` () = task {
 let ``Get files downloadLink by ids is Ok`` () = task {
     // Arrange
     let fileIds =
-        [ 2013333184649590L; 2424609243916557L; 3970039428634821L ]
+        [ 230063753840368L; 748012071562569L; 1296220000699223L ]
 
     // Act
     let! dtos = readClient.Files.DownloadAsync fileIds
@@ -138,7 +138,7 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     // Arrange
     let query =
         FileQuery(
-            Filter = FileFilter(CreatedTime = TimeRange(Min=Nullable 1533213749083L, Max=Nullable 1533213749099L)),
+            Filter = FileFilter(CreatedTime = TimeRange(Min=Nullable 1586949728742L, Max=Nullable 1586949728744L)),
             Limit = Nullable 10
         )
 
@@ -151,8 +151,8 @@ let ``Filter Files on CreatedTime is Ok`` () = task {
     let createdTimes = Seq.map (fun (e: File) -> e.CreatedTime) dtos
 
     // Assert
-    test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1533213749099L && t > 1533213749083L) createdTimes @>
+    test <@ len = 4 @>
+    test <@ Seq.forall (fun t -> t <= 1586949728744L && t >= 1586949728742L) createdTimes @>
 }
 
 [<Trait("resource", "files")>]
@@ -161,7 +161,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
     // Arrange
     let query =
         FileQuery(
-            Filter = FileFilter(LastUpdatedTime = TimeRange(Min=Nullable 1533213795975L, Max=Nullable 1533213795995L)),
+            Filter = FileFilter(LastUpdatedTime = TimeRange(Min=Nullable 1587127447625L, Max=Nullable 1587127447627L)),
             Limit = Nullable 10
         )
 
@@ -175,7 +175,7 @@ let ``Filter Files on LastUpdatedTime is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1533213795995L && t > 1533213795975L) lastUpdatedTimes @>
+    test <@ Seq.forall (fun t -> t <= 1587127447627L && t >= 1587127447625L) lastUpdatedTimes @>
 }
 
 [<Trait("resource", "files")>]
@@ -206,7 +206,7 @@ let ``Filter Files on MetaData is Ok`` () = task {
     // Arrange
     let query =
         FileQuery(
-            Filter = FileFilter(Metadata = (dict ["workmate_id", "474635"] |> Dictionary)),
+            Filter = FileFilter(Metadata = (dict ["__COGNITE_PNID", "true"] |> Dictionary)),
             Limit = Nullable 10
         )
 
@@ -219,8 +219,8 @@ let ``Filter Files on MetaData is Ok`` () = task {
     let ms = Seq.map (fun (e: File) -> e.Metadata) dtos
 
     // Assert
-    test <@ len = 1 @>
-    test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["workmate_id"] = "474635") ms @>
+    test <@ len = 10 @>
+    test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["__COGNITE_PNID"] = "true") ms @>
 }
 
 [<Trait("resource", "files")>]
@@ -229,7 +229,7 @@ let ``Filter Files on Source is Ok`` () = task {
     // Arrange
     let query =
         FileQuery(
-            Filter = FileFilter(Source = "Documentum"),
+            Filter = FileFilter(Source = "Discovery"),
             Limit = Nullable 10
         )
 
@@ -243,14 +243,14 @@ let ``Filter Files on Source is Ok`` () = task {
 
     // Assert
     test <@ len = 10 @>
-    test <@ Seq.forall ((=) "Documentum") sources @>
+    test <@ Seq.forall ((=) "Discovery") sources @>
 }
 
 [<Trait("resource", "files")>]
 [<Fact>]
 let ``Filter Files on Name is Ok`` () = task {
     // Arrange
-    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(Name="PH-ME-P-0003-001"))
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(Name="PH-ME-P-0156-001.pdf"))
 
     // Act
     let! dtos = readClient.Files.ListAsync query
@@ -261,7 +261,7 @@ let ``Filter Files on Name is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall ((=) "PH-ME-P-0003-001") names @>
+    test <@ Seq.forall ((=) "PH-ME-P-0156-001.pdf") names @>
 }
 
 [<Trait("resource", "files")>]
@@ -269,7 +269,7 @@ let ``Filter Files on Name is Ok`` () = task {
 let ``Filter Files on MimeType is Ok`` () = task {
     // Arrange
 
-    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(MimeType="pdf"))
+    let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(MimeType="application/pdf"))
 
     // Act
     let! dtos = readClient.Files.ListAsync query
@@ -279,8 +279,8 @@ let ``Filter Files on MimeType is Ok`` () = task {
     let mimeTypes = Seq.map (fun (e: File) -> e.MimeType) dtos.Items
 
     // Assert
-    test <@ len = 7 @>
-    test <@ Seq.forall ((=) "pdf") mimeTypes @>
+    test <@ len = 10 @>
+    test <@ Seq.forall ((=) "application/pdf") mimeTypes @>
 }
 
 [<Trait("resource", "files")>]
@@ -289,8 +289,8 @@ let ``Filter Files on UploadedTime is Ok`` () = task {
     // Arrange
     let timerange =
         TimeRange(
-            Min = Nullable 1533213278669L,
-            Max = Nullable 1533213278689L
+            Min = Nullable 1586949730123L,
+            Max = Nullable 1586949730125L
         )
     let query = FileQuery(Limit=Nullable 10, Filter=FileFilter(UploadedTime=timerange))
 
@@ -304,7 +304,7 @@ let ``Filter Files on UploadedTime is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 1533213278689L && t > 1533213278669L) uploadedTimes @>
+    test <@ Seq.forall (fun t -> t <= 1586949730125L && t >= 1586949730123L) uploadedTimes @>
 }
 
 [<Trait("resource", "files")>]
@@ -328,7 +328,7 @@ let ``Filter Files on SourceCreatedTime is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 73125450L && t > 73125430L) sourceCreatedTimes @>
+    test <@ Seq.forall (fun t -> t <= 73125450L && t >= 73125430L) sourceCreatedTimes @>
 }
 
 [<Trait("resource", "files")>]
@@ -351,7 +351,7 @@ let ``Filter Files on SourceModifiedTime is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun t -> t < 99304960L && t > 99304940L) sourceModifiedTimes @>
+    test <@ Seq.forall (fun t -> t <= 99304960L && t >= 99304940L) sourceModifiedTimes @>
 }
 
 [<Trait("resource", "files")>]
