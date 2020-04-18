@@ -55,8 +55,8 @@ let ``List Rows with limit is Ok`` () = task {
     test <@ Seq.length res.Items > 0 @>
     test <@ res.Items |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
     test <@ res.Items |> Seq.exists (fun dto ->
-        (dto.Columns.Item "sdk-test-col").ToString() = "sdk-test-value" &&
-        (dto.Columns.Item "sdk-test-col2").ToString() = "sdk-test-value2") @>
+        (dto.Columns.GetValueOrDefault "sdk-test-col").ToString() = "sdk-test-value" &&
+        (dto.Columns.GetValueOrDefault "sdk-test-col2").ToString() = "sdk-test-value2") @>
 }
 
 [<Trait("resource", "raw")>]
@@ -74,7 +74,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
     // Assert
     test <@ Seq.length res.Items > 0 @>
     test <@ res.Items |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
-    test <@ res.Items |> Seq.exists (fun dto -> (dto.Columns.Item "sdk-test-col2").ToString() = "sdk-test-value2") @>
+    test <@ res.Items |> Seq.exists (fun dto -> (dto.Columns.GetValueOrDefault "sdk-test-col2").ToString() = "sdk-test-value2") @>
 }
 
 [<Trait("resource", "raw")>]

@@ -179,7 +179,7 @@ let ``Filter assets on Root is Ok`` () = task {
     let len = Seq.length res.Items
 
     // Assert
-    test <@ len = 2 @>
+    test <@ len = 1 @>
 }
 
 [<Fact>]
