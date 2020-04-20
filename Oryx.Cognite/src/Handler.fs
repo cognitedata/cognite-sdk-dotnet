@@ -91,7 +91,14 @@ module Handler =
 
     /// Decode response message into a ResponseException.
     let decodeError (response: HttpResponseMessage) : Task<HandlerError<ResponseException>> = task {
-        if response.Content.Headers.ContentType.MediaType.Contains "application/json" then
+        let mediaType =
+           Option.ofObj response.Content
+           |> Option.bind (fun content -> content.Headers |> Option.ofObj)
+           |> Option.bind (fun headers -> headers.ContentType |> Option.ofObj)
+           |> Option.bind (fun contentType -> contentType.MediaType |> Option.ofObj)
+           |> Option.defaultValue String.Empty
+
+        if mediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
             try
                 let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
