@@ -246,7 +246,6 @@ namespace CogniteSdk.Resources
         /// <param name="tables">The names of the tables to delete.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Empty result.</returns>
-
         public async Task<EmptyResponse> DeleteTablesAsync(string database, IEnumerable<string> tables, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))

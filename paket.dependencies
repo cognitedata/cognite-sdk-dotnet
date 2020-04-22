@@ -5,8 +5,7 @@ group Sdk
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget Oryx prerelease
-    #nuget Microsoft.CodeAnalysis.FxCopAnalyzers
+    nuget Oryx
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
@@ -17,16 +16,15 @@ group Oryx.Cognite
     nuget System.Text.Json
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2.1
-    nuget Oryx prerelease
-    nuget Oryx.Protobuf prerelease
-    nuget Oryx.SystemTextJson prerelease
+    nuget Oryx
+    nuget Oryx.Protobuf
+    nuget Oryx.SystemTextJson
 
 group Types
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
     nuget System.Text.Json
-    #nuget Microsoft.CodeAnalysis.FxCopAnalyzers
 
 group Test
     source https://www.nuget.org/api/v2
@@ -40,9 +38,9 @@ group Test
     nuget Microsoft.NET.Test.Sdk ~> 16
     nuget MSTest.TestAdapter ~> 1
     nuget MSTest.TestFramework ~> 1
-    nuget Oryx prerelease
-    nuget Oryx.Protobuf prerelease
-    nuget Oryx.SystemTextJson prerelease
+    nuget Oryx
+    nuget Oryx.Protobuf
+    nuget Oryx.SystemTextJson
 
 
 group Playground
@@ -57,9 +55,9 @@ group Playground
     nuget Microsoft.Extensions.Hosting
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
-    nuget Oryx prerelease
-    nuget Oryx.Protobuf prerelease
-    nuget Oryx.SystemTextJson prerelease
+    nuget Oryx
+    nuget Oryx.Protobuf
+    nuget Oryx.SystemTextJson
     nuget CogniteSdk.Protobuf
     nuget Serilog
     nuget Serilog.Extensions.Logging
