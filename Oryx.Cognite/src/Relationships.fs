@@ -25,8 +25,8 @@ module Relationships =
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
     let list (query: RelationshipQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Relationship>, 'a> =
-        listPlayground query Url
-        >=> logWithMessage "Relationships:list"
+        logWithMessage "Relationships:list"
+        >=> listPlayground query Url
 
     /// <summary>
     /// Create new relationships in the given project.
@@ -34,8 +34,8 @@ module Relationships =
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
     let create (items: RelationshipCreate seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
-        createPlayground items Url
-        >=> logWithMessage "Relationships:create"
+        logWithMessage "Relationships:create"
+        >=> createPlayground items Url
 
     /// <summary>
     /// Delete multiple relationships in the same project.
@@ -45,8 +45,8 @@ module Relationships =
     let delete (externalIds: string seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let relationships = externalIds |> Seq.map Identity.Create
         let items = ItemsWithoutCursor(Items=relationships)
-        deletePlayground items Url
-        >=> logWithMessage "Relationships:delete"
+        logWithMessage "Relationships:delete"
+        >=> deletePlayground items Url
 
     /// <summary>
     /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may be listed per
@@ -56,8 +56,8 @@ module Relationships =
     /// <returns>Relationships with given ids.</returns>
     let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
         let relationships = ids |> Seq.map Identity.Create
-        retrievePlayground relationships Url
-        >=> logWithMessage "Relationships:retrieve"
+        logWithMessage "Relationships:retrieve"
+        >=> retrievePlayground relationships Url
 
     /// <summary>
     /// Retrieves a list of relationships matching the given criteria. This operation does not support pagination.
@@ -65,7 +65,7 @@ module Relationships =
     /// <param name="query">relationships search query.</param>
     /// <returns>List of relationships matching given criteria.</returns>
     let search (query: RestrictedGraphQuery) : HttpHandler<HttpResponseMessage, RestrictedGraphQueryResult, 'a> =
-        searchPlayground query Url
-        >=> logWithMessage "Relationships:search"
+        logWithMessage "Relationships:search"
+        >=> searchPlayground query Url
 
 

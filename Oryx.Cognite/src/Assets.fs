@@ -20,8 +20,8 @@ module Assets =
 
     /// Retrieves information about an asset given an asset id. Returns asset with the given id.
     let get (assetId: int64) : HttpHandler<HttpResponseMessage, Asset, 'a> =
-        getById assetId Url
-        >=> logWithMessage "Assets:get"
+        logWithMessage "Assets:get"
+        >=> getById assetId Url
 
     /// <summary>
     /// Retrieves list of assets matching filter, and a cursor if given limit is exceeded
@@ -29,8 +29,8 @@ module Assets =
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Asset>, 'a> =
-        list query Url
-        >=> logWithMessage "Assets:list"
+        logWithMessage "Assets:list"
+        >=> list query Url
 
     /// <summary>
     /// Create new assets in the given project.
@@ -38,8 +38,8 @@ module Assets =
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     let create (items: AssetCreate seq) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
-        create items Url
-        >=> logWithMessage "Assets:create"
+        logWithMessage "Assets:create"
+        >=> create items Url
 
     /// <summary>
     /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if recursive is true.
@@ -47,8 +47,8 @@ module Assets =
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (assets: AssetDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete assets Url
-        >=> logWithMessage "Assets:delete"
+        logWithMessage "Assets:delete"
+        >=> delete assets Url
 
     /// <summary>
     /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
@@ -57,8 +57,8 @@ module Assets =
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
-        retrieve ids Url
-        >=> logWithMessage "Assets:retrieve"
+        logWithMessage "Assets:retrieve"
+        >=> retrieve ids Url
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
@@ -66,11 +66,11 @@ module Assets =
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
     let search (query: AssetSearch) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
-        search query Url
-        >=> logWithMessage "Assets:search"
+        logWithMessage "Assets:search"
+        >=> search query Url
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
     let update (query: IEnumerable<UpdateItem<AssetUpdate>>) : HttpHandler<HttpResponseMessage, Asset seq, 'a>  =
-        update query Url
-        >=> logWithMessage "Assets:update"
+        logWithMessage "Assets:update"
+        >=> update query Url
 
