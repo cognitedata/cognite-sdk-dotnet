@@ -44,6 +44,6 @@ module DataPoints =
     let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsItem<DataPoint>>, 'a> =
         req {
             let url = Url +/ "latest"
-            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> query url
+            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> HttpCompletionOption.ResponseContentRead query url
             return ret.Items
         } >=> logWithMessage "DataPoints:latest"

@@ -25,7 +25,7 @@ module Raw =
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     let listDatabases (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawDatabase>, 'a> =
-        getWithQuery query Url
+        getWithQuery HttpCompletionOption.ResponseHeadersRead query Url
         >=> logWithMessage "Raw:get"
 
     /// <summary>
@@ -54,7 +54,7 @@ module Raw =
     /// <returns>List of tables.</returns>
     let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawTable>, 'a> =
         Url +/ database +/ "tables"
-        |> getWithQuery query
+        |> getWithQuery HttpCompletionOption.ResponseHeadersRead query
         >=> logWithMessage "Raw:listTables"
 
     /// <summary>
@@ -74,7 +74,7 @@ module Raw =
     /// <param name="items">The list of tables to delete.</param>
     /// <returns>Empty result.</returns>
     let deleteTables (database: string) (items: RawTableDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        Url +/ database +/ "tables/delete" |> post items
+        Url +/ database +/ "tables/delete" |> post HttpCompletionOption.ResponseContentRead items
         >=> logWithMessage "Raw:deleteTables"
 
     /// <summary>
@@ -86,7 +86,7 @@ module Raw =
     /// <returns>The retrieved rows.</returns>
     let listRows (database: string) (table: string) (query: RawRowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RawRow>, 'a> =
         Url +/ database +/ "tables" +/ table +/ "rows"
-        |> getWithQuery query
+        |> getWithQuery HttpCompletionOption.ResponseHeadersRead query
         >=> logWithMessage "Raw:listRows"
 
     /// <summary>
@@ -127,5 +127,5 @@ module Raw =
     let deleteRows (database: string) (table: string) (rows: RawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = ItemsWithoutCursor<RawRowDelete>(Items=rows)
         Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
-        |> postV10 query
+        |> postV10 HttpCompletionOption.ResponseContentRead query
         >=> logWithMessage "Raw:deleteRows"
