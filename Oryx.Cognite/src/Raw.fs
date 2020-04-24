@@ -26,7 +26,8 @@ module Raw =
     /// <returns>databases in project.</returns>
     let listDatabases (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawDatabase>, 'a> =
         logWithMessage "Raw:get"
-        >=> getWithQuery HttpCompletionOption.ResponseHeadersRead query Url
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQuery query Url
 
     /// <summary>
     /// Create new databases in the given project.
@@ -55,7 +56,8 @@ module Raw =
     let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawTable>, 'a> =
         let url = Url +/ database +/ "tables"
         logWithMessage "Raw:listTables"
-        >=> getWithQuery HttpCompletionOption.ResponseHeadersRead query url
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQuery query url
 
     /// <summary>
     /// Create tables in database.
@@ -77,7 +79,7 @@ module Raw =
     let deleteTables (database: string) (items: RawTableDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let url = Url +/ database +/ "tables/delete"
         logWithMessage "Raw:deleteTables"
-        >=> post HttpCompletionOption.ResponseContentRead items url
+        >=> post items url
 
     /// <summary>
     /// Retrieve rows from a table.
@@ -89,7 +91,8 @@ module Raw =
     let listRows (database: string) (table: string) (query: RawRowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RawRow>, 'a> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         logWithMessage "Raw:listRows"
-        >=> getWithQuery HttpCompletionOption.ResponseHeadersRead query url
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQuery query url
 
     /// <summary>
     /// Create rows in a table.
@@ -130,4 +133,4 @@ module Raw =
         let query = ItemsWithoutCursor<RawRowDelete>(Items=rows)
         let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
         logWithMessage "Raw:deleteRows"
-        >=> postV10 HttpCompletionOption.ResponseContentRead query url
+        >=> postV10 query url

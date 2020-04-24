@@ -27,7 +27,7 @@ module Files =
     /// Upload new file in the given project.
     let upload (file: FileCreate) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadRead, 'a> =
         logWithMessage "Files:upload"
-        >=> postV10 HttpCompletionOption.ResponseContentRead file Url
+        >=> postV10 file Url
 
     /// Get download URL for file in the given project.
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileDownload>, 'a> =
@@ -35,7 +35,9 @@ module Files =
         >=> req {
             let url = Url +/ "downloadlink"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret = postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownload>, 'a> HttpCompletionOption.ResponseHeadersRead request url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownload>, 'a> request url
             return ret.Items
         }  
 

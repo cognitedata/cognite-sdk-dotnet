@@ -45,6 +45,6 @@ module DataPoints =
         logWithMessage "DataPoints:latest"
         >=> req {
             let url = Url +/ "latest"
-            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> HttpCompletionOption.ResponseContentRead query url
+            let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> query url
             return ret.Items
         } 
