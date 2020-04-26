@@ -15,7 +15,9 @@ using System;
 namespace CogniteSdk.Resources
 {
     /// <summary>
-    /// For internal use. Contains all data points methods.
+    /// Contains all the client methods for handling <see
+    /// href="https://docs.cognite.com/api/v1/#tag/Time-series">Time Series</see>. You need to access the methods in this
+    /// class through <see cref="Client.TimeSeries" /> property of the <see cref="Client" />.
     /// </summary>
     public class TimeSeriesResource : Resource
     {

@@ -12,3 +12,4 @@ coverage.lcov
 .paket
 .idea
 launchSettings.json
+_site

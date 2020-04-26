@@ -23,7 +23,8 @@ namespace CogniteSdk
     public interface IMetrics : Oryx.IMetrics { }
 
     /// <summary>
-    /// Cognite SDK client.
+    /// The Cognite SDK client. This is the client you use to handle the different resources, i.e Assets, Events,
+    /// TimeSeries. To create a new client you need to use the <see cref="Client.Builder" />.
     /// </summary>
     public class Client
     {
@@ -94,7 +95,7 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// Builder to build a client.
+        /// The client builder. This is the builder you need to use in order to build a new <see cref="Client" />..
         /// </summary>
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
@@ -103,7 +104,7 @@ namespace CogniteSdk
             private Func<CancellationToken, Task<string>> _authHandler;
 
             /// <summary>
-            /// Create Client builder.
+            /// Create new Client builder.
             /// </summary>
             /// <param name="httpClient">Optional HttpClient to use for HTTP requests.</param>
             public Builder(HttpClient httpClient = null)
@@ -288,9 +289,10 @@ namespace CogniteSdk
             }
 
             /// <summary>
-            /// Builds the new client. Builder is invalid after this.
+            /// Builds the new client. Finishes the build and returns a new
+            /// <see cref="Client" />. Note that the builder will not be valid after the client has been built.
             /// </summary>
-            /// <returns>New client.</returns>
+            /// <returns>New <see cref="Client" />.</returns>
             public Client Build()
             {
                 // Check for optional fields etc here
@@ -304,7 +306,8 @@ namespace CogniteSdk
             }
 
             /// <summary>
-            /// Create new Client builder.
+            /// Create new Client builder. This static create method takes an optional <see cref="HttpClient" /> which
+            /// may help if dependency injection (DI) scenarios.
             /// </summary>
             /// <param name="httpClient">Optional httpClient</param>
             /// <returns>New client builder.</returns>
