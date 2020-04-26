@@ -25,7 +25,7 @@ module Raw =
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
     let listDatabases (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawDatabase>, 'a> =
-        logWithMessage "Raw:get"
+        withLogMessage "Raw:get"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> getWithQuery query Url
 
@@ -35,7 +35,7 @@ module Raw =
     /// <param name="items">The events to create.</param>
     /// <returns>List of created databases.</returns>
     let createDatabases (items: IEnumerable<RawDatabase>) : HttpHandler<HttpResponseMessage, IEnumerable<RawDatabase>, 'a> =
-        logWithMessage "Raw:createDatabases"
+        withLogMessage "Raw:createDatabases"
         >=> create items Url
 
     /// <summary>
@@ -44,7 +44,7 @@ module Raw =
     /// <param name="query">The list of databases to delete.</param>
     /// <returns>Empty result.</returns>
     let deleteDatabases (query: RawDatabaseDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        logWithMessage "Raw:deleteDatabases"
+        withLogMessage "Raw:deleteDatabases"
         >=> delete query Url
 
     /// <summary>
@@ -55,7 +55,7 @@ module Raw =
     /// <returns>List of tables.</returns>
     let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawTable>, 'a> =
         let url = Url +/ database +/ "tables"
-        logWithMessage "Raw:listTables"
+        withLogMessage "Raw:listTables"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> getWithQuery query url
 
@@ -68,7 +68,7 @@ module Raw =
     let createTables (database: string) (items: RawTable seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, RawTable seq, 'a> =
         let query = RawTableCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables"
-        logWithMessage "Raw:createTables"
+        withLogMessage "Raw:createTables"
         >=> createWithQuery items query url
 
     /// <summary>
@@ -78,7 +78,7 @@ module Raw =
     /// <returns>Empty result.</returns>
     let deleteTables (database: string) (items: RawTableDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let url = Url +/ database +/ "tables/delete"
-        logWithMessage "Raw:deleteTables"
+        withLogMessage "Raw:deleteTables"
         >=> post items url
 
     /// <summary>
@@ -90,7 +90,7 @@ module Raw =
     /// <returns>The retrieved rows.</returns>
     let listRows (database: string) (table: string) (query: RawRowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RawRow>, 'a> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
-        logWithMessage "Raw:listRows"
+        withLogMessage "Raw:listRows"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> getWithQuery query url
 
@@ -105,7 +105,7 @@ module Raw =
     let createRows (database: string) (table: string) (rows: RawRowCreate seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
-        logWithMessage "Raw:createRows"
+        withLogMessage "Raw:createRows"
         >=> createWithQueryEmpty rows query url
 
     /// <summary>
@@ -119,7 +119,7 @@ module Raw =
     let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
-        logWithMessage "Raw:createRows"
+        withLogMessage "Raw:createRows"
         >=> createWithQueryEmpty rows query url
 
     /// <summary>
@@ -132,5 +132,5 @@ module Raw =
     let deleteRows (database: string) (table: string) (rows: RawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let query = ItemsWithoutCursor<RawRowDelete>(Items=rows)
         let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
-        logWithMessage "Raw:deleteRows"
+        withLogMessage "Raw:deleteRows"
         >=> postV10 query url

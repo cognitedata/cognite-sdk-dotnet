@@ -25,7 +25,7 @@ module Relationships =
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
     let list (query: RelationshipQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Relationship>, 'a> =
-        logWithMessage "Relationships:list"
+        withLogMessage "Relationships:list"
         >=> listPlayground query Url
 
     /// <summary>
@@ -34,7 +34,7 @@ module Relationships =
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
     let create (items: RelationshipCreate seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
-        logWithMessage "Relationships:create"
+        withLogMessage "Relationships:create"
         >=> createPlayground items Url
 
     /// <summary>
@@ -45,7 +45,7 @@ module Relationships =
     let delete (externalIds: string seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let relationships = externalIds |> Seq.map Identity.Create
         let items = ItemsWithoutCursor(Items=relationships)
-        logWithMessage "Relationships:delete"
+        withLogMessage "Relationships:delete"
         >=> deletePlayground items Url
 
     /// <summary>
@@ -56,7 +56,7 @@ module Relationships =
     /// <returns>Relationships with given ids.</returns>
     let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
         let relationships = ids |> Seq.map Identity.Create
-        logWithMessage "Relationships:retrieve"
+        withLogMessage "Relationships:retrieve"
         >=> retrievePlayground relationships Url
 
     /// <summary>
@@ -65,7 +65,7 @@ module Relationships =
     /// <param name="query">relationships search query.</param>
     /// <returns>List of relationships matching given criteria.</returns>
     let search (query: RestrictedGraphQuery) : HttpHandler<HttpResponseMessage, RestrictedGraphQueryResult, 'a> =
-        logWithMessage "Relationships:search"
+        withLogMessage "Relationships:search"
         >=> searchPlayground query Url
 
 

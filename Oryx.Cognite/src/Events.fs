@@ -23,7 +23,7 @@ module Events =
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
     let get (eventId: int64) : HttpHandler<HttpResponseMessage, Event, 'a> =
-        logWithMessage "Events:get"
+        withLogMessage "Events:get"
         >=> getById eventId Url
 
     /// <summary>
@@ -32,7 +32,7 @@ module Events =
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Event>, 'a> =
-        logWithMessage "Events:list"
+        withLogMessage "Events:list"
         >=> list query Url
 
     /// <summary>
@@ -41,7 +41,7 @@ module Events =
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
     let create (items: EventCreate seq) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        logWithMessage "Events:create"
+        withLogMessage "Events:create"
         >=> create items Url
 
     /// <summary>
@@ -50,7 +50,7 @@ module Events =
     /// <param name="items">The list of events to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (items: EventDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        logWithMessage "Events:delete"
+        withLogMessage "Events:delete"
         >=> delete items Url
 
     /// <summary>
@@ -60,7 +60,7 @@ module Events =
     /// <param name="ids">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        logWithMessage "Events:retrieve"
+        withLogMessage "Events:retrieve"
         >=> retrieve ids Url
 
     /// <summary>
@@ -69,7 +69,7 @@ module Events =
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
     let search (query: EventSearch) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        logWithMessage "Events:search"
+        withLogMessage "Events:search"
         >=> search query Url
 
     /// <summary>
@@ -78,6 +78,6 @@ module Events =
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
     let update (query: UpdateItem<EventUpdate> seq) : HttpHandler<HttpResponseMessage, Event seq, 'a>  =
-        logWithMessage "Events:update"
+        withLogMessage "Events:update"
         >=> update query Url
 

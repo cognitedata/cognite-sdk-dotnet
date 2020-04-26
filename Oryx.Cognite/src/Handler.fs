@@ -124,6 +124,7 @@ module Handler =
         GET
         >=> withResource url
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -143,6 +144,7 @@ module Handler =
         >=> withResource url
         >=> withQuery parms
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -151,6 +153,7 @@ module Handler =
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -169,6 +172,7 @@ module Handler =
         >=> withQuery parms
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -272,6 +276,7 @@ module Handler =
         >=> withResponseType ResponseType.Protobuf
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> protobuf parser
 
@@ -282,6 +287,7 @@ module Handler =
         >=> withResource url
         >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
