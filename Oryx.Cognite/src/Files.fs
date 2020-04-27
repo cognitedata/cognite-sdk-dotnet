@@ -17,41 +17,43 @@ module Files =
 
     /// Retrieves information about a file given a file id.
     let get (fileId: int64) : HttpHandler<HttpResponseMessage, File, 'a> =
-        Url +/ sprintf "%d" fileId |> getV10
-        >=> logWithMessage "Files:get"
-
+        withLogMessage "Files:get"
+        >=> (Url +/ sprintf "%d" fileId |> getV10)
     /// Retrieves list of files matching filter, and a cursor if given limit is exceeded. Returns list of files matching given filters and optional cursor</returns>
     let list (query: FileQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<File>, 'a> =
-        list query Url
-        >=> logWithMessage "Files:list"
+        withLogMessage "Files:list"
+        >=> list query Url
 
     /// Upload new file in the given project.
     let upload (file: FileCreate) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadRead, 'a> =
-        postV10 file Url
-        >=> logWithMessage "Files:upload"
+        withLogMessage "Files:upload"
+        >=> postV10 file Url
 
     /// Get download URL for file in the given project.
     let download (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<FileDownload>, 'a> =
-        req {
+        withLogMessage "Files:download"
+        >=> req {
             let url = Url +/ "downloadlink"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret = postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownload>, 'a> request url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownload>, 'a> request url
             return ret.Items
-        } >=> logWithMessage "Files:download"
+        }  
 
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<File>, 'a> =
-        retrieve ids Url
-        >=> logWithMessage "Files:retrieve"
+        withLogMessage "Files:retrieve"
+        >=> retrieve ids Url
 
     let search (query: FileSearch) : HttpHandler<HttpResponseMessage, File seq, 'a> =
-        search query Url
-        >=> logWithMessage "Files:search"
+        withLogMessage "Files:search"
+        >=> search query Url
 
     let delete (files: ItemsWithoutCursor<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete files Url
-        >=> logWithMessage "Files:delete"
+        withLogMessage "Files:delete"
+        >=> delete files Url
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
     let update (query: IEnumerable<UpdateItem<FileUpdate>>) : HttpHandler<HttpResponseMessage, File seq, 'a>  =
-        update query Url
-        >=> logWithMessage "Files:update"
+        withLogMessage "Files:update"
+        >=> update query Url

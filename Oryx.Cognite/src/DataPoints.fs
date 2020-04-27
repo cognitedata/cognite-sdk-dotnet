@@ -22,28 +22,29 @@ module DataPoints =
 
     /// Retrieves a list of numeric data points from multiple time series in a project.
     let list (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointListResponse, 'a> =
-        listProtobuf query Url DataPointListResponse.Parser.ParseFrom
-        >=> logWithMessage "DataPoints:list"
+        withLogMessage "DataPoints:list"
+        >=> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Retrieves a list of aggregate data points from multiple time series in a project.
     let listAggregates (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointListResponse, 'a> =
-        listProtobuf query Url DataPointListResponse.Parser.ParseFrom
-        >=> logWithMessage "DataPoints:listAggregates"
+        withLogMessage "DataPoints:listAggregates"
+        >=> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Create one or more new times eries. Returns a list of created time series.
     let create (items: DataPointInsertionRequest) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        createProtobuf items Url
-        >=> logWithMessage "DataPoints:create"
+        withLogMessage "DataPoints:create"
+        >=> createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: DataPointsDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete items Url
-        >=> logWithMessage "DataPoints:delete"
+        withLogMessage "DataPoints:delete"
+        >=> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
     let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsItem<DataPoint>>, 'a> =
-        req {
+        withLogMessage "DataPoints:latest"
+        >=> req {
             let url = Url +/ "latest"
             let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> query url
             return ret.Items
-        } >=> logWithMessage "DataPoints:latest"
+        } 

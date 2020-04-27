@@ -124,6 +124,7 @@ module Handler =
         GET
         >=> withResource url
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -143,6 +144,7 @@ module Handler =
         >=> withResource url
         >=> withQuery parms
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
@@ -151,14 +153,15 @@ module Handler =
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
     let postV10<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withVersion V10 >=> post content url
+        withVersion V10 >=> post content url 
 
     let postPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withVersion Playground >=> post content url
+        withVersion Playground >=> post content url 
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
@@ -169,26 +172,34 @@ module Handler =
         >=> withQuery parms
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 
     let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "list" |> postV10 content
+        withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> postV10  content (url +/ "list")
+
 
     let inline listPlayground (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "list" |> postPlayground content
+        withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> postPlayground content (url +/ "list")
 
     let search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let url = url +/ "search"
-            let! ret = postV10<'a, ItemsWithoutCursor<'b>, 'c> content url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postV10<'a, ItemsWithoutCursor<'b>, 'c> content url
             return ret.Items
         }
 
     let searchPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         req {
             let url = url +/ "search"
-            let! ret = postPlayground<'a, 'b, 'c> content url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postPlayground<'a, 'b, 'c> content url
             return ret
         }
 
@@ -204,7 +215,9 @@ module Handler =
         req {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret = postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
             return ret.Items
         }
 
@@ -212,7 +225,9 @@ module Handler =
         req {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret = postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
+            let! ret =
+                withCompletion HttpCompletionOption.ResponseHeadersRead
+                >=> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
             return ret
         }
 
@@ -255,11 +270,13 @@ module Handler =
     let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =
         let url = url +/ "list"
         POST
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> withVersion V10
         >=> withResource url
         >=> withResponseType ResponseType.Protobuf
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> protobuf parser
 
@@ -270,6 +287,7 @@ module Handler =
         >=> withResource url
         >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
+        >=> log
         >=> withError decodeError
         >=> json jsonOptions
 

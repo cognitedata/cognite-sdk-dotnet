@@ -23,8 +23,8 @@ module Events =
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
     let get (eventId: int64) : HttpHandler<HttpResponseMessage, Event, 'a> =
-        getById eventId Url
-        >=> logWithMessage "Events:get"
+        withLogMessage "Events:get"
+        >=> getById eventId Url
 
     /// <summary>
     /// Retrieves list of events matching filter, and a cursor if given limit is exceeded
@@ -32,8 +32,8 @@ module Events =
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let list (query: EventQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Event>, 'a> =
-        list query Url
-        >=> logWithMessage "Events:list"
+        withLogMessage "Events:list"
+        >=> list query Url
 
     /// <summary>
     /// Create new events in the given project.
@@ -41,8 +41,8 @@ module Events =
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
     let create (items: EventCreate seq) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        create items Url
-        >=> logWithMessage "Events:create"
+        withLogMessage "Events:create"
+        >=> create items Url
 
     /// <summary>
     /// Delete multiple events in the same project,
@@ -50,8 +50,8 @@ module Events =
     /// <param name="items">The list of events to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (items: EventDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        delete items Url
-        >=> logWithMessage "Events:delete"
+        withLogMessage "Events:delete"
+        >=> delete items Url
 
     /// <summary>
     /// Retrieves information about multiple events in the same project. A maximum of 1000 event IDs may be listed per
@@ -60,8 +60,8 @@ module Events =
     /// <param name="ids">The ids of the events to get.</param>
     /// <returns>Events with given ids.</returns>
     let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        retrieve ids Url
-        >=> logWithMessage "Events:retrieve"
+        withLogMessage "Events:retrieve"
+        >=> retrieve ids Url
 
     /// <summary>
     /// Retrieves a list of events matching the given criteria. This operation does not support pagination.
@@ -69,8 +69,8 @@ module Events =
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
     let search (query: EventSearch) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
-        search query Url
-        >=> logWithMessage "Events:search"
+        withLogMessage "Events:search"
+        >=> search query Url
 
     /// <summary>
     /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not changed
@@ -78,6 +78,6 @@ module Events =
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
     let update (query: UpdateItem<EventUpdate> seq) : HttpHandler<HttpResponseMessage, Event seq, 'a>  =
-        update query Url
-        >=> logWithMessage "Events:update"
+        withLogMessage "Events:update"
+        >=> update query Url
 
