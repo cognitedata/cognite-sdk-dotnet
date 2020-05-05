@@ -9,6 +9,5 @@ coverage.lcov
 .ionide
 *.swp
 .config
-.paket
 .idea
 launchSettings.json
