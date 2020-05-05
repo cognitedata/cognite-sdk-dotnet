@@ -4,7 +4,7 @@
 
 # CogniteSdk for .Net
 
-[![Build Status](https://travis-ci.org/cognitedata/cognite-sdk-dotnet.svg?branch=master)](https://travis-ci.org/cognitedata/cognite-sdk-dotnet)
+![Build and Test](https://github.com/cognitedata/cognite-sdk-dotnet/workflows/Build%20and%20Test/badge.svg)
 [![codecov](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet/branch/master/graph/badge.svg?token=da8aPB6l9U)](https://codecov.io/gh/cognitedata/cognite-sdk-dotnet)
 [![Nuget](https://img.shields.io/nuget/vpre/CogniteSdk)](https://www.nuget.org/packages/CogniteSdk/)
 
