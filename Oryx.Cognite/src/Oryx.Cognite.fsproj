@@ -12,6 +12,7 @@
   <ItemGroup>
     <Compile Include="Common.fs" />
     <Compile Include="Handler.fs" />
+    <Compile Include="3D.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="TimeSeries.fs" />
     <Compile Include="DataPoints.fs" />
