@@ -229,7 +229,7 @@ let ``Count assets with filter is ok`` () = task {
     let query = AssetQuery(Filter = filter)
 
     // Act
-    let! count = readClient.Assets.CountAsync query
+    let! count = readClient.Assets.AggregateAsync query
 
     // Assert
     test <@ count > 0 @>

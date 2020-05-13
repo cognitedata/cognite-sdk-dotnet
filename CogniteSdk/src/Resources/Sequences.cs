@@ -49,14 +49,14 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Number of assets matching given filters</returns>
-        public async Task<Int32> CountAsync(SequenceQuery query, CancellationToken token = default)
+        public async Task<Int32> AggregateAsync(SequenceQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.count<Int32>(query);
+            var req = Oryx.Cognite.Sequences.aggregate<Int32>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 

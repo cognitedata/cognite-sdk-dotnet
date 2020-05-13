@@ -382,7 +382,7 @@ let ``Count Files matching MetaData filter is Ok`` () = task {
         )
 
     // Act
-    let! count = readClient.Files.CountAsync query
+    let! count = readClient.Files.AggregateAsync query
     // Assert
     test <@ count >= 10 @>
 }

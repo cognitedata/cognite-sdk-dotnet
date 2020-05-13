@@ -60,7 +60,7 @@ let ``Count Sequences is Ok`` () = task {
     let query = SequenceQuery()
 
     // Act
-    let! count = writeClient.Sequences.CountAsync query
+    let! count = writeClient.Sequences.AggregateAsync query
 
     // Assert
     test <@ count > 0 @>

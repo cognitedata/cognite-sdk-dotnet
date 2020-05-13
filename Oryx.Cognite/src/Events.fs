@@ -36,13 +36,13 @@ module Events =
         >=> list query Url
 
     /// <summary>
-    /// Retrieves list of events matching filter, and a cursor if given limit is exceeded
+    /// Retrieves number of events matching filter, and a cursor if given limit is exceeded
     /// </summary>
     /// <param name="query">The query to use.</param>
-    /// <returns>List of events matching given filters and optional cursor</returns>
-    let count (query: EventQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
+    /// <returns>Number of events matching given filters and optional cursor</returns>
+    let aggregate (query: EventQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
         withLogMessage "Events:aggregate"
-        >=> count query Url
+        >=> aggregate query Url
 
     /// <summary>
     /// Create new events in the given project.

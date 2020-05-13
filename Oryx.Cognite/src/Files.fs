@@ -24,10 +24,10 @@ module Files =
         withLogMessage "Files:list"
         >=> list query Url
 
-        /// Retrieves number of files matching filter. Returns number of files matching given filters</returns>
-    let count (query: FileQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
+    /// Retrieves number of files matching filter. Returns number of files matching given filters</returns>
+    let aggregate (query: FileQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
         withLogMessage "Files:aggregate"
-        >=> count query Url
+        >=> aggregate query Url
 
     /// Upload new file in the given project.
     let upload (file: FileCreate) (overwrite: bool) : HttpHandler<HttpResponseMessage, FileUploadRead, 'a> =

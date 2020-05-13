@@ -185,15 +185,14 @@ module Handler =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postPlayground content (url +/ "list")
 
-    let inline count (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
+    let inline aggregate (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
         req {
             let url =  url +/ "aggregate"
             let! itemsobject =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postV10<'a, ItemsWithoutCursor<MatchingCount>, 'c> content url
-            let countobj = itemsobject.Items |> Seq.head
-            let count = countobj.Count
-            return count
+                >=> postV10<'a, ItemsWithoutCursor<AggregateCount>, 'c> content url
+            let item = itemsobject.Items |> Seq.head
+            return item.Count
         }
 
     let search<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =

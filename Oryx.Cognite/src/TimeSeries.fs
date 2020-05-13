@@ -24,9 +24,9 @@ module TimeSeries =
         >=> list query Url
     /// Retrieves number of time series matching filter. Returns number of time
     /// series matching given filters.
-    let count (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
+    let aggregate (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
         withLogMessage "TimeSeries:aggregate"
-        >=> count query Url
+        >=> aggregate query Url
 
     /// Create one or more new time series. Returns list of created time series.
     let create (items: IEnumerable<TimeSeriesCreate>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeries>, 'a> =

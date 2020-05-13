@@ -31,7 +31,7 @@ let ``Count timeseries is Ok`` () = task {
     let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
-    let! count = readClient.TimeSeries.CountAsync query
+    let! count = readClient.TimeSeries.AggregateAsync query
 
     // Assert
     test <@ count > 0 @>

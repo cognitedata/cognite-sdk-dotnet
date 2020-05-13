@@ -41,7 +41,7 @@ namespace Test.CSharp.Integration {
                 }
             };
             // Act
-            var res = ReadClient.Assets.CountAsync(option);
+            var res = ReadClient.Assets.AggregateAsync(option);
 
             // Assert
             var count = res.Result;
@@ -59,7 +59,7 @@ namespace Test.CSharp.Integration {
                 }
             };
             // Act
-            var res = ReadClient.Assets.CountAsync(option);
+            var res = ReadClient.Assets.AggregateAsync(option);
 
             // Assert
             var count = res.Result;
