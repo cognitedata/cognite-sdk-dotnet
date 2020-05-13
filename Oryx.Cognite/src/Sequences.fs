@@ -31,7 +31,7 @@ module Sequences =
 
     /// Retrieves number of sequences matching filter.
     let count (query: SequenceQuery): HttpHandler<HttpResponseMessage, int32, 'a> =
-        withLogMessage "Sequences:get"
+        withLogMessage "Sequences:aggregate"
         >=> count query Url
 
     /// Create new sequences in the given project. Returns list of created sequences.

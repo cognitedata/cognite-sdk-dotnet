@@ -26,7 +26,7 @@ module Files =
 
         /// Retrieves number of files matching filter. Returns number of files matching given filters</returns>
     let count (query: FileQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
-        withLogMessage "Files:count"
+        withLogMessage "Files:aggregate"
         >=> count query Url
 
     /// Upload new file in the given project.

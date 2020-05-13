@@ -41,7 +41,7 @@ module Events =
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
     let count (query: EventQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
-        withLogMessage "Events:count"
+        withLogMessage "Events:aggregate"
         >=> count query Url
 
     /// <summary>

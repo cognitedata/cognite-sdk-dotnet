@@ -38,7 +38,7 @@ module Assets =
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters</returns>
     let count (query: AssetQuery) : HttpHandler<HttpResponseMessage, int, 'a> =
-        withLogMessage "Assets:count"
+        withLogMessage "Assets:aggregate"
         >=> count query Url
 
     /// <summary>
