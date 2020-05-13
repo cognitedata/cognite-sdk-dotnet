@@ -41,4 +41,17 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<ItemsWithCursor<T>>(this);
     }
+
+    /// <summary>
+    /// Object used to deserialize the result of aggregate (count) requests.
+    /// </summary>
+    public class MatchingCount
+    {
+        /// <summary>
+        /// Number of elements matching the query
+        /// </summary>
+        public int Count {get; set;}
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this.Count);
+    }
 }

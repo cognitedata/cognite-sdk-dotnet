@@ -323,6 +323,21 @@ let ``Filter events on Type is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Count assets with filter is ok`` () = task {
+    // Arrange
+    let meta = Dictionary (dict [("version", "undefined")])
+    let filter = EventFilter(Metadata = meta)
+    let query = EventQuery(Filter = filter)
+
+    // Act
+    let! count = readClient.Events.CountAsync query
+
+    // Assert
+    test <@ count > 0 @>
+}
+
+
+[<Fact>]
 let ``Search events is Ok`` () = task {
     // Arrange
     let dto = DescriptionSearch(Description = "dotnet")

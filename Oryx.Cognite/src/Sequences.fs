@@ -29,6 +29,11 @@ module Sequences =
         withLogMessage "Sequences:listRows"
         >=> Handler.list query RowsUrl
 
+    /// Retrieves number of sequences matching filter.
+    let count (query: SequenceQuery): HttpHandler<HttpResponseMessage, int32, 'a> =
+        withLogMessage "Sequences:get"
+        >=> count query Url
+
     /// Create new sequences in the given project. Returns list of created sequences.
     let create (items: SequenceCreate seq) : HttpHandler<HttpResponseMessage, SequenceData seq, 'a> =
         withLogMessage "Sequences:create"

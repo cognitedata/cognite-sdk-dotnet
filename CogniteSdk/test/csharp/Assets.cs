@@ -29,6 +29,42 @@ namespace Test.CSharp.Integration {
             // Assert
             Assert.True(limit == res.Result.Items.Count(), "Expected the number of assets to be the same as the Limit value");
         }
+        [Fact]
+        [Trait("Description", "Ensures that getting the Asset count matching the query returns a number")]
+        public void CountAssetsReturnInt() {
+            // Arrange
+            var option = new AssetQuery {
+                Filter = new AssetFilter(){
+                    Metadata = new Dictionary<string, string>{
+                        {"WMT_SAFETYCRITICALELEMENT_ID", "1060"}
+                    }
+                }
+            };
+            // Act
+            var res = ReadClient.Assets.CountAsync(option);
+
+            // Assert
+            var count = res.Result;
+            Assert.True(count > 0);
+        }
+        [Fact]
+        [Trait("Description", "Ensures that getting the Asset count when filter has no matches returns zero")]
+        public void CountAssetsWithNoMatchesReturnZero() {
+            // Arrange
+            var option = new AssetQuery {
+                Filter = new AssetFilter(){
+                    Metadata = new Dictionary<string, string>{
+                        {"ThisMetaDataFilterhasNoMatches", "ThereIsNoSpoon"}
+                    }
+                }
+            };
+            // Act
+            var res = ReadClient.Assets.CountAsync(option);
+
+            // Assert
+            var count = res.Result;
+            Assert.True(count == 0);
+        }
 
         [Fact]
         [Trait("Description","Ensures that getting an asset by ID returns the correct asset")]

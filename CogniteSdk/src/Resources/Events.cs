@@ -44,6 +44,23 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieves number of events matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of assets matching given filters</returns>
+        public async Task<Int32> CountAsync(EventQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.Events.count<Int32>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create events.
         /// </summary>
         /// <param name="events">Events to create.</param>
