@@ -55,6 +55,20 @@ let ``List Sequences with limit and filter is Ok`` () = task {
 
 [<Trait("resource", "sequences")>]
 [<Fact>]
+let ``Count Sequences is Ok`` () = task {
+    // Arrange
+    let query = SequenceQuery()
+
+    // Act
+    let! count = writeClient.Sequences.AggregateAsync query
+
+    // Assert
+    test <@ count > 0 @>
+}
+
+
+[<Trait("resource", "sequences")>]
+[<Fact>]
 let ``Get sequences by ids is Ok`` () = task {
     // Arrange
     let sequencesIds = [ 5702374195409554L ]

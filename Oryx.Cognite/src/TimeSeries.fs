@@ -22,6 +22,11 @@ module TimeSeries =
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeries>, 'a> =
         withLogMessage "TimeSeries:get"
         >=> list query Url
+    /// Retrieves number of time series matching filter. Returns number of time
+    /// series matching given filters.
+    let aggregate (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
+        withLogMessage "TimeSeries:aggregate"
+        >=> aggregate query Url
 
     /// Create one or more new time series. Returns list of created time series.
     let create (items: IEnumerable<TimeSeriesCreate>) : HttpHandler<HttpResponseMessage, IEnumerable<TimeSeries>, 'a> =

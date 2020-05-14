@@ -222,6 +222,20 @@ let ``Filter assets on Source is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Count assets with filter is ok`` () = task {
+    // Arrange
+    let meta = Dictionary (dict [("RES_ID", "525283")])
+    let filter = AssetFilter(Metadata = meta)
+    let query = AssetQuery(Filter = filter)
+
+    // Act
+    let! count = readClient.Assets.AggregateAsync query
+
+    // Assert
+    test <@ count > 0 @>
+}
+
+[<Fact>]
 let ``Search assets is Ok`` () = task {
     // Arrange
     let search = Search(Name = "23")

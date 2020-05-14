@@ -39,6 +39,23 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieves number of files matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of files matching given filters and optional cursor</returns>
+        public async Task<Int32> AggregateAsync(FileQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.Files.aggregate<Int32>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Retrieves information about an file given a file id.
         /// </summary>
         /// <param name="fileId">The id of the file to get.</param>

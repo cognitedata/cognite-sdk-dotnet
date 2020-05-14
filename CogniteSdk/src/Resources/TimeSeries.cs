@@ -41,6 +41,23 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieves number of timeseries matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of timeseries matching given filters</returns>
+        public async Task<Int32> AggregateAsync(TimeSeriesQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.TimeSeries.aggregate<Int32>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create 1 or more time series.
         /// </summary>
         /// <param name="timeseries">Time series to create.</param>

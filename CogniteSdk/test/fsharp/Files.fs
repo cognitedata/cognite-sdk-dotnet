@@ -374,6 +374,21 @@ let ``Filter Files on Uploaded is Ok`` () = task {
 
 [<Trait("resource", "files")>]
 [<Fact>]
+let ``Count Files matching MetaData filter is Ok`` () = task {
+    // Arrange
+    let query =
+        FileQuery(
+            Filter = FileFilter(Metadata = (dict ["__COGNITE_PNID", "true"] |> Dictionary))
+        )
+
+    // Act
+    let! count = readClient.Files.AggregateAsync query
+    // Assert
+    test <@ count >= 10 @>
+}
+
+[<Trait("resource", "files")>]
+[<Fact>]
 let ``Search Files on Name is Ok`` () = task {
     // Arrange
     let query = FileSearch(Search=NameSearch(Name="test"))

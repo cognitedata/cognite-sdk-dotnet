@@ -45,6 +45,23 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieves number of assets matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of assets matching given filters and optional cursor</returns>
+        public async Task<Int32> AggregateAsync(AssetQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.aggregate<Int32>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create assets.
         /// </summary>
         /// <param name="assets">Assets to create.</param>
