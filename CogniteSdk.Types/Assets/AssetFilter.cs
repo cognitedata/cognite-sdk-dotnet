@@ -77,5 +77,12 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+
+        /// <summary>
+        /// Label Filter
+        /// </summary>
+        #nullable enable
+        public LabelFilter? Labels { get; set; }
+        #nullable disable
     }
 }
