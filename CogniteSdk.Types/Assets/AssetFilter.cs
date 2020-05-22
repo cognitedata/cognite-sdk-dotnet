@@ -82,7 +82,7 @@ namespace CogniteSdk
         /// Label Filter
         /// </summary>
         #nullable enable
-        public LabelFilter? Labels { get; set; }
+        public List<List<Label>>? Labels { get; set; }
         #nullable disable
     }
 }

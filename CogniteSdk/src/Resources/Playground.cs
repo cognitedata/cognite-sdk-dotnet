@@ -19,6 +19,11 @@ namespace CogniteSdk.Resources
         public RelationshipResource Relationships  { get; }
 
         /// <summary>
+        /// Client Assets extension methods
+        /// </summary>
+        public Playground.AssetsResource Assets { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authntication handler.</param>
@@ -26,6 +31,7 @@ namespace CogniteSdk.Resources
         internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
             Relationships = new RelationshipResource(authHandler, ctx);
+            Assets = new CogniteSdk.Resources.Playground.AssetsResource(authHandler, ctx);
         }
     }
 }

@@ -455,3 +455,23 @@ let ``Update assets is Ok`` () = task {
     test <@ isNull resSource2 @>
     test <@ resMetaData3.Count = 0 @>
 }
+
+
+[<Fact>]
+let ``Filter assets on Label is Ok`` () = task {
+    // Arrange
+    let x = Label("123")
+    let y = Label("456")
+    let labels = List([List([x; y])])
+
+    let filter = AssetFilter(Labels = labels)
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = readClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    test <@ len = 1 @>
+}

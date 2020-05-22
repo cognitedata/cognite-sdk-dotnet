@@ -12,28 +12,21 @@ namespace CogniteSdk
     /// </summary>
     public class Label
     {
-        public string PlaceHolder { get; set;}
-    }
-
-    /// <summary>
-    /// The LabelList read class.
-    /// </summary>
-    public class LabelList
-    {
-
-    /// <summary>
-    /// List of externalIds.
-    /// </summary>
-        public List<string> ExternalId { get; set; }
-    }
-
-    public class LabelFilter
-    {
         /// <summary>
-        /// Labelfilter consists of a list of OrFilters with AndFilters as subfilters
+        /// Placeholder Label Class
         /// </summary>
-        // Another way to look at this is that it is on the form OrFilters<AndFilters<ExternalId>>
-        public List<List<string>> Filter { get; set; }
+        public string ExternalId { get; set;}
+
+        public Label()
+        {
+        }
+        /// <summary>
+        /// Constructor method for Label type
+        /// </summary>
+        public Label(string externalID)
+        {
+            ExternalId = externalID;
+        }
     }
 }
 
