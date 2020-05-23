@@ -14,9 +14,23 @@ namespace CogniteSdk
         /// <summary>
         /// Filter based on whether or not is has published revisions.
         /// </summary>
-        public bool Published { get; set; }
+        public bool? Published { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<ThreeDRevisionQuery>(this);
+
+        /// <inheritdoc/>
+        public new List<(string, string)> ToQueryParams()
+        {
+            var list = new List<(string, string)>();
+            if (Limit.HasValue)
+                list.Add(("limit", Limit.ToString()));
+            if (Cursor != null)
+                list.Add(("cursor", Cursor));
+            if (Published.HasValue)
+                list.Add(("published", Published.Value.ToString()));
+
+            return list;
+        }
     }
 }

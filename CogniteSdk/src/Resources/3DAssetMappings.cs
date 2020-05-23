@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of ThreeDAssetMapping matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<ThreeDAssetMapping>> ListAsync(string modelId, string revisionId, ThreeDAssetMappingFilter query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<ThreeDAssetMapping>> ListAsync(long modelId, long revisionId, ThreeDAssetMappingQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
@@ -54,7 +54,7 @@ namespace CogniteSdk.Resources
         /// <param name="ThreeDAssetMapping">ThreeDAssetMapping to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence of created ThreeDAssetMapping.</returns>
-        public async Task<IEnumerable<ThreeDAssetMapping>> CreateAsync(string modelId, string revisionId, IEnumerable<ThreeDAssetMappingCreate> ThreeDAssetMapping, CancellationToken token = default)
+        public async Task<IEnumerable<ThreeDAssetMapping>> CreateAsync(long modelId, long revisionId, IEnumerable<ThreeDAssetMappingCreate> ThreeDAssetMapping, CancellationToken token = default)
         {
             if (ThreeDAssetMapping is null)
             {
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
         /// <param name="revisionId">The revisionId to get asset mappings from</param>
         /// <param name="ids">Ids of ThreeDAssetMappings to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(string modelId, string revisionId, IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(long modelId, long revisionId, IEnumerable<Identity> ids, CancellationToken token = default)
         {
             if (ids is null)
             {
@@ -92,7 +92,7 @@ namespace CogniteSdk.Resources
         /// <param name="revisionId">The revisionId to get asset mappings from</param>
         /// <param name="internalIds">The list of ThreeDAssetMapping ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(string modelId, string revisionId, IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(long modelId, long revisionId, IEnumerable<long> internalIds, CancellationToken token = default)
         {
             if (internalIds is null)
             {
