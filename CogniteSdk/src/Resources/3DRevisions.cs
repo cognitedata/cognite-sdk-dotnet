@@ -34,7 +34,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of ThreeDRevision matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<ThreeDRevision>> ListAsync(string modelId, ThreeDRevisionQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<ThreeDRevision>> ListAsync(long modelId, ThreeDRevisionQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
@@ -50,12 +50,12 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="modelId">The 3D model to get revision from.</param>
         /// <param name="revisionId">The 3D revision to get logs from.</param>
-        /// <param name="severity">Filter on severity of logs.</param>
+        /// <param name="query">Query on severity of logs.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of ThreeDRevision matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<ThreeDRevisionLog>> ListLogsAsync(string modelId, string revisionId, long severity, CancellationToken token = default)
+        public async Task<ItemsWithCursor<ThreeDRevisionLog>> ListLogsAsync(long modelId, long revisionId, ThreeDRevisionLogQuery query, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.listLogs<ItemsWithCursor<ThreeDRevisionLog>>(modelId, revisionId, severity);
+            var req = ThreeDRevisions.listLogs<ItemsWithCursor<ThreeDRevisionLog>>(modelId, revisionId, query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -67,7 +67,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of ThreeDRevision matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<ThreeDNode>> ListNodesAsync(string modelId, string revisionId, ThreeDNodeQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<ThreeDNode>> ListNodesAsync(long modelId, long revisionId, ThreeDNodeQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
@@ -85,7 +85,7 @@ namespace CogniteSdk.Resources
         /// <param name="ThreeDRevision">ThreeDRevision to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence of created ThreeDRevision.</returns>
-        public async Task<IEnumerable<ThreeDRevision>> CreateAsync(string modelId, IEnumerable<ThreeDRevisionCreate> ThreeDRevision, CancellationToken token = default)
+        public async Task<IEnumerable<ThreeDRevision>> CreateAsync(long modelId, IEnumerable<ThreeDRevisionCreate> ThreeDRevision, CancellationToken token = default)
         {
             if (ThreeDRevision is null)
             {
@@ -104,7 +104,7 @@ namespace CogniteSdk.Resources
         /// <param name="modelId">The 3D model to get revision from.</param>
         /// <param name="ids">Ids of ThreeDRevisions to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(string modelId, IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(long modelId, IEnumerable<Identity> ids, CancellationToken token = default)
         {
             if (ids is null)
             {
@@ -122,7 +122,7 @@ namespace CogniteSdk.Resources
         /// <param name="modelId">The 3D model to get revision from.</param>
         /// <param name="internalIds">The list of ThreeDRevision ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(string modelId, IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(long modelId, IEnumerable<long> internalIds, CancellationToken token = default)
         {
             if (internalIds is null)
             {
@@ -143,9 +143,9 @@ namespace CogniteSdk.Resources
         /// <param name="modelId">The 3D model to get revision from.</param>
         /// <param name="revisionId">The 3D revision to get.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<ThreeDRevision>> RetrieveAsync(string modelId, long revisionId, CancellationToken token = default)
+        public async Task<ThreeDRevision> RetrieveAsync(long modelId, long revisionId, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.retrieve<IEnumerable<ThreeDRevision>>(modelId, revisionId);
+            var req = ThreeDRevisions.retrieve<ThreeDRevision>(modelId, revisionId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -159,7 +159,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of ThreeDRevision to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated ThreeDRevision.</returns>
-        public async Task<IEnumerable<ThreeDRevision>> UpdateAsync (string modelId, IEnumerable<ThreeDRevisionUpdateItem> query, CancellationToken token = default )
+        public async Task<IEnumerable<ThreeDRevision>> UpdateAsync (long modelId, IEnumerable<ThreeDRevisionUpdateItem> query, CancellationToken token = default )
         {
             if (query is null)
             {
@@ -179,7 +179,7 @@ namespace CogniteSdk.Resources
         /// <param name="fileId">The 3D file to update thumbnail on.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated ThreeDRevision.</returns>
-        public async Task<EmptyResponse> UpdateThumbnailAsync (string modelId, string revisionId, long fileId, CancellationToken token = default )
+        public async Task<EmptyResponse> UpdateThumbnailAsync (long modelId, long revisionId, long fileId, CancellationToken token = default )
         {
             var req = ThreeDRevisions.updateThumbnail<EmptyResponse>(modelId, revisionId, fileId);
             return await RunAsync(req, token).ConfigureAwait(false);

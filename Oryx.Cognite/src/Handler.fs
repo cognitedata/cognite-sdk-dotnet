@@ -158,10 +158,10 @@ module Handler =
         >=> json jsonOptions
 
     let postV10<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withVersion V10 >=> post content url 
+        withVersion V10 >=> post content url
 
     let postPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withVersion Playground >=> post content url 
+        withVersion Playground >=> post content url
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
@@ -178,7 +178,7 @@ module Handler =
 
     let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> postV10  content (url +/ "list")
+        >=> postV10 content (url +/ "list")
 
 
     let inline listPlayground (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =

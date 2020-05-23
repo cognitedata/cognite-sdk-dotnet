@@ -1,6 +1,7 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -13,11 +14,11 @@ namespace CogniteSdk
         /// <summary>
         /// Max value.
         /// </summary>
-        public double Max { get; set; }
+        public IEnumerable<double> Max { get; set; }
         /// <summary>
         /// Min value.
         /// </summary>
-        public double Min { get; set; }
+        public IEnumerable<double> Min { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

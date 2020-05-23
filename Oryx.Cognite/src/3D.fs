@@ -72,8 +72,8 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="query">The query to use.</param>
     /// <returns>List of 3DRevisions matching given filters and optional cursor</returns>
-    let list (modelId: string) (query: ThreeDRevisionQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDRevision>, 'a> =
-        let url = Url +/ modelId
+    let list (modelId: int64) (query: ThreeDRevisionQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDRevision>, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions"
         withLogMessage "3DRevisions:list"
         >=> getWithQuery query url
 
@@ -83,8 +83,8 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="items">The 3D Revisions to create.</param>
     /// <returns>List of created 3D Revisions.</returns>
-    let create (modelId: string) (items: ThreeDRevisionCreate seq) : HttpHandler<HttpResponseMessage, ThreeDRevision seq, 'a> =
-        let url = Url +/ modelId
+    let create (modelId: int64) (items: ThreeDRevisionCreate seq) : HttpHandler<HttpResponseMessage, ThreeDRevision seq, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions"
         withLogMessage "3DRevision:create"
         >=> create items url
 
@@ -94,8 +94,8 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="threeDRevisions">The list of 3DRevisions to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (modelId: string) (ids: IEnumerable<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        let url = Url +/ modelId
+    let delete (modelId: int64) (ids: IEnumerable<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions"
         let items = ItemsWithoutCursor(Items=ids)
         withLogMessage "3DRevision:delete"
         >=> delete items url
@@ -107,8 +107,8 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="ids">The ids of the 3DRevisions to get.</param>
     /// <returns>3DRevisions with given ids.</returns>
-    let retrieve (modelId: string) (revisionId: int64) : HttpHandler<HttpResponseMessage, ThreeDRevision seq, 'a> =
-        let url = Url +/ modelId +/ "revisions"
+    let retrieve (modelId: int64) (revisionId: int64) : HttpHandler<HttpResponseMessage, ThreeDRevision, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions"
         withLogMessage "3DRevisions:retrieve"
         >=> getById revisionId url
 
@@ -119,8 +119,8 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="query">The update query.</param>
     /// <returns>Corresponing revisions after applying the updates.</returns>
-    let update (modelId: string) (query: IEnumerable<UpdateItem<ThreeDRevisionUpdate>>) : HttpHandler<HttpResponseMessage, ThreeDRevision seq, 'a>  =
-        let url = Url +/ modelId
+    let update (modelId: int64) (query: IEnumerable<UpdateItem<ThreeDRevisionUpdate>>) : HttpHandler<HttpResponseMessage, ThreeDRevision seq, 'a>  =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions"
         withLogMessage "3DRevisions:update"
         >=> update query url
 
@@ -132,8 +132,8 @@ module ThreeDRevisions =
     /// <param name="revisionId">The revision to get logs from.</param>
     /// <param name="query">The update query.</param>
     /// <returns>Corresponing revisions after applying the updates.</returns>
-    let updateThumbnail (modelId: string) (revisionId: string) (fileId: int64) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a>  =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "thumbnail"
+    let updateThumbnail (modelId: int64) (revisionId: int64) (fileId: int64) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a>  =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "thumbnail"
         let query = ThreeDUpdateThumbnailQuery(FileId=fileId)
         withLogMessage "3DRevisions:update"
         >=> postWithQuery () query url
@@ -145,9 +145,8 @@ module ThreeDRevisions =
     /// <param name="revisionId">The revision to get logs from.</param>
     /// <param name="severity">Minimum severity to retrieve (3 = INFO, 5 = WARN, 7 = ERROR).</param>
     /// <returns>List of 3DRevisions matching given filters and optional cursor</returns>
-    let listLogs (modelId: string) (revisionId: string) (severity: int64) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDRevisionLog>, 'a> =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "logs"
-        let query = ThreeDRevisionLogQuery(Severity=severity)
+    let listLogs (modelId: int64) (revisionId: int64) (query: ThreeDRevisionLogQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDRevisionLog>, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "logs"
         withLogMessage "3DRevisionLogs:list"
         >=> getWithQuery query url
 
@@ -160,8 +159,8 @@ module ThreeDNodes =
     /// <param name="modelId">The model to get nodes from.</param>
     /// <param name="query">The query to use.</param>
     /// <returns>List of 3DNode matching given query and optional cursor</returns>
-    let list (modelId: string) (revisionId: string) (query: ThreeDNodeQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDNode>, 'a> =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "nodes"
+    let list (modelId: int64) (revisionId: int64) (query: ThreeDNodeQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDNode>, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "nodes"
         withLogMessage "3DNode:list"
         >=> getWithQuery query url
 
@@ -175,8 +174,8 @@ module ThreeDAssetMappings =
     /// <param name="revisionId">The revision to get asset mappings from.</param>
     /// <param name="query">The query to use.</param>
     /// <returns>List of 3DAssetMapping matching given query and optional cursor</returns>
-    let list (modelId: string) (revisionId: string) (query: ThreeDAssetMappingFilter) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDAssetMapping>, 'a> =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "mappings"
+    let list (modelId: int64) (revisionId: int64) (query: ThreeDAssetMappingQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<ThreeDAssetMapping>, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "mappings"
         withLogMessage "3DAssetMapping:list"
         >=> list query url
 
@@ -187,8 +186,8 @@ module ThreeDAssetMappings =
     /// <param name="revisionId">The revision to get asset mappings from.</param>
     /// <param name="items">The 3D asset mappings to create.</param>
     /// <returns>List of created 3D AssetMappings.</returns>
-    let create (modelId: string) (revisionId: string) (items: ThreeDAssetMappingCreate seq) : HttpHandler<HttpResponseMessage, ThreeDAssetMapping seq, 'a> =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "mappings"
+    let create (modelId: int64) (revisionId: int64) (items: ThreeDAssetMappingCreate seq) : HttpHandler<HttpResponseMessage, ThreeDAssetMapping seq, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "mappings"
         withLogMessage "3DAssetMapping:create"
         >=> create items url
 
@@ -198,8 +197,8 @@ module ThreeDAssetMappings =
     /// <param name="revisionId">The revision to delete asset mappings from.</param>
     /// <param name="assetMappings">AssetMappings to delete</param>
     /// <returns>Empty result.</returns>
-    let delete (modelId: string) (revisionId: string) (assetMappings: IEnumerable<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
-        let url = Url +/ modelId +/ "revisions" +/ revisionId +/ "mappings"
+    let delete (modelId: int64) (revisionId: int64) (assetMappings: IEnumerable<Identity>) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+        let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "mappings"
         let items = ItemsWithoutCursor(Items=assetMappings)
         withLogMessage "3DAssetMapping:delete"
         >=> delete items url

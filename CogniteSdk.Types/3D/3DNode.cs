@@ -42,7 +42,7 @@ namespace CogniteSdk
         /// categories containing key/value string pairs.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Properties { get; set; }
+        public Dictionary<string, Dictionary<string, string>> Properties { get; set; }
         /// <summary>
         /// The bounding box of the subtree with this sector as the root sector.
         /// Is null if there are no geometries in the subtree.
