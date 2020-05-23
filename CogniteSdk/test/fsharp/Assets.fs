@@ -16,12 +16,12 @@ let ``List assets with limit is Ok`` () = task {
     // Arrange
     let query = AssetQuery(Limit= Nullable 10)
 
-    // // Act
+    // Act
     let! res = readClient.Assets.ListAsync(query)
     let len = Seq.length res.Items
 
-    // // Assert
-    test <@ 10 = 10 @>
+    // Assert
+    test <@ len = 10 @>
 }
 
 [<Fact>]
