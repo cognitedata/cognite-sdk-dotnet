@@ -68,6 +68,21 @@ namespace CogniteSdk
         public SequencesResource Sequences  { get; }
 
         /// <summary>
+        /// Client 3D Models extension methods
+        /// </summary>
+        public ThreeDModelsResource ThreeDModels { get; set; }
+
+        /// <summary>
+        /// Client 3D Revisions extension methods
+        /// </summary>
+        public ThreeDRevisionsResource ThreeDRevisions { get; set; }
+
+        /// <summary>
+        /// Client 3D Asset Mappings extension methods
+        /// </summary>
+        public ThreeDAssetMappingsResource ThreeDAssetMappings { get; set; }
+
+        /// <summary>
         /// Client playground extension methods
         /// </summary>
         public PlaygroundResource Playground  { get; }
@@ -86,6 +101,9 @@ namespace CogniteSdk
             Events = new EventsResource(authHandler, ctx);
             Sequences = new SequencesResource(authHandler, ctx);
             Raw = new RawResource(authHandler, ctx);
+            ThreeDModels = new ThreeDModelsResource(authHandler, ctx);
+            ThreeDRevisions = new ThreeDRevisionsResource(authHandler, ctx);
+            ThreeDAssetMappings = new ThreeDAssetMappingsResource(authHandler, ctx);
             Files = new FilesResource(authHandler, ctx);
             Login = new LoginResource(authHandler, ctx);
 
