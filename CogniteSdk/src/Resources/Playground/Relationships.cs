@@ -7,10 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk;
-using static Oryx.Cognite.HandlerModule;
+using static Oryx.Cognite.Playground.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
-namespace CogniteSdk.Resources
+namespace CogniteSdk.Resources.Playground
 {
     /// <summary>
     /// For internal use. Contains all relationship methods.
@@ -39,7 +39,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<Relationship>>(query);
+            var req = Oryx.Cognite.Playground.Relationships.list<ItemsWithCursor<Relationship>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -56,7 +56,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(relationships));
             }
 
-            var req = Oryx.Cognite.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
+            var req = Oryx.Cognite.Playground.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -73,7 +73,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(externalIds));
             }
 
-            var req = Oryx.Cognite.Relationships.delete<EmptyResponse>(externalIds);
+            var req = Oryx.Cognite.Playground.Relationships.delete<EmptyResponse>(externalIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -90,7 +90,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
+            var req = Oryx.Cognite.Playground.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -107,7 +107,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Relationships.search<RestrictedGraphQueryResult>(query);
+            var req = Oryx.Cognite.Playground.Relationships.search<RestrictedGraphQueryResult>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

@@ -17,6 +17,9 @@ namespace CogniteSdk
         /// </summary>
         public string ExternalId { get; set;}
 
+        /// <summary>
+        /// Empty constructor method for Label type
+        /// </summary>
         public Label()
         {
         }
