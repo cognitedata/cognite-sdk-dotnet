@@ -460,18 +460,60 @@ let ``Update assets is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Label is Ok`` () = task {
     // Arrange
-    let x = Label("123")
-    let y = Label("456")
-    let labels = List([List([x; y])])
+    let labels = List([List([Label("pressure-transmitter")])])
 
     let filter = AssetFilter(Labels = labels)
-    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+    let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
 
     // Act
-    let! res = readClient.Playground.Assets.ListAsync query
+    let! res = playgroundClient.Playground.Assets.ListAsync query
 
     let len = Seq.length res.Items
 
     // Assert
-    test <@ len = 1 @>
+    // Test may fail if datastudio playground data changes
+    test <@ len = 10 @>
+}
+
+
+[<Fact>]
+let ``Filter assets on Label and metadata is Ok`` () = task {
+    // Arrange
+    let labels = List([List([Label("pressure-transmitter")])])
+
+    let meta = Dictionary (dict [("RES_ID", "532919")])
+
+    let filter =
+        AssetFilter(
+            Labels = labels,
+            Metadata = meta
+        )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = playgroundClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    // Test may fail if datastudio playground data changes
+    test <@ len = 3 @>
+}
+
+[<Fact>]
+let ``Filter assets on non-existent label returns empty response`` () = task {
+    // Arrange
+    let labels = List([List([Label("ThisLabelShouldNotExist")])])
+
+    let filter = AssetFilter( Labels = labels )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = playgroundClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    // Test may fail if datastudio playground data changes
+    test <@ len = 0 @>
 }
