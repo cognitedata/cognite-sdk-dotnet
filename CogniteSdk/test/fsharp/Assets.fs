@@ -456,7 +456,7 @@ let ``Update assets is Ok`` () = task {
     test <@ resMetaData3.Count = 0 @>
 }
 
-
+/// Playground
 [<Fact>]
 let ``Filter assets on Label is Ok`` () = task {
     // Arrange
@@ -533,4 +533,29 @@ let ``Count assets matching Label is Ok`` () = task {
     // Assert
     // Test may fail if datastudio playground data changes
     test <@ count = 2108 @>
+}
+
+[<Fact>]
+let ``Create and delete asset with label is Ok`` () = task {
+    // Arrange
+    let externalIdString = Guid.NewGuid().ToString();
+    let labels = List([Label("TestLabel")])
+    let dto =
+        AssetCreate(
+            ExternalId = externalIdString,
+            Name = "Create Assets With Label sdk test",
+            Labels = labels
+        )
+    let externalId = Identity externalIdString
+
+    // Act
+    let! res = writeClient.Playground.Assets.CreateAsync [ dto ]
+    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+
+    let head = Seq.head res
+    let resExternalId = head.ExternalId
+
+    // Assert
+    test <@ resExternalId = externalIdString @>
+    test <@ (Seq.head head.Labels).ExternalId = (Seq.head labels).ExternalId @>
 }
