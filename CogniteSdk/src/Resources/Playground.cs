@@ -31,7 +31,7 @@ namespace CogniteSdk.Resources
         internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
             Relationships = new Playground.RelationshipResource(authHandler, ctx);
-            Assets = new CogniteSdk.Resources.Playground.AssetsResource(authHandler, ctx);
+            Assets = new Playground.AssetsResource(authHandler, ctx);
         }
     }
 }

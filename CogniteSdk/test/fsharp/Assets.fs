@@ -472,7 +472,7 @@ let ``Filter assets on Label is Ok`` () = task {
 
     // Assert
     // Test may fail if datastudio playground data changes
-    test <@ len = 10 @>
+    test <@ len = 1000 @>
 }
 
 
@@ -506,7 +506,7 @@ let ``Filter assets on non-existent label returns empty response`` () = task {
     let labels = List([List([Label("ThisLabelShouldNotExist")])])
 
     let filter = AssetFilter( Labels = labels )
-    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+    let query = AssetQuery( Limit = Nullable 10, Filter = filter )
 
     // Act
     let! res = playgroundClient.Playground.Assets.ListAsync query
@@ -516,4 +516,21 @@ let ``Filter assets on non-existent label returns empty response`` () = task {
     // Assert
     // Test may fail if datastudio playground data changes
     test <@ len = 0 @>
+}
+
+[<Fact>]
+let ``Count assets matching Label is Ok`` () = task {
+    // Arrange
+    let labels = List([List([Label("pressure-transmitter")])])
+
+    let filter = AssetFilter( Labels = labels )
+    let query = AssetQuery( Filter = filter )
+
+    // Act
+    let! count = playgroundClient.Playground.Assets.CountAsync query
+
+
+    // Assert
+    // Test may fail if datastudio playground data changes
+    test <@ count = 2108 @>
 }

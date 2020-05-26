@@ -183,13 +183,12 @@ module Handler =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postPlayground content (url +/ "list")
 
-    let inline aggregate (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
+    let inline count (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
         req {
-            let url =  url +/ "aggregate"
-            let! itemsobject =
+            let url =  url +/ "count"
+            let! item =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postPlayground<'a, ItemsWithoutCursor<AggregateCount>, 'c> content url
-            let item = itemsobject.Items |> Seq.head
+                >=> postPlayground<'a, AggregateCount, 'c> content url
             return item.Count
         }
 
