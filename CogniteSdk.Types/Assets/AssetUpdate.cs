@@ -48,6 +48,12 @@ namespace CogniteSdk
         /// </summary>
         public Update<long?> ParentExternalId { get; set; }
 
+        /// <summary>
+        /// Change the Labels of the object
+        /// </summary>
+        [System.Obsolete("The Labels attribute is in development, and currently only available for use in playground")]
+        public UpdateLabels<System.Collections.Generic.List<Label>> Labels { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
