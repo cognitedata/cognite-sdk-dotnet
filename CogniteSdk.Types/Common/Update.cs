@@ -178,7 +178,7 @@ namespace CogniteSdk
     public class UpdateLabels<TCollection>
     {
         /// <summary>
-        /// User to add new labels labels
+        /// Used to add new labels labels
         /// </summary>
         public TCollection Put { get; set; }
 

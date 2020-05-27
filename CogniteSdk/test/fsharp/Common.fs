@@ -29,12 +29,6 @@ module Common =
             "fusiondotnet-tests"
             "https://greenfield.cognitedata.com"
 
-    let playgroundClient =
-        createClient
-            (Environment.GetEnvironmentVariable "TEST_API_KEY_PLAYGROUND")
-            "datastudio"
-            "https://greenfield.cognitedata.com"
-
     let noAuthClient =
         let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))
         let httpClient = new HttpClient(handler);
