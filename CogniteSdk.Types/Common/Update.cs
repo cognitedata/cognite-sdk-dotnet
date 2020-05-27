@@ -172,13 +172,13 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// Used for setting, updating and removing Labels, primarily for Assets.
+    /// Used for adding and removing Labels, primarily for Assets.
     /// </summary>
     [System.Obsolete("The UpdateLabels class is in development, and currently only available for use in playground")]
     public class UpdateLabels<TCollection>
     {
         /// <summary>
-        /// Used to add new labels labels
+        /// Used to add new labels
         /// </summary>
         public TCollection Put { get; set; }
 

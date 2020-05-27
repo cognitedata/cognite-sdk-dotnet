@@ -597,7 +597,7 @@ let ``Create, update and delete asset's label is Ok`` () = task {
         )
     let externalId = Identity externalIdString
 
-    // Update the labels, removing the old and adding a new label
+    // Update the labels, removing the old label and adding a new one
     let newLabels = List([Label("AssetTestUpdateLabel2")])
     let update = seq {
         AssetUpdateItem(
@@ -614,11 +614,14 @@ let ``Create, update and delete asset's label is Ok`` () = task {
     let! assetupdated = writeClient.Playground.Assets.RetrieveAsync [externalId]
 
     let updatedAssetFromCDF = assetupdated |> Seq.head
-    let updatedLabelExternalId = (updatedAssetFromCDF.Labels |> Seq.head).ExternalId
+    let updatedLabels = updatedAssetFromCDF.Labels
 
     let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
 
 
     // Assert
-    test <@ updatedLabelExternalId = "AssetTestUpdateLabel2" @>
+    // Verify that the updated asset contains the new label
+    test <@ Seq.length updatedLabels = 1 @>
+    test <@ ( updatedLabels |> Seq.head ).ExternalId  = ( newLabels |> Seq.head ).ExternalId @>
+    test <@ ( updatedLabels |> Seq.head ).ExternalId <> ( labels |> Seq.head ).ExternalId @>
 }
