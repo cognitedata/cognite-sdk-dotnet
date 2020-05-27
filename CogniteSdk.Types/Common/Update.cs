@@ -186,7 +186,9 @@ namespace CogniteSdk
         /// Used to remove labels
         /// </summary>
         public TCollection Remove { get; set; }
-
+        /// <summary>
+        /// Insert a Label
+        /// </summary>
         public UpdateLabels(TCollection putLabels)
         {
             Put = putLabels;
