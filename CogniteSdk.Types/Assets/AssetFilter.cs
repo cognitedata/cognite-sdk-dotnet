@@ -79,7 +79,7 @@ namespace CogniteSdk
         public override string ToString() => Stringable.ToString(this);
 
         /// <summary>
-        /// Label Filter
+        /// Label Filter on form [[AND AND] OR [AND AND ...] OR [...]]
         /// </summary>
         #nullable enable
         public List<List<Label>>? Labels { get; set; }

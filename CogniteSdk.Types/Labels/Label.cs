@@ -1,8 +1,6 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System.Collections.Generic;
-
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -10,6 +8,7 @@ namespace CogniteSdk
     /// <summary>
     /// The Label read class.
     /// </summary>
+    [System.Obsolete("The Label class is under development, and currently only available for use in playground")]
     public class Label
     {
         /// <summary>

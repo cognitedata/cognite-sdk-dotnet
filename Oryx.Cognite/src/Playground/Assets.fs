@@ -31,7 +31,7 @@ module Assets =
     /// <returns>List of assets matching given filters and optional cursor</returns>
     let list (query: AssetQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Asset>, 'a> =
         withLogMessage "Assets:list"
-        >=> listPlayground query Url
+        >=> list query Url
 
     /// <summary>
     /// Retrieves count of assets matching filter

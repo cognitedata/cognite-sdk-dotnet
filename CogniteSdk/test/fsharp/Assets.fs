@@ -501,9 +501,13 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Filter assets on multi Label ORfilter and metadata is Ok`` () = task {
+let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task {
     // Arrange
-    let labels = List([List([Label("AssetTestLabel1")]); List([Label("AssetTestLabel2")])])
+    let labels =
+        List([
+            List([Label("AssetTestLabel1")]);
+            List([Label("AssetTestLabel2")])
+        ])
 
     let meta = Dictionary (dict [("RES_ID", "42")])
 
