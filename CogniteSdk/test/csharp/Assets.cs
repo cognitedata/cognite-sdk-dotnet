@@ -262,18 +262,18 @@ namespace Test.CSharp.Integration {
         public async Task UpdatedAssetsLabelPerformsExpectedChangesAsync() {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
-            var newLabels = new List<Label> { new Label("AssetTestUpdateLabel2")};
 
 
-            var newAsset = new AssetCreate
+            var initialAsset = new AssetCreate
             {
                 ExternalId = externalIdString,
                 Name = "Update Assets Label c# sdk test",
                 Description = "Just a test",
                 Labels = new List<Label>{ new Label("AssetTestUpdateLabel1") }
             };
-            var newName = "Updated update asset";
 
+            var newName = "Updated asset name";
+            var newLabels = new List<Label> { new Label("AssetTestUpdateLabel2")};
             var update = new List<AssetUpdateItem>
             {
                 new AssetUpdateItem(externalId: externalIdString)
@@ -281,13 +281,13 @@ namespace Test.CSharp.Integration {
                     Update = new AssetUpdate()
                     {
                         Name = new Update<string>(newName),
-                        Labels = new UpdateLabels<List<Label>>(newLabels, new List<Label> { new Label("AssetTestUpdateLabel1") })
+                        Labels = new UpdateLabels<List<Label>>(putLabels: newLabels, removeLabels: new List<Label> { new Label("AssetTestUpdateLabel1") })
                     }
                 }
             };
 
             // Act
-            _ = await WriteClient.Playground.Assets.CreateAsync(new List<AssetCreate>() { newAsset }).ConfigureAwait(false);
+            _ = await WriteClient.Playground.Assets.CreateAsync(new List<AssetCreate>() { initialAsset }).ConfigureAwait(false);
             await WriteClient.Playground.Assets.UpdateAsync(update);
 
             var getRes = await WriteClient.Playground.Assets.RetrieveAsync(new List<string>() { externalIdString });
@@ -298,7 +298,7 @@ namespace Test.CSharp.Integration {
             Assert.True(resCount == 1, $"Expected a single Asset but got {resCount}");
             var resAsset = getRes.First();
             Assert.True(externalIdString == resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
-            Assert.True(newName == resAsset.Name, $"Expected the Asset name to update to '{newName}' but was '{resAsset.Name}'");
+
             Assert.True(resAsset.Labels.Count == 1, $"Expected asset to have one label but was '{resAsset.Labels.Count}'");
             Assert.True(resAsset.Labels.ElementAt(0).ExternalId == newLabels.ElementAt(0).ExternalId, $"Expected label to be '{newLabels.ElementAt(0).ExternalId}' but was '{resAsset.Labels.ElementAt(0).ExternalId}'");
         }

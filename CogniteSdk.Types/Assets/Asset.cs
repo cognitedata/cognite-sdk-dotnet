@@ -101,9 +101,8 @@ namespace CogniteSdk
         /// A list of labels associated with this asset
         /// </summary>
         [Obsolete("The Label attribute is in development, and currently only available for use in playground")]
-        #nullable enable
-        public List<Label>? Labels { get; set; }
-        #nullable disable
+        public List<Label> Labels { get; set; }
+
     }
 }
 
