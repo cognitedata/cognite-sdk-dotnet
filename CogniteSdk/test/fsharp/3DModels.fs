@@ -52,3 +52,26 @@ let ``Create and delete 3D models is Ok`` () = task {
     // Assert
     test <@ model.Name = name @>
 }
+
+[<Fact>]
+let ``Update 3D model name is Ok`` () = task {
+    // Arrange
+    let name = "sdk-test-model-" + Guid.NewGuid().ToString();
+    let newName = "sdk-test-model-" + Guid.NewGuid().ToString();
+
+    let dto = ThreeDModelCreate(Name=name)
+
+    // Act
+    let! res = writeClient.ThreeDModels.CreateAsync [dto]
+    let model = Seq.head res
+    let updateDto = ThreeDModelUpdateItem(model.Id)
+    updateDto.Update <- ThreeDModelUpdate(Name=Update(newName))
+
+    let! updateRes = writeClient.ThreeDModels.UpdateAsync [updateDto]
+    let updatedModel = Seq.head updateRes
+    let! delRes = writeClient.ThreeDModels.DeleteAsync [model.Id]
+
+    // Assert
+    test <@ model.Name = name @>
+    test <@ updatedModel.Name = newName @>
+}

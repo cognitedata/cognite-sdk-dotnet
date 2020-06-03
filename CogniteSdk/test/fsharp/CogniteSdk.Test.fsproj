@@ -9,7 +9,6 @@
     <Compile Include="Common.fs" />
     <Compile Include="3DModels.fs" />
     <Compile Include="3DRevisions.fs" />
-    <!-- <Compile Include="3DAssetMappings.fs" /> -->
     <Compile Include="Raw.fs" />
     <Compile Include="Events.fs" />
     <Compile Include="Assets.fs" />
