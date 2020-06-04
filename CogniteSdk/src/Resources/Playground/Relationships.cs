@@ -49,14 +49,14 @@ namespace CogniteSdk.Resources.Playground
         /// <param name="relationships">Relationships to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sequence of created Relationships.</returns>
-        public async Task<ItemsWithoutCursor<Relationship>> CreateAsync(IEnumerable<RelationshipCreate> relationships, CancellationToken token = default)
+        public async Task<IEnumerable<Relationship>> CreateAsync(IEnumerable<RelationshipCreate> relationships, CancellationToken token = default)
         {
             if (relationships is null)
             {
                 throw new ArgumentNullException(nameof(relationships));
             }
 
-            var req = Oryx.Cognite.Playground.Relationships.create<ItemsWithoutCursor<Relationship>>(relationships);
+            var req = Oryx.Cognite.Playground.Relationships.create<IEnumerable<Relationship>>(relationships);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -83,14 +83,14 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="ids">The list of relationships identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<ItemsWithoutCursor<Relationship>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
+        public async Task<IEnumerable<Relationship>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Playground.Relationships.retrieve<ItemsWithoutCursor<Relationship>>(ids);
+            var req = Oryx.Cognite.Playground.Relationships.retrieve<IEnumerable<Relationship>>(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 

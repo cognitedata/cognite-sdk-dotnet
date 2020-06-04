@@ -84,10 +84,6 @@ module Handler =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postPlayground  content (url +/ "list")
 
-    let inline listPlayground (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> postPlayground content (url +/ "list")
-
     let inline count (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
         req {
             let url =  url +/ "count"
@@ -133,28 +129,11 @@ module Handler =
             return ret.Items
         }
 
-    let retrievePlayground<'a, 'b> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
-        req {
-            let url = url +/ "byids"
-            let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
-            return ret
-        }
-
     let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postPlayground<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
             return ret.Items
-        }
-
-    let createPlayground<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
-        req {
-            let content' = ItemsWithoutCursor(Items=content)
-            let! ret = postPlayground<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
-            return ret
         }
 
     let createWithQuery<'a, 'b, 'c> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
@@ -165,7 +144,4 @@ module Handler =
         }
 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "delete" |> postPlayground content
-
-    let inline deletePlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> postPlayground content

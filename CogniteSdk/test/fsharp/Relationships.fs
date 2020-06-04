@@ -19,7 +19,7 @@ let ``Get relationship by ids is Ok`` () = task {
     // Act
     let! res = writeClient.Playground.Relationships.RetrieveAsync relationshipIds
 
-    let len = Seq.length res.Items
+    let len = Seq.length res
 
     // Assert
     test <@ len = 1 @>
@@ -81,7 +81,7 @@ let ``Create and delete Relationships is Ok`` () = task {
     let! res = writeClient.Playground.Relationships.CreateAsync [ dto ]
     let! delRes = writeClient.Playground.Relationships.DeleteAsync [ externalId ]
 
-    let resExternalId = (Seq.head res.Items).ExternalId
+    let resExternalId = (Seq.head res).ExternalId
 
     // Assert
     test <@ resExternalId = externalId @>

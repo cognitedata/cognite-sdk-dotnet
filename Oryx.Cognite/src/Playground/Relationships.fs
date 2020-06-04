@@ -26,16 +26,16 @@ module Relationships =
     /// <returns>List of relationships.</returns>
     let list (query: RelationshipQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Relationship>, 'a> =
         withLogMessage "Relationships:list"
-        >=> listPlayground query Url
+        >=> list query Url
 
     /// <summary>
     /// Create new relationships in the given project.
     /// </summary>
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
-    let create (items: RelationshipCreate seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
+    let create (items: RelationshipCreate seq) : HttpHandler<HttpResponseMessage, Relationship seq, 'a> =
         withLogMessage "Relationships:create"
-        >=> createPlayground items Url
+        >=> create items Url
 
     /// <summary>
     /// Delete multiple relationships in the same project.
@@ -46,7 +46,7 @@ module Relationships =
         let relationships = externalIds |> Seq.map Identity.Create
         let items = ItemsWithoutCursor(Items=relationships)
         withLogMessage "Relationships:delete"
-        >=> deletePlayground items Url
+        >=> delete items Url
 
     /// <summary>
     /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may be listed per
@@ -54,10 +54,10 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<Relationship>, 'a> =
+    let retrieve (ids: string seq) : HttpHandler<HttpResponseMessage, Relationship seq, 'a> =
         let relationships = ids |> Seq.map Identity.Create
         withLogMessage "Relationships:retrieve"
-        >=> retrievePlayground relationships Url
+        >=> retrieve relationships Url
 
     /// <summary>
     /// Retrieves a list of relationships matching the given criteria. This operation does not support pagination.
