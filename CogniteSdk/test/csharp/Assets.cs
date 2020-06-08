@@ -256,5 +256,50 @@ namespace Test.CSharp.Integration {
             Assert.True(resAsset.Metadata.ContainsKey("key1") && resAsset.Metadata.ContainsKey("key2"), "Asset wasnt update with new metadata values");
             Assert.True(resAsset.Metadata.ContainsKey("oldkey2") && !resAsset.Metadata.ContainsKey("oldkey1"), "Asset update changed unintended metadata values");
         }
+
+        [Fact]
+        [Trait("Description", "Updating assets label performs expected changes")]
+        public async Task UpdatedAssetsLabelPerformsExpectedChangesAsync() {
+            // Arrange
+            var externalIdString = Guid.NewGuid().ToString();
+
+            var initialAsset = new AssetCreate
+            {
+                ExternalId = externalIdString,
+                Name = "Update Assets Label c# sdk test",
+                Description = "Just a test",
+                Labels = new List<CogniteExternalId>{ new CogniteExternalId("AssetTestUpdateLabel1") }
+            };
+
+            var newName = "Updated asset name";
+            var newLabels = new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel2")};
+            var update = new List<AssetUpdateItem>
+            {
+                new AssetUpdateItem(externalId: externalIdString)
+                {
+                    Update = new AssetUpdate()
+                    {
+                        Name = new Update<string>(newName),
+                        Labels = new UpdateLabels<IEnumerable<CogniteExternalId>>(putLabels: newLabels, removeLabels: new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel1") })
+                    }
+                }
+            };
+
+            // Act
+            _ = await WriteClient.Playground.Assets.CreateAsync(new List<AssetCreate>() { initialAsset }).ConfigureAwait(false);
+            await WriteClient.Playground.Assets.UpdateAsync(update);
+
+            var getRes = await WriteClient.Playground.Assets.RetrieveAsync(new List<string>() { externalIdString });
+            await WriteClient.Playground.Assets.DeleteAsync(new List<string>() { externalIdString });
+
+            // Assert
+            var resCount = getRes.Count();
+            Assert.True(resCount == 1, $"Expected a single Asset but got {resCount}");
+            var resAsset = getRes.First();
+            Assert.True(externalIdString == resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
+
+            Assert.True(resAsset.Labels.Count() == 1, $"Expected asset to have one label but was '{resAsset.Labels.Count()}'");
+            Assert.True(resAsset.Labels.ElementAt(0).ExternalId == newLabels.ElementAt(0).ExternalId, $"Expected label to be '{newLabels.ElementAt(0).ExternalId}' but was '{resAsset.Labels.ElementAt(0).ExternalId}'");
+        }
     }
 }

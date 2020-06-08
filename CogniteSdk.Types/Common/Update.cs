@@ -170,4 +170,44 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
+
+    /// <summary>
+    /// Used for adding and removing Labels, primarily for Assets.
+    /// </summary>
+    [System.Obsolete("The UpdateLabels class is in development, and currently only available for use in playground")]
+    public class UpdateLabels<TCollection>
+    {
+        /// <summary>
+        /// Used to add new labels
+        /// </summary>
+        public TCollection Put { get; set; }
+
+        /// <summary>
+        /// Used to remove labels
+        /// </summary>
+        public TCollection Remove { get; set; }
+        /// <summary>
+        /// Insert a Label
+        /// </summary>
+        public UpdateLabels(TCollection putLabels)
+        {
+            Put = putLabels;
+        }
+
+        /// <summary>
+        /// Add and remove labels
+        /// specified keys.
+        /// </summary>
+        /// <param name="putLabels">Labels to put</param>
+        /// <param name="removeLabels">Labels to remove.</param>
+        /// <returns></returns>
+        public UpdateLabels(TCollection putLabels, TCollection removeLabels)
+        {
+            Put = putLabels;
+            Remove = removeLabels;
+        }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
+    }
 }

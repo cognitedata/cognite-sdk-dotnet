@@ -22,6 +22,7 @@ module TimeSeries =
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<TimeSeries>, 'a> =
         withLogMessage "TimeSeries:get"
         >=> list query Url
+
     /// Retrieves number of time series matching filter. Returns number of time
     /// series matching given filters.
     let aggregate (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, int32, 'a> =
@@ -45,7 +46,7 @@ module TimeSeries =
         >=> retrieve ids Url
 
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination. Returns
-    /// list of time series matching given criteria.</returns>
+    /// list of time series matching given criteria.
     let search (query: TimeSeriesSearch) : HttpHandler<HttpResponseMessage, TimeSeries seq, 'a> =
         withLogMessage "TimeSeries:search"
         >=> search query Url

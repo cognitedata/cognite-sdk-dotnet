@@ -20,17 +20,9 @@ open Oryx.SystemTextJson.ResponseReader
 open Oryx.Protobuf
 open Oryx.Protobuf.ResponseReader
 
+open Oryx.Cognite
+
 open CogniteSdk
-
-
-// Shadow types for Oryx that pins the error type to ResponseError
-type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
-type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
-type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
-type public HttpHandler<'a, 'b, 'r> = HttpFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
-type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseException>
-type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseException>
-type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
 
 /// Oryx HTTP handlers for specific use within the Cognite SDK
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -131,9 +123,6 @@ module Handler =
     let getV10<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
         withVersion V10 >=> get url
 
-    let getPlayground<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        withVersion Playground >=> get url
-
     let inline getById (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         url +/ sprintf "%d" id |> getV10
 
@@ -160,9 +149,6 @@ module Handler =
     let postV10<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         withVersion V10 >=> post content url
 
-    let postPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withVersion Playground >=> post content url
-
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         let parms = query.ToQueryParams ()
 
@@ -179,11 +165,6 @@ module Handler =
     let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postV10 content (url +/ "list")
-
-
-    let inline listPlayground (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> postPlayground content (url +/ "list")
 
     let inline aggregate (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
         req {
@@ -204,15 +185,6 @@ module Handler =
             return ret.Items
         }
 
-    let searchPlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        req {
-            let url = url +/ "search"
-            let! ret =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postPlayground<'a, 'b, 'c> content url
-            return ret
-        }
-
     let update<'a, 'b, 'c> (items: IEnumerable<UpdateItem<'a>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let url = url +/ "update"
@@ -231,28 +203,11 @@ module Handler =
             return ret.Items
         }
 
-    let retrievePlayground<'a, 'b> (ids: Identity seq) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'a>, 'b> =
-        req {
-            let url = url +/ "byids"
-            let request = ItemsWithoutCursor<Identity>(Items = ids)
-            let! ret =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
-            return ret
-        }
-
     let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postV10<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
             return ret.Items
-        }
-
-    let createPlayground<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<'b>, 'c> =
-        req {
-            let content' = ItemsWithoutCursor(Items=content)
-            let! ret = postPlayground<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
-            return ret
         }
 
     let createWithQuery<'a, 'b, 'c> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
@@ -272,9 +227,6 @@ module Handler =
 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         url +/ "delete" |> postV10 content
-
-    let inline deletePlayground<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "delete" |> postPlayground content
 
     /// List content using protocol buffers
     let listProtobuf<'a, 'b, 'c> (content: 'a) (url: string) (parser: IO.Stream -> 'b): HttpHandler<HttpResponseMessage, 'b, 'c> =

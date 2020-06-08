@@ -1,6 +1,6 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-
+using System;
 using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
@@ -96,6 +96,13 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+
+        /// <summary>
+        /// A list of labels associated with this asset
+        /// </summary>
+        [Obsolete("The Label attribute is in development, and currently only available for use in playground")]
+        public IEnumerable<CogniteExternalId> Labels { get; set; }
+
     }
 }
 

@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
@@ -77,5 +78,11 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+
+        /// <summary>
+        /// Label Filter on form [[AND AND] OR [AND AND ...] OR [...]]
+        /// </summary>
+        [Obsolete("The label filter feature is in development and currently only available in playground.")]
+        public IEnumerable<IEnumerable<CogniteExternalId>> Labels { get; set; }
     }
 }

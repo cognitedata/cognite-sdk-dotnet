@@ -455,3 +455,224 @@ let ``Update assets is Ok`` () = task {
     test <@ isNull resSource2 @>
     test <@ resMetaData3.Count = 0 @>
 }
+
+/// Playground
+[<Fact>]
+let ``Filter assets on single Label is Ok`` () = task {
+    // Arrange
+    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]]
+
+    let filter = AssetFilter(Labels = labels)
+    let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    // Test may fail if datastudio playground data changes
+    test <@ len = 3 @>
+}
+
+
+[<Fact>]
+let ``Filter assets on Label and metadata is Ok`` () = task {
+    // Arrange
+    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]]
+
+    let meta = Dictionary (dict [("RES_ID", "42")])
+
+    let filter =
+        AssetFilter(
+            Labels = labels,
+            Metadata = meta
+        )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    test <@ len = 1 @>
+}
+
+[<Fact>]
+let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task {
+    // Arrange
+    let labels =
+        seq [
+            seq [ CogniteExternalId("AssetTestLabel1") ];
+            seq [ CogniteExternalId("AssetTestLabel2") ]
+        ]
+
+    let meta = Dictionary (dict [("RES_ID", "42")])
+
+    let filter =
+        AssetFilter(
+            Labels = labels,
+            Metadata = meta
+        )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    test <@ len = 2 @>
+}
+
+[<Fact>]
+let ``Filter assets on nonexistent label returns empty response`` () = task {
+    // Arrange
+    let labels = seq [ seq [ CogniteExternalId("ThisLabelShouldNotExist") ]]
+
+    let filter = AssetFilter( Labels = labels )
+    let query = AssetQuery( Limit = Nullable 10, Filter = filter )
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    test <@ len = 0 @>
+}
+
+[<Fact>]
+let ``Count assets matching multi Label ORfilter is Ok`` () = task {
+    // Arrange
+    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]; seq [ CogniteExternalId("AssetTestLabel2") ]]
+
+    let filter = AssetFilter( Labels = labels )
+    let query = AssetQuery( Filter = filter )
+
+    // Act
+    let! count = writeClient.Playground.Assets.CountAsync query
+
+
+    // Assert
+    test <@ count = 6 @>
+}
+
+[<Fact>]
+let ``Create and delete asset with label is Ok`` () = task {
+    // Arrange
+    let externalIdString = Guid.NewGuid().ToString();
+    let labels = seq [ CogniteExternalId("TestLabel") ]
+    let dto =
+        AssetCreate(
+            ExternalId = externalIdString,
+            Name = "Create Assets With Label sdk test",
+            Labels = labels
+        )
+    let externalId = Identity externalIdString
+
+    // Act
+    let! res = writeClient.Playground.Assets.CreateAsync [ dto ]
+    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+
+    let createdAsset = Seq.head res
+    let createdAssetExternalId = createdAsset.ExternalId
+
+    // Assert
+    test <@ createdAssetExternalId = externalIdString @>
+}
+
+[<Fact>]
+let ``Create, update by replacing label, and delete asset is Ok`` () = task {
+    // Arrange
+    let externalIdString = "AssetTestUpdateLabelA";
+    let initialLabels = seq [ CogniteExternalId("AssetTestUpdateLabel1") ]
+    let entity =
+        AssetCreate(
+            ExternalId = externalIdString,
+            Name = "Create then update Asset, replacing Label, sdk test",
+            Labels = initialLabels
+        )
+    let externalId = Identity externalIdString
+
+    let newLabels = seq [ CogniteExternalId("AssetTestUpdateLabel2") ]
+    // Update object which removes the old label and adds a new one
+    let update = seq {
+        AssetUpdateItem(
+            externalId = externalIdString,
+            Update = AssetUpdate(
+                Labels = UpdateLabels(newLabels, initialLabels)
+            )
+        )
+    }
+
+    // Act
+    // Create the asset
+    let! res = writeClient.Playground.Assets.CreateAsync [ entity ]
+    // Update the asset
+    let! updateRes = writeClient.Playground.Assets.UpdateAsync update
+    // Retrieve the updated asset
+    let! assetupdated = writeClient.Playground.Assets.RetrieveAsync [externalId]
+
+    // Retrieve updated assets labels
+    let updatedAssetFromCDF = assetupdated |> Seq.head
+    let updatedLabels = updatedAssetFromCDF.Labels
+    // Delete the asset
+    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+
+
+    // Assert
+    // Verify that the updated asset contains the new label
+    test <@ Seq.length updatedLabels = 1 @>
+    test <@ ( updatedLabels |> Seq.head ).ExternalId  = ( newLabels |> Seq.head ).ExternalId @>
+    test <@ ( updatedLabels |> Seq.head ).ExternalId <> ( initialLabels |> Seq.head ).ExternalId @>
+}
+
+
+[<Fact>]
+let ``Create, update by adding new label and delete asset is Ok`` () = task {
+    // Arrange
+    let externalIdString = "AssetTestUpdateLabelB";
+    let initialLabels = seq [ CogniteExternalId("AssetTestUpdateLabel1") ]
+    let entity =
+        AssetCreate(
+            ExternalId = externalIdString,
+            Name = "Create then update Asset, replacing Label, sdk test",
+            Labels = initialLabels
+        )
+    let externalId = Identity externalIdString
+
+    let newLabels = seq [ CogniteExternalId("AssetTestUpdateLabel2") ]
+    // Update object, used to add a new label
+    let update = seq {
+        AssetUpdateItem(
+            externalId = externalIdString,
+            Update = AssetUpdate(
+                Labels = UpdateLabels(newLabels)
+            )
+        )
+    }
+
+    // Act
+    // Create the asset
+    let! res = writeClient.Playground.Assets.CreateAsync [ entity ]
+    // Update the asset
+    let! updateRes = writeClient.Playground.Assets.UpdateAsync update
+    // Retrieve the updated asset
+    let! assetupdated = writeClient.Playground.Assets.RetrieveAsync [externalId]
+
+    // Retrieve updated assets labels
+    let updatedAssetFromCDF = assetupdated |> Seq.head
+    let updatedLabels = updatedAssetFromCDF.Labels
+    let updatedLabelsStrings = updatedLabels |> Seq.map (fun label -> label.ExternalId)
+    // Delete the asset
+    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+
+
+    // Assert
+    // Verify that the updated asset has both labels
+    test <@ Seq.length updatedLabels = 2 @>
+    test <@  updatedLabelsStrings |> (Seq.contains (initialLabels |> Seq.head).ExternalId ) @>
+    test <@  updatedLabelsStrings |> (Seq.contains (newLabels |> Seq.head).ExternalId ) @>
+}
