@@ -58,9 +58,7 @@ namespace CogniteSdk
         /// List of labels to associate with the asset.
         /// </summary>
         [Obsolete("The Label attribute is in development, and currently only available for use in playground")]
-        #nullable enable
         public List<Label>? Labels { get; set; }
-        #nullable disable
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

@@ -6,6 +6,7 @@ namespace Oryx.Cognite.Playground
 open System.Net.Http
 
 open Oryx
+open Oryx.Cognite
 open Oryx.Cognite.Playground
 
 open System.Collections.Generic

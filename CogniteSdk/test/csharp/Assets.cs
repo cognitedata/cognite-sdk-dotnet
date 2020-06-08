@@ -263,7 +263,6 @@ namespace Test.CSharp.Integration {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
 
-
             var initialAsset = new AssetCreate
             {
                 ExternalId = externalIdString,
