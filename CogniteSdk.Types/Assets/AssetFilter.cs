@@ -83,6 +83,6 @@ namespace CogniteSdk
         /// Label Filter on form [[AND AND] OR [AND AND ...] OR [...]]
         /// </summary>
         [Obsolete("The label filter feature is in development and currently only available in playground.")]
-        public List<List<Label>> Labels { get; set; }
+        public IEnumerable<IEnumerable<CogniteExternalId>> Labels { get; set; }
     }
 }

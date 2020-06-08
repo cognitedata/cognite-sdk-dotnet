@@ -268,11 +268,11 @@ namespace Test.CSharp.Integration {
                 ExternalId = externalIdString,
                 Name = "Update Assets Label c# sdk test",
                 Description = "Just a test",
-                Labels = new List<Label>{ new Label("AssetTestUpdateLabel1") }
+                Labels = new List<CogniteExternalId>{ new CogniteExternalId("AssetTestUpdateLabel1") }
             };
 
             var newName = "Updated asset name";
-            var newLabels = new List<Label> { new Label("AssetTestUpdateLabel2")};
+            var newLabels = new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel2")};
             var update = new List<AssetUpdateItem>
             {
                 new AssetUpdateItem(externalId: externalIdString)
@@ -280,7 +280,7 @@ namespace Test.CSharp.Integration {
                     Update = new AssetUpdate()
                     {
                         Name = new Update<string>(newName),
-                        Labels = new UpdateLabels<List<Label>>(putLabels: newLabels, removeLabels: new List<Label> { new Label("AssetTestUpdateLabel1") })
+                        Labels = new UpdateLabels<IEnumerable<CogniteExternalId>>(putLabels: newLabels, removeLabels: new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel1") })
                     }
                 }
             };
@@ -298,7 +298,7 @@ namespace Test.CSharp.Integration {
             var resAsset = getRes.First();
             Assert.True(externalIdString == resAsset.ExternalId, $"Asset doest have expected ExternalId. Was '{resAsset.ExternalId}' but expected '{externalIdString}'");
 
-            Assert.True(resAsset.Labels.Count == 1, $"Expected asset to have one label but was '{resAsset.Labels.Count}'");
+            Assert.True(resAsset.Labels.Count() == 1, $"Expected asset to have one label but was '{resAsset.Labels.Count()}'");
             Assert.True(resAsset.Labels.ElementAt(0).ExternalId == newLabels.ElementAt(0).ExternalId, $"Expected label to be '{newLabels.ElementAt(0).ExternalId}' but was '{resAsset.Labels.ElementAt(0).ExternalId}'");
         }
     }
