@@ -163,15 +163,16 @@ namespace CogniteSdk.Resources
         /// per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Assets.retrieve<IEnumerable<Asset>>(ids);
+            var req = Assets.retrieve<IEnumerable<Asset>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -180,8 +181,9 @@ namespace CogniteSdk.Resources
         /// per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (internalIds is null)
             {
@@ -189,7 +191,7 @@ namespace CogniteSdk.Resources
             }
 
             var ids = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -197,8 +199,9 @@ namespace CogniteSdk.Resources
         /// per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (externalIds is null)
             {
@@ -206,7 +209,7 @@ namespace CogniteSdk.Resources
             }
 
             var ids = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
         #endregion
 

@@ -10,6 +10,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open System
 
 /// Various time series HTTP handlers
 [<RequireQualifiedAccess>]
@@ -41,9 +42,9 @@ module TimeSeries =
 
     /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may be
     /// listed per request and all of them must be unique. Returns the time series with the given ids.
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, TimeSeries seq, 'a> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<HttpResponseMessage, TimeSeries seq, 'a> =
         withLogMessage "TimeSeries:retrieve"
-        >=> retrieve ids Url
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
     /// Retrieves a list of time series matching the given criteria. This operation does not support pagination. Returns
     /// list of time series matching given criteria.

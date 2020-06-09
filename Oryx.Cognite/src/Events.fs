@@ -9,6 +9,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open System
 
 /// Various event HTTP handlers.
 
@@ -67,10 +68,11 @@ module Events =
     /// request and all of them must be unique.
     /// </summary>
     /// <param name="ids">The ids of the events to get.</param>
+    /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<HttpResponseMessage, Event seq, 'a> =
         withLogMessage "Events:retrieve"
-        >=> retrieve ids Url
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
     /// <summary>
     /// Retrieves a list of events matching the given criteria. This operation does not support pagination.
