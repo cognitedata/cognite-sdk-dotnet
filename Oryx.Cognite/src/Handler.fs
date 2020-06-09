@@ -203,6 +203,19 @@ module Handler =
             return ret.Items
         }
 
+    let retrieveIgnoreUnkownIds<'a, 'b> (ids: Identity seq) (ignoreUnknownIdsOpt: bool option) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'a>, 'b> =
+        match ignoreUnknownIdsOpt with
+        | Some ignoreUnknownIds ->
+            req {
+                let url = url +/ "byids"
+                let request = ItemsWithIgnoreUnknownIds<Identity>(Items = ids, IgnoreUnknownIds = ignoreUnknownIds)
+                let! ret =
+                    withCompletion HttpCompletionOption.ResponseHeadersRead
+                    >=> postV10<ItemsWithIgnoreUnknownIds<Identity>, ItemsWithoutCursor<'a>, 'b> request url
+                return ret.Items
+            }
+        | None -> retrieve ids url
+
     let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let content' = ItemsWithoutCursor(Items=content)

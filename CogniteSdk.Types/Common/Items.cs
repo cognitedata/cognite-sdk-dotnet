@@ -41,4 +41,24 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<ItemsWithCursor<T>>(this);
     }
+
+    /// <summary>
+    /// Holds several items, and can ignore unknown ids. But don't support paging, i.e no cursor.
+    /// </summary>
+    /// <typeparam name="T">A resource type that is serializable.</typeparam>
+    public class ItemsWithIgnoreUnknownIds<T>
+    {
+        /// <summary>
+        /// Resource items of type T.
+        /// </summary>
+        public IEnumerable<T> Items { get; set; }
+        /// <summary>
+        /// Default: false
+        /// Ignore IDs and external IDs that are not found
+        /// </summary>
+        public bool IgnoreUnknownIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
+    }
 }

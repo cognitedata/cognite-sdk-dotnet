@@ -472,7 +472,7 @@ let ``Filter assets on single Label is Ok`` () = task {
 
     // Assert
     // Test may fail if datastudio playground data changes
-    test <@ len = 3 @>
+    test <@ len > 0 @>
 }
 
 
@@ -496,7 +496,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
     let len = Seq.length res.Items
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len > 0 @>
 }
 
 [<Fact>]
@@ -523,7 +523,7 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
     let len = Seq.length res.Items
 
     // Assert
-    test <@ len = 2 @>
+    test <@ len > 0 @>
 }
 
 [<Fact>]
@@ -556,7 +556,7 @@ let ``Count assets matching multi Label ORfilter is Ok`` () = task {
 
 
     // Assert
-    test <@ count = 6 @>
+    test <@ count > 0 @>
 }
 
 [<Fact>]

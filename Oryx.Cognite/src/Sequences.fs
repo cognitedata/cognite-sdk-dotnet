@@ -10,6 +10,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open System
 
 /// Various event HTTP handlers.
 
@@ -56,9 +57,9 @@ module Sequences =
 
     /// Retrieves information about multiple sequences in the same project. A maximum of 1000 event IDs may be listed per
     /// request and all of them must be unique. Returns sequences with given ids.
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Sequence seq, 'a> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<HttpResponseMessage, Sequence seq, 'a> =
         withLogMessage "Sequences:retrieve"
-        >=> retrieve ids Url
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
     /// Retrieves a list of sequences matching the given criteria. This operation does not support pagination. Returns list of sequences matching given criteria.
     let search (query: SequenceSearch) : HttpHandler<HttpResponseMessage, Sequence seq, 'a> =

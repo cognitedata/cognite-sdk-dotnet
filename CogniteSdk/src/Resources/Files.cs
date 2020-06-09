@@ -73,10 +73,11 @@ namespace CogniteSdk.Resources
         /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="ids">The list of file identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.retrieve<IEnumerable<File>>(ids);
+            var req = Oryx.Cognite.Files.retrieve<IEnumerable<File>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -85,11 +86,12 @@ namespace CogniteSdk.Resources
         /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="internalIds">The list of file internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -97,11 +99,12 @@ namespace CogniteSdk.Resources
         /// the same order as in the request. This operation does not return the file contents.
         /// </summary>
         /// <param name="externalIds">The list of file internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
         #endregion
 

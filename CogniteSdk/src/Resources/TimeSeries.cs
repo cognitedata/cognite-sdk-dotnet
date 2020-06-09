@@ -109,10 +109,11 @@ namespace CogniteSdk.Resources
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of time series identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
+            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -121,11 +122,12 @@ namespace CogniteSdk.Resources
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
-            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
+            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -134,11 +136,12 @@ namespace CogniteSdk.Resources
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
-            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids);
+            var req = Oryx.Cognite.TimeSeries.retrieve<IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
