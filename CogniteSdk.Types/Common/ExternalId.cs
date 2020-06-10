@@ -30,6 +30,9 @@ namespace CogniteSdk
         {
             ExternalId = externalID;
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 }
 
