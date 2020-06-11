@@ -499,7 +499,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
     let! res = writeClient.Playground.Assets.ListAsync query
 
     // Assert
-    let allItemsMatch (item:Asset) =
+    let validateItem (item:Asset) =
         let t1 =
             item.Labels
             |> Seq.map (fun x -> x.ExternalId)
@@ -508,12 +508,12 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
         let t2 = item.Metadata.["RES_ID"] = "42"
         t1 && t2
 
-    let resultIsCorrect =
+    let allItemsMatch =
         res.Items
-        |> Seq.map allItemsMatch
+        |> Seq.map validateItem
         |> Seq.forall id
 
-    test <@ resultIsCorrect @>
+    test <@ allItemsMatch @>
 }
 
 [<Fact>]
