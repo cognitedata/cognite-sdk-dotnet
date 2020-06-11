@@ -477,6 +477,7 @@ let ``Filter assets on single Label is Ok`` () = task {
 
     // Assert
     // Test may fail if datastudio playground data changes
+    test <@ (res.Items |> Seq.length) > 0 @>
     test <@ allItemsMatch @>
 }
 
@@ -513,6 +514,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
         |> Seq.map validateItem
         |> Seq.forall id
 
+    test <@ (Seq.length res.Items) > 0 @>
     test <@ allItemsMatch @>
 }
 
