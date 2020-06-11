@@ -10,6 +10,7 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
+open System
 
 /// Various asset HTTP handlers.
 
@@ -65,9 +66,9 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<HttpResponseMessage, Asset seq, 'a> =
         withLogMessage "Assets:retrieve"
-        >=> retrieve ids Url
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
     /// <summary>
     /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.

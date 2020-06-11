@@ -7,6 +7,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open System
 
 /// Various event HTTP handlers.
 
@@ -44,11 +45,11 @@ module Files =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
                 >=> postV10<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<FileDownload>, 'a> request url
             return ret.Items
-        }  
+        }
 
-    let retrieve (ids: Identity seq) : HttpHandler<HttpResponseMessage, IEnumerable<File>, 'a> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<HttpResponseMessage, IEnumerable<File>, 'a> =
         withLogMessage "Files:retrieve"
-        >=> retrieve ids Url
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
     let search (query: FileSearch) : HttpHandler<HttpResponseMessage, File seq, 'a> =
         withLogMessage "Files:search"
