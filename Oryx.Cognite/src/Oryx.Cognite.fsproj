@@ -24,6 +24,7 @@
     <Compile Include="Login.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Assets.fs" />
+    <Compile Include="Playground/Functions.fs" />
     <Compile Include="Playground/Relationships.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
   </ItemGroup>
