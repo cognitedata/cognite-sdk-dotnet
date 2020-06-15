@@ -24,6 +24,17 @@ namespace CogniteSdk.Resources
         public Playground.FunctionResource Functions { get; set; }
 
         /// <summary>
+        /// Client FunctionCalls extension methods.
+        /// </summary>
+        /// <value></value>
+        public Playground.FunctionCallResource FunctionCalls { get; set; }
+
+        /// <summary>
+        /// Client FunctionSchedules extension methods
+        /// </summary>
+        public Playground.FunctionScheduleResource FunctionSchedules { get; set; }
+
+        /// <summary>
         /// Client Relationships extension methods
         /// </summary>
         public Playground.RelationshipResource Relationships  { get; }
@@ -37,6 +48,7 @@ namespace CogniteSdk.Resources
         {
             Assets = new Playground.AssetsResource(authHandler, ctx);
             Functions = new Playground.FunctionResource(authHandler, ctx);
+            FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);
             Relationships = new Playground.RelationshipResource(authHandler, ctx);
         }
     }

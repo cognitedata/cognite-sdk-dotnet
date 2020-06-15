@@ -1,4 +1,4 @@
-// Copyright 2019 Cognite AS
+// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace CogniteSdk
         /// Error message.
         /// </summary>
         public string Message { get; set; }
+
         /// <summary>
         /// Stack trace of exception, useful for debugging.
         /// </summary>

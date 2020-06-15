@@ -32,9 +32,9 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of Functions</returns>
-        public async Task<ItemsWithCursor<Function>> ListAsync(CancellationToken token = default)
+        public async Task<ItemsWithoutCursor<Function>> ListAsync(CancellationToken token = default)
         {
-            var req = Functions.list<ItemsWithCursor<Function>>();
+            var req = Functions.list<ItemsWithoutCursor<Function>>();
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 

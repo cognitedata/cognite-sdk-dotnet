@@ -1,4 +1,4 @@
-// Copyright 2019 Cognite AS
+// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace CogniteSdk
         /// The name of the function.
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// The file ID to a file uploaded to Cognite's Files API.
         /// This file must be a zip file and contain a file called handler.py.
@@ -27,18 +28,22 @@ namespace CogniteSdk
         /// SDK's are available.
         /// </summary>
         public long FileId { get; set; }
+
         /// <summary>
         /// Owner of this function. Typically used to know who created it.
         /// </summary>
         public string Owner { get; set; }
+
         /// <summary>
         /// Description of the function.
         /// </summary>
         public string Description { get; set; }
+
         /// <summary>
         /// API key that can be used inside the function to access data in CDF.
         /// </summary>
         public string ApiKey { get; set; }
+
         /// <summary>
         /// Object with additional secrets as key/value pairs. These can
         /// e.g. password to simulators or other data sources. Keys must
@@ -47,10 +52,12 @@ namespace CogniteSdk
         /// unique, and cannot be apikey.
         /// </summary>
         public Dictionary<string, string> Secrets { get; set; }
+
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970,
         /// Coordinated Universal Time (UTC), minus leap seconds.        /// </summary>
         public string ExternalId { get; set; }
+
         /// <summary>
         /// Error if function building failed.
         /// </summary>
