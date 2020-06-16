@@ -48,6 +48,7 @@ namespace CogniteSdk.Resources
         {
             Assets = new Playground.AssetsResource(authHandler, ctx);
             Functions = new Playground.FunctionResource(authHandler, ctx);
+            FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);
             FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);
             Relationships = new Playground.RelationshipResource(authHandler, ctx);
         }

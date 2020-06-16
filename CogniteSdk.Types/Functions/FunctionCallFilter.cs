@@ -23,19 +23,19 @@ namespace CogniteSdk
         /// 1 January 1970, Coordinated Universal Time (UTC),
         /// minus leap seconds.
         /// </summary>
-        public long StartTime { get; set; }
+        public long? StartTime { get; set; }
 
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday,
         /// 1 January 1970, Coordinated Universal Time (UTC),
         /// minus leap seconds.
         /// </summary>
-        public long EndTime { get; set; }
+        public long? EndTime { get; set; }
 
         /// <summary>
         /// A server-generated id for the schedule.
         /// </summary>
-        public CogniteServerId ScheduleId { get; set; }
+        public long? ScheduleId { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

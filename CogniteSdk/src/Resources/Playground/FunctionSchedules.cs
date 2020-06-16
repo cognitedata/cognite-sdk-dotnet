@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="ids">The ids of FunctionSchedules to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(IEnumerable<CogniteServerId> ids, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> ids, CancellationToken token = default)
         {
             if (ids is null)
             {

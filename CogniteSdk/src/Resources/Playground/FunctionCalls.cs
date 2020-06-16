@@ -78,7 +78,7 @@ namespace CogniteSdk.Resources.Playground
         /// <param name="callId">Id for function call to get.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Reponse from function call.</returns>
-        public async Task<FunctionCallResponse> retrieveResponse(long functionId, long callId, CancellationToken token = default)
+        public async Task<FunctionCallResponse> RetrieveResponse(long functionId, long callId, CancellationToken token = default)
         {
             var req = FunctionCalls.retrieveResponse<FunctionCallResponse>(functionId, callId);
             return await RunAsync(req, token).ConfigureAwait(false);
@@ -91,9 +91,9 @@ namespace CogniteSdk.Resources.Playground
         /// <param name="data">Data passed through the data argument to the function.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Reponse from function call.</returns>
-        public async Task<FunctionCall> retrieveResponse(long functionId, JsonElement data, CancellationToken token = default)
+        public async Task<FunctionCall> CallFunction<T>(long functionId, T data, CancellationToken token = default)
         {
-            var req = FunctionCalls.callFunction<FunctionCall>(functionId, data);
+            var req = FunctionCalls.callFunction<T, FunctionCall>(functionId, data);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

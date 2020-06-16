@@ -66,7 +66,7 @@ module FunctionCalls =
     let get (functionId: int64) (callId: int64) : HttpHandler<HttpResponseMessage, FunctionCall, 'a> =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
         withLogMessage "FunctionCalls:get"
-        >=> getById callId Url
+        >=> getById callId url
 
     /// <summary>
     /// Retrieves list of functionCalls matching filter.
@@ -75,8 +75,9 @@ module FunctionCalls =
     /// <returns>List of FunctionCalls.</returns>
     let list (functionId: int64) (filter: FunctionCallFilter): HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FunctionCall>, 'a> =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
+        let filterQuery = FunctionCallQuery(Filter=filter)
         withLogMessage "FunctionCalls:list"
-        >=> list filter url
+        >=> list filterQuery url
 
     /// <summary>
     /// Retrieves list of logs from function call.
@@ -86,7 +87,7 @@ module FunctionCalls =
     /// <returns>List of logs from function call.</returns>
     let listLogs (functionId: int64) (callId: int64) : HttpHandler<HttpResponseMessage, ItemsWithoutCursor<FunctionCallLogEntry>, 'a> =
         let url = Url +/ sprintf "%d" functionId +/ "calls" +/ sprintf "%d" callId +/ "logs"
-        withLogMessage "FunctionCalls:list"
+        withLogMessage "FunctionCalls:listLogs"
         >=> getPlayground url
 
     /// <summary>
@@ -106,10 +107,11 @@ module FunctionCalls =
     /// <param name="functionId">Id for function to get call from.</param>
     /// <param name="data">Data passed through the data argument to the function.</param>
     /// <returns>Function call response.</returns>
-    let callFunction (functionId: int64) (data: JsonElement): HttpHandler<HttpResponseMessage, FunctionCall, 'a> =
+    let callFunction (functionId: int64) (data: 'b): HttpHandler<HttpResponseMessage, FunctionCall, 'a> =
         let url = Url +/ sprintf "%d" functionId +/ "call"
+        let dataDto = FunctionCallData(Data=data)
         withLogMessage "FunctionCalls:CallFunction"
-        >=> postPlayground data url
+        >=> postPlayground dataDto url
 
 [<RequireQualifiedAccess>]
 module FunctionSchedules =
@@ -138,7 +140,7 @@ module FunctionSchedules =
     /// </summary>
     /// <param name="ids">The list of server-ids for FunctionSchedules to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (ids: CogniteServerId seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (ids: int64 seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
         let items = ItemsWithoutCursor(Items=ids)
         withLogMessage "FunctionSchedules:delete"
         >=> delete items Url
