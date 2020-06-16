@@ -20,12 +20,12 @@ using CogniteSdk.Types.Common;
             /// <summary>
             /// A server-generated id for the schedule.
             /// </summary>
-            public CogniteServerId ScheduleId { get; set; }
+            public long ScheduleId { get; set; }
 
             /// <summary>
             /// A server-generated id for the function.
             /// </summary>
-            public CogniteServerId FunctionId { get; set; }
+            public long FunctionId { get; set; }
 
             /// <inheritdoc />
             public override string ToString() => Stringable.ToString(this);
