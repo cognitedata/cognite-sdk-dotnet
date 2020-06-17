@@ -79,6 +79,19 @@ let ``List Rows with limit and choose columns isOk`` () = task {
 
 [<Trait("resource", "raw")>]
 [<Fact>]
+let ``Get Row isOk`` () = task {
+    // Arrange
+    let query = RawRowQuery(Limit = Nullable 10, Columns = ["sdk-test-col2"])
+
+    // Act
+    let! res = writeClient.Raw.GetRowAsync("sdk-test-database", "sdk-test-table", "sdk-test-row")
+
+    // Assert
+    test <@ res.Key = "sdk-test-row" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
 let ``Create and delete database is Ok`` () = task {
     // Arrange
     let name = Guid.NewGuid().ToString().[..31]
