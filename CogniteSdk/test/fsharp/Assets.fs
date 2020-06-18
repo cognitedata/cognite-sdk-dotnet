@@ -468,11 +468,17 @@ let ``Filter assets on single Label is Ok`` () = task {
     // Act
     let! res = writeClient.Playground.Assets.ListAsync query
 
-    let len = Seq.length res.Items
+    let allItemsMatch =
+        res.Items |> Seq.map (fun item ->
+            item.Labels
+            |> Seq.map (fun label -> label.ExternalId)
+            |> Seq.contains "AssetTestLabel1"
+        ) |> Seq.forall id
 
     // Assert
     // Test may fail if datastudio playground data changes
-    test <@ len > 0 @>
+    test <@ (res.Items |> Seq.length) > 0 @>
+    test <@ allItemsMatch @>
 }
 
 
@@ -493,10 +499,23 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
     // Act
     let! res = writeClient.Playground.Assets.ListAsync query
 
-    let len = Seq.length res.Items
-
     // Assert
-    test <@ len > 0 @>
+    let validateItem (item:Asset) =
+        let t1 =
+            item.Labels
+            |> Seq.map (fun x -> x.ExternalId)
+            |> Seq.tryFind (fun s -> s = "AssetTestLabel1")
+            |> Option.isSome
+        let t2 = item.Metadata.["RES_ID"] = "42"
+        t1 && t2
+
+    let allItemsMatch =
+        res.Items
+        |> Seq.map validateItem
+        |> Seq.forall id
+
+    test <@ (Seq.length res.Items) > 0 @>
+    test <@ allItemsMatch @>
 }
 
 [<Fact>]
@@ -520,10 +539,33 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
     // Act
     let! res = writeClient.Playground.Assets.ListAsync query
 
-    let len = Seq.length res.Items
-
     // Assert
-    test <@ len > 0 @>
+    let hasLabel (label) (x:seq<string>) =
+        x
+        |> Seq.tryFind (fun resLabel -> resLabel = label)
+        |> Option.isSome
+
+    let resLabels =
+        res.Items
+        |> Seq.map (fun item ->
+            item.Labels
+            |> Seq.map (fun label -> label.ExternalId)
+        )
+
+    let itemsHaveLabel1 =
+        resLabels
+        |> Seq.map ( hasLabel "AssetTestLabel1" )
+
+    let itemsHaveLabel2 =
+        resLabels
+        |> Seq.map ( hasLabel "AssetTestLabel2" )
+
+    let allItemsMatch =
+        (itemsHaveLabel1, itemsHaveLabel2) ||> (Seq.map2 (||))
+    test <@ ( res.Items |> Seq.length ) > 0 @>
+    test <@ allItemsMatch |> Seq.forall id @>
+    test <@ itemsHaveLabel1 |> Seq.contains true @>
+    test <@ itemsHaveLabel2 |> Seq.contains true @>
 }
 
 [<Fact>]
@@ -556,7 +598,7 @@ let ``Count assets matching multi Label ORfilter is Ok`` () = task {
 
 
     // Assert
-    test <@ count > 0 @>
+    test <@ count >=2 @>
 }
 
 [<Fact>]
