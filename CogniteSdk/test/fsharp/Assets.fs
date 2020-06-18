@@ -552,17 +552,20 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
             |> Seq.map (fun label -> label.ExternalId)
         )
 
-    let containsLabel1 =
+    let itemsHaveLabel1 =
         resLabels
         |> Seq.map ( hasLabel "AssetTestLabel1" )
-        |> Seq.contains true
 
-    let containsLabel2 =
+    let itemsHaveLabel2 =
         resLabels
         |> Seq.map ( hasLabel "AssetTestLabel2" )
-        |> Seq.contains true
-    test <@ containsLabel1 @>
-    test <@ containsLabel2 @>
+
+    let allItemsMatch =
+        (itemsHaveLabel1, itemsHaveLabel2) ||> (Seq.map2 (||))
+    test <@ ( res.Items |> Seq.length ) > 0 @>
+    test <@ allItemsMatch |> Seq.forall id @>
+    test <@ itemsHaveLabel1 |> Seq.contains true @>
+    test <@ itemsHaveLabel2 |> Seq.contains true @>
 }
 
 [<Fact>]
@@ -595,7 +598,7 @@ let ``Count assets matching multi Label ORfilter is Ok`` () = task {
 
 
     // Assert
-    test <@ count >= 6 @>
+    test <@ count >=2 @>
 }
 
 [<Fact>]
