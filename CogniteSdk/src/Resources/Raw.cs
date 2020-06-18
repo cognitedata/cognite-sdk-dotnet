@@ -315,6 +315,36 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieve a single row from a table.
+        /// </summary>
+        /// <param name="database">The database to list rows from.</param>
+        /// <param name="table">The table to list rows from.</param>
+        /// <param name="key">Key for row to get.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>The retrieved rows.</returns>
+        public async Task<RawRow> GetRowAsync(string database, string table, string key, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("message", nameof(key));
+            }
+
+
+            var req = Oryx.Cognite.Raw.getRow<RawRow>(database, table, key);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create rows in a table.
         /// </summary>
         /// <param name="database">The database to create rows from.</param>

@@ -95,6 +95,18 @@ module Raw =
         >=> getWithQuery query url
 
     /// <summary>
+    /// Get a single row from table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="key">Key of row to get.</param>
+    /// <returns>The retrieved row.</returns>
+    let getRow (database: string) (table: string) (key: string) : HttpHandler<HttpResponseMessage, RawRow, 'a> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
+        withLogMessage "Raw:getRow"
+        >=> getV10 url
+
+    /// <summary>
     /// Create rows in a table.
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>

@@ -16,6 +16,7 @@
     <Compile Include="Sequences.fs" />
     <Compile Include="DataPoints.fs" />
     <Compile Include="Files.fs" />
+    <Compile Include="Functions.fs" />
     <Compile Include="Relationships.fs" />
     <Compile Include="Login.fs" />
     <Compile Include="Program.fs" />
