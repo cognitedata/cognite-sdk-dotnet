@@ -80,9 +80,10 @@ namespace CogniteSdk
         public override string ToString() => Stringable.ToString(this);
 
         /// <summary>
-        /// Label Filter on form [[AND AND] OR [AND AND ...] OR [...]]
+        /// Label Filter
         /// </summary>
         [Obsolete("The label filter feature is in development and currently only available in playground.")]
-        public IEnumerable<IEnumerable<CogniteExternalId>> Labels { get; set; }
+        public LabelFilter Labels { get; set; }
+        //public IEnumerable<IEnumerable<CogniteExternalId>> Labels { get; set; }
     }
 }
