@@ -176,10 +176,10 @@ let ``Filter assets on Root is Ok`` () = task {
     // Act
     let! res = readClient.Assets.ListAsync query
 
-    let len = Seq.length res.Items
-
     // Assert
-    test <@ len = 1 @>
+    test <@ (res.Items |> Seq.length) > 0 @>
+    for item in res.Items do
+        test <@ item.RootId = item.Id @>
 }
 
 [<Fact>]
@@ -460,7 +460,7 @@ let ``Update assets is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on single Label is Ok`` () = task {
     // Arrange
-    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]]
+    let labels = LabelFilter ( CogniteExternalId("AssetTestLabel1") )
 
     let filter = AssetFilter(Labels = labels)
     let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
@@ -485,7 +485,7 @@ let ``Filter assets on single Label is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Label and metadata is Ok`` () = task {
     // Arrange
-    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]]
+    let labels = LabelFilter( CogniteExternalId("AssetTestLabel1") )
 
     let meta = Dictionary (dict [("RES_ID", "42")])
 
@@ -519,13 +519,46 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Filter assets with labels AND filter is Ok`` () = task{
+    // Arrange
+    let labelSeq =
+        LabelContainsAllFilter (
+            seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ]
+        )
+    let labels = LabelFilter( labelSeq )
+
+    let filter =
+        AssetFilter(
+            Labels = labels
+        )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    // Assert
+    let resLabels =
+        res.Items |>
+        Seq.map (fun item -> item.Labels |> Seq.map (fun label -> label.ExternalId))
+
+    let itemsMatch =
+        resLabels
+        |> Seq.map ( fun labels ->
+                (labels |> ( Seq.contains "AssetTestLabel1" )) &&
+                (labels |> ( Seq.contains "AssetTestLabel2" ))
+            )
+    test <@ ( res.Items |> Seq.length ) > 0 @>
+    test <@ itemsMatch |> Seq.forall id @>
+}
+
+[<Fact>]
 let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task {
     // Arrange
-    let labels =
-        seq [
-            seq [ CogniteExternalId("AssetTestLabel1") ];
-            seq [ CogniteExternalId("AssetTestLabel2") ]
-        ]
+    let labelSeq =
+        LabelContainsAnyFilter (
+            seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ]
+        )
+    let labels = LabelFilter( labelSeq )
 
     let meta = Dictionary (dict [("RES_ID", "42")])
 
@@ -571,7 +604,7 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
 [<Fact>]
 let ``Filter assets on nonexistent label returns empty response`` () = task {
     // Arrange
-    let labels = seq [ seq [ CogniteExternalId("ThisLabelShouldNotExist") ]]
+    let labels = LabelFilter ( CogniteExternalId("ThisLabelShouldNotExist") )
 
     let filter = AssetFilter( Labels = labels )
     let query = AssetQuery( Limit = Nullable 10, Filter = filter )
@@ -588,8 +621,10 @@ let ``Filter assets on nonexistent label returns empty response`` () = task {
 [<Fact>]
 let ``Count assets matching multi Label ORfilter is Ok`` () = task {
     // Arrange
-    let labels = seq [ seq [ CogniteExternalId("AssetTestLabel1") ]; seq [ CogniteExternalId("AssetTestLabel2") ]]
-
+    let labels =
+        LabelFilter(
+            LabelContainsAnyFilter( seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ] )
+        )
     let filter = AssetFilter( Labels = labels )
     let query = AssetQuery( Filter = filter )
 
@@ -628,7 +663,8 @@ let ``Create and delete asset with label is Ok`` () = task {
 [<Fact>]
 let ``Create, update by replacing label, and delete asset is Ok`` () = task {
     // Arrange
-    let externalIdString = "AssetTestUpdateLabelA";
+    let testguid = Guid.NewGuid().ToString()
+    let externalIdString = "AssetTestUpdateLabelA-"+testguid;
     let initialLabels = seq [ CogniteExternalId("AssetTestUpdateLabel1") ]
     let entity =
         AssetCreate(
@@ -675,7 +711,8 @@ let ``Create, update by replacing label, and delete asset is Ok`` () = task {
 [<Fact>]
 let ``Create, update by adding new label and delete asset is Ok`` () = task {
     // Arrange
-    let externalIdString = "AssetTestUpdateLabelB";
+    let testguid = Guid.NewGuid().ToString()
+    let externalIdString = "AssetTestUpdateLabelB-"+testguid;
     let initialLabels = seq [ CogniteExternalId("AssetTestUpdateLabel1") ]
     let entity =
         AssetCreate(
