@@ -519,6 +519,39 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Filter assets with labels AND filter is Ok`` () = task{
+    // Arrange
+    let labelSeq =
+        LabelContainsAllFilter (
+            seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ]
+        )
+    let labels = LabelFilter( labelSeq )
+
+    let filter =
+        AssetFilter(
+            Labels = labels
+        )
+    let query = AssetQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = writeClient.Playground.Assets.ListAsync query
+
+    // Assert
+    let resLabels =
+        res.Items |>
+        Seq.map (fun item -> item.Labels |> Seq.map (fun label -> label.ExternalId))
+
+    let itemsMatch =
+        resLabels
+        |> Seq.map ( fun labels ->
+                (labels |> ( Seq.contains "AssetTestLabel1" )) &&
+                (labels |> ( Seq.contains "AssetTestLabel2" ))
+            )
+    test <@ ( res.Items |> Seq.length ) > 0 @>
+    test <@ itemsMatch |> Seq.forall id @>
+}
+
+[<Fact>]
 let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task {
     // Arrange
     let labelSeq =
