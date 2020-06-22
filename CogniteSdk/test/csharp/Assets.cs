@@ -280,7 +280,7 @@ namespace Test.CSharp.Integration {
                     Update = new AssetUpdate()
                     {
                         Name = new Update<string>(newName),
-                        Labels = new UpdateLabels<IEnumerable<CogniteExternalId>>(putLabels: newLabels, removeLabels: new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel1") })
+                        Labels = new UpdateLabels<IEnumerable<CogniteExternalId>>(addLabels: newLabels, removeLabels: new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel1") })
                     }
                 }
             };

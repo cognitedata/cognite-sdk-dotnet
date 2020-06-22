@@ -180,7 +180,7 @@ namespace CogniteSdk
         /// <summary>
         /// Used to add new labels
         /// </summary>
-        public TCollection Put { get; set; }
+        public TCollection Add { get; set; }
 
         /// <summary>
         /// Used to remove labels
@@ -189,21 +189,21 @@ namespace CogniteSdk
         /// <summary>
         /// Insert a Label
         /// </summary>
-        public UpdateLabels(TCollection putLabels)
+        public UpdateLabels(TCollection addLabels)
         {
-            Put = putLabels;
+            Add = addLabels;
         }
 
         /// <summary>
         /// Add and remove labels
         /// specified keys.
         /// </summary>
-        /// <param name="putLabels">Labels to put</param>
+        /// <param name="AddLabels">Labels to Add</param>
         /// <param name="removeLabels">Labels to remove.</param>
         /// <returns></returns>
-        public UpdateLabels(TCollection putLabels, TCollection removeLabels)
+        public UpdateLabels(TCollection addLabels, TCollection removeLabels)
         {
-            Put = putLabels;
+            Add = addLabels;
             Remove = removeLabels;
         }
 
