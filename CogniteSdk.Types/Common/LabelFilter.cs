@@ -20,7 +20,7 @@ namespace CogniteSdk
         /// </summary>
         public LabelContainsAnyFilter(){}
         /// <summary>
-        /// Create a LabelContainsAnyFilter with the provided set of labels (CogniteExternalIds)
+        /// Create a LabelContainsAnyFilter with the provided set of labels (CogniteExternalIds).
         /// </summary>
         public LabelContainsAnyFilter(IEnumerable<CogniteExternalId> labels){
             ContainsAny = labels;
@@ -39,7 +39,7 @@ namespace CogniteSdk
         /// </summary>
         public LabelContainsAllFilter(){}
         /// <summary>
-        /// Create a LabelContainsAllFilter with the provided set of labels (CogniteExternalIds)
+        /// Create a LabelContainsAllFilter with the provided set of labels (CogniteExternalIds).
         /// </summary>
         public LabelContainsAllFilter(IEnumerable<CogniteExternalId> labels){
             ContainsAll = labels;
@@ -48,25 +48,25 @@ namespace CogniteSdk
 
     /// <summary>
     /// The Cognite Label filter class.
-    /// Currently only available for use in playground
+    /// Currently only available for use in playground.
     /// </summary>
     public class LabelFilter
     {
         /// <summary>
-        /// Filter labels that contains a single label
+        /// Filter labels that contains a single label.
         /// </summary>
         public CogniteExternalId Contains { get; set; }
         /// <summary>
-        /// Filter labels that contains any of the given labels (OR-filter)
+        /// Filter labels that contains any of the given labels (OR-filter).
         /// </summary>
         public IEnumerable<CogniteExternalId> ContainsAny { get; set; }
         /// <summary>
-        /// Filter labels that contains all of the given labels (AND-filter)
+        /// Filter labels that contains all of the given labels (AND-filter).
         /// </summary>
         public IEnumerable<CogniteExternalId> ContainsAll { get; set; }
 
         /// <summary>
-        /// LabelFilter with string parameter creates a single label filter
+        /// LabelFilter with string parameter creates a single label filter.
         /// </summary>
         public LabelFilter(string containsFilter)
         {
@@ -74,7 +74,7 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// LabelFilter with CogniteExternalID parameter creates a single label filter
+        /// LabelFilter with CogniteExternalID parameter creates a single label filter.
         /// </summary>
         public LabelFilter(CogniteExternalId containsFilter)
         {
@@ -82,14 +82,14 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// LabelFilter with LabelContainsAllFilter parameter creates a multilabel AND-filter
+        /// LabelFilter with LabelContainsAllFilter parameter creates a multilabel AND-filter.
         /// </summary>
         public LabelFilter(LabelContainsAllFilter labels)
         {
             ContainsAll = labels.ContainsAll;
         }
         /// <summary>
-        /// LabelFilter with LabelContainsAnyFilter parameter creates a multilabel OR-filter
+        /// LabelFilter with LabelContainsAnyFilter parameter creates a multilabel OR-filter.
         /// </summary>
         public LabelFilter(LabelContainsAnyFilter labels)
         {

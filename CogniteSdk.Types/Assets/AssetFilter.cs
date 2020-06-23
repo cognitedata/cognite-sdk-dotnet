@@ -80,8 +80,8 @@ namespace CogniteSdk
         public override string ToString() => Stringable.ToString(this);
 
         /// <summary>
-        /// Label Filter
-        /// Currently only available for use in playground
+        /// Label Filter.
+        /// Currently only available for use in playground.
         /// </summary>
         public LabelFilter Labels { get; set; }
         //public IEnumerable<IEnumerable<CogniteExternalId>> Labels { get; set; }

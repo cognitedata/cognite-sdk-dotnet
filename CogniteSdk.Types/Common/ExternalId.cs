@@ -7,24 +7,24 @@ namespace CogniteSdk
 {
     /// <summary>
     /// The CogniteExternalId read class.
-    /// Currently only available for use in playground
+    /// Currently only available for use in playground.
     /// </summary>
     public class CogniteExternalId
     {
         /// <summary>
-        /// Placeholder ExternalId Class
+        /// Placeholder ExternalId Class.
         /// </summary>
         public string ExternalId { get; set; }
 
         /// <summary>
-        /// Empty constructor method for ExternalId type
+        /// Empty constructor method for ExternalId type.
         /// </summary>
         public CogniteExternalId()
         {
         }
 
         /// <summary>
-        /// Constructor method for ExternalId type
+        /// Constructor method for ExternalId type.
         /// </summary>
         public CogniteExternalId(string externalID)
         {

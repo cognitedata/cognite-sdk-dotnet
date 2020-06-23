@@ -98,8 +98,8 @@ namespace CogniteSdk
         public override string ToString() => Stringable.ToString(this);
 
         /// <summary>
-        /// A list of labels associated with this asset
-        /// Currently only available for use in playground
+        /// A list of labels associated with this asset.
+        /// Currently only available for use in playground.
         /// </summary>
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 

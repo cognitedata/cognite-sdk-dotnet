@@ -173,21 +173,21 @@ namespace CogniteSdk
 
     /// <summary>
     /// Used for adding and removing Labels, primarily for Assets.
-    /// Currently only available for use in playground
+    /// Currently only available for use in playground.
     /// </summary>
     public class UpdateLabels<TCollection>
     {
         /// <summary>
-        /// Used to add new labels
+        /// Used to add new labels.
         /// </summary>
         public TCollection Add { get; set; }
 
         /// <summary>
-        /// Used to remove labels
+        /// Used to remove labels.
         /// </summary>
         public TCollection Remove { get; set; }
         /// <summary>
-        /// Insert a Label
+        /// Insert a Label.
         /// </summary>
         public UpdateLabels(TCollection addLabels)
         {
@@ -195,9 +195,9 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// Add and remove labels
+        /// Add and remove labels.
         /// </summary>
-        /// <param name="addLabels">Labels to Add</param>
+        /// <param name="addLabels">Labels to Add.</param>
         /// <param name="removeLabels">Labels to remove.</param>
         /// <returns></returns>
         public UpdateLabels(TCollection addLabels, TCollection removeLabels)
