@@ -48,8 +48,8 @@ namespace CogniteSdk
 
     /// <summary>
     /// The Cognite Label filter class.
+    /// Currently only available for use in playground
     /// </summary>
-    [System.Obsolete("The ExternalId class is under development, and currently only available for use in playground")]
     public class LabelFilter
     {
         /// <summary>

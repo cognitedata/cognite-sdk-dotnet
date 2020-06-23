@@ -51,8 +51,8 @@ namespace CogniteSdk
 
         /// <summary>
         /// Change the Labels of the object
+        /// Currently only available for use in playground
         /// </summary>
-        [System.Obsolete("The Labels attribute is in development, and currently only available for use in playground")]
         public UpdateLabels<IEnumerable<CogniteExternalId>> Labels { get; set; }
 
         /// <inheritdoc />

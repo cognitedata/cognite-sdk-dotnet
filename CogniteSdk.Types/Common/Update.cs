@@ -173,8 +173,8 @@ namespace CogniteSdk
 
     /// <summary>
     /// Used for adding and removing Labels, primarily for Assets.
+    /// Currently only available for use in playground
     /// </summary>
-    [System.Obsolete("The UpdateLabels class is in development, and currently only available for use in playground")]
     public class UpdateLabels<TCollection>
     {
         /// <summary>
@@ -196,9 +196,8 @@ namespace CogniteSdk
 
         /// <summary>
         /// Add and remove labels
-        /// specified keys.
         /// </summary>
-        /// <param name="AddLabels">Labels to Add</param>
+        /// <param name="addLabels">Labels to Add</param>
         /// <param name="removeLabels">Labels to remove.</param>
         /// <returns></returns>
         public UpdateLabels(TCollection addLabels, TCollection removeLabels)

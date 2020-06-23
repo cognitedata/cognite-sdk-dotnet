@@ -99,8 +99,8 @@ namespace CogniteSdk
 
         /// <summary>
         /// A list of labels associated with this asset
+        /// Currently only available for use in playground
         /// </summary>
-        [Obsolete("The Label attribute is in development, and currently only available for use in playground")]
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 
     }

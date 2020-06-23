@@ -7,8 +7,8 @@ namespace CogniteSdk
 {
     /// <summary>
     /// The CogniteExternalId read class.
+    /// Currently only available for use in playground
     /// </summary>
-    [System.Obsolete("The ExternalId class is under development, and currently only available for use in playground")]
     public class CogniteExternalId
     {
         /// <summary>
