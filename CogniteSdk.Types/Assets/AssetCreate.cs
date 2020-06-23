@@ -56,8 +56,8 @@ namespace CogniteSdk
 
         /// <summary>
         /// List of labels to associate with the asset.
+        /// Currently only available for use in playground.
         /// </summary>
-        [Obsolete("The Label attribute is in development, and currently only available for use in playground")]
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 
         /// <inheritdoc />
