@@ -173,7 +173,6 @@ namespace CogniteSdk
 
     /// <summary>
     /// Used for adding and removing Labels, primarily for Assets.
-    /// Currently only available for use in playground.
     /// </summary>
     public class UpdateLabels<TCollection>
     {

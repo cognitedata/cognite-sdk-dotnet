@@ -7,7 +7,6 @@ namespace CogniteSdk
 {
     /// <summary>
     /// The CogniteExternalId read class.
-    /// Currently only available for use in playground.
     /// </summary>
     public class CogniteExternalId
     {
