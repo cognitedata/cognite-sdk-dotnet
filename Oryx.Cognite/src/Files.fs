@@ -1,5 +1,6 @@
 namespace Oryx.Cognite
 
+open System
 open System.Collections.Generic
 open System.Net.Http
 
@@ -7,7 +8,6 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open System
 
 /// Various event HTTP handlers.
 

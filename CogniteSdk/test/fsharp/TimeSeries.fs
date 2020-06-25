@@ -108,7 +108,7 @@ let ``Search timeseries is Ok`` () = task {
     let len = Seq.length dtos
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len > 0 @>
 }
 
 [<Fact>]
@@ -221,7 +221,7 @@ let ``Search timeseries on IsStep is Ok`` () = task {
     let isSteps = Seq.map (fun (d : TimeSeries) -> d.IsStep) dtos
 
     // Assert
-    test <@ len = 5 @>
+    test <@ len > 0 @>
     test <@ Seq.forall id isSteps @>
 }
 
@@ -241,7 +241,7 @@ let ``Search timeseries on IsString is Ok`` () = task {
     let isStrings = Seq.map (fun (d: TimeSeries) -> d.IsString) dtos
 
     // Assert
-    test <@ len = 6 @>
+    test <@ len > 0 @>
     test <@ Seq.forall id isStrings @>
 }
 
@@ -261,7 +261,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
     let units = Seq.map (fun (d: TimeSeries) -> d.Unit) dtos
 
     // Assert
-    test <@ len = 2 @>
+    test <@ len > 1 @>
     test <@ Seq.forall ((=) "et") units @>
 }
 
@@ -274,14 +274,14 @@ let ``Search timeseries on MetaData is Ok`` () = task {
             Limit = Nullable 10
         )
     // Act
-    let! dtos = readClient.TimeSeries.SearchAsync query
+    let! items = readClient.TimeSeries.SearchAsync query
 
-    let len = Seq.length dtos
-    let ms = Seq.map (fun (d: TimeSeries)  -> d.Metadata) dtos
+    let len = Seq.length items
+    let ms = Seq.map (fun (d: TimeSeries) -> d.Metadata) items
 
     // Assert
-    test <@ len = 1 @>
-    test <@ Seq.forall (fun (m : Dictionary<string,string>) -> m.["pointid"] = "160909") ms @>
+    test <@ len > 0 @>
+    test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["pointid"] = "160909") ms @>
 }
 
 [<Fact>]
@@ -293,11 +293,11 @@ let ``FuzzySearch timeseries on Name is Ok`` () = task {
             Limit = Nullable 10
         )
     // Act
-    let! dtos = readClient.TimeSeries.SearchAsync query
+    let! items = readClient.TimeSeries.SearchAsync query
 
-    let len = Seq.length dtos
+    let len = Seq.length items
 
-    let names = Seq.map (fun (d: TimeSeries) -> d.Name) dtos
+    let names = Seq.map (fun (d: TimeSeries) -> d.Name) items
 
     // Assert
     test <@ len > 0 @>
