@@ -261,7 +261,7 @@ let ``Search timeseries on Unit is Ok`` () = task {
     let units = Seq.map (fun (d: TimeSeries) -> d.Unit) dtos
 
     // Assert
-    test <@ len = 2 @>
+    test <@ len > 1 @>
     test <@ Seq.forall ((=) "et") units @>
 }
 
@@ -280,7 +280,7 @@ let ``Search timeseries on MetaData is Ok`` () = task {
     let ms = Seq.map (fun (d: TimeSeries) -> d.Metadata) items
 
     // Assert
-    test <@ len = 1 @>
+    test <@ len > 0 @>
     test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["pointid"] = "160909") ms @>
 }
 
