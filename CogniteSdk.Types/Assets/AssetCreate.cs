@@ -56,7 +56,6 @@ namespace CogniteSdk
 
         /// <summary>
         /// List of labels to associate with the asset.
-        /// Currently only available for use in playground.
         /// </summary>
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 

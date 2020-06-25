@@ -51,7 +51,6 @@ namespace CogniteSdk
 
         /// <summary>
         /// Change the Labels of the object.
-        /// Currently only available for use in playground.
         /// </summary>
         public UpdateLabels<IEnumerable<CogniteExternalId>> Labels { get; set; }
 
