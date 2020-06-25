@@ -116,6 +116,16 @@ namespace CogniteSdk
         }
 
         /// <summary>
+        /// Create LabelsContainsAll filter from externalId string.
+        /// </summary>
+        /// <param name="label">label externalId.</param>
+        /// <returns>Label filter.</returns>
+        public static LabelFilter All(string label)
+        {
+            return new LabelFilter(new LabelContainsAllFilter(new [] { label }));
+        }
+
+        /// <summary>
         /// Create LabelsContainsAll filter from string of externalIds.
         /// </summary>
         /// <param name="labels">Sequence of label externalIds.</param>
@@ -123,6 +133,16 @@ namespace CogniteSdk
         public static LabelFilter Any(IEnumerable<string> labels)
         {
             return new LabelFilter(new LabelContainsAnyFilter(labels));
+        }
+
+        /// <summary>
+        /// Create LabelsContainsAny filter from externalId string.
+        /// </summary>
+        /// <param name="label">label externalId.</param>
+        /// <returns>Label filter.</returns>
+        public static LabelFilter Any(string label)
+        {
+            return new LabelFilter(new LabelContainsAnyFilter(new [] { label }));
         }
 
         /// <inheritdoc />

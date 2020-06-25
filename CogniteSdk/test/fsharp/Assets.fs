@@ -460,7 +460,7 @@ let ``Update assets is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on single Label is Ok`` () = task {
     // Arrange
-    let labels = LabelFilter ( CogniteExternalId("AssetTestLabel1") )
+    let labels = LabelFilter.All("AssetTestLabel1")
 
     let filter = AssetFilter(Labels = labels)
     let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
@@ -485,7 +485,7 @@ let ``Filter assets on single Label is Ok`` () = task {
 [<Fact>]
 let ``Filter assets on Label and metadata is Ok`` () = task {
     // Arrange
-    let labels = LabelFilter( CogniteExternalId("AssetTestLabel1") )
+    let labels = LabelFilter.All("AssetTestLabel1")
 
     let meta = Dictionary (dict [("RES_ID", "42")])
 
@@ -521,11 +521,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 [<Fact>]
 let ``Filter assets with labels AND filter is Ok`` () = task{
     // Arrange
-    let labelSeq =
-        LabelContainsAllFilter (
-            seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ]
-        )
-    let labels = LabelFilter( labelSeq )
+    let labels = LabelFilter.Any (seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
 
     let filter =
         AssetFilter(
@@ -554,11 +550,7 @@ let ``Filter assets with labels AND filter is Ok`` () = task{
 [<Fact>]
 let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task {
     // Arrange
-    let labelSeq =
-        LabelContainsAnyFilter (
-            seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ]
-        )
-    let labels = LabelFilter( labelSeq )
+    let labels= LabelFilter.Any(seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
 
     let meta = Dictionary (dict [("RES_ID", "42")])
 
@@ -604,7 +596,7 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
 [<Fact>]
 let ``Filter assets on nonexistent label returns empty response`` () = task {
     // Arrange
-    let labels = LabelFilter ( CogniteExternalId("ThisLabelShouldNotExist") )
+    let labels = LabelFilter.All("ThisLabelShouldNotExist")
 
     let filter = AssetFilter( Labels = labels )
     let query = AssetQuery( Limit = Nullable 10, Filter = filter )
@@ -621,10 +613,8 @@ let ``Filter assets on nonexistent label returns empty response`` () = task {
 [<Fact>]
 let ``Count assets matching multi Label ORfilter is Ok`` () = task {
     // Arrange
-    let labels =
-        LabelFilter(
-            LabelContainsAnyFilter( seq [ CogniteExternalId("AssetTestLabel1"); CogniteExternalId("AssetTestLabel2") ] )
-        )
+    let labels = LabelFilter.Any( seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
+
     let filter = AssetFilter( Labels = labels )
     let query = AssetQuery( Filter = filter )
 
