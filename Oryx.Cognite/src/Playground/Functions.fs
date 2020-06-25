@@ -9,10 +9,7 @@ open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Playground
 
-open System.Collections.Generic
 open CogniteSdk
-open CogniteSdk.Types.Common
-open System.Text.Json
 
 /// Various function HTTP handlers.
 [<RequireQualifiedAccess>]
