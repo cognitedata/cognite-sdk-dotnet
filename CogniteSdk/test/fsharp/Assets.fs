@@ -521,7 +521,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 [<Fact>]
 let ``Filter assets with labels AND filter is Ok`` () = task{
     // Arrange
-    let labels = LabelFilter.Any (seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
+    let labels = LabelFilter.All (seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
 
     let filter =
         AssetFilter(
