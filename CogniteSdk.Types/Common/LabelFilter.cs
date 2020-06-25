@@ -75,7 +75,6 @@ namespace CogniteSdk
 
     /// <summary>
     /// The Cognite Label filter class.
-    /// Currently only available for use in playground.
     /// </summary>
     public class LabelFilter
     {
