@@ -47,7 +47,7 @@ namespace CogniteSdk
         /// <summary>
         /// Change the external ID of the object.
         /// </summary>
-        public Update<long?> ParentExternalId { get; set; }
+        public Update<string> ParentExternalId { get; set; }
 
         /// <summary>
         /// Change the Labels of the object.
