@@ -15,7 +15,7 @@ open Tests
 [<Fact>]
 let ``Get datapoints by id with options is Ok`` () = task {
     // Arrange
-    let id = 613312137748079L
+    let id = 6190956317771L
     let query =
         DataPointsQuery(
             Start = "1563175800000",
@@ -45,12 +45,12 @@ let ``Get datapoints by id with options is Ok`` () = task {
 
     // Assert
     test <@ resId = id @>
-    test <@ Seq.length datapoints = 9 @>
+    test <@ Seq.length datapoints = 27 @>
 }
 [<Fact>]
 let ``Get datapoints by id with limit is Ok`` () = task {
     // Arrange
-    let id = 613312137748079L
+    let id = 6190956317771L
     let query =
         DataPointsQuery(
             Items = [
@@ -82,7 +82,7 @@ let ``Get datapoints by id with limit is Ok`` () = task {
 [<Fact>]
 let ``Get datapoints by id with limit and timerange is Ok`` () = task {
     // Arrange
-    let id = 613312137748079L
+    let id = 6190956317771L
 
     let query =
         DataPointsQuery(
@@ -118,8 +118,8 @@ let ``Get datapoints by id with limit and timerange is Ok`` () = task {
 [<Fact>]
 let ``Get datapoints by multiple id with limit is Ok`` () = task {
     // Arrange
-    let idA = 613312137748079L
-    let idB = 613312137748079L
+    let idA = 6190956317771L
+    let idB = 25870989735584L
     let query =
         DataPointsQuery(
             Items = [
@@ -150,7 +150,7 @@ let ``Get datapoints by multiple id with limit is Ok`` () = task {
 [<Fact>]
 let ``Get datapoints by id with aggregate is Ok`` () = task {
     // Arrange
-    let id = 605574483685900L
+    let id = 138649441615650L
     let query =
         DataPointsQuery(
             Start = "1563048800000",
@@ -194,7 +194,7 @@ let ``Get datapoints by id with aggregate is Ok`` () = task {
 [<Fact>]
 let ``Retrieve latest datapoints by id is Ok`` () = task {
     // Arrange
-    let id = 613312137748079L
+    let id = 6190956317771L
     let query =
         DataPointsLatestQuery(
             Items = [

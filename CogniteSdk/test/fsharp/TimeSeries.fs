@@ -40,7 +40,7 @@ let ``Count timeseries is Ok`` () = task {
 [<Fact>]
 let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
-    let id = 613312137748079L
+    let id = 6190956317771L
 
     // Act
     let! dtos = readClient.TimeSeries.RetrieveAsync [ id ]
@@ -189,7 +189,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
-            Filter = TimeSeriesFilter(ExternalIdPrefix = "VAL_45"),
+            Filter = TimeSeriesFilter(ExternalIdPrefix = "pi:1636"),
             Limit = Nullable 10
         )
 
@@ -200,8 +200,8 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     let externalIds = Seq.map (fun (d : TimeSeries) -> d.ExternalId) dtos
 
     // Assert
-    test <@ len = 10 @>
-    test <@ Seq.forall (fun (e: string) -> e.StartsWith("VAL_45")) externalIds @>
+    test <@ len > 1 @>
+    test <@ Seq.forall (fun (e: string) -> e.StartsWith("pi:1636")) externalIds @>
 }
 
 [<Fact>]
