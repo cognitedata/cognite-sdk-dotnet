@@ -46,7 +46,7 @@ namespace CogniteSdk
         /// <summary>
         /// Asset External IDs of related equipment that this time series relates to.
         /// </summary>
-        public IEnumerable<string> ExternalAssetIds { get; set; }
+        public IEnumerable<string> AssetExternalIds { get; set; }
 
         /// <summary>
         /// Only include time series that have a related asset in a tree rooted at any of these root assetIds.
