@@ -179,5 +179,22 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.TimeSeries.update<IEnumerable<TimeSeries>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Retrieves list of time series matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public async Task<IEnumerable<DataPointsSyntheticItem>> SyntheticQueryAsync(TimeSeriesSyntheticQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.TimeSeries.syntheticQuery<IEnumerable<DataPointsSyntheticItem>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
     }
 }

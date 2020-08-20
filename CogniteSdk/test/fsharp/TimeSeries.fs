@@ -386,3 +386,44 @@ let ``Update timeseries is Ok`` () = task {
 
     // Assert delete
 }
+
+[<Fact>]
+let ``Synthetic Query is Ok`` () = task {
+    // Arrange
+    let query =
+        TimeSeriesSyntheticQuery(
+            Items = [
+                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='pi:160627'} + 1", Limit = Nullable 10)
+            ]
+        )
+
+    // Act
+    let! res = readClient.TimeSeries.SyntheticQueryAsync(query)
+
+    let ts = res |> Seq.head |> (fun x -> x.DataPoints)
+
+    // Assert
+    test <@ ts |> Seq.length <= 10 @>
+    test <@ ts |> Seq.length > 0 @>
+    test <@ ts |> Seq.forall (fun x -> isNull x.Error) @>
+}
+
+[<Fact>]
+let ``Synthetic Query with Error is Ok`` () = task {
+    // Arrange
+    let query =
+        TimeSeriesSyntheticQuery(
+            Items = [
+                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='pi:160627'} / 0", Limit = Nullable 5)
+            ]
+        )
+
+    // Act
+    let! res = readClient.TimeSeries.SyntheticQueryAsync(query)
+
+    let ts = res |> Seq.head |> (fun x -> x.DataPoints)
+
+    // Assert
+    test <@ ts |> Seq.length > 0 @>
+    test <@ ts |> Seq.forall (fun x -> x.Error |> (not << isNull)) @>
+}
