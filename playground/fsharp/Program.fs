@@ -131,6 +131,22 @@ let insertDataPointsProtoStyle ctx = task {
 
 }
 
+let syntheticQueryExample (ctx : HttpContext) = task {
+    let query =
+        TimeSeriesSyntheticQuery(
+            Items = [
+                TimeSeriesSyntheticQueryItem(
+                    Expression="ts{externalId='pi:160627'} + 1",
+                    Start = "30d-ago"
+                )
+            ]
+        )
+    let! res =
+        TimeSeries.syntheticQuery query
+        |> runUnsafeAsync ctx CancellationToken.None
+    printfn "%A" res
+ }
+
 let asyncMain argv = task {
     printfn "F# Client"
 

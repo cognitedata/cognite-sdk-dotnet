@@ -58,3 +58,13 @@ module TimeSeries =
         withLogMessage "TimeSeries:update"
         >=> update query Url
 
+    /// Executes an on-the-fly synthetic query
+    /// For example you can use the expression "24 * ts{externalId='production/hour'}" to convert from hourly to daily production rates.
+    /// More about synthetic queries https://docs.cognite.com/dev/concepts/resource_types/timeseries.html#synthetic-time-series
+    let syntheticQuery (query: TimeSeriesSyntheticQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsSyntheticItem>, 'a> =
+        withLogMessage "TimeSeries:syntheticQuery"
+        >=> req {
+            let url = Url +/ "synthetic/query"
+            let! ret = postV10<TimeSeriesSyntheticQuery, ItemsWithoutCursor<DataPointsSyntheticItem>, 'a> query url
+            return ret.Items
+        } 

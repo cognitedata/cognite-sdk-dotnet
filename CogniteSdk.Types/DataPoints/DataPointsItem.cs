@@ -39,7 +39,7 @@ namespace CogniteSdk
         public string Unit { get; set; }
 
         /// <summary>
-        /// The list of datapoints.
+        /// The list of data points.
         /// </summary>
         [JsonPropertyName("datapoints")]
         public IEnumerable<DataPoint> DataPoints { get; set; }
