@@ -40,7 +40,35 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.list<ItemsWithCursor<Asset>>(query);
+            var req = Assets.list<Asset, ItemsWithCursor<Asset>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves list of assets matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public ItemsWithCursor<Asset> List(AssetQuery query, CancellationToken token = default)
+        {
+            return ListAsync(query, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Retrieves number of assets matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of assets matching given filters and optional cursor</returns>
+        public async Task<int> AggregateAsync(AssetQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.aggregate<int>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -50,15 +78,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Number of assets matching given filters and optional cursor</returns>
-        public async Task<Int32> AggregateAsync(AssetQuery query, CancellationToken token = default)
+        public int Aggregate(AssetQuery query, CancellationToken token = default)
         {
-            if (query is null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
-
-            var req = Assets.aggregate<Int32>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return AggregateAsync(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -79,6 +101,17 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Create assets.
+        /// </summary>
+        /// <param name="assets">Assets to create.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Sequence of created assets.</returns>
+        public IEnumerable<Asset> Create(IEnumerable<AssetCreate> assets, CancellationToken token = default)
+        {
+            return CreateAsync(assets, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Retrieves information about an asset given an asset id.
         /// </summary>
         /// <param name="assetId">The id of the asset to get.</param>
@@ -86,8 +119,19 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
-            var req = Assets.get<Asset>(assetId);
+            var req = Assets.get<Asset, Asset>(assetId);
             return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves information about an asset given an asset id.
+        /// </summary>
+        /// <param name="assetId">The id of the asset to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Asset with the given id.</returns>
+        public Asset Get(long assetId, CancellationToken token = default)
+        {
+            return GetAsync(assetId, token).GetAwaiter().GetResult();
         }
 
         #region Delete overloads
@@ -109,6 +153,17 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if
+        /// recursive is true.
+        /// </summary>
+        /// <param name="query">The query of assets to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public EmptyResponse Delete(AssetDelete query, CancellationToken token = default)
+        {
+            return DeleteAsync(query, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Delete multiple assets in the same project by identity items.
         /// </summary>
         /// <param name="items">The list of assets identities to delete.</param>
@@ -122,6 +177,16 @@ namespace CogniteSdk.Resources
 
             var query = new AssetDelete() { Items = items };
             return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple assets in the same project by identity items.
+        /// </summary>
+        /// <param name="items">The list of assets identities to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public EmptyResponse Delete(IEnumerable<Identity> items, CancellationToken token = default)
+        {
+            return DeleteAsync(items, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -141,6 +206,16 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Delete multiple assets in the same project by internal ids.
+        /// </summary>
+        /// <param name="internalIds">The list of assets ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public EmptyResponse Delete(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            return DeleteAsync(internalIds, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Delete multiple assets in the same project by external ids.
         /// </summary>
         /// <param name="externalIds">The list of assets ids to delete.</param>
@@ -154,6 +229,16 @@ namespace CogniteSdk.Resources
 
             var query = new AssetDelete() { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete multiple assets in the same project by external ids.
+        /// </summary>
+        /// <param name="externalIds">The list of assets ids to delete.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public EmptyResponse Delete(IEnumerable<string> externalIds, CancellationToken token = default)
+        {
+            return DeleteAsync(externalIds, token).GetAwaiter().GetResult();
         }
         #endregion
 
@@ -172,8 +257,20 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Assets.retrieve<IEnumerable<Asset>>(ids, ignoreUnknownIds);
+            var req = Assets.retrieve<Asset, IEnumerable<Asset>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of assets identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<Asset> Retrieve(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return RetrieveAsync(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -198,6 +295,18 @@ namespace CogniteSdk.Resources
         /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
         /// per request and all of them must be unique.
         /// </summary>
+        /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<Asset> Retrieve(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return RetrieveAsync(internalIds, ignoreUnknownIds, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
+        /// </summary>
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -211,6 +320,18 @@ namespace CogniteSdk.Resources
             var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
+        /// per request and all of them must be unique.
+        /// </summary>
+        /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<Asset> Retrieve(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return RetrieveAsync(externalIds, ignoreUnknownIds, token).GetAwaiter().GetResult();
+        }
         #endregion
 
         /// <summary>
@@ -219,14 +340,43 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<Asset>> SearchAsync (AssetSearch query, CancellationToken token = default )
+        public async Task<IEnumerable<Asset>> SearchAsync(AssetSearch query, CancellationToken token = default )
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.search<IEnumerable<Asset>>(query);
+            var req = Assets.search<Asset, IEnumerable<Asset>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public IEnumerable<Asset> Search(AssetSearch query, CancellationToken token = default)
+        {
+            return SearchAsync(query, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not
+        /// changed
+        /// </summary>
+        /// <param name="query">The list of assets to update.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of updated assets.</returns>
+        public async Task<IEnumerable<Asset>> UpdateAsync(IEnumerable<AssetUpdateItem> query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.update<Asset, IEnumerable<Asset>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -237,15 +387,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<Asset>> UpdateAsync (IEnumerable<AssetUpdateItem> query, CancellationToken token = default )
+        public IEnumerable<Asset> Update(IEnumerable<AssetUpdateItem> query, CancellationToken token = default)
         {
-            if (query is null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
-
-            var req = Assets.update<IEnumerable<Asset>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return UpdateAsync(query, token).GetAwaiter().GetResult();
         }
     }
 }

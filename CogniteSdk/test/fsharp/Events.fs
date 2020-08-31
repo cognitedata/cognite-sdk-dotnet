@@ -34,33 +34,31 @@ let ``Create and delete events is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Get event by id is Ok`` () = task {
+let ``Get event by id is Ok`` () =
     // Arrange
     let eventId = 19442413705355L
 
     // Act
-    let! res = readClient.Events.GetAsync eventId
+    let res = readClient.Events.Get eventId
 
     let resId = res.Id
 
     // Assert
     test <@ resId = eventId @>
-}
+
 
 [<Fact>]
-let ``Get event by missing id is Error`` () = task {
+let ``Get event by missing id is Error`` () =
     // Arrange
     let eventId = 0L
 
     // Act
-    let! res =
-        task {
-            try
-                let! a = readClient.Events.GetAsync eventId
-                return Ok a
-            with
-            | :? ResponseException as e -> return Error e
-        }
+    let res =
+        try
+            let a = readClient.Events.Get eventId
+            Ok a
+        with
+        | :? ResponseException as e -> Error e
 
     let err = Result.getError res
 
@@ -69,25 +67,24 @@ let ``Get event by missing id is Error`` () = task {
     test <@ err.Code = 400 @>
     test <@ err.Message.Contains "constraint violations" @>
     test <@ not (isNull err.RequestId) @>
-}
 
 [<Fact>]
-let ``Get event by ids is Ok`` () = task {
+let ``Get event by ids is Ok`` () =
     // Arrange
     let eventIds =
         [ 1995162693488L; 6959277162251L; 13821390033633L ]
 
     // Act
-    let! res = readClient.Events.RetrieveAsync eventIds
+    let res = readClient.Events.Retrieve eventIds
 
     let len = Seq.length res
 
     // Assert
     test <@ len = 3 @>
-}
+
 
 [<Fact>]
-let ``Update events is Ok`` () = task {
+let ``Update events is Ok`` () =
     // Arrange
     let externalId = Guid.NewGuid().ToString();
     let newMetadata = Dictionary(dict [
@@ -104,9 +101,9 @@ let ``Update events is Ok`` () = task {
         )
     let newDescription = "UpdatedDesc"
     // Act
-    let! createRes = writeClient.Events.CreateAsync [ dto ]
-    let! updateRes =
-        writeClient.Events.UpdateAsync [
+    let createRes = writeClient.Events.Create [ dto ]
+    let updateRes =
+        writeClient.Events.Update [
             EventUpdateItem(
                 externalId = externalId,
                 Update = EventUpdate(
@@ -116,8 +113,8 @@ let ``Update events is Ok`` () = task {
             )
         ]
 
-    let! getRes = writeClient.Events.RetrieveAsync [ externalId ]
-    let! delRes = writeClient.Events.DeleteAsync [ externalId ]
+    let getRes = writeClient.Events.Retrieve [ externalId ]
+    let delRes = writeClient.Events.Delete [ externalId ]
 
     let getDto = Seq.head getRes
 
@@ -131,7 +128,6 @@ let ``Update events is Ok`` () = task {
     test <@ getDto.ExternalId = externalId @>
     test <@ getDto.Description = newDescription @>
     test <@ getDto.Metadata |> fun a -> metaDataOk @>
-}
 
 [<Fact>]
 let ``List events with limit is Ok`` () = task {

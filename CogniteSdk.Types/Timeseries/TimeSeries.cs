@@ -7,9 +7,9 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// TimeSeries read class.
+    /// TimeSeries read class (without metadata).
     /// </summary>
-    public class TimeSeries
+    public class TimeSeriesWithoutMetadata
     {
         /// <summary>
         /// Server-generated ID for the object
@@ -35,13 +35,6 @@ namespace CogniteSdk
         /// Whether the time series is string valued or not.
         /// </summary>
         public bool IsString { get; set; }
-
-        /// <summary>
-        /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16
-        /// key-value pairs.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// The physical unit of the time series.
@@ -82,5 +75,18 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+    }
+
+    /// <summary>
+    /// TimeSeries read class.
+    /// </summary>
+    public class TimeSeries : TimeSeriesWithoutMetadata
+    {
+        /// <summary>
+        /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16
+        /// key-value pairs.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
     }
 }

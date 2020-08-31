@@ -8,10 +8,9 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event read class.
+    /// The Event read class (without metadata).
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
-    public class Event
+    public class EventWithoutMetadata
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -48,13 +47,6 @@ namespace CogniteSdk
         /// </summary>
         public string Description { get; set; }
 
-
-        /// <summary>
-        /// Custom, application specific metadata. String key -> String value
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
-
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.
         /// </summary>
@@ -86,7 +78,7 @@ namespace CogniteSdk
         /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
-            return obj is Event dto && Id == dto.Id;
+            return obj is EventWithoutMetadata dto && Id == dto.Id;
         }
 
         /// <summary>Serves as the default hash function.</summary>
@@ -98,6 +90,19 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+    }
+
+    /// <summary>
+    /// The Event read class.
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
+    public class Event : EventWithoutMetadata
+    {
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
     }
 }
 

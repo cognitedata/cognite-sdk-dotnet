@@ -8,10 +8,10 @@ open Oryx
 open CogniteSdk
 
 // Shadow types for Oryx that pins the error type to ResponseError
-type HttpFuncResult<'r> = Task<Result<Context<'r>, HandlerError<ResponseException>>>
-type HttpFunc<'a, 'r> = Context<'a> -> HttpFuncResult<'r, ResponseException>
-type NextFunc<'a, 'r> = HttpFunc<'a, 'r, ResponseException>
-type public HttpHandler<'a, 'b, 'r> = HttpFunc<'b, 'r, ResponseException> -> Context<'a> -> HttpFuncResult<'r, ResponseException>
-type HttpHandler<'a, 'r> = HttpHandler<'a, 'a, 'r, ResponseException>
-type HttpHandler<'r> = HttpHandler<HttpResponseMessage, 'r, ResponseException>
+type HttpFuncResult<'TResult> = Task<Result<Context<'TResult>, HandlerError<ResponseException>>>
+type HttpFunc<'T, 'TResult> = Context<'T> -> HttpFuncResult<'TResult, ResponseException>
+type NextFunc<'T, 'TResult> = HttpFunc<'T, 'TResult, ResponseException>
+type public HttpHandler<'T, 'TNext, 'TResult> = HttpFunc<'TNext, 'TResult, ResponseException> -> Context<'T> -> HttpFuncResult<'TResult, ResponseException>
+type HttpHandler<'T, 'TResult> = HttpHandler<'T, 'T, 'TResult, ResponseException>
+type HttpHandler<'T> = HttpHandler<HttpResponseMessage, 'T, ResponseException>
 type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
