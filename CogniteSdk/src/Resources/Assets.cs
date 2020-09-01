@@ -274,8 +274,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Assets.retrieve<Asset, IEnumerable<Asset>>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Assets.retrieve<Asset, IEnumerable<Asset>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Assets.retrieve<AssetWithoutMetadata, IEnumerable<AssetWithoutMetadata>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -364,8 +372,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.search<Asset, IEnumerable<Asset>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Assets.search<Asset, IEnumerable<Asset>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Assets.search<AssetWithoutMetadata, IEnumerable<AssetWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

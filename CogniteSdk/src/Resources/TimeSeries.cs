@@ -185,8 +185,16 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeries, IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeries, IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeriesWithoutMetadata, IEnumerable<TimeSeriesWithoutMetadata>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -211,8 +219,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
-            var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeries, IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -237,8 +244,7 @@ namespace CogniteSdk.Resources
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
-            var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeries, IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -266,8 +272,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.TimeSeries.search<TimeSeries, IEnumerable<TimeSeries>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.TimeSeries.search<TimeSeries, IEnumerable<TimeSeries>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.TimeSeries.search<TimeSeriesWithoutMetadata, IEnumerable<TimeSeriesWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

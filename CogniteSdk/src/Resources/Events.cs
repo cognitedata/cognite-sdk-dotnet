@@ -271,8 +271,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Events.retrieve<Event, IEnumerable<Event>>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.Events.retrieve<Event, IEnumerable<Event>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Events.retrieve<EventWithoutMetadata, IEnumerable<EventWithoutMetadata>>(ids, ignoreUnknownIds);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -362,8 +370,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.search<Event, IEnumerable<Event>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.Events.search<Event, IEnumerable<Event>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Events.search<EventWithoutMetadata, IEnumerable<EventWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
