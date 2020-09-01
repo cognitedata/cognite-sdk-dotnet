@@ -86,3 +86,31 @@ let ``Create and delete Relationships is Ok`` () = task {
     // Assert
     test <@ resExternalId = externalId @>
 }
+
+// [<Fact>]
+// let ``BETA: Get Relationships by ids is Ok`` () = task {
+//     // Arrange
+//     let relationshipIds = [ "relationship-test" ]
+
+//     // Act
+//     let! res = readClient.Beta.Relationships.RetrieveAsync relationshipIds
+
+//     let len = Seq.length res
+
+//     // Assert
+//     test <@ len = 1 @>
+// }
+
+[<Fact>]
+let ``BETA: Get relationhips collection with empty filter is ok`` () = task {
+    // Arrange
+    let filter = Beta.RelationshipFilter()
+    let query = Beta.RelationshipQuery(Filter=filter)
+    // Act
+    let! res = readClient.Beta.Relationships.ListAsync query
+
+    let len = Seq.length res.Items
+
+    // Assert
+    test <@ len = 1 @>
+}
