@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event read class (without metadata).
+    /// The Event read class (with metadata).
     /// </summary>
     public class Event
     {
@@ -99,7 +99,7 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// The Event read class.
+    /// The Event read class (without meta-data).
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
     public class EventWithoutMetadata : Event

@@ -8,7 +8,7 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// TimeSeries read class (without metadata).
+    /// TimeSeries read class.
     /// </summary>
     public class TimeSeries
     {
@@ -86,7 +86,7 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// TimeSeries read class.
+    /// TimeSeries read class (without metadata).
     /// </summary>
     public class TimeSeriesWithoutMetadata : TimeSeries
     {
