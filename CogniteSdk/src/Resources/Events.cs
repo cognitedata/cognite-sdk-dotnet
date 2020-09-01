@@ -33,15 +33,21 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.list<Event, ItemsWithCursor<Event>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.Events.list<Event, ItemsWithCursor<Event>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            } else {
+                var req = Oryx.Cognite.Events.list<EventWithoutMetadata, ItemsWithCursor<EventWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -50,7 +56,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public ItemsWithCursor<Event> List(EventQuery query, CancellationToken token = default)
+        public IItemsWithCursor<Event> List(EventQuery query, CancellationToken token = default)
         {
             return ListAsync(query, token).GetAwaiter().GetResult();
         }
@@ -119,8 +125,17 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<Event> GetAsync(long eventId, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Events.get<Event, Event>(eventId);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.Events.get<Event, Event>(eventId);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Events.get<EventWithoutMetadata, EventWithoutMetadata>(eventId);
+                return await RunAsync(req, token).ConfigureAwait(false);
+
+            }
         }
 
         /// <summary>

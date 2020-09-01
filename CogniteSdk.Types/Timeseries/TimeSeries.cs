@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -9,7 +10,7 @@ namespace CogniteSdk
     /// <summary>
     /// TimeSeries read class (without metadata).
     /// </summary>
-    public class TimeSeriesWithoutMetadata
+    public class TimeSeries
     {
         /// <summary>
         /// Server-generated ID for the object
@@ -73,6 +74,13 @@ namespace CogniteSdk
         /// </summary>
         public long LastUpdatedTime { get; set; }
 
+        /// <summary>
+        /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16
+        /// key-value pairs.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
@@ -80,13 +88,14 @@ namespace CogniteSdk
     /// <summary>
     /// TimeSeries read class.
     /// </summary>
-    public class TimeSeries : TimeSeriesWithoutMetadata
+    public class TimeSeriesWithoutMetadata : TimeSeries
     {
         /// <summary>
         /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16
         /// key-value pairs.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
+        [JsonIgnore]
+        public new Dictionary<string, string> Metadata { get; set; }
     }
 }

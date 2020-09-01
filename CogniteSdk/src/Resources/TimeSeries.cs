@@ -35,10 +35,18 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of time series matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.list<TimeSeries,  ItemsWithCursor<TimeSeries>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata)
+            {
+                var req = Oryx.Cognite.TimeSeries.list<TimeSeries,  ItemsWithCursor<TimeSeries>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.TimeSeries.list<TimeSeriesWithoutMetadata,  ItemsWithCursor<TimeSeriesWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -47,7 +55,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of time series matching given filters and optional cursor</returns>
-        public ItemsWithCursor<TimeSeries> List(TimeSeriesQuery query, CancellationToken token = default)
+        public IItemsWithCursor<TimeSeries> List(TimeSeriesQuery query, CancellationToken token = default)
         {
             return ListAsync(query, token).GetAwaiter().GetResult();
         }

@@ -41,10 +41,13 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            if (_includeMetadata) {
+            if (_includeMetadata)
+            {
                 var req = Assets.list<Asset, ItemsWithCursor<Asset>>(query);
                 return await RunAsync(req, token).ConfigureAwait(false);
-            } else {
+            }
+            else
+            {
                 var req = Assets.list<AssetWithoutMetadata, ItemsWithCursor<AssetWithoutMetadata>>(query);
                 return await RunAsync(req, token).ConfigureAwait(false);
             }
@@ -125,10 +128,13 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
-            if (_includeMetadata) {
+            if (_includeMetadata)
+            {
                 var req = Assets.get<Asset, Asset>(assetId);
                 return await RunAsync(req, token).ConfigureAwait(false);
-            } else {
+            }
+            else
+            {
                 var req = Assets.get<AssetWithoutMetadata, AssetWithoutMetadata>(assetId);
                 return await RunAsync(req, token).ConfigureAwait(false);
             }
