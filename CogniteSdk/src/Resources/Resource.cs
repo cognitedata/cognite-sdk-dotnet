@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,6 +53,7 @@ namespace CogniteSdk.Resources
         {
             _ctx = ctx;
             _authHandler = authHandler;
+            _includeMetadata = true;
         }
 
         /// <summary>

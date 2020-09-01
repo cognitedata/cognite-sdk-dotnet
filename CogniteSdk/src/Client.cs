@@ -119,7 +119,7 @@ namespace CogniteSdk
         {
             private HttpContext _context = create();
             private Func<CancellationToken, Task<string>> _authHandler;
-            private bool _includeMetadata = false;
+            private bool _includeMetadata = true;
 
             /// <summary>
             /// Create Client builder.
