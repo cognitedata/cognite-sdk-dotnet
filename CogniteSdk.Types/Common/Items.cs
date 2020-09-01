@@ -10,6 +10,21 @@ namespace CogniteSdk
     /// <summary>
     /// Holds several items. But don't support paging, i.e no cursor.
     /// </summary>
+    /// <typeparam name="T">A resource type.</typeparam>
+    public interface IItemsWithCursor<out T>
+    {
+        /// <summary>
+        /// Resource items of type T.
+        /// </summary>
+        IEnumerable<T> Items { get; }
+
+        /// <inheritdoc />
+        string ToString();
+    }
+
+    /// <summary>
+    /// Holds several items. But don't support paging, i.e no cursor.
+    /// </summary>
     /// <typeparam name="T">A resource type that is serializable.</typeparam>
     public class ItemsWithoutCursor<T>
     {
@@ -26,7 +41,7 @@ namespace CogniteSdk
     /// Items with a next cursor.
     /// </summary>
     /// <typeparam name="T">Resource type that is serializable.</typeparam>
-    public class ItemsWithCursor<T>
+    public class ItemsWithCursor<T> : IItemsWithCursor<T>
     {
         /// <summary>
         /// Resource items of type T.
@@ -39,7 +54,7 @@ namespace CogniteSdk
         public string NextCursor { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<ItemsWithCursor<T>>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>

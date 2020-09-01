@@ -130,27 +130,26 @@ let ``Update events is Ok`` () =
     test <@ getDto.Metadata |> fun a -> metaDataOk @>
 
 [<Fact>]
-let ``List events with limit is Ok`` () = task {
+let ``List events with limit is Ok`` () =
     // Arrange
     let query = EventQuery(Limit = Nullable 10)
 
     // Act
-    let! res = readClient.Events.ListAsync query
+    let res = readClient.Events.List query
 
     let len = Seq.length res.Items
 
     // Assert
     test <@ len = 10 @>
-}
 
 [<Fact>]
-let ``Filter events on AssetIds is Ok`` () = task {
+let ``Filter events on AssetIds is Ok`` () =
     // Arrange
     let filter = EventFilter(AssetIds = [ 4650652196144007L ])
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = readClient.Events.ListAsync query
+    let res = readClient.Events.List query
 
     let len = Seq.length res.Items
     let assetIds = Seq.collect (fun (e: Event) -> e.AssetIds) res.Items
@@ -158,16 +157,15 @@ let ``Filter events on AssetIds is Ok`` () = task {
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall ((=) 4650652196144007L) assetIds @>
-}
 
 [<Fact>]
-let ``Filter events on subtype is Ok`` () = task {
+let ``Filter events on subtype is Ok`` () =
     // Arrange
     let filter = EventFilter(Subtype = "VAL")
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = readClient.Events.ListAsync query
+    let res = readClient.Events.List query
 
     let len = Seq.length res.Items
 
@@ -176,17 +174,16 @@ let ``Filter events on subtype is Ok`` () = task {
     // Assert
     test <@ len = 10 @>
     test <@ subTypes |> Seq.forall ((=) "VAL") @>
-}
 
 [<Fact>]
-let ``Filter events on CreatedTime is Ok`` () = task {
+let ``Filter events on CreatedTime is Ok`` () =
     // Arrange
     let timerange = TimeRange(Min = Nullable 1582975736270L, Max = Nullable 1582975736290L)
     let filter = EventFilter(CreatedTime = timerange)
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
 
     let len = Seq.length res.Items
 
@@ -195,17 +192,16 @@ let ``Filter events on CreatedTime is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1582975736290L && t > 1582975736270L) createdTimes @>
-}
 
 [<Fact>]
-let ``Filter events on LastUpdatedTime is Ok`` () = task {
+let ``Filter events on LastUpdatedTime is Ok`` () =
     // Arrange
     let timerange = TimeRange(Min = Nullable 1582975736270L, Max = Nullable 1582975736290L)
     let filter = EventFilter(LastUpdatedTime = timerange)
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
     let len = Seq.length res.Items
 
     let lastUpdatedTimes = Seq.map (fun (e: Event) -> e.CreatedTime) res.Items
@@ -213,17 +209,16 @@ let ``Filter events on LastUpdatedTime is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun t -> t < 1582975736290L && t > 1582975736270L) lastUpdatedTimes @>
-}
 
 [<Fact>]
-let ``Filter events on StartTime is Ok`` () = task {
+let ``Filter events on StartTime is Ok`` () =
     // Arrange
     let timerange = TimeRange(Min = Nullable 1565941319000L, Max = Nullable 1565941339000L)
     let filter = EventFilter(StartTime = timerange)
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
 
     let len = Seq.length res.Items
 
@@ -232,17 +227,16 @@ let ``Filter events on StartTime is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun (t: Nullable<int64>) -> t.Value < 1565941339000L && t.Value > 1565941319000L) startTimes @>
-}
 
 [<Fact>]
-let ``Filter events on EndTime is Ok`` () = task {
+let ``Filter events on EndTime is Ok`` () =
     // Arrange
     let timerange = TimeRange(Min = Nullable 1565941331000L, Max = Nullable 1565941351000L)
     let filter = EventFilter(EndTime = timerange)
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
     let len = Seq.length res.Items
 
     let endTimes = Seq.map (fun (e: Event) -> e.EndTime) res.Items
@@ -250,32 +244,30 @@ let ``Filter events on EndTime is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun (t: Nullable<int64>) -> t.Value < 1565941351000L && t.Value > 1565941331000L) endTimes @>
-}
 
 [<Fact>]
-let ``Filter events on ExternalIdPrefix is Ok`` () = task {
+let ``Filter events on ExternalIdPrefix is Ok`` () =
     // Arrange
     let filter = EventFilter(ExternalIdPrefix = "odata")
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
 
     let externalIds = Seq.map (fun (e: Event) -> e.ExternalId) res.Items
 
     // Assert
     test <@ Seq.length externalIds > 0 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("odata")) externalIds @>
-}
 
 [<Fact>]
-let ``Filter events on Metadata is Ok`` () = task {
+let ``Filter events on Metadata is Ok`` () =
     // Arrange
     let filter = EventFilter(Metadata = Dictionary(dict ["sourceId", "2758173488388242"]))
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
     let len = Seq.length res.Items
 
     let ms = Seq.map (fun (e: Event) -> e.Metadata) res.Items
@@ -283,16 +275,15 @@ let ``Filter events on Metadata is Ok`` () = task {
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun (m: Dictionary<string, string>) -> m.Item "sourceId" = "2758173488388242") ms @>
-}
 
 [<Fact>]
-let ``Filter events on Source is Ok`` () = task {
+let ``Filter events on Source is Ok`` () =
     // Arrange
     let filter = EventFilter(Source = "akerbp-cdp")
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = readClient.Events.ListAsync query
+    let res = readClient.Events.List query
     let len = Seq.length res.Items
 
     let sources = Seq.map (fun (e: Event) -> e.Source) res.Items
@@ -300,15 +291,14 @@ let ``Filter events on Source is Ok`` () = task {
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall ((=) "akerbp-cdp") sources @>
-}
 
 [<Fact>]
-let ``Filter events on Type is Ok`` () = task {
+let ``Filter events on Type is Ok`` () =
     // Arrange
     let filter = EventFilter(Type = "Monad")
     let query = EventQuery(Limit = Nullable 10, Filter = filter)
     // Act
-    let! res = writeClient.Events.ListAsync query
+    let res = writeClient.Events.List query
     let len = Seq.length res.Items
 
     let types = Seq.map (fun (e: Event) -> e.Type) res.Items
@@ -316,33 +306,29 @@ let ``Filter events on Type is Ok`` () = task {
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall ((=) "Monad") types @>
-}
 
 [<Fact>]
-let ``Count assets with filter is ok`` () = task {
+let ``Count assets with filter is ok`` () =
     // Arrange
     let meta = Dictionary (dict [("version", "undefined")])
     let filter = EventFilter(Metadata = meta)
     let query = EventQuery(Filter = filter)
 
     // Act
-    let! count = readClient.Events.AggregateAsync query
+    let count = readClient.Events.Aggregate query
 
     // Assert
     test <@ count > 0 @>
-}
-
 
 [<Fact>]
-let ``Search events is Ok`` () = task {
+let ``Search events is Ok`` () =
     // Arrange
     let dto = DescriptionSearch(Description = "dotnet")
     let query = EventSearch(Search = dto)
 
     // Act
-    let! res = writeClient.Events.SearchAsync query
+    let res = writeClient.Events.Search query
     let len = Seq.length res
 
     // Assert
     test <@ len > 0 @>
-}

@@ -37,6 +37,36 @@ let ``Get asset by id is Ok`` () =
     test <@ resId = assetId @>
 
 [<Fact>]
+let ``Get asset with metadata is Ok`` () =
+    // Arrange
+    let assetId = 130452390632424L
+
+    // Act
+    let res = readClient.Assets.Get assetId
+
+    let md = res.Metadata
+
+    // Assert
+    test <@ not (isNull md) @>
+    test <@ md.["SOURCE_DB"] = "workmate" @>
+
+[<Fact>]
+let ``Get asset without metadata is Ok`` () =
+    // Arrange
+    let assetId = 130452390632424L
+
+    // Act
+    let res = readClientWithoutMetadata.Assets.Get assetId
+
+    let resId = res.Id
+
+    // Assert
+    let md = res.Metadata
+
+    // Assert
+    test <@ isNull md @>
+
+[<Fact>]
 let ``Get asset by missing id is Error`` () =
     // Arrange
     let assetId = 0L

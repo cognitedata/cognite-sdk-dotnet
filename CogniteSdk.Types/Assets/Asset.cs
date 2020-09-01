@@ -2,15 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Asset read class (without metadata).
+    /// The Asset read class (with metadata).
     /// </summary>
-    public class AssetWithoutMetadata
+    public class Asset
     {
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
@@ -95,18 +95,25 @@ namespace CogniteSdk
         /// A list of labels associated with this asset.
         /// </summary>
         public IEnumerable<CogniteExternalId> Labels { get; set; }
-    }
 
-    /// <summary>
-    /// The Asset read class (with metadata).
-    /// </summary>
-    public class Asset : AssetWithoutMetadata
-    {
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public Dictionary<string, string> Metadata { get; set; }
+    }
+
+    /// <summary>
+    /// The Asset read class (without metadata).
+    /// </summary>
+    public class AssetWithoutMetadata : Asset
+    {
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        [JsonIgnore]
+        public new Dictionary<string, string> Metadata { get; set; }
     }
 }
 

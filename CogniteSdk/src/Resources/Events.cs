@@ -21,8 +21,9 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
+        /// <param name="includeMetadata">Include meta-data in responses or not.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal EventsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal EventsResource(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx) : base(authHandler, includeMetadata, ctx)
         {
         }
 

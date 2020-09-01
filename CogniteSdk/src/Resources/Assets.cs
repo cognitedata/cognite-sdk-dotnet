@@ -22,8 +22,9 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
+        /// <param name="includeMetadata">Include meta-data in responses or not.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal AssetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal AssetsResource(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx) : base(authHandler, includeMetadata, ctx)
         {
         }
 
@@ -33,15 +34,20 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.list<Asset, ItemsWithCursor<Asset>>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata) {
+                var req = Assets.list<Asset, ItemsWithCursor<Asset>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            } else {
+                var req = Assets.list<AssetWithoutMetadata, ItemsWithCursor<AssetWithoutMetadata>>(query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -50,7 +56,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public ItemsWithCursor<Asset> List(AssetQuery query, CancellationToken token = default)
+        public IItemsWithCursor<Asset> List(AssetQuery query, CancellationToken token = default)
         {
             return ListAsync(query, token).GetAwaiter().GetResult();
         }
@@ -119,8 +125,13 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
         {
-            var req = Assets.get<Asset, Asset>(assetId);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (_includeMetadata) {
+                var req = Assets.get<Asset, Asset>(assetId);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            } else {
+                var req = Assets.get<AssetWithoutMetadata, AssetWithoutMetadata>(assetId);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

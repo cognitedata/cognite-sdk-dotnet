@@ -29,6 +29,24 @@ namespace CogniteSdk.Resources
         protected readonly Func<CancellationToken, Task<string>> _authHandler;
 
         /// <summary>
+        /// Include metadata or not.
+        /// </summary>
+        protected readonly bool _includeMetadata;
+
+        /// <summary>
+        /// Will only be instantiated by the client.
+        /// </summary>
+        /// <param name="authHandler">Authentication handler.</param>
+        /// <param name="includeMetadata">Include meta-data or not.</param>
+        /// <param name="ctx">Context to use for the request.</param>
+        internal Resource(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx)
+        {
+            _ctx = ctx;
+            _authHandler = authHandler;
+            _includeMetadata = includeMetadata;
+        }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
