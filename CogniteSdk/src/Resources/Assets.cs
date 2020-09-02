@@ -19,7 +19,7 @@ namespace CogniteSdk.Resources
     public class AssetsResource : Resource
     {
         /// <summary>
-        /// Will only be instantiated by the client.
+        /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="includeMetadata">Include meta-data in responses or not.</param>
@@ -29,7 +29,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of assets matching query.
+        /// Asynchronously retrieves list of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -54,7 +54,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of assets matching query.
+        /// Retrieve list of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -65,7 +65,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves number of assets matching query.
+        /// Asynchronously retrieve number of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -82,7 +82,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves number of assets matching query.
+        /// Retrieve the number of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -93,7 +93,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Create assets.
+        /// Asynchronously create assets.
         /// </summary>
         /// <param name="assets">Assets to create.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -121,7 +121,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about an asset given an asset id.
+        /// Asynchronously retrieve information about an asset given an asset id.
         /// </summary>
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -153,8 +153,8 @@ namespace CogniteSdk.Resources
 
         #region Delete overloads
         /// <summary>
-        /// Delete multiple assets in the same project, along with all their descendants in the asset hierarchy if
-        /// recursive is true.
+        /// Asynchronously delete multiple assets in the same project, along with all their descendants in the asset
+        /// hierarchy if recursive is true.
         /// </summary>
         /// <param name="query">The query of assets to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -181,7 +181,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple assets in the same project by identity items.
+        /// Asynchronously delete multiple assets in the same project by identity items.
         /// </summary>
         /// <param name="items">The list of assets identities to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -207,7 +207,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple assets in the same project by internal ids.
+        /// Asynchronously delete multiple assets in the same project by internal ids.
         /// </summary>
         /// <param name="internalIds">The list of assets ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -233,7 +233,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple assets in the same project by external ids.
+        /// Asynchronously delete multiple assets in the same project by external ids.
         /// </summary>
         /// <param name="externalIds">The list of assets ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -261,8 +261,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -299,8 +299,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -329,8 +329,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -360,7 +360,7 @@ namespace CogniteSdk.Resources
         #endregion
 
         /// <summary>
-        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieve a list of assets matching the given criteria. This operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -385,7 +385,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// Retrieve a list of assets matching the given criteria. This operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -396,8 +396,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not
-        /// changed
+        /// Asynchronously update one or more assets. Supports partial updates, meaning that fields omitted from the
+        /// requests are not changed
         /// </summary>
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>

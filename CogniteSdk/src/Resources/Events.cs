@@ -17,7 +17,7 @@ namespace CogniteSdk.Resources
     public class EventsResource : Resource
     {
         /// <summary>
-        /// Will only be instantiated by the client.
+        /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="includeMetadata">Include meta-data in responses or not.</param>
@@ -117,7 +117,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about an asset given an asset id.
+        /// Asynchronously retrieves information about an asset given an asset id.
         /// </summary>
         /// <param name="eventId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -150,7 +150,7 @@ namespace CogniteSdk.Resources
 
         #region Delete overloads
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="query">The list of events to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -176,7 +176,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="identities">The list of event ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -202,7 +202,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="ids">The list of event ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -228,7 +228,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="externalIds">The list of event externalids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -257,8 +257,8 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -295,8 +295,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of event internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -325,8 +325,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of event external ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -357,7 +357,8 @@ namespace CogniteSdk.Resources
         #endregion
 
         /// <summary>
-        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieves a list of assets matching the given criteria. This operation does not support
+        /// pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -393,8 +394,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not
-        /// changed
+        /// Asynchronously update one or more events. Supports partial updates, meaning that fields omitted from the
+        /// requests are not changed
         /// </summary>
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>

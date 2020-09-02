@@ -331,7 +331,7 @@ namespace CogniteSdk
                 // Builder is invalid after this
                 _context = null;
                 _authHandler = null;
-                _includeMetadata = false;
+                _includeMetadata = true;
                 return new Client(authHandler, includeMetadata, ctx);
             }
 

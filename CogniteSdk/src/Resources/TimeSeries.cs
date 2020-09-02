@@ -17,7 +17,7 @@ namespace CogniteSdk.Resources
     public class TimeSeriesResource : Resource
     {
         /// <summary>
-        /// Will only be instantiated by the client.
+        /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="includeMetadata">Include meta-data in responses or not.</param>
@@ -27,7 +27,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of time series matching query.
+        /// Asynchronously retrieve list of time series matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of time series matching query.
+        /// Retrieve list of time series matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -58,7 +58,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves number of timeseries matching query.
+        /// Asynchronously retrieve the number of timeseries matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -75,7 +75,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves number of timeseries matching query.
+        /// Retrieve the number of timeseries matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -86,7 +86,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Create 1 or more time series.
+        /// Asynchronously create one or more time series.
         /// </summary>
         /// <param name="timeseries">Time series to create.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -98,7 +98,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Create 1 or more time series.
+        /// Create one or more time series.
         /// </summary>
         /// <param name="timeseries">Time series to create.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -109,7 +109,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Asynchronously delete multiple times series in the same project.
         /// </summary>
         /// <param name="query">The list of timeseries to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -120,7 +120,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Delete multiple times series in the same project.
         /// </summary>
         /// <param name="query">The list of timeseries to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -130,7 +130,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Asynchronously delete multiple times eries in the same project.
         /// </summary>
         /// <param name="internalIds">The list of timeseries internal ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -152,7 +152,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Asynchronously delete multiple times eries in the same project.
         /// </summary>
         /// <param name="externalIds">The list of timeseries external ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -174,8 +174,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
-        /// be listed per request and all of them must be unique.
+        /// Asynchronously retrieve information about multiple time series in the same project. A maximum of 1000 time
+        /// series IDs may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of time series identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -195,7 +195,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// Retrieve information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of time series identities to retrieve.</param>
@@ -207,8 +207,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
-        /// be listed per request and all of them must be unique.
+        /// Asynchronously retrieve information about multiple time series in the same project. A maximum of 1000 time
+        /// series IDs may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -220,7 +220,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// Retrieve information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
@@ -232,8 +232,8 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
-        /// be listed per request and all of them must be unique.
+        /// Asynchronously retrieve information about multiple time series in the same project. A maximum of 1000 time
+        /// series IDs may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -245,7 +245,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// Retrieve information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
@@ -257,7 +257,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieve a list of time series matching the given criteria. This operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -282,7 +282,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves a list of time series matching the given criteria. This operation does not support pagination.
+        /// Retrieve a list of time series matching the given criteria. This operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -293,7 +293,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Updates multiple time series within the same project. This operation supports partial updates, meaning that
+        /// Asynchronously update multiple time series within the same project. This operation supports partial updates, meaning that
         /// fields omitted from the requests are not changed
         /// </summary>
         /// <param name="query">The list of timeseries to update.</param>
@@ -311,7 +311,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Updates multiple time series within the same project. This operation supports partial updates, meaning that
+        /// Update multiple time series within the same project. This operation supports partial updates, meaning that
         /// fields omitted from the requests are not changed
         /// </summary>
         /// <param name="query">The list of timeseries to update.</param>
@@ -323,7 +323,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of time series matching query.
+        /// Asynchronously retrieve a list of time series matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -340,7 +340,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of time series matching query.
+        /// Retrieve a list of time series matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
