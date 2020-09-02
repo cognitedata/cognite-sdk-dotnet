@@ -1,16 +1,13 @@
 // Copyright 2019 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static Oryx.Cognite.HandlerModule;
-using CogniteSdk;
-
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
-using System;
 
 namespace CogniteSdk.Resources
 {
