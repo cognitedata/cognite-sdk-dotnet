@@ -123,13 +123,13 @@ let ``Filter assets is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Filter assets on Name is Ok`` () =
+let ``Filter assets on Name is Ok`` () = task {
     // Arrange
     let filter = AssetFilter(Name = "23-TE-96116-04")
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let res = readClient.Assets.List query
+    let! res = readClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
     let identity = (Seq.head res.Items).Id
@@ -137,15 +137,16 @@ let ``Filter assets on Name is Ok`` () =
     // Assert
     test <@ len = 1 @>
     test <@ identity = 702630644612L @>
+}
 
 [<Fact>]
-let ``Filter assets on ExternalIdPrefix is Ok`` () =
+let ``Filter assets on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let filter = AssetFilter(ExternalIdPrefix = "odata")
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let res = writeClient.Assets.List query
+    let! res = writeClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
 
@@ -156,16 +157,17 @@ let ``Filter assets on ExternalIdPrefix is Ok`` () =
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith "odata") externalids @>
+}
 
 [<Fact>]
-let ``Filter assets on MetaData is Ok`` () =
+let ``Filter assets on MetaData is Ok`` () = task {
     // Arrange
     let meta = Dictionary (dict [("RES_ID", "525283")])
     let filter = AssetFilter(Metadata = meta)
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let res = readClient.Assets.List query
+    let! res = readClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
     let ms = Seq.map (fun (dto: Asset) -> dto.Metadata) res.Items
@@ -173,6 +175,7 @@ let ``Filter assets on MetaData is Ok`` () =
     // Assert
     test <@ len = 10 @>
     test <@ ms |> Seq.forall (fun (m: Dictionary<string, string>) -> (m.Item "RES_ID") = "525283") @>
+}
 
 [<Fact>]
 let ``Filter assets on ParentIds is Ok`` () = task {
@@ -404,10 +407,10 @@ let ``Update assets is Ok`` () = task {
     }
 
     // Act
-    let createRes = writeClient.Assets.Create [ dto ]
-    let updateRes = writeClient.Assets.Update update
+    let! createRes = writeClient.Assets.CreateAsync [ dto ]
+    let! updateRes = writeClient.Assets.UpdateAsync update
 
-    let assetsResponses = writeClient.Assets.Retrieve [ newExternalId ]
+    let! assetsResponses = writeClient.Assets.RetrieveAsync [ newExternalId ]
 
     let resName, resExternalId, resMetaData =
         let h = Seq.tryHead assetsResponses
@@ -493,7 +496,7 @@ let ``Filter assets on single Label is Ok`` () = task {
     let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
 
     // Act
-    let res = writeClient.Assets.List query
+    let! res = writeClient.Assets.ListAsync query
 
     let allItemsMatch =
         res.Items |> Seq.map (fun item ->
@@ -556,7 +559,7 @@ let ``Filter assets with labels AND filter is Ok`` () = task {
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let res = writeClient.Assets.List query
+    let! res = writeClient.Assets.ListAsync query
 
     // Assert
     let resLabels =
