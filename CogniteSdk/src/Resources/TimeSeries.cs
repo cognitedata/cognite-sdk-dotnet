@@ -43,9 +43,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of time series matching given filters and optional cursor</returns>
-        public async Task<IItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
         {
-            return await ListAsync<TimeSeries>(query, token);
+            return (ItemsWithCursor<TimeSeries>) await ListAsync<TimeSeries>(query, token);
         }
 
         /// <summary>
