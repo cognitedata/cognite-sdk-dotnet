@@ -53,7 +53,7 @@ namespace CogniteSdk.Resources
             return (ItemsWithCursor<Event>) await ListAsync<Event>(query, token);
         }
 
-        // <summary>
+        /// <summary>
         /// Retrieves list of event like objects matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>

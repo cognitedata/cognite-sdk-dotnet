@@ -320,19 +320,20 @@ let ``Update timeseries is Ok`` () =
             "key1", "value1"
             "key2", "value2"
         ] |> Dictionary
+    let externalIdString = Guid.NewGuid().ToString();
     let dto =
         TimeSeriesCreate(
             Metadata = (dict [
                 "oldkey1", "oldvalue1"
                 "oldkey2", "oldvalue2"
             ] |> Dictionary),
-            ExternalId = "testupdate",
+            ExternalId = externalIdString,
             Name = "testupdate",
             IsString = false,
             IsStep = false
         )
     let externalId = dto.ExternalId
-    let newExternalId = "testupdatenew"
+    let newExternalId = Guid.NewGuid().ToString();
     let newDescription = "testdescription"
 
     // Act
