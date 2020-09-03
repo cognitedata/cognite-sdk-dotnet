@@ -79,7 +79,7 @@ let ``Retrieve response from functionCalls is Ok`` () = task {
     test <@ res.Response.ToString() = "42" @>
 }
 
-[<Fact>]
+//[<Fact>]
 let ``Call function is Ok`` () = task {
     // Act
     let! res = writeClient.Playground.FunctionCalls.CallFunction(8287208469954416L, Identity("test"))

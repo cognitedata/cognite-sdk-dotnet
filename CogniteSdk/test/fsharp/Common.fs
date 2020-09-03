@@ -6,7 +6,7 @@ open System.Net.Http
 open CogniteSdk
 
 module Common =
-    let createClient apiKey project url includeMetadata =
+    let createClient apiKey project url =
         let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))
         let httpClient = new HttpClient(handler);
 
@@ -23,14 +23,12 @@ module Common =
             (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
             "publicdata"
             "https://api.cognitedata.com"
-            true
 
     let writeClient =
         createClient
             (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
             "fusiondotnet-tests"
             "https://greenfield.cognitedata.com"
-            true
 
     let noAuthClient =
         let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))

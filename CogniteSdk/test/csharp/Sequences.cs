@@ -28,6 +28,7 @@ namespace Test.CSharp.Integration
             // Assert
             Assert.True(res.Items.Any(), "Expected at least one sequence");
         }
+
         [Fact]
         [Trait("Description", "List Sequences with limit and filter is Ok")]
         public async Task ListSequenceWithLimitAndFilter()
@@ -48,6 +49,7 @@ namespace Test.CSharp.Integration
             // Assert
             Assert.True(res.Items.Any(), "Expected at least one sequence");
         }
+
         [Fact]
         [Trait("Description", "Retrieve Sequences by id is Ok")]
         public async Task RetrieveSequenceById()
