@@ -20,7 +20,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// The source of the relationship.
         /// </summary>
-        public CogniteExternalId SourceExternalId { get; set; }
+        public string SourceExternalId { get; set; }
 
         /// <summary>
         /// Resource type of the relationship source
@@ -30,7 +30,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// The target of the relationship.
         /// </summary>
-        public CogniteExternalId TargetExternalId { get; set; }
+        public string TargetExternalId { get; set; }
 
         /// <summary>
         /// Resource type of the relationship source
@@ -40,12 +40,12 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Time when the relationship started.
         /// </summary>
-        public long StartTime { get; set; }
+        public long? StartTime { get; set; }
 
         /// <summary>
         /// Time when the relationship ended.
         /// </summary>
-        public long EndTime { get; set; }
+        public long? EndTime { get; set; }
 
         /// <summary>
         /// Confidence value of the existence of this relationship.
@@ -54,12 +54,12 @@ namespace CogniteSdk.Beta
         /// existence of the relationship. Generated relationships
         /// should never have the a confidence score of 1.0.
         /// </summary>
-        public float Confidence { get; set; }
+        public float? Confidence { get; set; }
 
         /// <summary>
         /// String describing the source system storing or generating the relationship.
         /// </summary>
-        public Int64 DataSetId { get; set; }
+        public Int64? DataSetId { get; set; }
 
         /// <summary>
         /// a list of labels associated with the relationships

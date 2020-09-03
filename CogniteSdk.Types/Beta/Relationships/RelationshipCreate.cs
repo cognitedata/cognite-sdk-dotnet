@@ -41,12 +41,12 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Time when the relationship started.
         /// </summary>
-        public long StartTime { get; set; }
+        public long? StartTime { get; set; }
 
         /// <summary>
         /// Time when the relationship ended.
         /// </summary>
-        public long EndTime { get; set; }
+        public long? EndTime { get; set; }
 
         /// <summary>
         /// Confidence value of the existence of this relationship.
@@ -55,12 +55,12 @@ namespace CogniteSdk.Beta
         /// existence of the relationship. Generated relationships
         /// should never have the a confidence score of 1.0.
         /// </summary>
-        public float Confidence { get; set; }
+        public float? Confidence { get; set; }
 
         /// <summary>
         /// The id of the dataset this relationship belongs to.
         /// </summary>
-        public Int64 DataSetId { get; set; }
+        public Int64? DataSetId { get; set; }
 
         /// <summary>
         /// List of labels to associate with the relationship.

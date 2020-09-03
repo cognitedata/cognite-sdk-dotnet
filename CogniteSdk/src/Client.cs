@@ -114,6 +114,7 @@ namespace CogniteSdk
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);
+            // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
         }
 
