@@ -20,10 +20,21 @@ namespace CogniteSdk.Resources
         /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
-        /// <param name="includeMetadata">Include meta-data in responses or not.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx) : base(authHandler, includeMetadata, ctx)
+        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve list of time series (with or without meta-data) matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of time series matching given filters and optional cursor</returns>
+        public async Task<IItemsWithCursor<T>> ListAsync<T>(TimeSeriesQuery query, CancellationToken token = default) where T : TimeSeries
+        {
+            var req = Oryx.Cognite.TimeSeries.list<T,  ItemsWithCursor<T>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -34,16 +45,18 @@ namespace CogniteSdk.Resources
         /// <returns>List of time series matching given filters and optional cursor</returns>
         public async Task<IItemsWithCursor<TimeSeries>> ListAsync(TimeSeriesQuery query, CancellationToken token = default)
         {
-            if (_includeMetadata)
-            {
-                var req = Oryx.Cognite.TimeSeries.list<TimeSeries,  ItemsWithCursor<TimeSeries>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Oryx.Cognite.TimeSeries.list<TimeSeriesWithoutMetadata,  ItemsWithCursor<TimeSeriesWithoutMetadata>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            return await ListAsync<TimeSeries>(query, token);
+        }
+
+        /// <summary>
+        /// Retrieve list of time series like objects matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of time series matching given filters and optional cursor</returns>
+        public IItemsWithCursor<T> List<T>(TimeSeriesQuery query, CancellationToken token = default) where T : TimeSeries
+        {
+            return ListAsync<T>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -54,7 +67,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of time series matching given filters and optional cursor</returns>
         public IItemsWithCursor<TimeSeries> List(TimeSeriesQuery query, CancellationToken token = default)
         {
-            return ListAsync(query, token).GetAwaiter().GetResult();
+            return ListAsync<TimeSeries>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -164,7 +177,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple times eries in the same project.
+        /// Delete multiple times series in the same project.
         /// </summary>
         /// <param name="externalIds">The list of timeseries external ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -180,18 +193,34 @@ namespace CogniteSdk.Resources
         /// <param name="ids">The list of time series identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : TimeSeries
+        {
+            var req = Oryx.Cognite.TimeSeries.retrieve<T, IEnumerable<T>>(ids, ignoreUnknownIds);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve information about multiple time series in the same project. A maximum of 1000 time
+        /// series IDs may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of time series identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            if (_includeMetadata)
-            {
-                var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeries, IEnumerable<TimeSeries>>(ids, ignoreUnknownIds);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Oryx.Cognite.TimeSeries.retrieve<TimeSeriesWithoutMetadata, IEnumerable<TimeSeriesWithoutMetadata>>(ids, ignoreUnknownIds);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            return await RetrieveAsync<TimeSeries>(ids, ignoreUnknownIds, token);
+        }
+
+        /// <summary>
+        /// Retrieve information about multiple time series in the same project. A maximum of 1000 time series IDs may
+        /// be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of time series identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T :  TimeSeries
+        {
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -203,7 +232,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public IEnumerable<TimeSeries> Retrieve(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            return RetrieveAsync(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
+            return RetrieveAsync<TimeSeries>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -217,6 +246,19 @@ namespace CogniteSdk.Resources
         {
             var ids = internalIds.Select(Identity.Create);
             return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve information about multiple time series like objects in the same project. A maximum of 1000 time series IDs may
+        /// be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : TimeSeries
+        {
+            var ids = internalIds.Select(Identity.Create);
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -245,6 +287,19 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieve information about multiple time series like objects in the same project. A maximum of 1000 time
+        /// series IDs may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : TimeSeries
+        {
+            var ids = externalIds.Select(Identity.Create);
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Retrieve information about multiple time series in the same project. A maximum of 1000 time series IDs may
         /// be listed per request and all of them must be unique.
         /// </summary>
@@ -257,28 +312,45 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieve a list of time series matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieve a list of time series (with or without meta-data) matching the given criteria. This
+        /// operation does not support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<TimeSeries>> SearchAsync(TimeSeriesSearch query, CancellationToken token = default)
+        public async Task<IEnumerable<T>> SearchAsync<T>(TimeSeriesSearch query, CancellationToken token = default) where T : TimeSeries
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            if (_includeMetadata)
-            {
-                var req = Oryx.Cognite.TimeSeries.search<TimeSeries, IEnumerable<TimeSeries>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Oryx.Cognite.TimeSeries.search<TimeSeriesWithoutMetadata, IEnumerable<TimeSeriesWithoutMetadata>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            var req = Oryx.Cognite.TimeSeries.search<T, IEnumerable<T>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve a list of time series matching the given criteria. This operation does not support
+        /// pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public async Task<IEnumerable<TimeSeries>> SearchAsync(TimeSeriesSearch query, CancellationToken token = default)
+        {
+            return await SearchAsync<TimeSeries>(query, token);
+        }
+
+        /// <summary>
+        /// Retrieve a list of time series like objects matching the given criteria. This operation does not support
+        /// pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public IEnumerable<T> Search<T>(TimeSeriesSearch query, CancellationToken token = default) where T : TimeSeries
+        {
+            return SearchAsync<T>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -289,7 +361,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given criteria.</returns>
         public IEnumerable<TimeSeries> Search(TimeSeriesSearch query, CancellationToken token = default)
         {
-            return SearchAsync(query, token).GetAwaiter().GetResult();
+            return SearchAsync<TimeSeries>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>

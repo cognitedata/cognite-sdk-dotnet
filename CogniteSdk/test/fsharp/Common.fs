@@ -15,7 +15,6 @@ module Common =
             .AddHeader("api-key", apiKey)
             .SetProject(project)
             .SetBaseUrl(Uri(url))
-            .IncludeMetadata(includeMetadata)
             .Build();
 
 
@@ -25,13 +24,6 @@ module Common =
             "publicdata"
             "https://api.cognitedata.com"
             true
-
-    let readClientWithoutMetadata =
-        createClient
-            (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
-            "publicdata"
-            "https://api.cognitedata.com"
-            false
 
     let writeClient =
         createClient

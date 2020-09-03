@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Oryx.Cognite;
-using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -22,10 +21,26 @@ namespace CogniteSdk.Resources
         /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
-        /// <param name="includeMetadata">Include meta-data in responses or not.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal AssetsResource(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx) : base(authHandler, includeMetadata, ctx)
+        internal AssetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves list of asset like objects matching the given query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public async Task<IItemsWithCursor<T>> ListAsync<T>(AssetQuery query, CancellationToken token = default) where T : Asset
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Assets.list<T, ItemsWithCursor<T>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -34,23 +49,21 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<IItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
-            if (query is null)
-            {
-                throw new ArgumentNullException(nameof(query));
-            }
+            var ret = await ListAsync<Asset>(query, token);
+            return ret as ItemsWithCursor<Asset>;
+        }
 
-            if (_includeMetadata)
-            {
-                var req = Assets.list<Asset, ItemsWithCursor<Asset>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Assets.list<AssetWithoutMetadata, ItemsWithCursor<AssetWithoutMetadata>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+        /// <summary>
+        /// Retrieve list of asset like objects matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of assets matching given filters and optional cursor</returns>
+        public IItemsWithCursor<T> List<T>(AssetQuery query, CancellationToken token = default) where T : Asset
+        {
+            return ListAsync<T>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -59,9 +72,9 @@ namespace CogniteSdk.Resources
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>List of assets matching given filters and optional cursor</returns>
-        public IItemsWithCursor<Asset> List(AssetQuery query, CancellationToken token = default)
+        public ItemsWithCursor<Asset> List(AssetQuery query, CancellationToken token = default)
         {
-            return ListAsync(query, token).GetAwaiter().GetResult();
+            return (ItemsWithCursor<Asset>) ListAsync<Asset>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -126,29 +139,43 @@ namespace CogniteSdk.Resources
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Asset with the given id.</returns>
-        public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
+        public async Task<T> GetAsync<T>(long assetId, CancellationToken token = default) where T : Asset
         {
-            if (_includeMetadata)
-            {
-                var req = Assets.get<Asset, Asset>(assetId);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Assets.get<AssetWithoutMetadata, AssetWithoutMetadata>(assetId);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            var req = Assets.get<T, T>(assetId);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieves information about an asset given an asset id.
+        /// Asynchronously retrieve information about an asset given an asset id.
+        /// </summary>
+        /// <param name="assetId">The id of the asset to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Asset with the given id.</returns>
+        public async Task<Asset> GetAsync(long assetId, CancellationToken token = default)
+        {
+            return await GetAsync<Asset>(assetId, token);
+        }
+
+        /// <summary>
+        /// Retrieves information about an asset like object given an asset id.
+        /// </summary>
+        /// <param name="assetId">The id of the asset to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Asset with the given id.</returns>
+        public T Get<T>(long assetId, CancellationToken token = default) where T : Asset
+        {
+            return GetAsync<T>(assetId, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Retrieves information about an asset like object given an asset id.
         /// </summary>
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Asset with the given id.</returns>
         public Asset Get(long assetId, CancellationToken token = default)
         {
-            return GetAsync(assetId, token).GetAwaiter().GetResult();
+            return GetAsync<Asset>(assetId, token).GetAwaiter().GetResult();
         }
 
         #region Delete overloads
@@ -261,6 +288,24 @@ namespace CogniteSdk.Resources
 
         #region Retrieve overloads
         /// <summary>
+        /// Asynchronously retrieves information about multiple asset like objects in the same project. A maximum of
+        /// 1000 assets IDs may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of assets identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Asset
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Assets.retrieve<T, IEnumerable<T>>(ids, ignoreUnknownIds);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asynchronously retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs
         /// may be listed per request and all of them must be unique.
         /// </summary>
@@ -269,33 +314,31 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            if (ids is null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
-
-            if (_includeMetadata)
-            {
-                var req = Assets.retrieve<Asset, IEnumerable<Asset>>(ids, ignoreUnknownIds);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Assets.retrieve<AssetWithoutMetadata, IEnumerable<AssetWithoutMetadata>>(ids, ignoreUnknownIds);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            return await RetrieveAsync<Asset>(ids, ignoreUnknownIds, token);
         }
 
         /// <summary>
-        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed
-        /// per request and all of them must be unique.
+        /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of assets identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Asset
+        {
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple asset like objects in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
         public IEnumerable<Asset> Retrieve(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            return RetrieveAsync(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
+            return RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -313,7 +356,20 @@ namespace CogniteSdk.Resources
             }
 
             var ids = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+            return await RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple asset like objects in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Asset
+        {
+            var ids = internalIds.Select(Identity.Create);
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -325,7 +381,8 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public IEnumerable<Asset> Retrieve(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            return RetrieveAsync(internalIds, ignoreUnknownIds, token).GetAwaiter().GetResult();
+            var ids = internalIds.Select(Identity.Create);
+            return RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -343,7 +400,20 @@ namespace CogniteSdk.Resources
             }
 
             var ids = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+            return await RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves information about multiple asset like objects in the same project. A maximum of 1000 assets IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public IEnumerable<T> Retrieve<T>(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Asset
+        {
+            var ids = externalIds.Select(Identity.Create);
+            return RetrieveAsync<T>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -355,33 +425,50 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public IEnumerable<Asset> Retrieve(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            return RetrieveAsync(externalIds, ignoreUnknownIds, token).GetAwaiter().GetResult();
+            var ids = externalIds.Select(Identity.Create);
+            return RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).GetAwaiter().GetResult();
         }
         #endregion
 
         /// <summary>
-        /// Asynchronously retrieve a list of assets matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieve a list of asset like objects matching the given criteria. This operation does not
+        /// support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<Asset>> SearchAsync(AssetSearch query, CancellationToken token = default )
+        public async Task<IEnumerable<T>> SearchAsync<T>(AssetSearch query, CancellationToken token = default) where T : Asset
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            if (_includeMetadata)
-            {
-                var req = Assets.search<Asset, IEnumerable<Asset>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
-            else
-            {
-                var req = Assets.search<AssetWithoutMetadata, IEnumerable<AssetWithoutMetadata>>(query);
-                return await RunAsync(req, token).ConfigureAwait(false);
-            }
+            var req = Assets.search<T, IEnumerable<T>>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve a list of assets matching the given criteria. This operation does not support
+        /// pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public async Task<IEnumerable<Asset>> SearchAsync(AssetSearch query, CancellationToken token = default)
+        {
+            return await SearchAsync<Asset>(query, token);
+        }
+
+        /// <summary>
+        /// Retrieve a list of asset like objects matching the given criteria. This operation does not support pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of assets matching given criteria.</returns>
+        public IEnumerable<T> Search<T>(AssetSearch query, CancellationToken token = default) where T : Asset
+        {
+            return SearchAsync<T>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -392,7 +479,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given criteria.</returns>
         public IEnumerable<Asset> Search(AssetSearch query, CancellationToken token = default)
         {
-            return SearchAsync(query, token).GetAwaiter().GetResult();
+            return SearchAsync<Asset>(query, token).GetAwaiter().GetResult();
         }
 
         /// <summary>

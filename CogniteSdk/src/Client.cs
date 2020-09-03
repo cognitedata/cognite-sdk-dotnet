@@ -90,15 +90,14 @@ namespace CogniteSdk
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
-        /// <param name="includeMetadata">Include meta-data in responses or not.</param>
         /// <param name="ctx">Context to use for this session.</param>
-        private Client(Func<CancellationToken, Task<string>> authHandler, bool includeMetadata, HttpContext ctx)
+        private Client(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx)
         {
             // Setup resources.
-            Assets = new AssetsResource(authHandler, includeMetadata, ctx);
-            TimeSeries = new TimeSeriesResource(authHandler, includeMetadata, ctx);
+            Assets = new AssetsResource(authHandler, ctx);
+            TimeSeries = new TimeSeriesResource(authHandler, ctx);
             DataPoints = new DataPointsResource(authHandler, ctx);
-            Events = new EventsResource(authHandler, includeMetadata, ctx);
+            Events = new EventsResource(authHandler, ctx);
             Sequences = new SequencesResource(authHandler, ctx);
             Raw = new RawResource(authHandler, ctx);
             ThreeDModels = new ThreeDModelsResource(authHandler, ctx);
@@ -119,7 +118,6 @@ namespace CogniteSdk
         {
             private HttpContext _context = create();
             private Func<CancellationToken, Task<string>> _authHandler;
-            private bool _includeMetadata = true;
 
             /// <summary>
             /// Create Client builder.
@@ -307,17 +305,6 @@ namespace CogniteSdk
             }
 
             /// <summary>
-            /// Include or exclude metadata decoding.
-            /// </summary>
-            /// <param name="includeMetadata">True if metadata should be included. Set to false to disable meta-data decoding.</param>
-            /// <returns>Updated builder.</returns>
-            public Builder IncludeMetadata(bool includeMetadata)
-            {
-                _includeMetadata = includeMetadata;
-                return this;
-            }
-
-            /// <summary>
             /// Builds the new client. Builder is invalid after this.
             /// </summary>
             /// <returns>New client.</returns>
@@ -326,13 +313,11 @@ namespace CogniteSdk
                 // Check for optional fields etc here
                 HttpContext ctx = _context;
                 Func<CancellationToken, Task<string>> authHandler = _authHandler;
-                bool includeMetadata = _includeMetadata;
 
                 // Builder is invalid after this
                 _context = null;
                 _authHandler = null;
-                _includeMetadata = true;
-                return new Client(authHandler, includeMetadata, ctx);
+                return new Client(authHandler, ctx);
             }
 
             /// <summary>

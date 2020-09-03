@@ -56,7 +56,7 @@ let ``Get asset without metadata is Ok`` () =
     let assetId = 130452390632424L
 
     // Act
-    let res = readClientWithoutMetadata.Assets.Get assetId
+    let res = readClient.Assets.Get<AssetWithoutMetadata> assetId
 
     let resId = res.Id
 
