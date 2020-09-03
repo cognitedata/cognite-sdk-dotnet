@@ -14,7 +14,7 @@ namespace Test.CSharp.Integration
     {
         [Fact]
         [Trait("Description", "Ensures listing Assets returns number of assets equal to 'limit' value")]
-        public async Task ListingAssetsRespectsLimit()
+        public async Task ListingAssetsRespectsLimitAsync()
         {
             // Arrange
             const int limit = 10;
@@ -32,7 +32,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting the Asset count matching the query returns a number")]
-        public async Task CountAssetsReturnInt()
+        public async Task CountAssetsReturnIntAsync()
         {
             // Arrange
             var option = new AssetQuery {
@@ -51,7 +51,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting the Asset count when filter has no matches returns zero")]
-        public async Task CountAssetsWithNoMatchesReturnZero()
+        public async Task CountAssetsWithNoMatchesReturnZeroAsync()
         {
             // Arrange
             var option = new AssetQuery {
@@ -71,7 +71,7 @@ namespace Test.CSharp.Integration
         [Fact]
         [Trait("Description","Ensures that getting an asset by ID returns the correct asset")]
 
-        public async Task AssetByIdReturnsCorrectAsset()
+        public async Task AssetByIdReturnsCorrectAssetAsync()
         {
             // Arrange
             const long assetId = 130452390632424;
@@ -85,7 +85,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting an asset with an invalid Id doesnt return anything")]
-        public async Task AssetByInvalidIdReturnsError()
+        public async Task AssetByInvalidIdReturnsErrorAsync()
         {
             // Arrange
             var assetId = 0;
@@ -125,7 +125,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Search Asset returns the correct number of assets")]
-        public async Task AssetSearchReturnsExpectedNumberOfAssets()
+        public async Task AssetSearchReturnsExpectedNumberOfAssetsAsync()
         {
             // Arrange
             var numOfAssets = 10;
@@ -148,7 +148,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Listing Assets with filter returns the expected number of assets")]
-        public async Task FilterAssetsReturnsTheExpectedNumberOfAssets()
+        public async Task FilterAssetsReturnsTheExpectedNumberOfAssetsAsync()
         {
             // Arrange
             var numOfAssets = 10;
@@ -170,7 +170,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Creating an asset and deletes it works")]
-        public async Task CreateAndDeleteAssetWorkAsExpected()
+        public async Task CreateAndDeleteAssetWorkAsExpectedAsync()
         {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
@@ -197,7 +197,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Deleting an asset that does not exist fails with ResponseException")]
-        public async Task AssetDeleteFailsWhenIdIsInvalid()
+        public async Task AssetDeleteFailsWhenIdIsInvalidAsync()
         {
             // Arrange
             var id = 0;
@@ -221,7 +221,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Updating asset performs expected changes")]
-        public async Task UpdatedAssetsPerformsExpectedChanges()
+        public async Task UpdatedAssetsPerformsExpectedChangesAsync()
         {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
