@@ -17,7 +17,6 @@ module Common =
             .SetBaseUrl(Uri(url))
             .Build();
 
-
     let readClient =
         createClient
             (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
