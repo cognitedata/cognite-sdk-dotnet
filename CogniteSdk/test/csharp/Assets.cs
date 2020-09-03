@@ -14,7 +14,7 @@ namespace Test.CSharp.Integration
     {
         [Fact]
         [Trait("Description", "Ensures listing Assets returns number of assets equal to 'limit' value")]
-        public void ListingAssetsRespectsLimit()
+        public async Task ListingAssetsRespectsLimit()
         {
             // Arrange
             const int limit = 10;
@@ -24,7 +24,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = ReadClient.Assets.List(option);
+            var res = await ReadClient.Assets.ListAsync(option);
 
             // Assert
             Assert.True(limit == res.Items.Count(), "Expected the number of assets to be the same as the Limit value");
@@ -32,7 +32,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting the Asset count matching the query returns a number")]
-        public void CountAssetsReturnInt()
+        public async Task CountAssetsReturnInt()
         {
             // Arrange
             var option = new AssetQuery {
@@ -43,7 +43,7 @@ namespace Test.CSharp.Integration
                 }
             };
             // Act
-            var count = ReadClient.Assets.Aggregate(option);
+            var count = await ReadClient.Assets.AggregateAsync(option);
 
             // Assert
             Assert.True(count > 0);
@@ -51,7 +51,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting the Asset count when filter has no matches returns zero")]
-        public void CountAssetsWithNoMatchesReturnZero()
+        public async Task CountAssetsWithNoMatchesReturnZero()
         {
             // Arrange
             var option = new AssetQuery {
@@ -62,7 +62,7 @@ namespace Test.CSharp.Integration
                 }
             };
             // Act
-            var count = ReadClient.Assets.Aggregate(option);
+            var count = await ReadClient.Assets.AggregateAsync(option);
 
             // Assert
             Assert.True(count == 0);
@@ -71,13 +71,13 @@ namespace Test.CSharp.Integration
         [Fact]
         [Trait("Description","Ensures that getting an asset by ID returns the correct asset")]
 
-        public void AssetByIdReturnsCorrectAsset()
+        public async Task AssetByIdReturnsCorrectAsset()
         {
             // Arrange
             const long assetId = 130452390632424;
 
             // Act
-            var res = ReadClient.Assets.Get(assetId);
+            var res = await ReadClient.Assets.GetAsync(assetId);
 
             // Assert
             Assert.True(assetId == res.Id, "The received Asset doesn't match the ID");
@@ -85,7 +85,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Ensures that getting an asset with an invalid Id doesnt return anything")]
-        public void AssetByInvalidIdReturnsError()
+        public async Task AssetByInvalidIdReturnsError()
         {
             // Arrange
             var assetId = 0;
@@ -93,7 +93,7 @@ namespace Test.CSharp.Integration
 
             // Act
             try {
-                var res = ReadClient.Assets.Get(assetId);
+                var res = await ReadClient.Assets.GetAsync(assetId);
             } catch (ResponseException) {
                 caughtException = true;
             }
@@ -104,7 +104,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Gets multiple Assets with a list of ids and ensures they are the correct assets")]
-        public void AssetsByIdsRetrivesTheCorrectAssetsAsync()
+        public async Task AssetsByIdsRetrivesTheCorrectAssetsAsync()
         {
             // Arrange
             var ids = new List<long>() {
@@ -114,7 +114,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = ReadClient.Assets.Retrieve(ids);
+            var res = await ReadClient.Assets.RetrieveAsync(ids);
 
             // Assert
             var returnedIds = res.Select(asset => asset.Id);
@@ -125,7 +125,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Search Asset returns the correct number of assets")]
-        public void AssetSearchReturnsExpectedNumberOfAssets()
+        public async Task AssetSearchReturnsExpectedNumberOfAssets()
         {
             // Arrange
             var numOfAssets = 10;
@@ -139,7 +139,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = ReadClient.Assets.Search(query);
+            var res = await ReadClient.Assets.SearchAsync(query);
 
             // Assert
             var resCount = res.Count();
@@ -148,7 +148,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Listing Assets with filter returns the expected number of assets")]
-        public void FilterAssetsReturnsTheExpectedNumberOfAssets()
+        public async Task FilterAssetsReturnsTheExpectedNumberOfAssets()
         {
             // Arrange
             var numOfAssets = 10;
@@ -161,7 +161,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = ReadClient.Assets.List(query);
+            var res = await ReadClient.Assets.ListAsync(query);
 
             // Assert
             var resCount = res.Items.Count();
@@ -170,7 +170,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Creating an asset and deletes it works")]
-        public void CreateAndDeleteAssetWorkAsExpected()
+        public async Task CreateAndDeleteAssetWorkAsExpected()
         {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
@@ -186,8 +186,8 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            var res = WriteClient.Assets.Create(new List<AssetCreate>() { newAsset });
-            WriteClient.Assets.Delete(deletes);
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { newAsset });
+            await WriteClient.Assets.DeleteAsync(deletes);
 
             // Assert
             var resCount = res.Count();
@@ -197,7 +197,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Deleting an asset that does not exist fails with ResponseException")]
-        public void AssetDeleteFailsWhenIdIsInvalid()
+        public async Task AssetDeleteFailsWhenIdIsInvalid()
         {
             // Arrange
             var id = 0;
@@ -210,7 +210,7 @@ namespace Test.CSharp.Integration
 
             // Act
             try {
-                WriteClient.Assets.Delete(query);
+                await WriteClient.Assets.DeleteAsync(query);
             } catch (ResponseException) {
                 caughtException = true;
             }
@@ -221,7 +221,7 @@ namespace Test.CSharp.Integration
 
         [Fact]
         [Trait("Description", "Updating asset performs expected changes")]
-        public void UpdatedAssetsPerformsExpectedChanges()
+        public async Task UpdatedAssetsPerformsExpectedChanges()
         {
             // Arrange
             var externalIdString = Guid.NewGuid().ToString();
@@ -251,11 +251,11 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            _ = WriteClient.Assets.Create(new List<AssetCreate>() { newAsset });
-            WriteClient.Assets.Update(update);
+            await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { newAsset });
+            await WriteClient.Assets.UpdateAsync(update);
 
-            var getRes = WriteClient.Assets.Retrieve(new List<string>() { externalIdString });
-            WriteClient.Assets.Delete(new List<string>() { externalIdString });
+            var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });
+            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert
             var resCount = getRes.Count();

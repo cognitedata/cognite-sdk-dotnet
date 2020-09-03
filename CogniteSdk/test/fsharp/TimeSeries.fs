@@ -12,36 +12,38 @@ open CogniteSdk
 open Common
 
 [<Fact>]
-let ``Get timeseries is Ok`` () =
+let ``Get timeseries is Ok`` () = task {
     // Arrange
     let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
-    let response = readClient.TimeSeries.List query
+    let! response = readClient.TimeSeries.ListAsync query
 
     let len = Seq.length response.Items
 
     // Assert
     test <@ len = 10 @>
+}
 
 [<Fact>]
-let ``Count timeseries is Ok`` () =
+let ``Count timeseries is Ok`` () = task {
     // Arrange
     let query = TimeSeriesQuery(Limit = Nullable 10)
 
     // Act
-    let count = readClient.TimeSeries.Aggregate query
+    let! count = readClient.TimeSeries.AggregateAsync query
 
     // Assert
     test <@ count > 0 @>
+}
 
 [<Fact>]
-let ``Get timeseries by ids is Ok`` () =
+let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
     let id = 6190956317771L
 
     // Act
-    let dtos = readClient.TimeSeries.Retrieve [ id ]
+    let! dtos = readClient.TimeSeries.RetrieveAsync [ id ]
 
     let len = Seq.length dtos
 
@@ -54,19 +56,20 @@ let ``Get timeseries by ids is Ok`` () =
     // Assert
     test <@ resId = id @>
     test <@ len > 0 @>
+}
 
 [<Fact>]
-let ``Get timeseries by missing id is Error`` () =
+let ``Get timeseries by missing id is Error`` () = task {
     // Arrange
     let id = Identity 0L
 
     // Act
-    Assert.Throws<ResponseException>(fun () -> readClient.TimeSeries.Retrieve [ id ] :> obj)
+    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.RetrieveAsync [ id ] :> _)
     |> ignore
-
+}
 
 [<Fact>]
-let ``Create and delete timeseries is Ok`` () =
+let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();
     let dto =
@@ -78,8 +81,8 @@ let ``Create and delete timeseries is Ok`` () =
         )
 
     // Act
-    let timeSereiesResponses = writeClient.TimeSeries.Create [ dto ]
-    let delRes = writeClient.TimeSeries.Delete [ externalIdString ]
+    let! timeSereiesResponses = writeClient.TimeSeries.CreateAsync [ dto ]
+    let! delRes = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
 
     let resExternalId =
         let h = Seq.tryHead timeSereiesResponses
@@ -89,9 +92,10 @@ let ``Create and delete timeseries is Ok`` () =
 
     // Assert
     test <@ resExternalId = externalIdString @>
+}
 
 [<Fact>]
-let ``Search timeseries is Ok`` () =
+let ``Search timeseries is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -100,14 +104,15 @@ let ``Search timeseries is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     // Assert
     test <@ len > 0 @>
+}
 
 [<Fact>]
-let ``Search timeseries on CreatedTime Ok`` () =
+let ``Search timeseries on CreatedTime Ok`` () = task {
     // Arrange
     let timerange =
         TimeRange(
@@ -121,7 +126,7 @@ let ``Search timeseries on CreatedTime Ok`` () =
         )
 
     // Act
-    let dtos = writeClient.TimeSeries.Search query
+    let! dtos = writeClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
 
@@ -130,9 +135,10 @@ let ``Search timeseries on CreatedTime Ok`` () =
     // Assert
     test <@ len = 2 @>
     test <@ createdTime = 1567707299042L @>
+}
 
 [<Fact>]
-let ``Search timeseries on LastUpdatedTime Ok`` () =
+let ``Search timeseries on LastUpdatedTime Ok`` () = task {
     // Arrange
     let timerange =
         TimeRange(
@@ -147,7 +153,7 @@ let ``Search timeseries on LastUpdatedTime Ok`` () =
         )
 
     // Act
-    let dtos = writeClient.TimeSeries.Search query
+    let! dtos = writeClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     let lastUpdatedTime = (Seq.head dtos).LastUpdatedTime
@@ -155,10 +161,10 @@ let ``Search timeseries on LastUpdatedTime Ok`` () =
     // Assert
     test <@ len = 2 @>
     test <@ lastUpdatedTime = 1567707299042L @>
-
+}
 
 [<Fact>]
-let ``Search timeseries on AssetIds is Ok`` () =
+let ``Search timeseries on AssetIds is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -167,7 +173,7 @@ let ``Search timeseries on AssetIds is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
 
@@ -176,9 +182,10 @@ let ``Search timeseries on AssetIds is Ok`` () =
     // Assert
     test <@ len = 1 @>
     test <@ Seq.forall ((=) (4293345866058133L)) assetIds @>
+}
 
 [<Fact>]
-let ``Search timeseries on ExternalIdPrefix is Ok`` () =
+let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -187,7 +194,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
     let len = Seq.length dtos
 
     let externalIds = Seq.map (fun (d : TimeSeries) -> d.ExternalId) dtos
@@ -195,9 +202,10 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () =
     // Assert
     test <@ len > 1 @>
     test <@ Seq.forall (fun (e: string) -> e.StartsWith("pi:1636")) externalIds @>
+}
 
 [<Fact>]
-let ``Search timeseries on IsStep is Ok`` () =
+let ``Search timeseries on IsStep is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -206,7 +214,7 @@ let ``Search timeseries on IsStep is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
 
@@ -215,9 +223,10 @@ let ``Search timeseries on IsStep is Ok`` () =
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall id isSteps @>
+}
 
 [<Fact>]
-let ``Search timeseries on IsString is Ok`` () =
+let ``Search timeseries on IsString is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -226,7 +235,7 @@ let ``Search timeseries on IsString is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
     let isStrings = Seq.map (fun (d: TimeSeries) -> d.IsString) dtos
@@ -234,9 +243,10 @@ let ``Search timeseries on IsString is Ok`` () =
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall id isStrings @>
+}
 
 [<Fact>]
-let ``Search timeseries on Unit is Ok`` () =
+let ``Search timeseries on Unit is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -244,7 +254,7 @@ let ``Search timeseries on Unit is Ok`` () =
             Limit = Nullable 10
         )
     // Act
-    let dtos = writeClient.TimeSeries.Search query
+    let! dtos = writeClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
 
@@ -253,9 +263,10 @@ let ``Search timeseries on Unit is Ok`` () =
     // Assert
     test <@ len > 1 @>
     test <@ Seq.forall ((=) "et") units @>
+}
 
 [<Fact>]
-let ``Search timeseries on MetaData is Ok`` () =
+let ``Search timeseries on MetaData is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -263,7 +274,7 @@ let ``Search timeseries on MetaData is Ok`` () =
             Limit = Nullable 10
         )
     // Act
-    let items = readClient.TimeSeries.Search query
+    let! items = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length items
     let ms = Seq.map (fun (d: TimeSeries) -> d.Metadata) items
@@ -271,9 +282,10 @@ let ``Search timeseries on MetaData is Ok`` () =
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall (fun (m: Dictionary<string,string>) -> m.["pointid"] = "160909") ms @>
+}
 
 [<Fact>]
-let ``FuzzySearch timeseries on Name is Ok`` () =
+let ``FuzzySearch timeseries on Name is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -281,7 +293,7 @@ let ``FuzzySearch timeseries on Name is Ok`` () =
             Limit = Nullable 10
         )
     // Act
-    let items = readClient.TimeSeries.Search query
+    let! items = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length items
 
@@ -290,9 +302,10 @@ let ``FuzzySearch timeseries on Name is Ok`` () =
     // Assert
     test <@ len > 0 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("SILch0") || n.Contains("92529")) names @>
+}
 
 [<Fact>]
-let ``FuzzySearch timeseries on Description is Ok`` () =
+let ``FuzzySearch timeseries on Description is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
@@ -301,7 +314,7 @@ let ``FuzzySearch timeseries on Description is Ok`` () =
         )
 
     // Act
-    let dtos = readClient.TimeSeries.Search query
+    let! dtos = readClient.TimeSeries.SearchAsync query
 
     let len = Seq.length dtos
 
@@ -310,9 +323,10 @@ let ``FuzzySearch timeseries on Description is Ok`` () =
     // Assert
     test <@ len = 10 @>
     test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
+}
 
 [<Fact>]
-let ``Update timeseries is Ok`` () =
+let ``Update timeseries is Ok`` () = task {
     // Arrange
 
     let newMetadata =
@@ -337,9 +351,9 @@ let ``Update timeseries is Ok`` () =
     let newDescription = "testdescription"
 
     // Act
-    let createRes = writeClient.TimeSeries.Create [ dto ]
-    let updateRes =
-        writeClient.TimeSeries.Update [
+    let! createRes = writeClient.TimeSeries.CreateAsync [ dto ]
+    let! updateRes =
+        writeClient.TimeSeries.UpdateAsync [
             TimeSeriesUpdateItem(
                 externalId = externalId,
                 Update = TimeSeriesUpdate(
@@ -351,8 +365,8 @@ let ``Update timeseries is Ok`` () =
                 )
             )
         ]
-    let getRes = writeClient.TimeSeries.Retrieve [ newExternalId ]
-    let deleteRes = writeClient.TimeSeries.Delete [ newExternalId ]
+    let! getRes = writeClient.TimeSeries.RetrieveAsync [ newExternalId ]
+    let! deleteRes = writeClient.TimeSeries.DeleteAsync [ newExternalId ]
 
     let resExternalId, resMetaData, resDescription =
         let head = Seq.tryHead getRes
@@ -372,9 +386,10 @@ let ``Update timeseries is Ok`` () =
     test <@ metaDataOk @>
 
     // Assert delete
+}
 
 [<Fact>]
-let ``Synthetic Query is Ok`` () =
+let ``Synthetic Query is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSyntheticQuery(
@@ -384,7 +399,7 @@ let ``Synthetic Query is Ok`` () =
         )
 
     // Act
-    let res = readClient.TimeSeries.SyntheticQuery(query)
+    let! res = readClient.TimeSeries.SyntheticQueryAsync(query)
 
     let ts = res |> Seq.head |> (fun x -> x.DataPoints)
 
@@ -392,9 +407,10 @@ let ``Synthetic Query is Ok`` () =
     test <@ ts |> Seq.length <= 10 @>
     test <@ ts |> Seq.length > 0 @>
     test <@ ts |> Seq.forall (fun x -> isNull x.Error) @>
+}
 
 [<Fact>]
-let ``Synthetic Query with Error is Ok`` () =
+let ``Synthetic Query with Error is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSyntheticQuery(
@@ -404,10 +420,11 @@ let ``Synthetic Query with Error is Ok`` () =
         )
 
     // Act
-    let res = readClient.TimeSeries.SyntheticQuery(query)
+    let! res = readClient.TimeSeries.SyntheticQueryAsync(query)
 
     let ts = res |> Seq.head |> (fun x -> x.DataPoints)
 
     // Assert
     test <@ ts |> Seq.length > 0 @>
     test <@ ts |> Seq.forall (fun x -> x.Error |> (not << isNull)) @>
+}
