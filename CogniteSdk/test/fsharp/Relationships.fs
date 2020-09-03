@@ -320,8 +320,8 @@ let ``BETA: filter by SourceType is ok`` () = task {
     let sourceExternalId = "test - filter by SourceType is ok - deletable"
     let targetExternalId = "test - filter by SourceType is ok - deletable"
 
-    let sourceTypeToMatch = "events"
-    let sourceTypeDontMatch = "assets"
+    let sourceTypeToMatch = "event"
+    let sourceTypeDontMatch = "asset"
 
     let externalId1 = Guid.NewGuid().ToString()
     let externalId2 = Guid.NewGuid().ToString()
@@ -372,8 +372,75 @@ let ``BETA: filter by SourceType is ok`` () = task {
 
     let allResultsMatchFilter =
         relationships.Items
-        |> Seq.map (fun relationship -> relationship.TargetExternalId = targetExternalId)
+        |> Seq.map (fun relationship -> relationship.SourceType = sourceTypeToMatch)
         |> Seq.forall id
+
+    // Assert
+    test <@ createRes |> Seq.length = 2 @>
+    test <@ relationships.Items |> Seq.length > 0 @>
+    test <@ allResultsMatchFilter @>
+}
+
+[<Fact>]
+let ``BETA: filter by TargetType is ok`` () = task {
+    // Arrange
+    // create relationship to use for retrieval test
+    let sourceExternalId = "test - filter by TargetType is ok - deletable"
+    let targetExternalId = "test - filter by TargetType is ok - deletable"
+
+    let targetTypeToMatch = "event"
+    let targetTypeDontMatch = "asset"
+
+    let externalId1 = Guid.NewGuid().ToString()
+    let externalId2 = Guid.NewGuid().ToString()
+
+    let relationshipCreateObject =
+        seq {
+            Beta.RelationshipCreate(
+                ExternalId=externalId1,
+                SourceExternalId=sourceExternalId,
+                TargetExternalId=targetExternalId,
+                SourceType="asset",
+
+                TargetType=targetTypeToMatch
+            );
+            Beta.RelationshipCreate(
+                ExternalId=externalId2,
+                SourceExternalId=sourceExternalId,
+                TargetExternalId=targetExternalId,
+                SourceType="asset",
+
+                TargetType=targetTypeDontMatch
+            )
+        }
+
+    // Act
+    //create the relationships for test
+    let! createRes =  writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
+    // retrieve the relationship by targetTypeToMatch
+    let relationshipsFilter =
+        Beta.RelationshipQuery(
+            Filter=Beta.RelationshipFilter(
+                TargetTypes = ( targetTypeToMatch |> Seq.singleton )
+            )
+        )
+    let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
+
+    // Cleanup: Delete all relationships that has this test's (deletable) sourceExternalId
+    let! deleteRelationships =
+        writeClient.Beta.Relationships.ListAsync (
+            Beta.RelationshipQuery(
+                    Filter=Beta.RelationshipFilter(
+                        SourceExternalIds = (sourceExternalId |> Seq.singleton)
+                    )
+                )
+        )
+    let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
+    let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
+
+    let allResultsMatchFilter =
+        relationships.Items
+        |> Seq.forall (fun relationship -> relationship.TargetType = targetTypeToMatch)
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
