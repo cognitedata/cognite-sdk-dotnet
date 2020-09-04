@@ -101,7 +101,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously delete multiple times series in the same project.
+        /// Asynchronously delete multiple time series in the same project.
         /// </summary>
         /// <param name="query">The list of timeseries to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -112,7 +112,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously delete multiple times eries in the same project.
+        /// Asynchronously delete multiple times series in the same project.
         /// </summary>
         /// <param name="internalIds">The list of timeseries internal ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -124,7 +124,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously delete multiple times eries in the same project.
+        /// Asynchronously delete multiple time series in the same project.
         /// </summary>
         /// <param name="externalIds">The list of timeseries external ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
