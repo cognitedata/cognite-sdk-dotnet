@@ -38,6 +38,28 @@ let ``Count timeseries is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Get timeseries by id is Ok`` () = task {
+    // Arrange
+    let id = 6190956317771L
+
+    // Act
+    let! item = readClient.TimeSeries.GetAsync id
+
+    // Assert
+    test <@ item.Id = id @>
+}
+
+[<Fact>]
+let ``Get timeseries by missing id is Error`` () = task {
+    // Arrange
+    let id = 0L
+
+    // Act
+    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.GetAsync id :> _)
+    |> ignore
+}
+
+[<Fact>]
 let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
     let id = 6190956317771L
@@ -59,7 +81,7 @@ let ``Get timeseries by ids is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Get timeseries by missing id is Error`` () = task {
+let ``Get timeseries by missing ids is Error`` () = task {
     // Arrange
     let id = Identity 0L
 
