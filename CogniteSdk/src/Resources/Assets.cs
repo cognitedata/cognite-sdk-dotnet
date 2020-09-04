@@ -27,7 +27,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieves list of asset like objects matching the given query.
+        /// Asynchronously retrieve a list of asset like objects matching the given query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -45,7 +45,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieves list of assets matching query.
+        /// Asynchronously retrieve a list of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>

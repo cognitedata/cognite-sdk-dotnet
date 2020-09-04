@@ -26,7 +26,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieves list of event like objects matching query.
+        /// Asynchronously retrieve a list of event like objects matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -44,7 +44,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieves list of events matching query.
+        /// Asynchronously retrieve a list of events matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
