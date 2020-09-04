@@ -31,6 +31,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
+        /// <typeparam name="T">Type of asset to return, e.g Assset or AssetWithoutMetadata.</typeparam>
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<IItemsWithCursor<T>> ListAsync<T>(AssetQuery query, CancellationToken token = default) where T : Asset
         {
@@ -93,6 +94,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of asset to return, e.g Assset or AssetWithoutMetadata.</typeparam>
         /// <returns>Asset with the given id.</returns>
         public async Task<T> GetAsync<T>(long assetId, CancellationToken token = default) where T : Asset
         {
@@ -185,7 +187,9 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <typeparam name="T">Type of asset to return, e.g Assset or AssetWithoutMetadata.</typeparam>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested assets.</returns>
         public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Asset
         {
             if (ids is null)
@@ -204,6 +208,7 @@ namespace CogniteSdk.Resources
         /// <param name="ids">The list of assets identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested assets.</returns>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             return await RetrieveAsync<Asset>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
@@ -216,6 +221,7 @@ namespace CogniteSdk.Resources
         /// <param name="internalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested assets.</returns>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (internalIds is null)
@@ -234,6 +240,7 @@ namespace CogniteSdk.Resources
         /// <param name="externalIds">The list of assets internal identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested assets.</returns>
         public async Task<IEnumerable<Asset>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (externalIds is null)
@@ -253,7 +260,8 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
+        /// <typeparam name="T">Type of asset to return, e.g Assset or AssetWithoutMetadata.</typeparam>
+        /// <returns>Sequence of assets matching given criteria.</returns>
         public async Task<IEnumerable<T>> SearchAsync<T>(AssetSearch query, CancellationToken token = default) where T : Asset
         {
             if (query is null)
@@ -271,7 +279,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
+        /// <returns>Sequence of assets matching given criteria.</returns>
         public async Task<IEnumerable<Asset>> SearchAsync(AssetSearch query, CancellationToken token = default)
         {
             return await SearchAsync<Asset>(query, token).ConfigureAwait(false);
@@ -283,7 +291,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The list of assets to update.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of updated assets.</returns>
+        /// <returns>Sequence of updated assets.</returns>
         public async Task<IEnumerable<Asset>> UpdateAsync(IEnumerable<AssetUpdateItem> query, CancellationToken token = default)
         {
             if (query is null)

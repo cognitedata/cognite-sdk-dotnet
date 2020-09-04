@@ -30,6 +30,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
         /// <returns>List of events matching given filters and optional cursor</returns>
         public async Task<IItemsWithCursor<T>> ListAsync<T>(EventQuery query, CancellationToken token = default) where T : Event
         {
@@ -92,6 +93,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="eventId">The id of the event to get.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
         /// <returns>Event with the given id.</returns>
         public async Task<T> GetAsync<T>(long eventId, CancellationToken token = default) where T : Event
         {
@@ -184,6 +186,8 @@ namespace CogniteSdk.Resources
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
+        /// <returns>A sequence of the requested events.</returns>
         public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Event
         {
             if (ids is null)
@@ -202,6 +206,7 @@ namespace CogniteSdk.Resources
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested events.</returns>
         public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             return await RetrieveAsync<Event>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
@@ -214,6 +219,7 @@ namespace CogniteSdk.Resources
         /// <param name="internalIds">The list of event internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested events.</returns>
         public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Event
         {
             if (internalIds is null)
@@ -232,6 +238,7 @@ namespace CogniteSdk.Resources
         /// <param name="internalIds">The list of event internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested events.</returns>
         public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             return await RetrieveAsync<Event>(internalIds, ignoreUnknownIds, token).ConfigureAwait(false);

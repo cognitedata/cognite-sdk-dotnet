@@ -30,6 +30,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
+        /// <typeparam name="T">Type of asset to return, e.g Assset or AssetWithoutMetadata.</typeparam>
         /// <returns>List of time series matching given filters and optional cursor</returns>
         public async Task<IItemsWithCursor<T>> ListAsync<T>(TimeSeriesQuery query, CancellationToken token = default) where T : TimeSeries
         {
@@ -49,7 +50,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieve the number of timeseries matching query.
+        /// Asynchronously retrieve the number of time series matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
@@ -82,6 +83,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="tsId">The id of the time series to get.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of time series to return, e.g TimeSeries or TimeSeriesWithoutMetadata.</typeparam>
         /// <returns>Time series with the given id.</returns>
         public async Task<T> GetAsync<T>(long tsId, CancellationToken token = default) where T : TimeSeries
         {
@@ -103,7 +105,7 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// Asynchronously delete multiple time series in the same project.
         /// </summary>
-        /// <param name="query">The list of timeseries to delete.</param>
+        /// <param name="query">The list of time series to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDelete query, CancellationToken token = default)
         {
@@ -112,9 +114,9 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously delete multiple times series in the same project.
+        /// Asynchronously delete multiple time series in the same project.
         /// </summary>
-        /// <param name="internalIds">The list of timeseries internal ids to delete.</param>
+        /// <param name="internalIds">The list of time series internal ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
@@ -141,6 +143,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="ids">The list of time series identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <typeparam name="T">Type of time series to return, e.g TimeSeries or TimeSeriesWithoutMetadata.</typeparam>
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : TimeSeries
         {
@@ -155,6 +158,7 @@ namespace CogniteSdk.Resources
         /// <param name="ids">The list of time series identities to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested time series.</returns>
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             return await RetrieveAsync<TimeSeries>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
@@ -167,6 +171,7 @@ namespace CogniteSdk.Resources
         /// <param name="internalIds">The list of time series internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested time series.</returns>
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = internalIds.Select(Identity.Create);
@@ -180,6 +185,7 @@ namespace CogniteSdk.Resources
         /// <param name="externalIds">The list of time series internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested time series.</returns>
         public async Task<IEnumerable<TimeSeries>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             var ids = externalIds.Select(Identity.Create);
@@ -192,7 +198,8 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of time series matching given criteria.</returns>
+        /// <typeparam name="T">Type of time series to return, e.g TimeSeries or TimeSeriesWithoutMetadata.</typeparam>
+        /// <returns>Sequence of time series matching given criteria.</returns>
         public async Task<IEnumerable<T>> SearchAsync<T>(TimeSeriesSearch query, CancellationToken token = default) where T : TimeSeries
         {
             if (query is null)
