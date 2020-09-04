@@ -20,7 +20,7 @@ module TimeSeries =
 
     /// Retrieves information about an time series given an time series id. Returns asset with the given id.
     let get (tsId: int64) : HttpHandler<HttpResponseMessage, #TimeSeries, 'TResult> =
-        withLogMessage "Assets:get"
+        withLogMessage "TimeSeries:get"
         >=> retrieve [ Identity tsId ] Url
         >=> map Seq.head
 
