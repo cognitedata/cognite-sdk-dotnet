@@ -18,6 +18,12 @@ module TimeSeries =
     [<Literal>]
     let Url = "/timeseries"
 
+    /// Retrieves information about an time series given an time series id. Returns asset with the given id.
+    let get (tsId: int64) : HttpHandler<HttpResponseMessage, #TimeSeries, 'TResult> =
+        withLogMessage "Assets:get"
+        >=> retrieve [ Identity tsId ] Url
+        >=> map Seq.head
+
     /// Retrieves list of time series matching filter, and a cursor if given limit is exceeded. Returns list of time
     /// series matching given filters and optional cursor.
     let list (query: TimeSeriesQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<#TimeSeries>, 'TResult> =

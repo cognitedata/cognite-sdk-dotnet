@@ -78,6 +78,29 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Asynchronously retrieve information about an time series like object given a time series id.
+        /// </summary>
+        /// <param name="tsId">The id of the time series to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Time series with the given id.</returns>
+        public async Task<T> GetAsync<T>(long tsId, CancellationToken token = default) where T : TimeSeries
+        {
+            var req = Oryx.Cognite.TimeSeries.get<T, T>(tsId);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve information about an time series given a time series id.
+        /// </summary>
+        /// <param name="tsId">The id of the time series to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Time series with the given id.</returns>
+        public async Task<TimeSeries> GetAsync(long tsId, CancellationToken token = default)
+        {
+            return await GetAsync<TimeSeries>(tsId, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asynchronously delete multiple times series in the same project.
         /// </summary>
         /// <param name="query">The list of timeseries to delete.</param>
@@ -169,7 +192,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
+        /// <returns>List of time series matching given criteria.</returns>
         public async Task<IEnumerable<T>> SearchAsync<T>(TimeSeriesSearch query, CancellationToken token = default) where T : TimeSeries
         {
             if (query is null)
@@ -187,7 +210,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
+        /// <returns>List of time series matching given criteria.</returns>
         public async Task<IEnumerable<TimeSeries>> SearchAsync(TimeSeriesSearch query, CancellationToken token = default)
         {
             return await SearchAsync<TimeSeries>(query, token).ConfigureAwait(false);
@@ -216,7 +239,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
-        /// <returns>List of assets matching given filters and optional cursor</returns>
+        /// <returns>List of time series matching given filters and optional cursor</returns>
         public async Task<IEnumerable<DataPointsSyntheticItem>> SyntheticQueryAsync(TimeSeriesSyntheticQuery query, CancellationToken token = default)
         {
             if (query is null)

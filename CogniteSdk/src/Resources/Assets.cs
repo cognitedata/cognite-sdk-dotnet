@@ -89,7 +89,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Asynchronously retrieve information about an asset given an asset id.
+        /// Asynchronously retrieve information about an asset like object given an asset id.
         /// </summary>
         /// <param name="assetId">The id of the asset to get.</param>
         /// <param name="token">Optional cancellation token.</param>

@@ -69,6 +69,38 @@ let ``Get timeseries by missing id is Error`` () = task {
 }
 
 [<Fact>]
+let ``Get timeseries with metadata is Ok`` () = task {
+    // Arrange
+    let timeseriesId = 6190956317771L
+
+    // Act
+    let! res = readClient.TimeSeries.GetAsync timeseriesId
+
+    let md = res.Metadata
+
+    // Assert
+    test <@ not (isNull md) @>
+    test <@ md.["instrumenttag"] = "23-PDT-92501:X.Value" @>
+}
+
+[<Fact>]
+let ``Get timeseries without metadata is Ok`` () = task {
+    // Arrange
+    let timeseriesId = 6190956317771L
+
+    // Act
+    let! res = readClient.TimeSeries.GetAsync<TimeSeriesWithoutMetadata> timeseriesId
+
+    let resId = res.Id
+
+    // Assert
+    let md = res.Metadata
+
+    // Assert
+    test <@ isNull md @>
+}
+
+[<Fact>]
 let ``Create and delete timeseries is Ok`` () = task {
     // Arrange
     let externalIdString = Guid.NewGuid().ToString();

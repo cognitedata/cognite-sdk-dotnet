@@ -87,6 +87,38 @@ let ``Get event by ids is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Get event with metadata is Ok`` () = task {
+    // Arrange
+    let eventId = 1995162693488L
+
+    // Act
+    let! res = readClient.Events.GetAsync eventId
+
+    let md = res.Metadata
+
+    // Assert
+    test <@ not (isNull md) @>
+    test <@ md.["source"] = "akerbp-cdp" @>
+}
+
+[<Fact>]
+let ``Get event without metadata is Ok`` () = task {
+    // Arrange
+    let eventId = 1995162693488L
+
+    // Act
+    let! res = readClient.Events.GetAsync<EventWithoutMetadata> eventId
+
+    let resId = res.Id
+
+    // Assert
+    let md = res.Metadata
+
+    // Assert
+    test <@ isNull md @>
+}
+
+[<Fact>]
 let ``Update events is Ok`` () = task {
     // Arrange
     let externalId = Guid.NewGuid().ToString();
