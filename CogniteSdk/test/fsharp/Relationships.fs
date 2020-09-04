@@ -226,6 +226,11 @@ let ``BETA: filter by SourceExternalId is ok`` () = task {
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
 
+    let allResultsMatchFilter =
+        relationships.Items
+        |> Seq.map (fun relationship -> relationship.SourceExternalId = srcExternalIdToMatch)
+        |> Seq.forall id
+
     // Cleanup: Delete all relationships that has the target (deletable) label
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
@@ -237,11 +242,6 @@ let ``BETA: filter by SourceExternalId is ok`` () = task {
         )
     let deleteIds = deleteRelationships.Items|> Seq.map (fun r -> r.ExternalId)
     let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
-
-    let allResultsMatchFilter =
-        relationships.Items
-        |> Seq.map (fun relationship -> relationship.SourceExternalId = srcExternalIdToMatch)
-        |> Seq.forall id
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -290,6 +290,11 @@ let ``BETA: filter by TargetExternalId is ok`` () = task {
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
 
+    let allResultsMatchFilter =
+        relationships.Items
+        |> Seq.map (fun relationship -> relationship.TargetExternalId = targetExternalIdToMatch)
+        |> Seq.forall id
+
     // Cleanup: Delete all relationships that has the target (deletable) label
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
@@ -301,11 +306,6 @@ let ``BETA: filter by TargetExternalId is ok`` () = task {
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
     let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
-
-    let allResultsMatchFilter =
-        relationships.Items
-        |> Seq.map (fun relationship -> relationship.TargetExternalId = targetExternalIdToMatch)
-        |> Seq.forall id
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -358,6 +358,11 @@ let ``BETA: filter by SourceType is ok`` () = task {
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
 
+    let allResultsMatchFilter =
+        relationships.Items
+        |> Seq.map (fun relationship -> relationship.SourceType = sourceTypeToMatch)
+        |> Seq.forall id
+
     // Cleanup: Delete all relationships that has this test's (deletable) sourceExternalId
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
@@ -369,11 +374,6 @@ let ``BETA: filter by SourceType is ok`` () = task {
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
     let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
-
-    let allResultsMatchFilter =
-        relationships.Items
-        |> Seq.map (fun relationship -> relationship.SourceType = sourceTypeToMatch)
-        |> Seq.forall id
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -426,6 +426,10 @@ let ``BETA: filter by TargetType is ok`` () = task {
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
 
+    let allResultsMatchFilter =
+        relationships.Items
+        |> Seq.forall (fun relationship -> relationship.TargetType = targetTypeToMatch)
+
     // Cleanup: Delete all relationships that has this test's (deletable) sourceExternalId
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
@@ -438,9 +442,74 @@ let ``BETA: filter by TargetType is ok`` () = task {
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
     let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
 
+    // Assert
+    test <@ createRes |> Seq.length = 2 @>
+    test <@ relationships.Items |> Seq.length > 0 @>
+    test <@ allResultsMatchFilter @>
+}
+
+[<Fact>]
+let ``BETA: filter by Confidence is ok`` () = task {
+    // Arrange
+    // create relationship to use for retrieval test
+    let sourceExternalId = "test - filter by Confidence is ok - deletable"
+    let targetExternalId = "test - filter by Confidence is ok - deletable"
+
+    let relationshiptype = "asset"
+
+    let externalId1 = Guid.NewGuid().ToString()
+    let externalId2 = Guid.NewGuid().ToString()
+
+    let relationshipCreateObject =
+        seq {
+            Beta.RelationshipCreate(
+                ExternalId=externalId1,
+                SourceExternalId=sourceExternalId,
+                TargetExternalId=targetExternalId,
+                SourceType=relationshiptype,
+                TargetType=relationshiptype,
+
+                Confidence = Nullable 1.0F
+            );
+            Beta.RelationshipCreate(
+                ExternalId=externalId2,
+                SourceExternalId=sourceExternalId,
+                TargetExternalId=targetExternalId,
+                SourceType=relationshiptype,
+                TargetType=relationshiptype,
+
+                Confidence = Nullable 0.5F
+            )
+        }
+
+    // Act
+    //create the relationships for test
+    let! createRes =  writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
+    // retrieve the relationship by targetTypeToMatch
+    let relationshipsFilter =
+        Beta.RelationshipQuery(
+            Filter=Beta.RelationshipFilter(
+                SourceExternalIds = ( sourceExternalId |> Seq.singleton ),
+                Confidence = RangeObjectFloat(Min = Nullable 0.99F)
+            )
+        )
+    let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
+
     let allResultsMatchFilter =
         relationships.Items
-        |> Seq.forall (fun relationship -> relationship.TargetType = targetTypeToMatch)
+        |> Seq.forall ( fun relationship -> relationship.Confidence = Nullable 1.0F )
+
+    // Cleanup: Delete all relationships that has this test's (deletable) sourceExternalId
+    let! deleteRelationships =
+        writeClient.Beta.Relationships.ListAsync (
+            Beta.RelationshipQuery(
+                    Filter=Beta.RelationshipFilter(
+                        SourceExternalIds = (sourceExternalId |> Seq.singleton)
+                    )
+                )
+        )
+    let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
+    let! deleteResult = writeClient.Beta.Relationships.DeleteAsync (deleteIds)
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>

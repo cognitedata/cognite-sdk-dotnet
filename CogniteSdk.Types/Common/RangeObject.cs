@@ -23,4 +23,23 @@ namespace CogniteSdk
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
+
+    /// <summary>
+    /// Range between two numbers, float.
+    /// </summary>
+    public class RangeObjectFloat
+    {
+        /// <summary>
+        /// Max allowable number.
+        /// </summary>
+        public float? Max { get; set; }
+
+        /// <summary>
+        /// Min allowable number.
+        /// </summary>
+        public float? Min { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
+    }
 }

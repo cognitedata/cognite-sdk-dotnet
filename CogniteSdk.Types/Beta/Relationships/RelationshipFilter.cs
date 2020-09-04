@@ -51,7 +51,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Range for Confidence.
         /// </summary>
-        public RangeObject Confidence { get; set; }
+        public RangeObjectFloat Confidence { get; set; }
 
         /// <summary>
         /// Range for CreatedTime.

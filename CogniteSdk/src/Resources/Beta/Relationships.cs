@@ -12,7 +12,7 @@ using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources.Beta
 {
-    // TODO: Move this out of namespace. CogniteSdk.Beta namespace is ignored when outside of namespace for some reason
+    // TODO: Move this out of namespace? CogniteSdk.Beta namespace is ignored when outside of namespace for some reason
     using CogniteSdk.Beta;
 
     /// <summary>
