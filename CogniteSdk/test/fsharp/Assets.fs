@@ -39,20 +39,50 @@ let ``Get asset by id is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Get asset with metadata is Ok`` () = task {
+    // Arrange
+    let assetId = 130452390632424L
+
+    // Act
+    let! res = readClient.Assets.GetAsync assetId
+
+    let md = res.Metadata
+
+    // Assert
+    test <@ not (isNull md) @>
+    test <@ md.["SOURCE_DB"] = "workmate" @>
+}
+
+[<Fact>]
+let ``Get asset without metadata is Ok`` () = task {
+    // Arrange
+    let assetId = 130452390632424L
+
+    // Act
+    let! res = readClient.Assets.GetAsync<AssetWithoutMetadata> assetId
+
+    let resId = res.Id
+
+    // Assert
+    let md = res.Metadata
+
+    // Assert
+    test <@ isNull md @>
+}
+
+[<Fact>]
 let ``Get asset by missing id is Error`` () = task {
     // Arrange
     let assetId = 0L
 
     // Act
-    let! res =
-        task {
-            try
-                let! a = readClient.Assets.GetAsync assetId
-                return Ok a
-            with
-            | :? ResponseException as e -> return Error e
-        }
-
+    let! res = task {
+        try
+            let! a = readClient.Assets.GetAsync assetId
+            return Ok a
+        with
+        | :? ResponseException as e -> return Error e
+    }
     let err = Result.getError res
 
     // Assert
@@ -466,7 +496,7 @@ let ``Filter assets on single Label is Ok`` () = task {
     let query = AssetQuery(Limit = Nullable 1000, Filter = filter)
 
     // Act
-    let! res = writeClient.Playground.Assets.ListAsync query
+    let! res = writeClient.Assets.ListAsync query
 
     let allItemsMatch =
         res.Items |> Seq.map (fun item ->
@@ -480,7 +510,6 @@ let ``Filter assets on single Label is Ok`` () = task {
     test <@ (res.Items |> Seq.length) > 0 @>
     test <@ allItemsMatch @>
 }
-
 
 [<Fact>]
 let ``Filter assets on Label and metadata is Ok`` () = task {
@@ -497,7 +526,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Playground.Assets.ListAsync query
+    let! res = writeClient.Assets.ListAsync query
 
     // Assert
     let validateItem (item:Asset) =
@@ -519,7 +548,7 @@ let ``Filter assets on Label and metadata is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Filter assets with labels AND filter is Ok`` () = task{
+let ``Filter assets with labels AND filter is Ok`` () = task {
     // Arrange
     let labels = LabelFilter.All (seq [ "AssetTestLabel1"; "AssetTestLabel2" ])
 
@@ -530,7 +559,7 @@ let ``Filter assets with labels AND filter is Ok`` () = task{
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Playground.Assets.ListAsync query
+    let! res = writeClient.Assets.ListAsync query
 
     // Assert
     let resLabels =

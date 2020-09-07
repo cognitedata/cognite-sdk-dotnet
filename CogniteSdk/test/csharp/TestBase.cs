@@ -9,14 +9,15 @@ using Xunit;
 
 namespace Test.CSharp.Integration
 {
-
-    public class TestFixture : IDisposable {
+    public class TestFixture : IDisposable
+    {
 
         protected static Client ReadClient;
         protected static Client WriteClient;
         protected static Event TestEvent;
 
-        public TestFixture() {
+        public TestFixture()
+        {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
             WriteClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
 
@@ -25,7 +26,8 @@ namespace Test.CSharp.Integration
 
         public void Dispose() { }
 
-        private static Client CreateClient(string apiKey, string project, string url) {
+        private static Client CreateClient(string apiKey, string project, string url)
+        {
             var httpClient = new HttpClient();
             return Client.Builder.Create(httpClient)
                 .SetAppId("TestApp")
@@ -35,7 +37,8 @@ namespace Test.CSharp.Integration
                 .Build();
         }
 
-        private void PopulateDataAsync() {
+        private void PopulateDataAsync()
+        {
             try {
                 TestEvent = WriteClient.Events.RetrieveAsync(new List<string>() { "TestEvent" }).Result.FirstOrDefault();
             } catch (AggregateException) {

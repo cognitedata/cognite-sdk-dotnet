@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Oryx.Cognite.Playground;
-using static Oryx.Cognite.Playground.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources.Playground
@@ -19,7 +18,7 @@ namespace CogniteSdk.Resources.Playground
     public class AssetsResource : Resource
     {
         /// <summary>
-        /// Will only be instantiated by the client.
+        /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
@@ -28,7 +27,7 @@ namespace CogniteSdk.Resources.Playground
         }
 
         /// <summary>
-        /// Retrieves list of assets matching query.
+        /// Asynchronously retrieve a list of assets matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using static Oryx.Cognite.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources
@@ -18,7 +17,7 @@ namespace CogniteSdk.Resources
     public class EventsResource : Resource
     {
         /// <summary>
-        /// Will only be instantiated by the client.
+        /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
@@ -27,29 +26,41 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Retrieves list of events matching query.
+        /// Asynchronously retrieve a list of event like objects matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
-        /// <returns>List of assets matching given filters and optional cursor</returns>
-        public async Task<ItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
+        /// <returns>List of events matching given filters and optional cursor</returns>
+        public async Task<IItemsWithCursor<T>> ListAsync<T>(EventQuery query, CancellationToken token = default) where T : Event
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.list<ItemsWithCursor<Event>>(query);
+            var req = Oryx.Cognite.Events.list<T, ItemsWithCursor<T>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieves number of events matching query.
+        /// Asynchronously retrieve a list of events matching query.
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
-        /// <returns>Number of assets matching given filters</returns>
-        public async Task<Int32> AggregateAsync(EventQuery query, CancellationToken token = default)
+        /// <returns>List of events matching given filters and optional cursor</returns>
+        public async Task<ItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
+        {
+            return (ItemsWithCursor<Event>) await ListAsync<Event>(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves number of events matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>Number of events matching given filters</returns>
+        public async Task<int> AggregateAsync(EventQuery query, CancellationToken token = default)
         {
             if (query is null)
             {
@@ -61,11 +72,11 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Create events.
+        /// Asynchronously create events.
         /// </summary>
         /// <param name="events">Events to create.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns></returns>
+        /// <returns>Sequence of created events.</returns>
         public async Task<IEnumerable<Event>> CreateAsync(IEnumerable<EventCreate> events, CancellationToken token = default)
         {
             if (events is null)
@@ -73,26 +84,37 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(events));
             }
 
-            var req = Oryx.Cognite.Events.create<IEnumerable<Event>>(events);
+            var req = Oryx.Cognite.Events.create<Event, IEnumerable<Event>>(events);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieves information about an asset given an asset id.
+        /// Asynchronously retrieves information about an event given an event id.
         /// </summary>
-        /// <param name="eventId">The id of the asset to get.</param>
+        /// <param name="eventId">The id of the event to get.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>Asset with the given id.</returns>
-        public async Task<Event> GetAsync(long eventId, CancellationToken token = default)
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
+        /// <returns>Event with the given id.</returns>
+        public async Task<T> GetAsync<T>(long eventId, CancellationToken token = default) where T : Event
         {
-            var req = Oryx.Cognite.Events.get<Event>(eventId);
+            var req = Oryx.Cognite.Events.get<T, T>(eventId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves information about an event given an event id.
+        /// </summary>
+        /// <param name="eventId">The id of the event to get.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Event with the given id.</returns>
+        public async Task<Event> GetAsync(long eventId, CancellationToken token = default)
+        {
+            return await GetAsync<Event>(eventId, token).ConfigureAwait(false);
+        }
 
         #region Delete overloads
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="query">The list of events to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -108,7 +130,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="identities">The list of event ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -124,7 +146,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="ids">The list of event ids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -140,7 +162,7 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
-        /// Delete multiple events in the same project.
+        /// Asynchronously delete multiple events in the same project.
         /// </summary>
         /// <param name="externalIds">The list of event externalids to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -154,36 +176,51 @@ namespace CogniteSdk.Resources
             var query = new EventDelete { Items = externalIds.Select(Identity.Create) };
             return await DeleteAsync(query, token).ConfigureAwait(false);
         }
-
         #endregion
 
         #region Retrieve overloads
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of events to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        /// <typeparam name="T">Type of event to return, e.g Event or EventWithoutMetadata.</typeparam>
+        /// <returns>A sequence of the requested events.</returns>
+        public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Event
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Events.retrieve<IEnumerable<Event>>(ids, ignoreUnknownIds);
+            var req = Oryx.Cognite.Events.retrieve<T, IEnumerable<T>>(ids, ignoreUnknownIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of events to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested events.</returns>
+        public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return await RetrieveAsync<Event>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="internalIds">The list of event internal ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        /// <returns>A sequence of the requested events.</returns>
+        public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : Event
         {
             if (internalIds is null)
             {
@@ -191,12 +228,25 @@ namespace CogniteSdk.Resources
             }
 
             var req = internalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, ignoreUnknownIds, token).ConfigureAwait(false);
+            return await RetrieveAsync<T>(req, ignoreUnknownIds, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieves information about multiple events in the same project. A maximum of 1000 events IDs may be listed
-        /// per request and all of them must be unique.
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of event internal ids to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested events.</returns>
+        public async Task<IEnumerable<Event>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return await RetrieveAsync<Event>(internalIds, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple events in the same project. A maximum of 1000 events IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="externalIds">The list of event external ids to retrieve.</param>
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
@@ -209,34 +259,52 @@ namespace CogniteSdk.Resources
             }
 
             var req = externalIds.Select(Identity.Create);
-            return await RetrieveAsync(req, ignoreUnknownIds, token).ConfigureAwait(false);
+            return await RetrieveAsync<Event>(req, ignoreUnknownIds, token).ConfigureAwait(false);
         }
         #endregion
 
         /// <summary>
-        /// Retrieves a list of assets matching the given criteria. This operation does not support pagination.
+        /// Asynchronously retrieves a list of event like objects matching the given criteria. This operation does not
+        /// support pagination.
         /// </summary>
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<Event>> SearchAsync (EventSearch query, CancellationToken token = default )
+        /// <returns>List of events matching given criteria.</returns>
+        public async Task<IEnumerable<T>> SearchAsync<T>(EventSearch query, CancellationToken token = default) where T : Event
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.search<IEnumerable<Event>>(query);
+            var req = Oryx.Cognite.Events.search<T, IEnumerable<T>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Update one or more events. Supports partial updates, meaning that fields omitted from the requests are not
-        /// changed
+        /// Asynchronously retrieves a list of events matching the given criteria. This operation does not support
+        /// pagination.
+        /// </summary>
+        /// <param name="query">Search query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>List of events matching given criteria.</returns>
+        public async Task<IEnumerable<Event>> SearchAsync(EventSearch query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            return await SearchAsync<Event>(query, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously update one or more events. Supports partial updates, meaning that fields omitted from the
+        /// requests are not changed
         /// </summary>
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>List of updated assets.</returns>
+        /// <returns>List of updated events.</returns>
         public async Task<IEnumerable<Event>> UpdateAsync (IEnumerable<EventUpdateItem> query, CancellationToken token = default )
         {
             if (query is null)
@@ -244,7 +312,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.update<IEnumerable<Event>>(query);
+            var req = Oryx.Cognite.Events.update<Event, IEnumerable<Event>>(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

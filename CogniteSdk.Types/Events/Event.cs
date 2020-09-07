@@ -2,15 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Event read class.
+    /// The Event read class (with metadata).
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
     public class Event
     {
         /// <summary>
@@ -48,13 +47,6 @@ namespace CogniteSdk
         /// </summary>
         public string Description { get; set; }
 
-
-        /// <summary>
-        /// Custom, application specific metadata. String key -> String value
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
-
         /// <summary>
         /// Asset IDs of related equipment that this event relates to.
         /// </summary>
@@ -81,6 +73,12 @@ namespace CogniteSdk
         /// <value></value>
         public long LastUpdatedTime { get; set; }
 
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
+
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>
@@ -98,6 +96,20 @@ namespace CogniteSdk
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+    }
+
+    /// <summary>
+    /// The Event read class (without meta-data).
+    /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Warning", "CA1716: Identifiers should not match keywords", Justification = "We also have events")]
+    public class EventWithoutMetadata : Event
+    {
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        [JsonIgnore]
+        public new Dictionary<string, string> Metadata { get; set; }
     }
 }
 
