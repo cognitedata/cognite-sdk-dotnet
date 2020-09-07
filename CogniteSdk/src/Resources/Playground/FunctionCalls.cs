@@ -2,14 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk;
 using Oryx.Cognite.Playground;
-using static Oryx.Cognite.Playground.HandlerModule;
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
 namespace CogniteSdk.Resources.Playground

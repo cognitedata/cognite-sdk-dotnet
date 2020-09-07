@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// The Asset read class.
+    /// The Asset read class (with metadata).
     /// </summary>
     public class Asset
     {
@@ -36,12 +36,6 @@ namespace CogniteSdk
         /// Javascript friendly internal ID given to the object.
         /// </summary>
         public long? DataSetId { get; set; }
-
-        /// <summary>
-        /// Custom, application specific metadata. String key -> String value
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// The source of this asset.
@@ -102,6 +96,24 @@ namespace CogniteSdk
         /// </summary>
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Metadata { get; set; }
+    }
+
+    /// <summary>
+    /// The Asset read class (without metadata).
+    /// </summary>
+    public class AssetWithoutMetadata : Asset
+    {
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        [JsonIgnore]
+        public new Dictionary<string, string> Metadata { get; set; }
     }
 }
 

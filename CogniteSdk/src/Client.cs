@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Oryx;
-using Oryx.Cognite;
 using CogniteSdk.Resources;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;

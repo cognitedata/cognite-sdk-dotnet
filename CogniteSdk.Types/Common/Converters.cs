@@ -5,14 +5,14 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk
 {
     /// <summary>
-    /// Converts ErrorValue values from JSON to LongValue, DoubleValue or StringValue.
+    /// Converts multiple values values from JSON to LongValue, DoubleValue or StringValue.
     /// </summary>
     public class MultiValueConverter : JsonConverter<MultiValue>
     {
         /// <summary>
-        /// Produces error values from the JSON input.
+        /// Creates MultiValue values from the JSON input.
         /// </summary>
-        /// <returns>The ErrorValue. Either LongValue, DoubleValue or StringValue.</returns>
+        /// <returns>The MultiValue. Either LongValue, DoubleValue or StringValue.</returns>
         public override MultiValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
@@ -32,7 +32,7 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// Not in use. We don't write any error values.
+        /// Writes MultiValue values to JSON numbers or strings.
         /// </summary>
         public override void Write(Utf8JsonWriter writer, MultiValue value, JsonSerializerOptions options)
         {
@@ -47,10 +47,10 @@ namespace CogniteSdk
                     writer.WriteStringValue(s.Value);
                     break;
                 case MultiValue.Double d:
-                    writer.WriteStringValue(d.ToString());
+                    writer.WriteNumberValue(d.Value);
                     break;
                 case MultiValue.Long l:
-                    writer.WriteStringValue(l.ToString());
+                    writer.WriteNumberValue(l.Value);
                     break;
                 default:
                     throw new ArgumentException($"Unknown MultiValue: {value}");

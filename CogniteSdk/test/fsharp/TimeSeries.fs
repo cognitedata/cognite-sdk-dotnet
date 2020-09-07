@@ -38,6 +38,28 @@ let ``Count timeseries is Ok`` () = task {
 }
 
 [<Fact>]
+let ``Get timeseries by id is Ok`` () = task {
+    // Arrange
+    let id = 6190956317771L
+
+    // Act
+    let! item = readClient.TimeSeries.GetAsync id
+
+    // Assert
+    test <@ item.Id = id @>
+}
+
+[<Fact>]
+let ``Get timeseries by missing id is Error`` () = task {
+    // Arrange
+    let id = 0L
+
+    // Act
+    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.GetAsync id :> _)
+    |> ignore
+}
+
+[<Fact>]
 let ``Get timeseries by ids is Ok`` () = task {
     // Arrange
     let id = 6190956317771L
@@ -59,13 +81,45 @@ let ``Get timeseries by ids is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Get timeseries by missing id is Error`` () = task {
+let ``Get timeseries by missing ids is Error`` () = task {
     // Arrange
     let id = Identity 0L
 
     // Act
     Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.RetrieveAsync [ id ] :> _)
     |> ignore
+}
+
+[<Fact>]
+let ``Get timeseries with metadata is Ok`` () = task {
+    // Arrange
+    let timeseriesId = 6190956317771L
+
+    // Act
+    let! res = readClient.TimeSeries.GetAsync timeseriesId
+
+    let md = res.Metadata
+
+    // Assert
+    test <@ not (isNull md) @>
+    test <@ md.["instrumenttag"] = "23-PDT-92501:X.Value" @>
+}
+
+[<Fact>]
+let ``Get timeseries without metadata is Ok`` () = task {
+    // Arrange
+    let timeseriesId = 6190956317771L
+
+    // Act
+    let! res = readClient.TimeSeries.GetAsync<TimeSeriesWithoutMetadata> timeseriesId
+
+    let resId = res.Id
+
+    // Assert
+    let md = res.Metadata
+
+    // Assert
+    test <@ isNull md @>
 }
 
 [<Fact>]
@@ -334,19 +388,20 @@ let ``Update timeseries is Ok`` () = task {
             "key1", "value1"
             "key2", "value2"
         ] |> Dictionary
+    let externalIdString = Guid.NewGuid().ToString();
     let dto =
         TimeSeriesCreate(
             Metadata = (dict [
                 "oldkey1", "oldvalue1"
                 "oldkey2", "oldvalue2"
             ] |> Dictionary),
-            ExternalId = "testupdate",
+            ExternalId = externalIdString,
             Name = "testupdate",
             IsString = false,
             IsStep = false
         )
     let externalId = dto.ExternalId
-    let newExternalId = "testupdatenew"
+    let newExternalId = Guid.NewGuid().ToString();
     let newDescription = "testdescription"
 
     // Act
