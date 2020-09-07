@@ -62,7 +62,7 @@ namespace CogniteSdk.Beta
         public Int64? DataSetId { get; set; }
 
         /// <summary>
-        /// a list of labels associated with the relationships
+        /// A list of labels associated with the relationships
         /// </summary>
         public IEnumerable<CogniteExternalId> Labels { get; set; }
 
