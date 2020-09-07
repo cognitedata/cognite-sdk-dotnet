@@ -27,7 +27,7 @@ namespace CogniteSdk
     /// <summary>
     /// Range between two numbers, float.
     /// </summary>
-    public class RangeObjectFloat
+    public class RangeFloat
     {
         /// <summary>
         /// Max allowable number.

@@ -1,4 +1,4 @@
-// Copyright 2019 Cognite AS
+// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
@@ -51,7 +51,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Range for Confidence.
         /// </summary>
-        public RangeObjectFloat Confidence { get; set; }
+        public RangeFloat Confidence { get; set; }
 
         /// <summary>
         /// Range for CreatedTime.

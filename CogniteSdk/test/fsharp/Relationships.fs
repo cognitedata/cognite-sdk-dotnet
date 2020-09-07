@@ -130,12 +130,15 @@ let ``BETA: create and delete relationships is ok`` () = task {
     let! createRes = writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
     let! getExtIds = writeClient.Beta.Relationships.ListAsync listFilter
 
+    let relationshipWasCreated = createRes |> Seq.map (fun r -> r.ExternalId = externalId) |> Seq.contains true
+
     // cleanup
     let deleteIds = getExtIds.Items |> Seq.map (fun relationship -> relationship.ExternalId)
     let! deleteResult = writeClient.Beta.Relationships.DeleteAsync deleteIds
 
     // Assert
-    test <@ createRes |> Seq.length = 1 @>
+    test <@ relationshipWasCreated@>
+    test <@ createRes |> Seq.length >= 1 @>
     test <@ getExtIds.Items |> Seq.length > 0 @>
 }
 
@@ -490,7 +493,7 @@ let ``BETA: filter by Confidence is ok`` () = task {
         Beta.RelationshipQuery(
             Filter=Beta.RelationshipFilter(
                 SourceExternalIds = ( sourceExternalId |> Seq.singleton ),
-                Confidence = RangeObjectFloat(Min = Nullable 0.99F)
+                Confidence = RangeFloat(Min = Nullable 0.99F)
             )
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
