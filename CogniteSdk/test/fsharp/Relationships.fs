@@ -350,7 +350,7 @@ let ``BETA: filter by SourceType is ok`` () = task {
     // Act
     //create the relationships for test
     let! createRes =  writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
-    // retrieve the relationship by sourceExternalId
+    // retrieve the relationship by the expected sourcetype
     let relationshipsFilter =
         Beta.RelationshipQuery(
             Filter=Beta.RelationshipFilter(
