@@ -111,13 +111,13 @@ let ``BETA: create and delete relationships is ok`` () = task {
     let relationshipCreateObject =
         seq {
             Beta.RelationshipCreate(
-                ExternalId=externalId,
-                SourceExternalId="RelationshipTestCreateAndDeleteSource",
-                SourceType="asset",
-                TargetExternalId="RelationshipTestCreateAndDeleteTarget",
-                TargetType="asset",
-                Confidence=Nullable 0.999F,
-                Labels=seq{CogniteExternalId(label)}
+                ExternalId = externalId,
+                SourceExternalId = "RelationshipTestCreateAndDeleteSource",
+                SourceType = Beta.RelationshipVertexType.Asset,
+                TargetExternalId = "RelationshipTestCreateAndDeleteTarget",
+                TargetType = Beta.RelationshipVertexType.Asset,
+                Confidence = Nullable 0.999F,
+                Labels = ( CogniteExternalId(label) |> Seq.singleton )
             )
         }
 
@@ -151,20 +151,18 @@ let ``BETA: retrieve relationship is ok`` () = task{
     let relationshipCreateObject =
         seq {
             Beta.RelationshipCreate(
-                ExternalId=externalId,
-                SourceExternalId=srcExternalId,
-                SourceType="asset",
-                TargetExternalId="Temp-RelationshipTestRetrieveTarget",
-                TargetType="asset",
-                Confidence=Nullable 0.999F
+                ExternalId = externalId,
+                SourceExternalId = srcExternalId,
+                SourceType = Beta.RelationshipVertexType.Asset,
+                TargetExternalId = "Temp-RelationshipTestRetrieveTarget",
+                TargetType = Beta.RelationshipVertexType.Asset,
+                Confidence = Nullable 0.999F
             )
         }
 
     //ids to retrieve
-    let retrieveIds =
-        seq{
-            externalId
-        }
+    let retrieveIds = externalId |> Seq.singleton
+
     // Act
     //create the relationship
     let! createRes =  writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
@@ -204,16 +202,16 @@ let ``BETA: filter by SourceExternalId is ok`` () = task {
             Beta.RelationshipCreate(
                 ExternalId=externalId1,
                 SourceExternalId=srcExternalIdToMatch,
-                SourceType="asset",
+                SourceType=Beta.RelationshipVertexType.Asset,
                 TargetExternalId=targetExternalId,
-                TargetType="asset"
+                TargetType=Beta.RelationshipVertexType.Asset
             );
             Beta.RelationshipCreate(
                 ExternalId=externalId2,
                 SourceExternalId=srcExternalIdDontMatch,
-                SourceType="asset",
+                SourceType=Beta.RelationshipVertexType.Asset,
                 TargetExternalId=targetExternalId,
-                TargetType="asset"
+                TargetType=Beta.RelationshipVertexType.Asset
             )
         }
 
@@ -223,8 +221,8 @@ let ``BETA: filter by SourceExternalId is ok`` () = task {
     // retrieve the relationship by sourceExternalId
     let relationshipsFilter =
         Beta.RelationshipQuery(
-            Filter=Beta.RelationshipFilter(
-                SourceExternalIds=(srcExternalIdToMatch|>Seq.singleton)
+            Filter = Beta.RelationshipFilter(
+                SourceExternalIds = (srcExternalIdToMatch|>Seq.singleton)
             )
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
@@ -238,8 +236,8 @@ let ``BETA: filter by SourceExternalId is ok`` () = task {
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
             Beta.RelationshipQuery(
-                    Filter=Beta.RelationshipFilter(
-                        TargetExternalIds=(targetExternalId|>Seq.singleton)
+                    Filter = Beta.RelationshipFilter(
+                        TargetExternalIds = (targetExternalId |> Seq.singleton)
                     )
                 )
         )
@@ -266,18 +264,18 @@ let ``BETA: filter by TargetExternalId is ok`` () = task {
     let relationshipCreateObject =
         seq {
             Beta.RelationshipCreate(
-                ExternalId=externalId1,
-                SourceExternalId=sourceExternalId,
-                SourceType="asset",
-                TargetExternalId=targetExternalIdToMatch,
-                TargetType="asset"
+                ExternalId = externalId1,
+                SourceExternalId = sourceExternalId,
+                SourceType = Beta.RelationshipVertexType.Asset,
+                TargetExternalId = targetExternalIdToMatch,
+                TargetType = Beta.RelationshipVertexType.Asset
             );
             Beta.RelationshipCreate(
-                ExternalId=externalId2,
-                SourceExternalId=sourceExternalId,
-                SourceType="asset",
-                TargetExternalId=targetExternalIdDontMatch,
-                TargetType="asset"
+                ExternalId = externalId2,
+                SourceExternalId = sourceExternalId,
+                SourceType = Beta.RelationshipVertexType.Asset,
+                TargetExternalId = targetExternalIdDontMatch,
+                TargetType = Beta.RelationshipVertexType.Asset
             )
         }
 
@@ -287,8 +285,8 @@ let ``BETA: filter by TargetExternalId is ok`` () = task {
     // retrieve the relationship by sourceExternalId
     let relationshipsFilter =
         Beta.RelationshipQuery(
-            Filter=Beta.RelationshipFilter(
-                TargetExternalIds=(targetExternalIdToMatch|>Seq.singleton)
+            Filter = Beta.RelationshipFilter(
+                TargetExternalIds = (targetExternalIdToMatch|>Seq.singleton)
             )
         )
     let! relationships = writeClient.Beta.Relationships.ListAsync relationshipsFilter
@@ -302,7 +300,7 @@ let ``BETA: filter by TargetExternalId is ok`` () = task {
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
             Beta.RelationshipQuery(
-                    Filter=Beta.RelationshipFilter(
+                    Filter = Beta.RelationshipFilter(
                         SourceExternalIds = (sourceExternalId |> Seq.singleton)
                     )
                 )
@@ -323,8 +321,8 @@ let ``BETA: filter by SourceType is ok`` () = task {
     let sourceExternalId = "test - filter by SourceType is ok - deletable"
     let targetExternalId = "test - filter by SourceType is ok - deletable"
 
-    let sourceTypeToMatch = "event"
-    let sourceTypeDontMatch = "asset"
+    let sourceTypeToMatch = Beta.RelationshipVertexType.Event
+    let sourceTypeDontMatch = Beta.RelationshipVertexType.Asset
 
     let externalId1 = Guid.NewGuid().ToString()
     let externalId2 = Guid.NewGuid().ToString()
@@ -335,7 +333,7 @@ let ``BETA: filter by SourceType is ok`` () = task {
                 ExternalId=externalId1,
                 SourceExternalId=sourceExternalId,
                 TargetExternalId=targetExternalId,
-                TargetType="asset",
+                TargetType=Beta.RelationshipVertexType.Asset,
 
                 SourceType=sourceTypeToMatch
             );
@@ -343,7 +341,7 @@ let ``BETA: filter by SourceType is ok`` () = task {
                 ExternalId=externalId2,
                 SourceExternalId=sourceExternalId,
                 TargetExternalId=targetExternalId,
-                TargetType="asset",
+                TargetType=Beta.RelationshipVertexType.Asset,
 
                 SourceType=sourceTypeDontMatch
             )
@@ -391,8 +389,8 @@ let ``BETA: filter by TargetType is ok`` () = task {
     let sourceExternalId = "test - filter by TargetType is ok - deletable"
     let targetExternalId = "test - filter by TargetType is ok - deletable"
 
-    let targetTypeToMatch = "event"
-    let targetTypeDontMatch = "asset"
+    let targetTypeToMatch = Beta.RelationshipVertexType.Event
+    let targetTypeDontMatch = Beta.RelationshipVertexType.Asset
 
     let externalId1 = Guid.NewGuid().ToString()
     let externalId2 = Guid.NewGuid().ToString()
@@ -400,20 +398,20 @@ let ``BETA: filter by TargetType is ok`` () = task {
     let relationshipCreateObject =
         seq {
             Beta.RelationshipCreate(
-                ExternalId=externalId1,
-                SourceExternalId=sourceExternalId,
-                TargetExternalId=targetExternalId,
-                SourceType="asset",
+                ExternalId = externalId1,
+                SourceExternalId = sourceExternalId,
+                TargetExternalId = targetExternalId,
+                SourceType = Beta.RelationshipVertexType.Asset,
 
-                TargetType=targetTypeToMatch
+                TargetType = targetTypeToMatch
             );
             Beta.RelationshipCreate(
-                ExternalId=externalId2,
-                SourceExternalId=sourceExternalId,
-                TargetExternalId=targetExternalId,
-                SourceType="asset",
+                ExternalId = externalId2,
+                SourceExternalId = sourceExternalId,
+                TargetExternalId = targetExternalId,
+                SourceType = Beta.RelationshipVertexType.Asset,
 
-                TargetType=targetTypeDontMatch
+                TargetType = targetTypeDontMatch
             )
         }
 
@@ -437,7 +435,7 @@ let ``BETA: filter by TargetType is ok`` () = task {
     let! deleteRelationships =
         writeClient.Beta.Relationships.ListAsync (
             Beta.RelationshipQuery(
-                    Filter=Beta.RelationshipFilter(
+                    Filter = Beta.RelationshipFilter(
                         SourceExternalIds = (sourceExternalId |> Seq.singleton)
                     )
                 )
@@ -458,7 +456,7 @@ let ``BETA: filter by Confidence is ok`` () = task {
     let sourceExternalId = "test - filter by Confidence is ok - deletable"
     let targetExternalId = "test - filter by Confidence is ok - deletable"
 
-    let relationshiptype = "asset"
+    let relationshiptype = Beta.RelationshipVertexType.Asset
 
     let externalId1 = Guid.NewGuid().ToString()
     let externalId2 = Guid.NewGuid().ToString()
@@ -466,20 +464,20 @@ let ``BETA: filter by Confidence is ok`` () = task {
     let relationshipCreateObject =
         seq {
             Beta.RelationshipCreate(
-                ExternalId=externalId1,
-                SourceExternalId=sourceExternalId,
-                TargetExternalId=targetExternalId,
-                SourceType=relationshiptype,
-                TargetType=relationshiptype,
+                ExternalId = externalId1,
+                SourceExternalId = sourceExternalId,
+                TargetExternalId = targetExternalId,
+                SourceType = relationshiptype,
+                TargetType = relationshiptype,
 
                 Confidence = Nullable 1.0F
             );
             Beta.RelationshipCreate(
-                ExternalId=externalId2,
-                SourceExternalId=sourceExternalId,
-                TargetExternalId=targetExternalId,
-                SourceType=relationshiptype,
-                TargetType=relationshiptype,
+                ExternalId = externalId2,
+                SourceExternalId = sourceExternalId,
+                TargetExternalId = targetExternalId,
+                SourceType = relationshiptype,
+                TargetType = relationshiptype,
 
                 Confidence = Nullable 0.5F
             )
@@ -488,7 +486,7 @@ let ``BETA: filter by Confidence is ok`` () = task {
     // Act
     //create the relationships for test
     let! createRes =  writeClient.Beta.Relationships.CreateAsync relationshipCreateObject
-    // retrieve the relationship by targetTypeToMatch
+    // retrieve the relationship by range that includes expected confidence
     let relationshipsFilter =
         Beta.RelationshipQuery(
             Filter=Beta.RelationshipFilter(

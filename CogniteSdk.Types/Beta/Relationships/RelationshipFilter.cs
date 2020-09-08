@@ -20,7 +20,7 @@ namespace CogniteSdk.Beta
         /// Include relationships which source is of any of the specified resource types
         /// Valid values are: "asset", "timeseries", "file", "event", "sequence"
         /// </summary>
-        public IEnumerable<string> SourceTypes {get; set;}
+        public IEnumerable<RelationshipVertexType> SourceTypes {get; set;}
 
         /// <summary>
         /// Targets to include.
@@ -31,7 +31,7 @@ namespace CogniteSdk.Beta
         /// Include relationships which target is of any of the specified resource types
         /// Valid values are: "asset", "timeseries", "file", "event", "sequence"
         /// </summary>
-        public IEnumerable<string> TargetTypes { get; set; }
+        public IEnumerable<RelationshipVertexType> TargetTypes { get; set; }
 
         /// <summary>
         /// Include relationships that has any of the provided values in their DataSetId field.
