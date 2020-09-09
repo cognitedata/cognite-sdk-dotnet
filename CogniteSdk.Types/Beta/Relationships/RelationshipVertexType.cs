@@ -11,15 +11,15 @@ namespace CogniteSdk.Beta
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum RelationshipVertexType
     {
-        /// String value
+        /// Asset type
         Asset,
-        /// String value
+        /// TimeSeries type
         TimeSeries,
-        /// String value
+        /// File type
         File,
-        /// String value
+        /// Event type
         Event,
-        /// String value
+        /// Sequence type
         Sequence
     }
 }
