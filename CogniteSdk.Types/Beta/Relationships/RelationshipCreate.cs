@@ -17,7 +17,6 @@ namespace CogniteSdk.Beta
         /// </summary>
         public string ExternalId { get; set; }
 
-
         /// <summary>
         /// The source externalId of the relationship.
         /// </summary>
