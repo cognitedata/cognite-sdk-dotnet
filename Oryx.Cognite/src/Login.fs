@@ -1,3 +1,5 @@
+// Copyright 2020 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
 namespace Oryx.Cognite
 
 open System.Net.Http
@@ -28,5 +30,4 @@ module Login =
         >=> req {
             let! data = get<LoginDataRead, 'a> "/login/status"
             return data.Data
-        }  
-
+        }
