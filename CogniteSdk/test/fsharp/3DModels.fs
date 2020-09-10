@@ -23,7 +23,7 @@ let ``List 3D models with limit is Ok`` () = task {
 
     // Assert
     test <@ len = 1 @>
-    test <@ model.Name = "Valhall PH" @>
+    test <@ model.Name.Length > 0 @>
 }
 
 [<Fact>]

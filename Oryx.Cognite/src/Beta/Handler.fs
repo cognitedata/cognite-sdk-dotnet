@@ -4,8 +4,6 @@
 /// handler functions for the Beta SDK.
 namespace Oryx.Cognite.Beta
 
-open Oryx.Cognite
-
 open System.Collections.Generic
 open System.Net.Http
 
@@ -21,64 +19,44 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
-    let withBeta (next: NextFunc<_,_>) (context: HttpContext) =
-        withVersion
-            V10
-            next
-            { context with Request = { context.Request with Headers = context.Request.Headers.Add("version", "beta") } }
+    let withBetaHeader next ctx =
+        withHeader "version" "beta" next ctx
 
-    let getBeta<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        withBeta  >=> get url
+    let withBetaVersion next ctx =
+        (
+            withBetaHeader
+            >=> withVersion V10
+        ) next ctx
+
+    let get<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
+        withBetaVersion
+        >=> get url
 
     let inline getById (id: int64) (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
-        url +/ sprintf "%d" id |> getBeta
+        url +/ sprintf "%d" id |> get
 
     let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, ItemsWithCursor<'a>, 'b> =
-        let parms = query.ToQueryParams ()
-        GET
-        >=> withBeta
-        >=> withResource url
-        >=> withQuery parms
-        >=> fetch
-        >=> log
-        >=> withError decodeError
-        >=> json jsonOptions
+        withBetaVersion
+        >=> getWithQuery query url
 
     let post<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        POST
-        >=> withResource url
-        >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
-        >=> fetch
-        >=> log
-        >=> withError decodeError
-        >=> json jsonOptions
-
-    let postBeta<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        withBeta  >=> post content url
+        withBetaVersion
+        >=> post content url
 
     let postWithQuery<'a, 'b, 'c> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        let parms = query.ToQueryParams ()
-
-        POST
-        >=> withBeta
-        >=> withResource url
-        >=> withQuery parms
-        >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
-        >=> fetch
-        >=> log
-        >=> withError decodeError
-        >=> json jsonOptions
+        withBetaVersion
+        >=> postWithQuery content query url
 
     let inline list (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> postBeta  content (url +/ "list")
+        >=> post content (url +/ "list")
 
     let inline count (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, int, 'c> =
         req {
             let url =  url +/ "count"
             let! item =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postBeta<'a, AggregateCount, 'c> content url
+                >=> post<'a, AggregateCount, 'c> content url
             return item.Count
         }
 
@@ -87,7 +65,7 @@ module Handler =
             let url = url +/ "search"
             let! ret =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postBeta<'a, ItemsWithoutCursor<'b>, 'c> content url
+                >=> post<'a, ItemsWithoutCursor<'b>, 'c> content url
             return ret.Items
         }
 
@@ -96,7 +74,7 @@ module Handler =
             let url = url +/ "search"
             let! ret =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postBeta<'a, 'b, 'c> content url
+                >=> post<'a, 'b, 'c> content url
             return ret
         }
 
@@ -104,7 +82,7 @@ module Handler =
         req {
             let url = url +/ "update"
             let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
-            let! ret = postBeta<ItemsWithoutCursor<UpdateItem<'a>>, ItemsWithoutCursor<'b>, 'c> request url
+            let! ret = post<ItemsWithoutCursor<UpdateItem<'a>>, ItemsWithoutCursor<'b>, 'c> request url
             return ret.Items
         }
 
@@ -114,14 +92,14 @@ module Handler =
             let request = ItemsWithoutCursor<Identity>(Items = ids)
             let! ret =
                 withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> postBeta<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
+                >=> post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>, 'b> request url
             return ret.Items
         }
 
     let create<'a, 'b, 'c> (content: IEnumerable<'a>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'b>, 'c> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
-            let! ret = postBeta<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
+            let! ret = post<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>, 'c> content' url
             return ret.Items
         }
 
@@ -133,4 +111,4 @@ module Handler =
         }
 
     let inline delete<'a, 'b, 'c> (content: 'a) (url: string) : HttpHandler<HttpResponseMessage, 'b, 'c> =
-        url +/ "delete" |> postBeta content
+        url +/ "delete" |> post content
