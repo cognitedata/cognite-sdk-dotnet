@@ -18,7 +18,7 @@ namespace CogniteSdk.Beta
 
         /// <summary>
         /// Include relationships which source is of any of the specified resource types
-        /// Valid values are: "asset", "timeseries", "file", "event", "sequence"
+        /// Valid values are: Asset, TimeSeries, File, Event, Sequence
         /// </summary>
         public IEnumerable<RelationshipVertexType> SourceTypes {get; set;}
 
@@ -29,7 +29,7 @@ namespace CogniteSdk.Beta
 
         /// <summary>
         /// Include relationships which target is of any of the specified resource types
-        /// Valid values are: "asset", "timeseries", "file", "event", "sequence"
+        /// Valid values are: Asset, TimeSeries, File, Event, Sequence
         /// </summary>
         public IEnumerable<RelationshipVertexType> TargetTypes { get; set; }
 
@@ -65,7 +65,7 @@ namespace CogniteSdk.Beta
 
         /// <summary>
         /// Limits results to those active at this time, i.e. ActiveAtTime falls between StartTime and EndTime.
-        /// StartTime is treated as inclusive (if activeAtTime ie equal to StartTime then the relationship will be
+        /// StartTime is treated as inclusive (if ActiveAtTime is equal to StartTime then the relationship will be
         /// included). EndTime is treated as exclusive (if ActiveTime is equal to EndTime then the relationship will NOT
         /// be included). If a relationship has neither StartTime nor EndTime, the relationship is active at all times.
         /// </summary>
