@@ -62,8 +62,8 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Delete multiple relationships in the same project, along with all their descendants in the relationship hierarchy if
-        /// recursive is true.
+        /// Delete multiple relationships in the same project, along with all their descendants in the relationship
+        /// hierarchy if recursive is true.
         /// </summary>
         /// <param name="externalIds">The externalIds of relationships to delete.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -79,8 +79,8 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may be listed
-        /// per request and all of them must be unique.
+        /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs
+        /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of relationships identities to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>

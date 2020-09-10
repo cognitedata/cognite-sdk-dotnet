@@ -64,7 +64,10 @@ namespace CogniteSdk.Beta
         public TimeRange LastUpdatedTime { get; set; }
 
         /// <summary>
-        /// Limits results to those active at this time, i.e. ActiveAtTime falls between StartTime and EndTime. StartTime is treated as inclusive (if activeAtTime ie equal to StartTime then the relationship will be included). EndTime is treated as exclusive (if ActiveTime is equal to EndTime then the relationship will NOT be included). If a relationship has neither StartTime nor EndTime, the relationship is active at all times.
+        /// Limits results to those active at this time, i.e. ActiveAtTime falls between StartTime and EndTime.
+        /// StartTime is treated as inclusive (if activeAtTime ie equal to StartTime then the relationship will be
+        /// included). EndTime is treated as exclusive (if ActiveTime is equal to EndTime then the relationship will NOT
+        /// be included). If a relationship has neither StartTime nor EndTime, the relationship is active at all times.
         /// </summary>
         public TimeRange ActiveAtTime { get; set; }
 

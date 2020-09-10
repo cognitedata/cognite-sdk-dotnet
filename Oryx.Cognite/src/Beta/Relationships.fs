@@ -49,8 +49,8 @@ module Relationships =
         >=> delete items Url
 
     /// <summary>
-    /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may be listed per
-    /// request and all of them must be unique.
+    /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may
+    /// be listed per request and all of them must be unique.
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
