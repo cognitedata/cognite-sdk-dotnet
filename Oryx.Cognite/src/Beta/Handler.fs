@@ -8,7 +8,6 @@ open System.Collections.Generic
 open System.Net.Http
 
 open Oryx
-
 open Oryx.Cognite
 
 open CogniteSdk
@@ -20,6 +19,7 @@ module Handler =
     let withBetaHeader next ctx =
         withHeader "version" "beta" next ctx
 
+    // TODO: eta conversion to get rid of (next ctx) parameters
     let withBetaVersion next ctx =
         (
             withBetaHeader
