@@ -47,31 +47,18 @@ module Handler =
         >=> post content (url +/ "list")
 
     let inline count (content: 'T) (url: string) : HttpHandler<HttpResponseMessage, int, 'TResult> =
-        req {
-            let url =  url +/ "count"
-            let! item =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> post<'T, AggregateCount, 'TResult> content url
-            return item.Count
-        }
+        let url =  url +/ "count"
+
+        withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> post<'T, AggregateCount, 'TResult> content url
+        >=> Handler.map (fun item -> item.Count)
 
     let search<'T, 'TNext, 'TResult> (content: 'T) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'TNext>, 'TResult> =
-        req {
-            let url = url +/ "search"
-            let! ret =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> post<'T, ItemsWithoutCursor<'TNext>, 'TResult> content url
-            return ret.Items
-        }
+        let url = url +/ "search"
 
-    let searchPlayground<'T, 'TNext, 'TResult> (content: 'T) (url: string) : HttpHandler<HttpResponseMessage, 'TNext, 'TResult> =
-        req {
-            let url = url +/ "search"
-            let! ret =
-                withCompletion HttpCompletionOption.ResponseHeadersRead
-                >=> post<'T, 'TNext, 'TResult> content url
-            return ret
-        }
+        withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> post<'T, ItemsWithoutCursor<'TNext>, 'TResult> content url
+        >=> Handler.map (fun ret -> ret.Items)
 
     let update<'T, 'TNext, 'TResult> (items: IEnumerable<UpdateItem<'T>>) (url: string) : HttpHandler<HttpResponseMessage, IEnumerable<'TNext>, 'TResult> =
         req {
