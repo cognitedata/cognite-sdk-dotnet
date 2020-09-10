@@ -8,8 +8,6 @@ open System.Collections.Generic
 open System.Net.Http
 
 open Oryx
-open Oryx.SystemTextJson
-open Oryx.SystemTextJson.ResponseReader
 
 open Oryx.Cognite
 
@@ -28,7 +26,7 @@ module Handler =
             >=> withVersion V10
         ) next ctx
 
-    let get<'a, 'b> (url: string)  : HttpHandler<HttpResponseMessage, 'a, 'b> =
+    let get<'a, 'b> (url: string) : HttpHandler<HttpResponseMessage, 'a, 'b> =
         withBetaVersion
         >=> get url
 

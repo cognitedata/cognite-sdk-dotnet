@@ -28,6 +28,7 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
+    // TODO: add to Oryx and remove here when available in Oryx
     let withHeader (name: string) (value: string) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Headers = context.Request.Headers.Add(name, value) } }
 
