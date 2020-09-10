@@ -36,7 +36,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Include relationships that has any of the provided values in their DataSetId field.
         /// </summary>
-        public IEnumerable<Int64> DataSetIds { get; set; }
+        public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <summary>
         /// Range for startTime.
