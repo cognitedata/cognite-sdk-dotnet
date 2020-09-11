@@ -28,6 +28,9 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
+    // TODO: add to Oryx and remove here when available in Oryx
+    let withHeader<'TResult> (name: string) (value: string) (next: NextFunc<HttpResponseMessage, 'TResult>) (context: Context<HttpResponseMessage>) =
+        next { context with Request = { context.Request with Headers = context.Request.Headers.Add(name, value) } }
 
     let withResource (resource: string) (next: NextFunc<_,_>) (context: HttpContext) =
         next { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.Resource, String resource) } }

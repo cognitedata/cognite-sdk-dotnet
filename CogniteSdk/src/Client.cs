@@ -87,6 +87,11 @@ namespace CogniteSdk
         public PlaygroundResource Playground  { get; }
 
         /// <summary>
+        /// Client beta extension methods
+        /// </summary>
+        public BetaResource Beta { get; }
+
+        /// <summary>
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -108,6 +113,8 @@ namespace CogniteSdk
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);
+            // Beta features (experimental)
+            Beta = new BetaResource(authHandler, ctx);
         }
 
         /// <summary>
