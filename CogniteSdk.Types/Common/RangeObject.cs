@@ -32,12 +32,12 @@ namespace CogniteSdk
         /// <summary>
         /// Max allowable number.
         /// </summary>
-        public float? Max { get; set; }
+        public double? Max { get; set; }
 
         /// <summary>
         /// Min allowable number.
         /// </summary>
-        public float? Min { get; set; }
+        public double? Min { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

@@ -54,7 +54,7 @@ namespace CogniteSdk.Beta
         /// existence of the relationship. Generated relationships
         /// should never have the a confidence score of 1.0.
         /// </summary>
-        public float? Confidence { get; set; }
+        public double? Confidence { get; set; }
 
         /// <summary>
         /// String describing the source system storing or generating the relationship.
