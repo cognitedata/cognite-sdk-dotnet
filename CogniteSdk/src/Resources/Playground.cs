@@ -14,11 +14,6 @@ namespace CogniteSdk.Resources
     public class PlaygroundResource : Resource
     {
         /// <summary>
-        /// Client Assets extension methods
-        /// </summary>
-        public Playground.AssetsResource Assets { get; }
-
-        /// <summary>
         /// Client Functions extension methods
         /// </summary>
         public Playground.FunctionResource Functions { get; set; }
@@ -46,7 +41,6 @@ namespace CogniteSdk.Resources
         /// <param name="ctx">Context to use for the request.</param>
         internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
-            Assets = new Playground.AssetsResource(authHandler, ctx);
             Functions = new Playground.FunctionResource(authHandler, ctx);
             FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);
             FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);

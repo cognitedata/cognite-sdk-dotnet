@@ -591,7 +591,7 @@ let ``Filter assets on metadata and two labels with OR filter is Ok`` () = task 
     let query = AssetQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
-    let! res = writeClient.Playground.Assets.ListAsync query
+    let! res = writeClient.Assets.ListAsync query
 
     // Assert
     let hasLabel (label) (x:seq<string>) =
@@ -631,7 +631,7 @@ let ``Filter assets on nonexistent label returns empty response`` () = task {
     let query = AssetQuery( Limit = Nullable 10, Filter = filter )
 
     // Act
-    let! res = writeClient.Playground.Assets.ListAsync query
+    let! res = writeClient.Assets.ListAsync query
 
     let len = Seq.length res.Items
 
@@ -648,7 +648,7 @@ let ``Count assets matching multi Label ORfilter is Ok`` () = task {
     let query = AssetQuery( Filter = filter )
 
     // Act
-    let! count = writeClient.Playground.Assets.CountAsync query
+    let! count = writeClient.Assets.AggregateAsync query
 
 
     // Assert
@@ -669,8 +669,8 @@ let ``Create and delete asset with label is Ok`` () = task {
     let externalId = Identity externalIdString
 
     // Act
-    let! res = writeClient.Playground.Assets.CreateAsync [ dto ]
-    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+    let! res = writeClient.Assets.CreateAsync [ dto ]
+    let! delRes = writeClient.Assets.DeleteAsync [ externalId ]
 
     let createdAsset = Seq.head res
     let createdAssetExternalId = createdAsset.ExternalId
@@ -706,17 +706,17 @@ let ``Create, update by replacing label, and delete asset is Ok`` () = task {
 
     // Act
     // Create the asset
-    let! res = writeClient.Playground.Assets.CreateAsync [ entity ]
+    let! res = writeClient.Assets.CreateAsync [ entity ]
     // Update the asset
-    let! updateRes = writeClient.Playground.Assets.UpdateAsync update
+    let! updateRes = writeClient.Assets.UpdateAsync update
     // Retrieve the updated asset
-    let! assetupdated = writeClient.Playground.Assets.RetrieveAsync [externalId]
+    let! assetupdated = writeClient.Assets.RetrieveAsync [externalId]
 
     // Retrieve updated assets labels
     let updatedAssetFromCDF = assetupdated |> Seq.head
     let updatedLabels = updatedAssetFromCDF.Labels
     // Delete the asset
-    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+    let! delRes = writeClient.Assets.DeleteAsync [ externalId ]
 
 
     // Assert
@@ -754,18 +754,18 @@ let ``Create, update by adding new label and delete asset is Ok`` () = task {
 
     // Act
     // Create the asset
-    let! res = writeClient.Playground.Assets.CreateAsync [ entity ]
+    let! res = writeClient.Assets.CreateAsync [ entity ]
     // Update the asset
-    let! updateRes = writeClient.Playground.Assets.UpdateAsync update
+    let! updateRes = writeClient.Assets.UpdateAsync update
     // Retrieve the updated asset
-    let! assetupdated = writeClient.Playground.Assets.RetrieveAsync [externalId]
+    let! assetupdated = writeClient.Assets.RetrieveAsync [externalId]
 
     // Retrieve updated assets labels
     let updatedAssetFromCDF = assetupdated |> Seq.head
     let updatedLabels = updatedAssetFromCDF.Labels
     let updatedLabelsStrings = updatedLabels |> Seq.map (fun label -> label.ExternalId)
     // Delete the asset
-    let! delRes = writeClient.Playground.Assets.DeleteAsync [ externalId ]
+    let! delRes = writeClient.Assets.DeleteAsync [ externalId ]
 
 
     // Assert
