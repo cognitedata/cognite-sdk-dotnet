@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 
+
 namespace CogniteSdk.Resources.Playground
 {
+    using CogniteSdk.Playground;
     /// <summary>
     /// For internal use. Contains all relationship methods.
     /// </summary>
