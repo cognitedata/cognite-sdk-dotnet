@@ -297,11 +297,11 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            _ = await WriteClient.Playground.Assets.CreateAsync(new List<AssetCreate>() { initialAsset }).ConfigureAwait(false);
-            await WriteClient.Playground.Assets.UpdateAsync(update);
+            _ = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { initialAsset }).ConfigureAwait(false);
+            await WriteClient.Assets.UpdateAsync(update);
 
-            var getRes = await WriteClient.Playground.Assets.RetrieveAsync(new List<string>() { externalIdString });
-            await WriteClient.Playground.Assets.DeleteAsync(new List<string>() { externalIdString });
+            var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });
+            await WriteClient.Assets.DeleteAsync(new List<string>() { externalIdString });
 
             // Assert
             var resCount = getRes.Count();
