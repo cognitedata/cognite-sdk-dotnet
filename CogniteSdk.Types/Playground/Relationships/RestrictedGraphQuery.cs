@@ -3,22 +3,22 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk
+namespace CogniteSdk.Playground
 {
     /// <summary>
-    /// Label used to represent edges and vertices.
+    /// Class to perform a graph query.
     /// </summary>
-    public class RelationshipLabelDto
+    public class RestrictedGraphQuery
     {
         /// <summary>
-        /// The id of a label.
+        /// Executable graph query, written in gremlin.
         /// </summary>
-        public int Id { get; set; }
+        public string Query { get; set; }
 
         /// <summary>
-        /// The label for the object.
+        /// Filter on relationships.
         /// </summary>
-        public string Label { get; set; }
+        public RelationshipFilter Filter { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

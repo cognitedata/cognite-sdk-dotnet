@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk
+namespace CogniteSdk.Playground
 {
     /// <summary>
     /// Class to perform a graph query.

@@ -10,6 +10,7 @@ open Oryx.Cognite
 open Oryx.Cognite.Playground
 
 open CogniteSdk
+open CogniteSdk.Playground
 
 /// Various asset HTTP handlers.
 
