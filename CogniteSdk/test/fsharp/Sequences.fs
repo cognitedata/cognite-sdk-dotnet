@@ -176,7 +176,7 @@ let ``Create and delete sequences rows is Ok`` () = task {
         )
     let deleteDto =
         SequenceRowDelete(
-            Rows = [],
+            Rows = [0L],
             ExternalId = externalId
         )
 

@@ -3,18 +3,13 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk
+namespace CogniteSdk.Playground
 {
     /// <summary>
-    /// Class to perform a graph query.
+    /// Query parameters for list relationships.
     /// </summary>
-    public class RestrictedGraphQuery
+    public class RelationshipQuery : CursorQueryBase
     {
-        /// <summary>
-        /// Executable graph query, written in gremlin.
-        /// </summary>
-        public string Query { get; set; }
-
         /// <summary>
         /// Filter on relationships.
         /// </summary>

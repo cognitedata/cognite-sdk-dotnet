@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk
+namespace CogniteSdk.Playground
 {
     /// <summary>
     /// Relationships Vertex property.

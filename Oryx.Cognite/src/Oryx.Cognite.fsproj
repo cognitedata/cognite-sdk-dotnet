@@ -23,7 +23,6 @@
     <Compile Include="Sequences.fs" />
     <Compile Include="Login.fs" />
     <Compile Include="Playground/Handler.fs" />
-    <Compile Include="Playground/Assets.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Playground/Relationships.fs" />
     <Compile Include="Beta/Handler.fs" />

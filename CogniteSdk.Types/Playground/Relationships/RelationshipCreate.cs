@@ -3,12 +3,12 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk
+namespace CogniteSdk.Playground
 {
     /// <summary>
-    /// Class for reading relationship.
+    /// Class for writing relationship.
     /// </summary>
-    public class Relationship
+    public class RelationshipCreate
     {
         /// <summary>
         /// The source of the relationship.
@@ -53,16 +53,6 @@ namespace CogniteSdk
         /// Enum: "flowsTo" "belongsTo" "isParentOf" "implements"
         /// </summary>
         public string RelationshipType { get; set; }
-
-        /// <summary>
-        /// Time when this relationship was created.
-        /// </summary>
-        public long CreatedTime { get; set; }
-
-        /// <summary>
-        /// Time when this relationship was last updated.
-        /// </summary>
-        public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

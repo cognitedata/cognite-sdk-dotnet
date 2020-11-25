@@ -28,10 +28,10 @@ let ``Get relationship by ids is Ok`` () = task {
 [<Fact>]
 let ``Filter relationships on sources is Ok`` () = task {
     // Arrange
-    let sources = RelationshipResource(Resource="asset", ResourceId="relationship-asset") |> Seq.singleton
-    let sourcesList = new List<RelationshipResource>(sources)
-    let filter = RelationshipFilter(Sources=sourcesList)
-    let query = RelationshipQuery(Limit = Nullable 10, Filter = filter)
+    let sources = Playground.RelationshipResource(Resource="asset", ResourceId="relationship-asset") |> Seq.singleton
+    let sourcesList = new List<Playground.RelationshipResource>(sources)
+    let filter = Playground.RelationshipFilter(Sources=sourcesList)
+    let query = Playground.RelationshipQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Playground.Relationships.ListAsync query
@@ -45,10 +45,10 @@ let ``Filter relationships on sources is Ok`` () = task {
 [<Fact>]
 let ``Filter relationships on targets is Ok`` () = task {
     // Arrange
-    let targets = RelationshipResource(Resource="timeseries", ResourceId="timeseries-relationship") |> Seq.singleton
-    let targetsList = new List<RelationshipResource>(targets)
-    let filter = RelationshipFilter(Targets=targetsList)
-    let query = RelationshipQuery(Limit = Nullable 10, Filter = filter)
+    let targets = Playground.RelationshipResource(Resource="timeseries", ResourceId="timeseries-relationship") |> Seq.singleton
+    let targetsList = new List<Playground.RelationshipResource>(targets)
+    let filter = Playground.RelationshipFilter(Targets=targetsList)
+    let query = Playground.RelationshipQuery(Limit = Nullable 10, Filter = filter)
 
     // Act
     let! res = writeClient.Playground.Relationships.ListAsync query
@@ -63,10 +63,10 @@ let ``Filter relationships on targets is Ok`` () = task {
 let ``Create and delete Relationships is Ok`` () = task {
     // Arrange
     let externalId = Guid.NewGuid().ToString();
-    let source = RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
-    let target = RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
+    let source = Playground.RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
+    let target = Playground.RelationshipResource(Resource="asset", ResourceId=Guid.NewGuid().ToString();)
     let dto =
-        RelationshipCreate(
+        Playground.RelationshipCreate(
             ExternalId = externalId,
             Source = source,
             Target = target,
