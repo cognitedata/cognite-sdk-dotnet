@@ -63,14 +63,14 @@ open System.Text.Json
 //     test <@ len > 0 @>
 // }
 
-[<Fact>]
-let ``Retrieve functionCalls is Ok`` () = task {
-    // Act
-    let! res = writeClient.Playground.FunctionCalls.GetAsync(8287208469954416L, 2504165293606494L)
+// [<Fact>]
+// let ``Retrieve functionCalls is Ok`` () = task {
+//     // Act
+//     let! res = writeClient.Playground.FunctionCalls.GetAsync(8287208469954416L, 2504165293606494L)
 
-    test <@ res.Status = "Completed" @>
-    test <@ res.Id = 2504165293606494L @>
-}
+//     test <@ res.Status = "Completed" @>
+//     test <@ res.Id = 2504165293606494L @>
+// }
 
 // TODO: Fix this
 // [<Fact>]
