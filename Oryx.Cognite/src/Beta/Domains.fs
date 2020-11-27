@@ -18,16 +18,11 @@ module Domains =
     [<Literal>]
     let Url = "/domains"
 
-    let BaseUrl = new Uri("http://localhost:8080") // new Uri("https://templates.cognite.ai")
-
-    let withBaseUrl(baseUrl: Uri) (next: NextFunc<_,_>) (context: HttpContext) =
-        next { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } }
-
     let domainUrlPrefix (domainRef: DomainRef) : String =
         Url +/ Uri.EscapeUriString(domainRef.ExternalId) +/ domainRef.Version.ToString()
 
     let domainUrl (domainRef: DomainRef) (path: String) : String =
-        domainUrlPrefix (domainRef) +/ path
+        domainUrlPrefix domainRef +/ path
 
     /// <summary>
     /// Retrieves list of domains and a cursor if given limit is exceeded.
@@ -36,7 +31,6 @@ module Domains =
     /// <returns>List of domains.</returns>
     let list (query: DomainQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Domain>, 'a> =
         withLogMessage "domains:list"
-        >=> withBaseUrl BaseUrl
         >=> getWithQuery query Url
 
     /// <summary>
@@ -46,6 +40,8 @@ module Domains =
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
     let graphql (domainRef: DomainRef) (query: string) : HttpHandler<HttpResponseMessage, GraphQlResult> =
+        let url = domainUrl domainRef "/graphql"
+        let query = GraphQlQuery(Query = query)
+
         withLogMessage "domain:schema"
-        >=> withBaseUrl BaseUrl
-        >=> post (GraphQlQuery ( Query = query )) (domainUrl domainRef "/graphql")
+        >=> post query url
