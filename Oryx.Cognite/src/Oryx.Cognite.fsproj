@@ -27,7 +27,8 @@
     <Compile Include="Playground/Relationships.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/Relationships.fs" />
-    <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+    <Compile Include="Beta\Domains.fs" />
+    <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
