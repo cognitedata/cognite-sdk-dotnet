@@ -18,7 +18,7 @@ namespace CogniteSdk
         public TimeRange StartTime { get; set; }
 
         /// <summary>
-        /// Range between two timestamps.
+        /// Either range between two timestamps or isNull filter condition.
         /// </summary>
         public TimeRange EndTime { get; set; }
 

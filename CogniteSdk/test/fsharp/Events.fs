@@ -281,11 +281,27 @@ let ``Filter events on EndTime is Ok`` () = task {
     let! res = writeClient.Events.ListAsync query
     let len = Seq.length res.Items
 
-    let endTimes = Seq.map (fun (e: Event) -> e.EndTime) res.Items
+    let endTimes = res.Items |> Seq.choose (fun (e: Event) -> Option.ofNullable e.EndTime)
 
     // Assert
     test <@ len = 1 @>
-    test <@ Seq.forall (fun (t: Nullable<int64>) -> t.Value < 1565941351000L && t.Value > 1565941331000L) endTimes @>
+    test <@ Seq.forall (fun (t) -> t < 1565941351000L && t > 1565941331000L) endTimes @>
+}
+
+[<Fact>]
+let ``Filter events on null EndTime is Ok`` () = task {
+    // Arrange
+    let filter = EventFilter(EndTime = TimeRange(IsNull = Nullable true))
+    let query = EventQuery(Limit = Nullable 10, Filter = filter)
+
+    // Act
+    let! res = readClient.Events.ListAsync query
+
+    let endTimes = res.Items |> Seq.map (fun (e: Event) -> Option.ofNullable e.EndTime)
+
+    // Assert
+    test <@ not (Seq.isEmpty endTimes) @>
+    test <@ Seq.forall Option.isNone endTimes @>
 }
 
 [<Fact>]
