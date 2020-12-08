@@ -4,6 +4,7 @@ Write commits according to: <https://chris.beams.io/posts/git-commit/>
 
 Follow these steps when creating a pull request:
 
+0. Update the [CHANGELOG.md](./CHANGELOG.md)
 1. `git add <your changes>`
 2. `git commit -m"<your commit message>"`
 3. `git rebase master -i`

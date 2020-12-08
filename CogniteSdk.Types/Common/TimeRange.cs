@@ -22,6 +22,12 @@ namespace CogniteSdk
         /// </summary>
         public long? Min { get; set; }
 
+        /// <summary>
+        /// Set to true if you want to search for data with field value not set,
+        /// false to search for cases where some value is present.
+        /// </summary>
+        public bool? IsNull { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
