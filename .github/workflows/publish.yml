@@ -23,7 +23,7 @@ jobs:
     - name: Setup paket
       run: dotnet tool install Paket
     - name: Dotnet Pack
-      run: dotnet pack -c release -p:Version=${GITHUB_REF##*/v}
+      run: dotnet pack -c release -p:PackageVersion=${GITHUB_REF##*/v} -p:FileVersion=${GITHUB_REF##*/v}
 
     - name: Push CogniteSdk Nuget
       run: dotnet nuget push CogniteSdk/src/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
