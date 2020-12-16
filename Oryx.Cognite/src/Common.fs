@@ -5,8 +5,8 @@
 namespace Oryx.Cognite
 
 open System
-open System.Reflection
 open System.Diagnostics
+open System.Reflection
 open System.Text.Json
 
 open Oryx
