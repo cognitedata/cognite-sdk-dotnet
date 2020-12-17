@@ -5,6 +5,7 @@
 namespace Oryx.Cognite
 
 open System
+open System.Diagnostics
 open System.Reflection
 open System.Text.Json
 
@@ -103,9 +104,7 @@ module Context =
         sprintf "api/%s/projects/%s%s" version project resource
         |> combine baseUrl
 
-    let private version =
-        let version = Assembly.GetExecutingAssembly().GetName().Version
-        (version.Major, version.Minor, version.Build)
+    let private fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion
 
     let withUrlBuilder ctx =
         Context.withUrlBuilder urlBuilder ctx
@@ -121,9 +120,8 @@ module Context =
         { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
 
     let create () =
-        let major, minor, build = version
         Context.defaultContext
         |> Context.withUrlBuilder urlBuilder
-        |> Context.withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%d.%d.%d" major minor build)
+        |> Context.withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
         |> Context.withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
 

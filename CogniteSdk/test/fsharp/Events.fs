@@ -371,9 +371,9 @@ let ``Filter events on Type is Ok`` () = task {
 }
 
 [<Fact>]
-let ``Count assets with filter is ok`` () = task {
+let ``Count events with filter is ok`` () = task {
     // Arrange
-    let meta = Dictionary (dict [("version", "undefined")])
+    let meta = Dictionary (dict [("source", "akerbp-cdp")])
     let filter = EventFilter(Metadata = meta)
     let query = EventQuery(Filter = filter)
 
