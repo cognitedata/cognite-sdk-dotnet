@@ -24,7 +24,7 @@ module Raw =
     /// </summary>
     /// <param name="query">Query object containing limit and nextCursor</param>
     /// <returns>databases in project.</returns>
-    let listDatabases (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawDatabase>, 'a> =
+    let listDatabases (query: RawDatabaseQuery) : HttpHandler<unit, ItemsWithCursor<RawDatabase>, 'a> =
         withLogMessage "Raw:get"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> getWithQuery query Url
@@ -34,7 +34,7 @@ module Raw =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created databases.</returns>
-    let createDatabases (items: IEnumerable<RawDatabase>) : HttpHandler<HttpResponseMessage, IEnumerable<RawDatabase>, 'a> =
+    let createDatabases (items: IEnumerable<RawDatabase>) : HttpHandler<unit, IEnumerable<RawDatabase>, 'a> =
         withLogMessage "Raw:createDatabases"
         >=> create items Url
 
@@ -43,7 +43,7 @@ module Raw =
     /// </summary>
     /// <param name="query">The list of databases to delete.</param>
     /// <returns>Empty result.</returns>
-    let deleteDatabases (query: RawDatabaseDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let deleteDatabases (query: RawDatabaseDelete) : HttpHandler<unit, EmptyResponse, 'a> =
         withLogMessage "Raw:deleteDatabases"
         >=> delete query Url
 
@@ -53,7 +53,7 @@ module Raw =
     /// <param name="database">The database to list tables from.</param>
     /// <param name="query">The query with optional limit and cursor.</param>
     /// <returns>List of tables.</returns>
-    let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<RawTable>, 'a> =
+    let listTables (database: string) (query: RawDatabaseQuery) : HttpHandler<unit, ItemsWithCursor<RawTable>, 'a> =
         let url = Url +/ database +/ "tables"
         withLogMessage "Raw:listTables"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -65,7 +65,7 @@ module Raw =
     /// <param name="database">The database to list tables from.</param>
     /// <param name="items">The tables to create.</param>
     /// <returns>List of created tables.</returns>
-    let createTables (database: string) (items: RawTable seq) (ensureParent: bool) : HttpHandler<HttpResponseMessage, RawTable seq, 'a> =
+    let createTables (database: string) (items: RawTable seq) (ensureParent: bool) : HttpHandler<unit, RawTable seq, 'a> =
         let query = RawTableCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables"
         withLogMessage "Raw:createTables"
@@ -76,7 +76,7 @@ module Raw =
     /// </summary>
     /// <param name="items">The list of tables to delete.</param>
     /// <returns>Empty result.</returns>
-    let deleteTables (database: string) (items: RawTableDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let deleteTables (database: string) (items: RawTableDelete) : HttpHandler<unit, EmptyResponse, 'a> =
         let url = Url +/ database +/ "tables/delete"
         withLogMessage "Raw:deleteTables"
         >=> post items url
@@ -88,7 +88,7 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="query">The Row query.</param>
     /// <returns>The retrieved rows.</returns>
-    let listRows (database: string) (table: string) (query: RawRowQuery): HttpHandler<HttpResponseMessage, ItemsWithCursor<RawRow>, 'a> =
+    let listRows (database: string) (table: string) (query: RawRowQuery): HttpHandler<unit, ItemsWithCursor<RawRow>, 'a> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         withLogMessage "Raw:listRows"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -101,7 +101,7 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="key">Key of row to get.</param>
     /// <returns>The retrieved row.</returns>
-    let getRow (database: string) (table: string) (key: string) : HttpHandler<HttpResponseMessage, RawRow, 'a> =
+    let getRow (database: string) (table: string) (key: string) : HttpHandler<unit, RawRow, 'a> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
         withLogMessage "Raw:getRow"
         >=> getV10 url
@@ -114,7 +114,7 @@ module Raw =
     /// <param name="rows">The Rows to create.</param>
     /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
     /// <returns>The retrieved rows.</returns>
-    let createRows (database: string) (table: string) (rows: RawRowCreate seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let createRows (database: string) (table: string) (rows: RawRowCreate seq) (ensureParent: bool): HttpHandler<unit, EmptyResponse, 'a> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         withLogMessage "Raw:createRows"
@@ -128,7 +128,7 @@ module Raw =
     /// <param name="rows">The Rows to create.</param>
     /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
     /// <returns>The retrieved rows.</returns>
-    let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson seq) (ensureParent: bool): HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson seq) (ensureParent: bool): HttpHandler<unit, EmptyResponse, 'a> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         withLogMessage "Raw:createRows"
@@ -141,7 +141,7 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="rows">The Rows to create.</param>
     /// <returns>The retrieved rows.</returns>
-    let deleteRows (database: string) (table: string) (rows: RawRowDelete seq) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let deleteRows (database: string) (table: string) (rows: RawRowDelete seq) : HttpHandler<unit, EmptyResponse, 'a> =
         let query = ItemsWithoutCursor<RawRowDelete>(Items=rows)
         let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
         withLogMessage "Raw:deleteRows"

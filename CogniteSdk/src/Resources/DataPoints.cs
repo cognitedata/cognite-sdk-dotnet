@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
-using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
+using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources
 {

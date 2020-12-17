@@ -16,5 +16,5 @@ type HttpFunc<'T, 'TResult> = Context<'T> -> HttpFuncResult<'TResult, ResponseEx
 type NextFunc<'T, 'TResult> = HttpFunc<'T, 'TResult, ResponseException>
 type public HttpHandler<'T, 'TNext, 'TResult> = HttpFunc<'TNext, 'TResult, ResponseException> -> Context<'T> -> HttpFuncResult<'TResult, ResponseException>
 type HttpHandler<'T, 'TResult> = HttpHandler<'T, 'T, 'TResult, ResponseException>
-type HttpHandler<'T> = HttpHandler<HttpResponseMessage, 'T, ResponseException>
-type HttpHandler = HttpHandler<HttpResponseMessage, ResponseException>
+type HttpHandler<'T> = HttpHandler<unit, 'T, ResponseException>
+type HttpHandler = HttpHandler<unit, ResponseException>

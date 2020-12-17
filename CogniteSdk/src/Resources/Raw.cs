@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using static Oryx.Cognite.HandlerModule;
-using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
+using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources
 {

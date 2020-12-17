@@ -21,30 +21,30 @@ module DataPoints =
     let Url = "/timeseries/data"
 
     /// Retrieves a list of numeric data points from multiple time series in a project.
-    let list (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointListResponse, 'a> =
+    let list (query: DataPointsQuery) : HttpHandler<unit, DataPointListResponse, 'a> =
         withLogMessage "DataPoints:list"
         >=> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Retrieves a list of aggregate data points from multiple time series in a project.
-    let listAggregates (query: DataPointsQuery) : HttpHandler<HttpResponseMessage, DataPointListResponse, 'a> =
+    let listAggregates (query: DataPointsQuery) : HttpHandler<unit, DataPointListResponse, 'a> =
         withLogMessage "DataPoints:listAggregates"
         >=> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Create one or more new times eries. Returns a list of created time series.
-    let create (items: DataPointInsertionRequest) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let create (items: DataPointInsertionRequest) : HttpHandler<unit, EmptyResponse, 'a> =
         withLogMessage "DataPoints:create"
         >=> createProtobuf items Url
 
     /// Delete data points from 1 or more (multiple) time series.
-    let delete (items: DataPointsDelete) : HttpHandler<HttpResponseMessage, EmptyResponse, 'a> =
+    let delete (items: DataPointsDelete) : HttpHandler<unit, EmptyResponse, 'a> =
         withLogMessage "DataPoints:delete"
         >=> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    let latest (query: DataPointsLatestQuery) : HttpHandler<HttpResponseMessage, IEnumerable<DataPointsItem<DataPoint>>, 'a> =
+    let latest (query: DataPointsLatestQuery) : HttpHandler<unit, IEnumerable<DataPointsItem<DataPoint>>, 'a> =
         withLogMessage "DataPoints:latest"
         >=> req {
             let url = Url +/ "latest"
             let! ret = postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>, 'a> query url
             return ret.Items
-        } 
+        }
