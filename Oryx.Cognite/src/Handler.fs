@@ -95,11 +95,15 @@ module Handler =
 
         if mediaType.Contains "application/json" then
             use! stream = response.Content.ReadAsStreamAsync ()
+
             try
                 let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
-                let _, requestId = response.Headers.TryGetValue "x-request-id"
-                match Seq.tryExactlyOne requestId with
-                | Some requestId -> error.RequestId <- requestId
+                let requestId = response.Headers |> Map.tryFind "X-Request-ID"
+
+                match requestId with
+                | Some requestIds ->
+                    let requestId = Seq.tryExactlyOne requestIds |> Option.defaultValue String.Empty
+                    error.RequestId <- requestId
                 | None -> ()
 
                 return error.ToException () |> Oryx.ResponseError
@@ -113,7 +117,6 @@ module Handler =
             exn.Code <- int response.StatusCode
             return Oryx.ResponseError exn
     }
-
 
     let get<'TNext, 'TResult> (url: string) : HttpHandler<unit, 'TNext, 'TResult> =
         GET
