@@ -24,7 +24,6 @@
     <Compile Include="Login.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
-    <Compile Include="Playground/Relationships.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/Relationships.fs" />
     <Compile Include="Beta\Domains.fs" />

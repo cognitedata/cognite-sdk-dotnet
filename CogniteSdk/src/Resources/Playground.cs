@@ -30,11 +30,6 @@ namespace CogniteSdk.Resources
         public Playground.FunctionScheduleResource FunctionSchedules { get; set; }
 
         /// <summary>
-        /// Client Relationships extension methods
-        /// </summary>
-        public Playground.RelationshipResource Relationships  { get; }
-
-        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -44,7 +39,6 @@ namespace CogniteSdk.Resources
             Functions = new Playground.FunctionResource(authHandler, ctx);
             FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);
             FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);
-            Relationships = new Playground.RelationshipResource(authHandler, ctx);
         }
     }
 }
