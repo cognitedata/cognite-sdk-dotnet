@@ -4,15 +4,15 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
 
-using HttpContext = Oryx.Context<System.Net.Http.HttpResponseMessage>;
 using static Oryx.Cognite.ContextModule;
-using System.Threading;
+using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk
 {

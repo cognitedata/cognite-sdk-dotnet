@@ -10,7 +10,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />

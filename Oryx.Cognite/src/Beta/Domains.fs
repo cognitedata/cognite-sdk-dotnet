@@ -29,7 +29,7 @@ module Domains =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of domains.</returns>
-    let list (query: DomainQuery) : HttpHandler<HttpResponseMessage, ItemsWithCursor<Domain>, 'a> =
+    let list (query: DomainQuery) : HttpHandler<unit, ItemsWithCursor<Domain>, 'a> =
         withLogMessage "domains:list"
         >=> getWithQuery query Url
 
@@ -39,9 +39,9 @@ module Domains =
     /// <param name="domainRef">Unique reference to the domain.</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    let graphql (domainRef: DomainRef) (query: string) : HttpHandler<HttpResponseMessage, GraphQlResult> =
+    let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
         let url = domainUrl domainRef "/graphql"
         let query = GraphQlQuery(Query = query)
 
         withLogMessage "domain:schema"
-        >=> post query url
+        >=> postV10 query url
