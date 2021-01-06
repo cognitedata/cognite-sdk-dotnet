@@ -860,6 +860,10 @@ NUGET
     Microsoft.NETCore.Platforms (5.0)
     NETStandard.Library (2.0.3)
       Microsoft.NETCore.Platforms (>= 1.1)
+    Oryx (2.0.0-alpha-001)
+      FSharp.Core (>= 5.0)
+      Microsoft.Extensions.Logging (>= 5.0)
+      TaskBuilder.fs (>= 2.1)
     System.Buffers (4.5.1)
     System.Diagnostics.DiagnosticSource (5.0)
       System.Memory (>= 4.5.4)
@@ -877,11 +881,6 @@ NUGET
       FSharp.Core (>= 4.1.17)
       NETStandard.Library (>= 1.6.1)
       System.ValueTuple (>= 4.4)
-  remote: /Users/dbrattli/Developer/packages
-    Oryx (2.0.6)
-      FSharp.Core (>= 5.0)
-      Microsoft.Extensions.Logging (>= 5.0)
-      TaskBuilder.fs (>= 2.1)
 
 GROUP Test
 STORAGE: NONE

@@ -2,11 +2,10 @@ source https://www.nuget.org/api/v2
 storage: none
 
 group Sdk
-    source /Users/dbrattli/Developer/packages
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget Oryx >= 2
+    nuget Oryx >= 2 prerelease
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
