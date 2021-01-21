@@ -5,7 +5,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.Beta
+namespace CogniteSdk
 {
     /// <summary>
     /// Converts multiple values values from JSON to LongValue, DoubleValue or StringValue.

@@ -3,7 +3,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk.Beta
+namespace CogniteSdk
 {
     /// <summary>
     /// Enumeration of the source- and targettypes of a relationship
