@@ -18,8 +18,8 @@ namespace Test.CSharp.Integration
 
         public TestFixture()
         {
-            ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
-            WriteClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
+            ReadClient = CreateClient(Environment.GetEnvironmentVariable("FUSION_DOTNET_TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
+            WriteClient = CreateClient(Environment.GetEnvironmentVariable("FUSION_DOTNET_TEST_API_KEY_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
 
             PopulateDataAsync();
         }

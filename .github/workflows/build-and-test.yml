@@ -28,8 +28,8 @@ jobs:
     - name: Test
       run: ./test.sh
       env:
-        TEST_API_KEY_READ: ${{ secrets.TEST_API_KEY_READ }}
-        TEST_API_KEY_WRITE: ${{ secrets.TEST_API_KEY_WRITE }}
+        FUSION_DOTNET_TEST_API_KEY_READ: ${{ secrets.TEST_API_KEY_READ }}
+        FUSION_DOTNET_TEST_API_KEY_WRITE: ${{ secrets.TEST_API_KEY_WRITE }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:
