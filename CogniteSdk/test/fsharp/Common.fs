@@ -19,13 +19,13 @@ module Common =
 
     let readClient =
         createClient
-            (Environment.GetEnvironmentVariable "FUSION_DOTNET_TEST_API_KEY_READ")
+            (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
             "publicdata"
             "https://api.cognitedata.com"
 
     let writeClient =
         createClient
-            (Environment.GetEnvironmentVariable "FUSION_DOTNET_TEST_API_KEY_WRITE")
+            (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
             "fusiondotnet-tests"
             "https://greenfield.cognitedata.com"
 
