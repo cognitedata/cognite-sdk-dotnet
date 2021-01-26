@@ -3,7 +3,7 @@
 
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Beta
+namespace CogniteSdk
 {
     /// <summary>
     /// Query parameters for list relationships.

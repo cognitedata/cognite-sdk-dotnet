@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
-namespace CogniteSdk.Beta
+namespace CogniteSdk
 {
     /// <summary>
     /// Class for writing relationship.
