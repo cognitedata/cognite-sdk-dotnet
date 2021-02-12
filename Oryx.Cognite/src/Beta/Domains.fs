@@ -16,10 +16,13 @@ open CogniteSdk.Beta
 [<RequireQualifiedAccess>]
 module Domains =
     [<Literal>]
-    let Url = "/domains"
+    let Url = "/templategroups"
 
     let domainUrlPrefix (domainRef: DomainRef) : String =
-        Url +/ Uri.EscapeUriString(domainRef.ExternalId) +/ domainRef.Version.ToString()
+        Url
+        +/ Uri.EscapeUriString(domainRef.ExternalId)
+        +/ "versions"
+        +/ domainRef.Version.ToString()
 
     let domainUrl (domainRef: DomainRef) (path: String) : String =
         domainUrlPrefix domainRef +/ path
