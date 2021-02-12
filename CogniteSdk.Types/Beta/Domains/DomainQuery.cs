@@ -9,9 +9,5 @@ namespace CogniteSdk.Beta
     /// </summary>
     public class DomainQuery : CursorQueryBase
     {
-        /// <summary>
-        /// Filter on owners
-        ///
-        public IEnumerable<string> Owners {get; set;}
     }
 }
