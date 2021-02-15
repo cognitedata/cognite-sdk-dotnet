@@ -1,4 +1,4 @@
-// Copyright 2019 Cognite AS
+// Copyright 2021 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 namespace Oryx.Cognite.Beta
@@ -18,17 +18,8 @@ module TemplateGroups =
     [<Literal>]
     let Url = "/templategroups"
 
-    // TODO: Make TemplateGroupRef sdk type which consists of TemplateGroup ExternalID and version? Like DomainRef
-    // TODO: Remove this and replace with in-line method?
-    let domainUrlPrefix (domainRef: DomainRef) : String =
-        Url
-        +/ Uri.EscapeUriString(domainRef.ExternalId)
-        +/ "versions"
-        +/ domainRef.Version.ToString()
-
-    // TODO: remove this and replace with in-line method in graphql?
-    let domainUrl (domainRef: DomainRef) (path: String) : String =
-        domainUrlPrefix domainRef +/ path
+    let templateGroupVersionsUrl externalId =
+        Url +/ externalId +/ "versions"
 
     /// <summary>
     /// Retrieves list of template groups and a cursor if given limit is exceeded.
@@ -41,14 +32,16 @@ module TemplateGroups =
         withLogMessage "templategroups:list"
         >=> list query url
 
-
+    /// <summary>
+    /// Retrieves a list of versions of a given template group, and a version if given limit is exceeded.
+    /// </summary>
     let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'a> =
-        let url = Url +/ externalId +/ "versions"
+        let url = templateGroupVersionsUrl externalId
 
         withLogMessage "templategroups:listVersions"
-        >=> list query url
+        >=> Handler.list query url
 
-    let listVersions (templateGroup: TemplateGroup) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'a> =
+    let listVersionsFromTemplateGroup (templateGroup: TemplateGroup) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'a> =
         listVersions (templateGroup.ExternalId) query
 
 
@@ -58,12 +51,23 @@ module TemplateGroups =
     /// <param name="domainRef">Unique reference to the domain.</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
-        let url = domainUrl domainRef "/graphql"
+    //let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
+    let graphql (externalId: string) (templateGroupVersion: string) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
+        let url =
+            templateGroupVersionsUrl externalId
+            +/ templateGroupVersion
+            +/ "graphql"
+
         let query = GraphQlQuery(Query = query)
 
         withLogMessage "templategroups:schema"
         >=> postV10 query url
+
+    let graphql (externalId: string) (templateGroupVersion:TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
+        graphql
+            externalId
+            (templateGroupVersion.Version |> string)
+            query
 
     // FIXME: We don't want JSON Graphql result
     // Return Query type which contains data of string?

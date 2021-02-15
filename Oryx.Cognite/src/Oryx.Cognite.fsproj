@@ -26,6 +26,7 @@
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
+    <Compile Include="Beta/TemplateGroups.fs" />
     <Compile Include="Beta\Domains.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
