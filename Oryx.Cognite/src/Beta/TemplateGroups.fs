@@ -63,7 +63,7 @@ module TemplateGroups =
         withLogMessage "templategroups:schema"
         >=> postV10 query url
 
-    let graphql (externalId: string) (templateGroupVersion:TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
+    let graphqlFromTemplateGroupVersion (externalId: string) (templateGroupVersion:TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
         graphql
             externalId
             (templateGroupVersion.Version |> string)
