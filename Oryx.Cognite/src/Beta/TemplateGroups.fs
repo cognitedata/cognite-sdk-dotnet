@@ -28,7 +28,6 @@ module TemplateGroups =
     /// <returns>List of domains.</returns>
     let list (query: TemplateGroupFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroup>, 'TResult> =
         let url = Url
-
         withLogMessage "templategroups:list"
         >=> list query url
 
@@ -37,33 +36,23 @@ module TemplateGroups =
     /// </summary>
     let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'TResult> =
         let url = templateGroupVersionsUrl externalId
-
         withLogMessage "templategroups:listVersions"
         >=> Handler.list query url
-
-    let listVersionsFromTemplateGroup (templateGroup: TemplateGroup) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'TResult> =
-        listVersions (templateGroup.ExternalId) query
-
 
     /// <summary>
     /// Runs a query by using GraphQL against a domain.
     /// </summary>
-    /// <param name="domainRef">Unique reference to the domain.</param>
+    /// <param name="externalId">Unique reference to the Template Group.</param>
+    /// <param name="templateGroupVersion">Select a specific version of the Template Group schema</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    //let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GrapQLResult, 'TResult> =
-
-    let graphql (externalId: string) (templateGroupVersion: TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'TResult> =
+    let graphql (externalId: string) (templateGroupVersion: int) (query: string) : HttpHandler<unit, GraphQlResult, 'TResult> =
         let url =
             templateGroupVersionsUrl externalId
-            +/ (templateGroupVersion.Version |> string)
+            +/ (templateGroupVersion |> string)
             +/ "graphql"
 
         let query = GraphQlQuery(Query = query)
 
         withLogMessage "templategroups:schema"
         >=> postV10 query url
-
-    // Decode JSONElement contained within GraphQL
-    // To type Object<string,Value>
-    // Value= Object|String|Number|Array
