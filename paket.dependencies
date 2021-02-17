@@ -16,9 +16,9 @@ group Oryx.Cognite
     nuget System.Text.Json
     nuget CogniteSdk.Protobuf
     nuget Taskbuilder.fs ~> 2
-    nuget Oryx >= 2 prerelease
-    nuget Oryx.Protobuf >= 2 prerelease
-    nuget Oryx.SystemTextJson >= 2 prerelease
+    nuget Oryx >= 2
+    nuget Oryx.Protobuf >= 2
+    nuget Oryx.SystemTextJson >= 2
 
 group Types
     source https://www.nuget.org/api/v2
@@ -39,8 +39,8 @@ group Test
     nuget MSTest.TestAdapter ~> 1
     nuget MSTest.TestFramework ~> 1
     nuget Oryx >= 2 prerelease
-    nuget Oryx.Protobuf >= 2 prerelease
-    nuget Oryx.SystemTextJson >= 2 prerelease
+    nuget Oryx.Protobuf >= 2
+    nuget Oryx.SystemTextJson >= 2
 
 
 group Playground
@@ -56,8 +56,8 @@ group Playground
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
     nuget Oryx >= 2 prerelease
-    nuget Oryx.Protobuf >= 2 prerelease
-    nuget Oryx.SystemTextJson >= 2 prerelease
+    nuget Oryx.Protobuf >= 2
+    nuget Oryx.SystemTextJson >= 2
     nuget CogniteSdk.Protobuf
     nuget Serilog
     nuget Serilog.Extensions.Logging
