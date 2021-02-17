@@ -71,6 +71,7 @@ module Common =
                 IgnoreNullValues = true
             )
         options.Converters.Add(MultiValueConverter())
+        options.Converters.Add(ObjectToDictionaryJsonConverter())
         options
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
