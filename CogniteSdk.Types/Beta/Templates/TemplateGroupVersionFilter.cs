@@ -18,14 +18,5 @@ namespace CogniteSdk.Beta
         /// Maximum version of template
         /// </summary>
         public int? MaxVersion { get; set; }
-
-        /// <summary>
-        /// Query with pinned version
-        /// </summary>
-        public TemplateGroupVersionFilter(int Version)
-        {
-            MinVersion = Version;
-            MaxVersion = Version;
-        }
     }
 }
