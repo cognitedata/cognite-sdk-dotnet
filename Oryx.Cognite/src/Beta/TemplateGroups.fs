@@ -26,7 +26,7 @@ module TemplateGroups =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of domains.</returns>
-    let list (query: TemplateGroupFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroup>, 'a> =
+    let list (query: TemplateGroupFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroup>, 'TResult> =
         let url = Url
 
         withLogMessage "templategroups:list"
@@ -35,13 +35,13 @@ module TemplateGroups =
     /// <summary>
     /// Retrieves a list of versions of a given template group, and a version if given limit is exceeded.
     /// </summary>
-    let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'a> =
+    let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'TResult> =
         let url = templateGroupVersionsUrl externalId
 
         withLogMessage "templategroups:listVersions"
         >=> Handler.list query url
 
-    let listVersionsFromTemplateGroup (templateGroup: TemplateGroup) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'a> =
+    let listVersionsFromTemplateGroup (templateGroup: TemplateGroup) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'TResult> =
         listVersions (templateGroup.ExternalId) query
 
 
@@ -51,11 +51,12 @@ module TemplateGroups =
     /// <param name="domainRef">Unique reference to the domain.</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    //let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
-    let graphql (externalId: string) (templateGroupVersion: string) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
+    //let graphql (domainRef: DomainRef) (query: string) : HttpHandler<unit, GrapQLResult, 'TResult> =
+
+    let graphql (externalId: string) (templateGroupVersion: TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'TResult> =
         let url =
             templateGroupVersionsUrl externalId
-            +/ templateGroupVersion
+            +/ (templateGroupVersion.Version |> string)
             +/ "graphql"
 
         let query = GraphQlQuery(Query = query)
@@ -63,11 +64,6 @@ module TemplateGroups =
         withLogMessage "templategroups:schema"
         >=> postV10 query url
 
-    let graphqlFromTemplateGroupVersion (externalId: string) (templateGroupVersion:TemplateGroupVersion) (query: string) : HttpHandler<unit, GraphQlResult, 'a> =
-        graphql
-            externalId
-            (templateGroupVersion.Version |> string)
-            query
-
-    // FIXME: We don't want JSON Graphql result
-    // Return Query type which contains data of string?
+    // Decode JSONElement contained within GraphQL
+    // To type Object<string,Value>
+    // Value= Object|String|Number|Array
