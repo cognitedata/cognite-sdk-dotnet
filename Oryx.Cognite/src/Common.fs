@@ -111,13 +111,13 @@ module Context =
         Context.withUrlBuilder urlBuilder ctx
 
     /// Set the project to connect to.
-    let withProject (project: string) (context: HttpContext) =
+    let withProject (project: string) (context: Context) =
         { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.Project, String project) } }
 
-    let withAppId (appId: string) (context: HttpContext) =
+    let withAppId (appId: string) (context: Context) =
         { context with Request = { context.Request with Headers = context.Request.Headers.Add ("x-cdp-app", appId); Items = context.Request.Items.Add(PlaceHolder.HasAppId, String "true") } }
 
-    let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
+    let withBaseUrl (baseUrl: Uri) (context: Context) =
         { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
 
     let create () =

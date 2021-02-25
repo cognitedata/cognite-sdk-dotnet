@@ -7,8 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
-
+using Oryx;
 namespace CogniteSdk.Resources
 {
     /// <summary>
@@ -21,7 +20,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -38,7 +37,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.list<DataPointListResponse>(query);
+            var req = Oryx.Cognite.DataPoints.list(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -55,7 +54,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.DataPoints.create<EmptyResponse>(points);
+            var req = Oryx.Cognite.DataPoints.create(points);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -73,7 +72,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.delete<EmptyResponse>(query);
+            var req = Oryx.Cognite.DataPoints.delete(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -90,7 +89,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.latest<IEnumerable<DataPointsItem<DataPoint>>>(query);
+            var req = Oryx.Cognite.DataPoints.latest(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

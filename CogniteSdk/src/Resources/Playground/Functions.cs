@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Oryx;
 using Oryx.Cognite.Playground;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources.Playground
 {
@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal FunctionResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal FunctionResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -32,7 +32,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of Functions</returns>
         public async Task<ItemsWithoutCursor<Function>> ListAsync(CancellationToken token = default)
         {
-            var req = Functions.list<ItemsWithoutCursor<Function>>();
+            var req = Functions.list();
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(functions));
             }
 
-            var req = Functions.create<IEnumerable<Function>>(functions);
+            var req = Functions.create(functions);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -66,7 +66,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.delete<EmptyResponse>(ids);
+            var req = Functions.delete(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -83,7 +83,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.retrieve<IEnumerable<Function>>(ids);
+            var req = Functions.retrieve(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk;
+using Oryx;
 using Oryx.Cognite.Playground;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources.Playground
 {
@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal FunctionCallResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal FunctionCallResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -34,7 +34,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Function call with the given id.</returns>
         public async Task<FunctionCall> GetAsync(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.get<FunctionCall>(functionId, callId);
+            var req = FunctionCalls.get(functionId, callId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -51,7 +51,7 @@ namespace CogniteSdk.Resources.Playground
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            var req = FunctionCalls.list<ItemsWithoutCursor<FunctionCall>>(functionId, filter);
+            var req = FunctionCalls.list(functionId, filter);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -64,7 +64,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of Functions</returns>
         public async Task<ItemsWithoutCursor<FunctionCallLogEntry>> ListLogsAsync(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.listLogs<ItemsWithoutCursor<FunctionCallLogEntry>>(functionId, callId);
+            var req = FunctionCalls.listLogs(functionId, callId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -77,7 +77,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Reponse from function call.</returns>
         public async Task<FunctionCallResponse> RetrieveResponse(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.retrieveResponse<FunctionCallResponse>(functionId, callId);
+            var req = FunctionCalls.retrieveResponse(functionId, callId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -90,7 +90,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Reponse from function call.</returns>
         public async Task<FunctionCall> CallFunction<T>(long functionId, T data, CancellationToken token = default)
         {
-            var req = FunctionCalls.callFunction<T, FunctionCall>(functionId, data);
+            var req = FunctionCalls.callFunction<T>(functionId, data);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

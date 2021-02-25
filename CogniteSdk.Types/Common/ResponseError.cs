@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
@@ -56,7 +57,7 @@ namespace CogniteSdk
         /// <summary>
         /// Convert error to exception.
         /// </summary>
-        public ResponseException ToException()
+        public Exception ToException()
         {
             var exn = new ResponseException(this.Error.Message) {
                 Code = this.Error.Code,

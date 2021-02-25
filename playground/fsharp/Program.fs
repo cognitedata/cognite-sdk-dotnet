@@ -7,12 +7,10 @@ open FsConfig
 open Com.Cognite.V1.Timeseries.Proto
 
 open Oryx
-open Oryx.Retry
 open Oryx.Cognite
 
 open CogniteSdk
 open FSharp.Control.Tasks.V2.ContextInsensitive
-open System.Threading
 
 type Config = {
     [<CustomName("API_KEY")>]
@@ -21,7 +19,7 @@ type Config = {
     Project: string
 }
 
-let getDatapointsExample (ctx : HttpContext) = task {
+let getDatapointsExample (ctx : Context) = task {
     let query =
         DataPointsQuery(
             Items = [ DataPointsQueryItem(Id=Nullable 20713436708L) ],
@@ -30,15 +28,15 @@ let getDatapointsExample (ctx : HttpContext) = task {
         )
     let! res =
         DataPoints.list query
-        |> runUnsafeAsync ctx CancellationToken.None
+        |> runUnsafeAsync ctx
     printfn "%A" res
  }
 
-let getAssetsExample (ctx : HttpContext) = task {
+let getAssetsExample (ctx : Context) = task {
     let! res =
         AssetQuery(Limit = Nullable 2)
         |> Assets.list
-        |> runUnsafeAsync ctx CancellationToken.None
+        |> runUnsafeAsync ctx
 
     let! res =
         AssetQuery(Limit = Nullable 2)
@@ -49,7 +47,7 @@ let getAssetsExample (ctx : HttpContext) = task {
     | Error err -> printfn "Error: %A" err
 }
 
-let updateAssetsExample (ctx : HttpContext) = task {
+let updateAssetsExample (ctx : Context) = task {
     let query =  [
         UpdateItem(
             id = 84025677715833721L,
@@ -62,7 +60,7 @@ let updateAssetsExample (ctx : HttpContext) = task {
     | Error err -> printfn "Error: %A" err
 }
 
-let searchAssetsExample (ctx : HttpContext) = task {
+let searchAssetsExample (ctx : Context) = task {
 
     let query =
         AssetSearch(
@@ -74,6 +72,7 @@ let searchAssetsExample (ctx : HttpContext) = task {
     | Ok res -> printfn "%A" res
     | Error err -> printfn "Error: %A" err
 }
+
 let createAssetsExample ctx = task {
 
     let assets = [
@@ -83,22 +82,17 @@ let createAssetsExample ctx = task {
        )
     ]
 
-    let myRetry = retry 500<ms> 5
-
-    let request = myRetry >=> req {
+    let request = req {
         let! ga = Assets.create assets
-
-        let! gb = concurrent [
-            retry 500<ms> 5 >=> Assets.create assets
-        ]
+        let! gb = Assets.create assets
 
         return gb
     }
 
-    let request = myRetry >=> concurrent [
+    let request = concurrent [
         let chunks = Seq.chunkBySize 10 assets
         for chunk in chunks do
-            yield retry 500<ms> 5 >=> Assets.create chunk
+            yield Assets.create chunk
     ]
 
     let! result = request |> runAsync ctx
@@ -131,7 +125,7 @@ let insertDataPointsProtoStyle ctx = task {
 
 }
 
-let syntheticQueryExample (ctx : HttpContext) = task {
+let syntheticQueryExample (ctx : Context) = task {
     let query =
         TimeSeriesSyntheticQuery(
             Items = [
@@ -143,7 +137,7 @@ let syntheticQueryExample (ctx : HttpContext) = task {
         )
     let! res =
         TimeSeries.syntheticQuery query
-        |> runUnsafeAsync ctx CancellationToken.None
+        |> runUnsafeAsync ctx
     printfn "%A" res
  }
 

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Oryx;
 using Oryx.Cognite.Playground;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources.Playground
 {
@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal FunctionScheduleResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal FunctionScheduleResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -32,7 +32,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of FunctionSchedules</returns>
         public async Task<ItemsWithoutCursor<FunctionSchedule>> ListAsync(CancellationToken token = default)
         {
-            var req = FunctionSchedules.list<ItemsWithoutCursor<FunctionSchedule>>();
+            var req = FunctionSchedules.list();
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -49,7 +49,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(functionSchedules));
             }
 
-            var req = FunctionSchedules.create<IEnumerable<FunctionSchedule>>(functionSchedules);
+            var req = FunctionSchedules.create(functionSchedules);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -66,7 +66,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = FunctionSchedules.delete<EmptyResponse>(ids);
+            var req = FunctionSchedules.delete(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
