@@ -280,7 +280,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Files.search(query);
-            return await RunAsync<IEnumerable<File>>(req, token).ConfigureAwait(false);
+            return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
 }
