@@ -26,7 +26,7 @@ module TemplateGroups =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of domains.</returns>
-    let list (query: TemplateGroupFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroup>, 'TResult> =
+    let list (query: TemplateGroupFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroup>> =
         let url = Url
         withLogMessage "templategroups:list"
         >=> list query url
@@ -34,7 +34,7 @@ module TemplateGroups =
     /// <summary>
     /// Retrieves a list of versions of a given template group, and a version if given limit is exceeded.
     /// </summary>
-    let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>, 'TResult> =
+    let listVersions (externalId: string) (query: TemplateGroupVersionFilter) : HttpHandler<unit, ItemsWithCursor<TemplateGroupVersion>> =
         let url = templateGroupVersionsUrl externalId
         withLogMessage "templategroups:listVersions"
         >=> Handler.list query url
@@ -46,7 +46,7 @@ module TemplateGroups =
     /// <param name="templateGroupVersion">Select a specific version of the Template Group schema</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    let graphql (externalId: string) (templateGroupVersion: int) (query: string) : HttpHandler<unit, GraphQlResult, 'TResult> =
+    let graphql (externalId: string) (templateGroupVersion: int) (query: string) : HttpHandler<unit, GraphQlResult> =
         let url =
             templateGroupVersionsUrl externalId
             +/ (templateGroupVersion |> string)

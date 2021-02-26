@@ -24,7 +24,7 @@ module Relationships =
     /// </summary>
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
-    let list (query: RelationshipQuery) : HttpHandler<unit, ItemsWithCursor<Relationship>, 'a> =
+    let list (query: RelationshipQuery) : HttpHandler<unit, ItemsWithCursor<Relationship>> =
         withLogMessage "Relationships:list"
         >=> list query Url
 
@@ -33,7 +33,7 @@ module Relationships =
     /// </summary>
     /// <param name="assets">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
-    let create (items: RelationshipCreate seq) : HttpHandler<unit, Relationship seq, 'a> =
+    let create (items: RelationshipCreate seq) : HttpHandler<unit, Relationship seq> =
         withLogMessage "Relationships:create"
         >=> create items Url
 
@@ -42,7 +42,7 @@ module Relationships =
     /// </summary>
     /// <param name="relationships">The list of externalIds for relationships to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (externalIds: string seq) : HttpHandler<unit, EmptyResponse, 'a> =
+    let delete (externalIds: string seq) : HttpHandler<unit, EmptyResponse> =
         let relationships = externalIds |> Seq.map Identity.Create
         let items = ItemsWithoutCursor(Items=relationships)
         withLogMessage "Relationships:delete"
@@ -54,7 +54,7 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) : HttpHandler<unit, Relationship seq, 'a> =
+    let retrieve (ids: string seq) : HttpHandler<unit, Relationship seq> =
         let relationships = ids |> Seq.map Identity.Create
         withLogMessage "Relationships:retrieve"
         >=> retrieve relationships Url

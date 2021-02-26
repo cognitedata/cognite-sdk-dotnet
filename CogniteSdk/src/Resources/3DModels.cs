@@ -7,9 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Oryx;
 using Oryx.Cognite;
 using static Oryx.Cognite.HandlerModule;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources
 {
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal ThreeDModelsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal ThreeDModelsResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDModels.list<ItemsWithCursor<ThreeDModel>>(query);
+            var req = ThreeDModels.list(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDModel));
             }
 
-            var req = ThreeDModels.create<IEnumerable<ThreeDModel>>(ThreeDModel);
+            var req = ThreeDModels.create(ThreeDModel);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -75,7 +75,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = ThreeDModels.delete<EmptyResponse>(ids);
+            var req = ThreeDModels.delete(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -106,7 +106,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<ThreeDModel> RetrieveAsync(long modelId, CancellationToken token = default)
         {
-            var req = ThreeDModels.retrieve<ThreeDModel>(modelId);
+            var req = ThreeDModels.retrieve(modelId);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -126,7 +126,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDModels.update<IEnumerable<ThreeDModel>>(query);
+            var req = ThreeDModels.update(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

@@ -14,7 +14,7 @@ open CogniteSdk.Login
 
 [<RequireQualifiedAccess>]
 module Login =
-    let get<'a, 'b> (url: string) : HttpHandler<unit, 'a, 'b> =
+    let get<'TResult> (url: string) : HttpHandler<unit, 'TResult> =
         GET
         >=> withVersion V10
         >=> withUrl url
@@ -25,9 +25,9 @@ module Login =
         >=> json jsonOptions
 
     /// Returns the authentication information about the asking entity.
-    let status () : HttpHandler<unit, LoginStatus, 'a> =
+    let status () : HttpHandler<unit, LoginStatus> =
         withLogMessage "Login:status"
         >=> req {
-            let! data = get<LoginDataRead, 'a> "/login/status"
+            let! data = get<LoginDataRead> "/login/status"
             return data.Data
         }

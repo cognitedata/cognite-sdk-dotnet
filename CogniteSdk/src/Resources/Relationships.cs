@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Oryx;
 using static Oryx.Cognite.HandlerModule;
-using HttpContext = Oryx.Context<Microsoft.FSharp.Core.Unit>;
 
 namespace CogniteSdk.Resources
 {
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal RelationshipResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal RelationshipResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
         {
         }
 
@@ -40,7 +40,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Relationships.list<ItemsWithCursor<Relationship>>(query);
+            var req = Oryx.Cognite.Relationships.list(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -57,7 +57,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(relationships));
             }
 
-            var req = Oryx.Cognite.Relationships.create<IEnumerable<Relationship>>(relationships);
+            var req = Oryx.Cognite.Relationships.create(relationships);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(externalIds));
             }
 
-            var req = Oryx.Cognite.Relationships.delete<EmptyResponse>(externalIds);
+            var req = Oryx.Cognite.Relationships.delete(externalIds);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -91,7 +91,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Relationships.retrieve<IEnumerable<Relationship>>(ids);
+            var req = Oryx.Cognite.Relationships.retrieve(ids);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }
