@@ -34,3 +34,12 @@ module DataSets =
     let list (query: DataSetQuery) : HttpHandler<unit, ItemsWithCursor<#DataSet>> =
         withLogMessage "DataSets:list"
         >=> list query Url
+
+    /// <summary>
+    /// Retrieves count of data sets matching filter
+    /// </summary>
+    /// <param name="query">The query to use.</param>
+    /// <returns>Count of data sets matching given filters</returns>
+    let aggregate (query: DataSetQuery) : HttpHandler<unit, int> =
+        withLogMessage "DataSets:aggregate"
+        >=> aggregate query Url

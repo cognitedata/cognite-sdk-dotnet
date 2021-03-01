@@ -65,5 +65,19 @@ namespace CogniteSdk.Resources
         {
             return (ItemsWithCursor<DataSet>)await ListAsync<DataSet>(query, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Asynchronously retrieve number of data sets matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Number of data sets matching given filters</returns>
+        public async Task<int> AggregateAsync(DataSetQuery query, CancellationToken token = default)
+        {
+            if (query is null) throw new ArgumentNullException(nameof(query));
+
+            var req = DataSets.aggregate(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
     }
 }

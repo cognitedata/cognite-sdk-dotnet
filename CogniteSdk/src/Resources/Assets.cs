@@ -60,7 +60,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="query">The query filter to use.</param>
         /// <param name="token">Optional cancellation token to use.</param>
-        /// <returns>Number of assets matching given filters and optional cursor</returns>
+        /// <returns>Number of assets matching given filters</returns>
         public async Task<int> AggregateAsync(AssetQuery query, CancellationToken token = default)
         {
             if (query is null)
