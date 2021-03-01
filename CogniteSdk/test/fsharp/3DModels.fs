@@ -3,7 +3,7 @@ module Tests.Integration.ThreeDModels
 open System
 open System.Collections.Generic
 
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks
 open Swensen.Unquote
 open Oryx
 open Xunit

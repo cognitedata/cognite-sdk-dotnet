@@ -15,7 +15,7 @@ group Oryx.Cognite
     nuget FSharp.Core >= 4.7
     nuget System.Text.Json
     nuget CogniteSdk.Protobuf
-    nuget Taskbuilder.fs ~> 2
+    nuget Ply
     nuget Oryx >= 3 prerelease
     nuget Oryx.Protobuf >= 3 prerelease
     nuget Oryx.SystemTextJson >= 3 prerelease

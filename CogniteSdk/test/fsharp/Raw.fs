@@ -2,7 +2,7 @@ module Tests.Integration.Raw
 
 open System
 open System.Collections.Generic
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks
 open System.Text.Json
 
 open Xunit

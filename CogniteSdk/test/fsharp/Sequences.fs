@@ -3,7 +3,7 @@ module Tests.Integration.Sequences
 open System
 open System.Collections.Generic
 open System.Net.Http
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks
 
 open Xunit
 open Swensen.Unquote
