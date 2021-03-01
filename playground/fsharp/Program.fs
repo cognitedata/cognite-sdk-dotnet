@@ -10,7 +10,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open FSharp.Control.Tasks.V2.ContextInsensitive
+open FSharp.Control.Tasks
 
 type Config = {
     [<CustomName("API_KEY")>]
