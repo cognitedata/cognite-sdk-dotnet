@@ -29,6 +29,7 @@ namespace CogniteSdk
         /// </summary>
         public Update<bool> WriteProtected { get; set; }
     }
+
     /// <summary>
     /// The data set update item type. Contains the update item for an <see cref="DataSetUpdate">DataSetUpdate</see>.
     /// </summary>

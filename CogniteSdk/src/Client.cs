@@ -69,6 +69,7 @@ namespace CogniteSdk
         /// Client Sequences extension methods
         /// </summary>
         public SequencesResource Sequences  { get; }
+
         /// <summary>
         /// Client DataSets extension methods
         /// </summary>
