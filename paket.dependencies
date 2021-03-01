@@ -42,7 +42,6 @@ group Test
     nuget Oryx.Protobuf >= 3 prerelease
     nuget Oryx.SystemTextJson >= 3 prerelease
 
-
 group Playground
     source https://www.nuget.org/api/v2
     storage: none
