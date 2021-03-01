@@ -54,3 +54,13 @@ module DataSets =
     let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<unit, #DataSet seq> =
         withLogMessage "DataSets:retrieve"
         >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
+
+    /// <summary>
+    /// Update one or more data sets. Supports partial updates, meaning that fields omitted from the requests are not changed.
+    /// Returns list of updated data sets.
+    /// </summary>
+    /// <param name="query">Data set updates to perform.</param>
+    /// <returns>List of updated data sets</returns>
+    let update (query: IEnumerable<UpdateItem<DataSet>>) : HttpHandler<unit, #DataSet seq> =
+        withLogMessage "DataSets:update"
+        >=> update query Url

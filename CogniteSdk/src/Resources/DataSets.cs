@@ -151,7 +151,25 @@ namespace CogniteSdk.Resources
             var ids = externalIds.Select(Identity.Create);
             return await RetrieveAsync<DataSet>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
         }
-
         #endregion
+
+        /// <summary>
+        /// Asynchronously update one or more data sets. Supports partial updates, meaning that fields omitted from the
+        /// requests are not changed
+        /// </summary>
+        /// <param name="query">The list of data sets to update.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Sequence of updated data sets.</returns>
+        public async Task<IEnumerable<DataSet>> UpdateAsync(IEnumerable<DataSetUpdateItem> query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = DataSets.update<DataSet>(query);
+            var ret = await RunAsync(req, token).ConfigureAwait(false);
+            return ret;
+        }
     }
 }
