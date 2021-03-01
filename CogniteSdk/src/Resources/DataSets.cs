@@ -79,5 +79,79 @@ namespace CogniteSdk.Resources
             var req = DataSets.aggregate(query);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
+
+        #region Retrieve overloads
+        /// <summary>
+        /// Asynchronously retrieves information about multiple data set like objects in the same project. A maximum of
+        /// 1000 data set IDs may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of data set identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <typeparam name="T">Type of data set to return, e.g DataSet or DataSetWithoutMetadata.</typeparam>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested data sets.</returns>
+        public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : DataSet
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple data sets in the same project. A maximum of 1000 data set IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="ids">The list of data set identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested data sets.</returns>
+        public async Task<IEnumerable<DataSet>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            return await RetrieveAsync<DataSet>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple data sets in the same project. A maximum of 1000 data set IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="internalIds">The list of data set internal identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested data sets.</returns>
+        public async Task<IEnumerable<DataSet>> RetrieveAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            if (internalIds is null)
+            {
+                throw new ArgumentNullException(nameof(internalIds));
+            }
+
+            var ids = internalIds.Select(Identity.Create);
+            return await RetrieveAsync<DataSet>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple data sets in the same project. A maximum of 1000 data set IDs
+        /// may be listed per request and all of them must be unique.
+        /// </summary>
+        /// <param name="externalIds">The list of data set external identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A sequence of the requested data sets.</returns>
+        public async Task<IEnumerable<DataSet>> RetrieveAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        {
+            if (externalIds is null)
+            {
+                throw new ArgumentNullException(nameof(externalIds));
+            }
+
+            var ids = externalIds.Select(Identity.Create);
+            return await RetrieveAsync<DataSet>(ids, ignoreUnknownIds, token).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

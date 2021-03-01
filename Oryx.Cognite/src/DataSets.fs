@@ -43,3 +43,14 @@ module DataSets =
     let aggregate (query: DataSetQuery) : HttpHandler<unit, int> =
         withLogMessage "DataSets:aggregate"
         >=> aggregate query Url
+
+    /// <summary>
+    /// Retrieves information about multiple data sets in the same project. A maximum of 1000 data set IDs may be listed per
+    /// request and all of them must be unique.
+    /// </summary>
+    /// <param name="ids">The ids of the data sets to get.</param>
+    /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found.</param>
+    /// <returns>Data sets with given ids.</returns>
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<unit, #DataSet seq> =
+        withLogMessage "DataSets:retrieve"
+        >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
