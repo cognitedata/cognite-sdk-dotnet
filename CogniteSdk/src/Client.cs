@@ -69,6 +69,10 @@ namespace CogniteSdk
         /// Client Sequences extension methods
         /// </summary>
         public SequencesResource Sequences  { get; }
+        /// <summary>
+        /// Client DataSets extension methods
+        /// </summary>
+        public DataSetsResource DataSets { get; }
 
         /// <summary>
         /// Client 3D Models extension methods
@@ -110,6 +114,7 @@ namespace CogniteSdk
             Sequences = new SequencesResource(authHandler, ctx);
             Raw = new RawResource(authHandler, ctx);
             Relationships = new RelationshipResource(authHandler, ctx);
+            DataSets = new DataSetsResource(authHandler, ctx);
             ThreeDModels = new ThreeDModelsResource(authHandler, ctx);
             ThreeDRevisions = new ThreeDRevisionsResource(authHandler, ctx);
             ThreeDAssetMappings = new ThreeDAssetMappingsResource(authHandler, ctx);
