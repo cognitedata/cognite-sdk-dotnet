@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 using CogniteSdk.Types.Common;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk
 {
@@ -60,5 +61,16 @@ namespace CogniteSdk
         }
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
+    }
+    /// <summary>
+    /// Data set read class (without metadata).
+    /// </summary>
+    public class DataSetWithoutMetadata : DataSet
+    {
+        /// <summary>
+        /// Custom, application specific metadata. String key -> String value
+        /// </summary>
+        [JsonIgnore]
+        public new Dictionary<string, string> Metadata { get; set; }
     }
 }

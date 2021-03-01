@@ -25,3 +25,12 @@ module DataSets =
     let create (items: DataSetCreate seq) : HttpHandler<unit, DataSet seq> =
         withLogMessage "DataSets:create"
         >=> create items Url
+
+    /// <summary>
+    /// Retrieves list of data sets matching filter, and a cursor if given limit is exceeded
+    /// </summary>
+    /// <param name="query">The query to use.</param>
+    /// <returns>List of data sets matching given filters and optional cursor</returns>
+    let list (query: DataSetQuery) : HttpHandler<unit, ItemsWithCursor<#DataSet>> =
+        withLogMessage "DataSets:list"
+        >=> list query Url

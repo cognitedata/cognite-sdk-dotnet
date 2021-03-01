@@ -39,5 +39,31 @@ namespace CogniteSdk.Resources
             var req = DataSets.create(dataSets);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Asynchronously retrieve a list of data set like objects matching the given filter.
+        /// </summary>
+        /// <typeparam name="T">Type of data set to return, e.g. DataSet or DataSetWithoutMetadata.</typeparam>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of data sets matching given filters and optional cursor</returns>
+        public async Task<IItemsWithCursor<T>> ListAsync<T>(DataSetQuery query, CancellationToken token = default) where T : DataSet
+        {
+            if (query is null) throw new ArgumentNullException(nameof(query));
+
+            var req = DataSets.list<T>(query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieve a list of data sets matching query.
+        /// </summary>
+        /// <param name="query">The query filter to use.</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>List of data sets matching given filters and optional cursor</returns>
+        public async Task<ItemsWithCursor<DataSet>> ListAsync(DataSetQuery query, CancellationToken token = default)
+        {
+            return (ItemsWithCursor<DataSet>)await ListAsync<DataSet>(query, token).ConfigureAwait(false);
+        }
     }
 }
