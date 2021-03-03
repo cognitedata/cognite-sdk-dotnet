@@ -20,7 +20,7 @@ module Assets =
     let Url = "/assets"
 
     /// Retrieves information about an asset given an asset id. Returns asset with the given id.
-    let get (assetId: int64) : HttpHandler<unit, #Asset> =
+    let get (assetId: int64) : IHttpHandler<unit, #Asset> =
         withLogMessage "Assets:get"
         >=> getById assetId Url
 
@@ -29,7 +29,7 @@ module Assets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of assets matching given filters and optional cursor</returns>
-    let list (query: AssetQuery) : HttpHandler<unit, ItemsWithCursor<#Asset>> =
+    let list (query: AssetQuery) : IHttpHandler<unit, ItemsWithCursor<#Asset>> =
         withLogMessage "Assets:list"
         >=> list query Url
 
@@ -38,7 +38,7 @@ module Assets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>Count of assets matching given filters</returns>
-    let aggregate (query: AssetQuery) : HttpHandler<unit, int> =
+    let aggregate (query: AssetQuery) : IHttpHandler<unit, int> =
         withLogMessage "Assets:aggregate"
         >=> aggregate query Url
 
@@ -47,7 +47,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The assets to create.</param>
     /// <returns>List of created assets.</returns>
-    let create (items: AssetCreate seq) : HttpHandler<unit, Asset seq> =
+    let create (items: AssetCreate seq) : IHttpHandler<unit, Asset seq> =
         withLogMessage "Assets:create"
         >=> create items Url
 
@@ -56,7 +56,7 @@ module Assets =
     /// </summary>
     /// <param name="assets">The list of assets to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (assets: AssetDelete) : HttpHandler<unit, EmptyResponse> =
+    let delete (assets: AssetDelete) : IHttpHandler<unit, EmptyResponse> =
         withLogMessage "Assets:delete"
         >=> delete assets Url
 
@@ -66,7 +66,7 @@ module Assets =
     /// </summary>
     /// <param name="assetId">The ids of the assets to get.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<unit, #Asset seq> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : IHttpHandler<unit, #Asset seq> =
         withLogMessage "Assets:retrieve"
         >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
@@ -75,12 +75,12 @@ module Assets =
     /// </summary>
     /// <param name="query">Asset search query.</param>
     /// <returns>List of assets matching given criteria.</returns>
-    let search (query: AssetSearch) : HttpHandler<unit, #Asset seq> =
+    let search (query: AssetSearch) : IHttpHandler<unit, #Asset seq> =
         withLogMessage "Assets:search"
         >=> search query Url
 
     /// Update one or more assets. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated assets.
-    let update (query: IEnumerable<UpdateItem<AssetUpdate>>) : HttpHandler<unit, #Asset seq>  =
+    let update (query: IEnumerable<UpdateItem<AssetUpdate>>) : IHttpHandler<unit, #Asset seq>  =
         withLogMessage "Assets:update"
         >=> update query Url
 

@@ -23,7 +23,7 @@ module Events =
     /// </summary>
     /// <param name="eventId">The id of the event to get.</param>
     /// <returns>Event with the given id.</returns>
-    let get (eventId: int64) : HttpHandler<unit, #Event> =
+    let get (eventId: int64) : IHttpHandler<unit, #Event> =
         withLogMessage "Events:get"
         >=> getById eventId Url
 
@@ -32,7 +32,7 @@ module Events =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of events matching given filters and optional cursor</returns>
-    let list (query: EventQuery) : HttpHandler<unit, ItemsWithCursor<#Event>> =
+    let list (query: EventQuery) : IHttpHandler<unit, ItemsWithCursor<#Event>> =
         withLogMessage "Events:list"
         >=> list query Url
 
@@ -41,7 +41,7 @@ module Events =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>Number of events matching given filters and optional cursor</returns>
-    let aggregate (query: EventQuery) : HttpHandler<unit, int32> =
+    let aggregate (query: EventQuery) : IHttpHandler<unit, int32> =
         withLogMessage "Events:aggregate"
         >=> aggregate query Url
 
@@ -50,7 +50,7 @@ module Events =
     /// </summary>
     /// <param name="items">The events to create.</param>
     /// <returns>List of created events.</returns>
-    let create (items: EventCreate seq) : HttpHandler<unit, #Event seq> =
+    let create (items: EventCreate seq) : IHttpHandler<unit, #Event seq> =
         withLogMessage "Events:create"
         >=> create items Url
 
@@ -59,7 +59,7 @@ module Events =
     /// </summary>
     /// <param name="items">The list of events to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (items: EventDelete) : HttpHandler<unit, EmptyResponse> =
+    let delete (items: EventDelete) : IHttpHandler<unit, EmptyResponse> =
         withLogMessage "Events:delete"
         >=> delete items Url
 
@@ -70,7 +70,7 @@ module Events =
     /// <param name="ids">The ids of the events to get.</param>
     /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<unit, #Event seq> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : IHttpHandler<unit, #Event seq> =
         withLogMessage "Events:retrieve"
         >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
@@ -79,7 +79,7 @@ module Events =
     /// </summary>
     /// <param name="query">Event search query.</param>
     /// <returns>List of events matching given criteria.</returns>
-    let search (query: EventSearch) : HttpHandler<unit, #Event seq> =
+    let search (query: EventSearch) : IHttpHandler<unit, #Event seq> =
         withLogMessage "Events:search"
         >=> search query Url
 
@@ -88,7 +88,7 @@ module Events =
     /// </summary>
     /// <param name="query">The list of events to update.</param>
     /// <returns>List of updated events.</returns>
-    let update (query: UpdateItem<EventUpdate> seq) : HttpHandler<unit, #Event seq>  =
+    let update (query: UpdateItem<EventUpdate> seq) : IHttpHandler<unit, #Event seq>  =
         withLogMessage "Events:update"
         >=> update query Url
 

@@ -19,7 +19,7 @@ type Config = {
     Project: string
 }
 
-let getDatapointsExample (ctx : Context) = task {
+let getDatapointsExample (ctx : HttpContext) = task {
     let query =
         DataPointsQuery(
             Items = [ DataPointsQueryItem(Id=Nullable 20713436708L) ],
@@ -32,7 +32,7 @@ let getDatapointsExample (ctx : Context) = task {
     printfn "%A" res
  }
 
-let getAssetsExample (ctx : Context) = task {
+let getAssetsExample (ctx : HttpContext) = task {
     let! res =
         AssetQuery(Limit = Nullable 2)
         |> Assets.list
@@ -47,7 +47,7 @@ let getAssetsExample (ctx : Context) = task {
     | Error err -> printfn "Error: %A" err
 }
 
-let updateAssetsExample (ctx : Context) = task {
+let updateAssetsExample (ctx : HttpContext) = task {
     let query =  [
         UpdateItem(
             id = 84025677715833721L,
@@ -60,7 +60,7 @@ let updateAssetsExample (ctx : Context) = task {
     | Error err -> printfn "Error: %A" err
 }
 
-let searchAssetsExample (ctx : Context) = task {
+let searchAssetsExample (ctx : HttpContext) = task {
 
     let query =
         AssetSearch(
@@ -125,7 +125,7 @@ let insertDataPointsProtoStyle ctx = task {
 
 }
 
-let syntheticQueryExample (ctx : Context) = task {
+let syntheticQueryExample (ctx : HttpContext) = task {
     let query =
         TimeSeriesSyntheticQuery(
             Items = [
@@ -151,11 +151,11 @@ let asyncMain argv = task {
 
     use client = new HttpClient ()
     let ctx =
-        Context.create ()
-        |> Context.withAppId "playground"
-        |> Context.withHttpClient client
-        |> Context.withHeader ("api-key", Uri.EscapeDataString config.ApiKey)
-        |> Context.withProject (Uri.EscapeDataString config.Project)
+        HttpContext.create ()
+        |> HttpContext.withAppId "playground"
+        |> HttpContext.withHttpClient client
+        |> HttpContext.withHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+        |> HttpContext.withProject (Uri.EscapeDataString config.Project)
 
     do! getAssetsExample ctx
 }

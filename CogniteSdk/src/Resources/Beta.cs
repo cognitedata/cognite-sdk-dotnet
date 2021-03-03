@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        internal BetaResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
+        internal BetaResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
         }
     }

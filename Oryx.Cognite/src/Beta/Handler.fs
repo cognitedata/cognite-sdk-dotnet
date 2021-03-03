@@ -16,51 +16,51 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
-    let withBetaHeader<'TResult> : HttpHandler<unit> =
+    let withBetaHeader<'TResult> : IHttpHandler<unit> =
         withHeader "version" "beta"
 
-    let withBetaVersion<'TResult> : HttpHandler<unit> =
+    let withBetaVersion<'TResult> : IHttpHandler<unit> =
         withBetaHeader<'TResult>
         >=> withVersion V10
 
-    let get (url: string) : HttpHandler<unit> =
+    let get (url: string) : IHttpHandler<unit> =
         withBetaVersion
         >=> get url
 
-    let inline getById (id: int64) (url: string) : HttpHandler<unit> =
+    let inline getById (id: int64) (url: string) : IHttpHandler<unit> =
         url +/ sprintf "%d" id |> get
 
-    let getWithQuery<'TNext> (query: IQueryParams) (url: string) : HttpHandler<unit, ItemsWithCursor<'TNext>> =
+    let getWithQuery<'TNext> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TNext>> =
         withBetaVersion
         >=> getWithQuery query url
 
-    let post<'TSource, 'TResult> (content: 'TSource) (url: string) : HttpHandler<unit, 'TResult> =
+    let post<'TSource, 'TResult> (content: 'TSource) (url: string) : IHttpHandler<unit, 'TResult> =
         withBetaVersion
         >=> post content url
 
-    let postWithQuery<'TSource, 'TResult> (content: 'TSource) (query: IQueryParams) (url: string) : HttpHandler<unit, 'TResult> =
+    let postWithQuery<'TSource, 'TResult> (content: 'TSource) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
         withBetaVersion
         >=> postWithQuery content query url
 
-    let inline list (content: 'TSource) (url: string) : HttpHandler<unit, 'TResult> =
+    let inline list (content: 'TSource) (url: string) : IHttpHandler<unit, 'TResult> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> post content (url +/ "list")
 
-    let inline count (content: 'TSource) (url: string) : HttpHandler<unit, int> =
+    let inline count (content: 'TSource) (url: string) : IHttpHandler<unit, int> =
         let url =  url +/ "count"
 
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> post<'TSource, AggregateCount> content url
-        >=> Handler.map (fun item -> item.Count)
+        >=> HttpHandler.map (fun item -> item.Count)
 
-    let search<'TSource, 'TResult> (content: 'TSource) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let search<'TSource, 'TResult> (content: 'TSource) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         let url = url +/ "search"
 
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> post<'TSource, ItemsWithoutCursor<'TResult>> content url
-        >=> Handler.map (fun ret -> ret.Items)
+        >=> HttpHandler.map (fun ret -> ret.Items)
 
-    let update<'TSource, 'TResult> (items: IEnumerable<UpdateItem<'TSource>>) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let update<'TSource, 'TResult> (items: IEnumerable<UpdateItem<'TSource>>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let url = url +/ "update"
             let request = ItemsWithoutCursor<UpdateItem<'TSource>>(Items = items)
@@ -68,27 +68,27 @@ module Handler =
             return ret.Items
         }
 
-    let retrieve<'T> (ids: Identity seq) (url: string) : HttpHandler<unit, IEnumerable<'T>> =
+    let retrieve<'T> (ids: Identity seq) (url: string) : IHttpHandler<unit, IEnumerable<'T>> =
         let url = url +/ "byids"
         let request = ItemsWithoutCursor<Identity>(Items = ids)
 
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'T>> request url
-        >=> Handler.map (fun ret -> ret.Items)
+        >=> HttpHandler.map (fun ret -> ret.Items)
 
-    let create<'TSource, 'TResult> (content: IEnumerable<'TSource>) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let create<'TSource, 'TResult> (content: IEnumerable<'TSource>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = post<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' url
             return ret.Items
         }
 
-    let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postWithQuery<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' query url
             return ret.Items
         }
 
-    let inline delete<'T> (content: 'T) (url: string) : HttpHandler<unit> =
+    let inline delete<'T> (content: 'T) (url: string) : IHttpHandler<unit> =
         url +/ "delete" |> post content

@@ -19,13 +19,13 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
-    let getPlayground<'a, 'b> (url: string)  : HttpHandler<unit, 'a> =
+    let getPlayground<'a, 'b> (url: string)  : IHttpHandler<unit, 'a> =
         withVersion Playground >=> get url
 
-    let inline getById (id: int64) (url: string) : HttpHandler<unit, 'a> =
+    let inline getById (id: int64) (url: string) : IHttpHandler<unit, 'a> =
         url +/ sprintf "%d" id |> getPlayground
 
-    let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : HttpHandler<unit, ItemsWithCursor<'a>> =
+    let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'a>> =
         let parms = query.ToQueryParams ()
         GET
         >=> withVersion Playground
@@ -36,7 +36,7 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let post<'a, 'b> (content: 'a) (url: string) : HttpHandler<unit, 'b> =
+    let post<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         POST
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
@@ -45,10 +45,10 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let postPlayground<'a, 'b> (content: 'a) (url: string) : HttpHandler<unit, 'b> =
+    let postPlayground<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         withVersion Playground >=> post content url
 
-    let postWithQuery<'a, 'b> (content: 'a) (query: IQueryParams) (url: string) : HttpHandler<unit, 'b> =
+    let postWithQuery<'a, 'b> (content: 'a) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'b> =
         let parms = query.ToQueryParams ()
 
         POST
@@ -61,11 +61,11 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let inline list (content: 'a) (url: string) : HttpHandler<unit, 'b> =
+    let inline list (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postPlayground  content (url +/ "list")
 
-    let inline count (content: 'a) (url: string) : HttpHandler<unit, int> =
+    let inline count (content: 'a) (url: string) : IHttpHandler<unit, int> =
         req {
             let url =  url +/ "count"
             let! item =
@@ -74,7 +74,7 @@ module Handler =
             return item.Count
         }
 
-    let search<'a, 'b> (content: 'a) (url: string) : HttpHandler<unit, IEnumerable<'b>> =
+    let search<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, IEnumerable<'b>> =
         req {
             let url = url +/ "search"
             let! ret =
@@ -83,7 +83,7 @@ module Handler =
             return ret.Items
         }
 
-    let searchPlayground<'a, 'b> (content: 'a) (url: string) : HttpHandler<unit, 'b> =
+    let searchPlayground<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         req {
             let url = url +/ "search"
             let! ret =
@@ -92,7 +92,7 @@ module Handler =
             return ret
         }
 
-    let update<'a, 'b> (items: IEnumerable<UpdateItem<'a>>) (url: string) : HttpHandler<unit, IEnumerable<'b>> =
+    let update<'a, 'b> (items: IEnumerable<UpdateItem<'a>>) (url: string) : IHttpHandler<unit, IEnumerable<'b>> =
         req {
             let url = url +/ "update"
             let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
@@ -100,7 +100,7 @@ module Handler =
             return ret.Items
         }
 
-    let retrieve<'a, 'b> (ids: Identity seq) (url: string) : HttpHandler<unit, IEnumerable<'a>> =
+    let retrieve<'a, 'b> (ids: Identity seq) (url: string) : IHttpHandler<unit, IEnumerable<'a>> =
         req {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
@@ -110,19 +110,19 @@ module Handler =
             return ret.Items
         }
 
-    let create<'a, 'b> (content: IEnumerable<'a>) (url: string) : HttpHandler<unit, IEnumerable<'b>> =
+    let create<'a, 'b> (content: IEnumerable<'a>) (url: string) : IHttpHandler<unit, IEnumerable<'b>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postPlayground<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>> content' url
             return ret.Items
         }
 
-    let createWithQuery<'a, 'b> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : HttpHandler<unit, IEnumerable<'b>> =
+    let createWithQuery<'a, 'b> (content: IEnumerable<'a>) (query: IQueryParams) (url: string) : IHttpHandler<unit, IEnumerable<'b>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postWithQuery<ItemsWithoutCursor<'a>, ItemsWithoutCursor<'b>> content' query url
             return ret.Items
         }
 
-    let inline delete<'a, 'b> (content: 'a) (url: string) : HttpHandler<unit, 'b> =
+    let inline delete<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         url +/ "delete" |> postPlayground content

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using Oryx;
 using Oryx.Cognite;
-using static Oryx.Cognite.HandlerModule;
+using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
 {
@@ -22,8 +22,8 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
-        /// <param name="ctx">Context to use for the request.</param>
-        internal ThreeDModelsResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
+        /// <param name="ctx">The HTTP context to use for the request.</param>
+        internal ThreeDModelsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
         }
 

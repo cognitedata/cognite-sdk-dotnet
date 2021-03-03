@@ -22,7 +22,7 @@ module DataSets =
     /// </summary>
     /// <param name="assets">The data sets to create.</param>
     /// <returns>List of created data sets.</returns>
-    let create (items: DataSetCreate seq) : HttpHandler<unit, DataSet seq> =
+    let create (items: DataSetCreate seq) : IHttpHandler<unit, DataSet seq> =
         withLogMessage "DataSets:create"
         >=> create items Url
 
@@ -31,7 +31,7 @@ module DataSets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>List of data sets matching given filters and optional cursor</returns>
-    let list (query: DataSetQuery) : HttpHandler<unit, ItemsWithCursor<#DataSet>> =
+    let list (query: DataSetQuery) : IHttpHandler<unit, ItemsWithCursor<#DataSet>> =
         withLogMessage "DataSets:list"
         >=> list query Url
 
@@ -40,7 +40,7 @@ module DataSets =
     /// </summary>
     /// <param name="query">The query to use.</param>
     /// <returns>Count of data sets matching given filters</returns>
-    let aggregate (query: DataSetQuery) : HttpHandler<unit, int> =
+    let aggregate (query: DataSetQuery) : IHttpHandler<unit, int> =
         withLogMessage "DataSets:aggregate"
         >=> aggregate query Url
 
@@ -51,7 +51,7 @@ module DataSets =
     /// <param name="ids">The ids of the data sets to get.</param>
     /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found.</param>
     /// <returns>Data sets with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : HttpHandler<unit, #DataSet seq> =
+    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : IHttpHandler<unit, #DataSet seq> =
         withLogMessage "DataSets:retrieve"
         >=> retrieveIgnoreUnkownIds ids (Option.ofNullable ignoreUnknownIds) Url
 
@@ -61,6 +61,6 @@ module DataSets =
     /// </summary>
     /// <param name="query">Data set updates to perform.</param>
     /// <returns>List of updated data sets</returns>
-    let update (query: IEnumerable<UpdateItem<DataSet>>) : HttpHandler<unit, #DataSet seq> =
+    let update (query: IEnumerable<UpdateItem<DataSet>>) : IHttpHandler<unit, #DataSet seq> =
         withLogMessage "DataSets:update"
         >=> update query Url

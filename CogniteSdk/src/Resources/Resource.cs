@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using Oryx;
 using Oryx.Cognite;
-using static Oryx.Cognite.HandlerModule;
+using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
 {
@@ -19,7 +19,7 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// The context.
         /// </summary>
-        protected readonly Context _ctx;
+        protected readonly HttpContext _ctx;
         /// <summary>
         /// The authentication handler.
         /// </summary>
@@ -29,8 +29,8 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
-        /// <param name="ctx">Context to use for the request.</param>
-        internal Resource(Func<CancellationToken, Task<string>> authHandler, Context ctx)
+        /// <param name="ctx">The HTTP context to use for the request.</param>
+        internal Resource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx)
         {
             _ctx = ctx;
             _authHandler = authHandler;
@@ -43,11 +43,11 @@ namespace CogniteSdk.Resources
         /// <param name="token">The cancellation token to use.</param>
         /// <typeparam name="T">The type of the response.</typeparam>
         /// <returns>Result.</returns>
-        protected async Task<T> RunAsync<T>(Oryx.HttpHandler<Microsoft.FSharp.Core.Unit, T> handler, CancellationToken token)
+        protected async Task<T> RunAsync<T>(Oryx.Middleware.IAsyncMiddleware<HttpContext, Microsoft.FSharp.Core.Unit, T> handler, CancellationToken token)
         {
             var req = _authHandler is null ? handler : withTokenRenewer(_authHandler, handler);
-            var ctx = Oryx.ContextModule.withCancellationToken(token, _ctx);
-            return await Handler.runUnsafeAsync(ctx, req).ConfigureAwait(false);
+            var ctx = Oryx.HttpContextModule.withCancellationToken(token, _ctx);
+            return await HttpHandler.runUnsafeAsync(ctx, req).ConfigureAwait(false);
         }
     }
 }
