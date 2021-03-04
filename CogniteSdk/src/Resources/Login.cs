@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using CogniteSdk.Login;
 using Oryx;
-using static Oryx.Cognite.HandlerModule;
+using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
 {
@@ -20,8 +20,8 @@ namespace CogniteSdk.Resources
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
-        /// <param name="ctx">Context to use for the request.</param>
-        internal LoginResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
+        /// <param name="ctx">The HTTP context to use for the request.</param>
+        internal LoginResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
         }
 

@@ -75,7 +75,7 @@ module Common =
         options
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
-module Context =
+module HttpContext =
     let urlBuilder (request: HttpRequest) =
 
         let items = request.Items
@@ -108,21 +108,21 @@ module Context =
     let private fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion
 
     let withUrlBuilder ctx =
-        Context.withUrlBuilder urlBuilder ctx
+        HttpContext.withUrlBuilder urlBuilder ctx
 
     /// Set the project to connect to.
-    let withProject (project: string) (context: Context) =
+    let withProject (project: string) (context: HttpContext) =
         { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.Project, String project) } }
 
-    let withAppId (appId: string) (context: Context) =
+    let withAppId (appId: string) (context: HttpContext) =
         { context with Request = { context.Request with Headers = context.Request.Headers.Add ("x-cdp-app", appId); Items = context.Request.Items.Add(PlaceHolder.HasAppId, String "true") } }
 
-    let withBaseUrl (baseUrl: Uri) (context: Context) =
+    let withBaseUrl (baseUrl: Uri) (context: HttpContext) =
         { context with Request = { context.Request with Items = context.Request.Items.Add(PlaceHolder.BaseUrl, Url baseUrl) } }
 
     let create () =
-        Context.defaultContext
-        |> Context.withUrlBuilder urlBuilder
-        |> Context.withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
-        |> Context.withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
+        HttpContext.defaultContext
+        |> HttpContext.withUrlBuilder urlBuilder
+        |> HttpContext.withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
+        |> HttpContext.withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
 

@@ -26,43 +26,47 @@ open CogniteSdk
 /// Oryx HTTP handlers for specific use within the Cognite SDK
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
-module Handler =
-    let withResource (resource: string): HttpHandler<'TSource> =
-        HttpHandler <| fun next ->
-            { new IHttpNext<'TSource> with
-                member _.NextAsync(ctx, ?content) =
-                    next.NextAsync(
-                        { ctx with
-                            Request =
-                                { ctx.Request with
-                                    Items = ctx.Request.Items.Add(PlaceHolder.Resource, String resource)
-                                }
-                        },
-                        ?content = content
-                    )
+module HttpHandler =
+    let withResource (resource: string): IHttpHandler<'TSource> =
+        { new IHttpHandler<'TSource> with
+            member _.Subscribe(next) =
+                { new IHttpNext<'TSource> with
+                    member _.OnNextAsync(ctx, ?content) =
+                        next.OnNextAsync(
+                            { ctx with
+                                Request =
+                                    { ctx.Request with
+                                        Items = ctx.Request.Items.Add(PlaceHolder.Resource, String resource)
+                                    }
+                            },
+                            ?content = content
+                        )
 
-                member _.ErrorAsync(ctx, exn) = next.ErrorAsync(ctx, exn)
-            }
+                    member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
+                    member _.OnCompletedAsync(ctx) = next.OnCompletedAsync(ctx)
+        }}
 
-    let withVersion (version: ApiVersion): HttpHandler<'TSource> =
-        HttpHandler <| fun next ->
-            { new IHttpNext<'TSource> with
-                member _.NextAsync(ctx, ?content) =
-                    next.NextAsync(
-                        { ctx with
-                            Request =
-                                { ctx.Request with
-                                    Items = ctx.Request.Items.Add(PlaceHolder.ApiVersion, String(version.ToString()))
-                                }
-                        },
-                        ?content = content
-                    )
+    let withVersion (version: ApiVersion): IHttpHandler<'TSource> =
+        { new IHttpHandler<'TSource> with
+            member _.Subscribe(next) =
+                { new IHttpNext<'TSource> with
+                    member _.OnNextAsync(ctx, ?content) =
+                        next.OnNextAsync(
+                            { ctx with
+                                Request =
+                                    { ctx.Request with
+                                        Items = ctx.Request.Items.Add(PlaceHolder.ApiVersion, String(version.ToString()))
+                                    }
+                            },
+                            ?content = content
+                        )
 
-                member _.ErrorAsync(ctx, exn) = next.ErrorAsync(ctx, exn)
-            }
+                    member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
+                    member _.OnCompletedAsync(ctx) = next.OnCompletedAsync(ctx)
+                }}
 
 
-    let withUrl (url: string): HttpHandler<'TSource> =
+    let withUrl (url: string): IHttpHandler<'TSource> =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Items
             let baseUrl =
@@ -74,12 +78,14 @@ module Handler =
             then failwith "Client must set the Application ID (appId)"
             baseUrl +/ url
 
-        HttpHandler <| fun next ->
-            { new IHttpNext<'TSource> with
-                member _.NextAsync(ctx, ?content) =
-                    next.NextAsync({ ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }, ?content=content)
-                member _.ErrorAsync(ctx, exn) = next.ErrorAsync(ctx, exn)
-            }
+        { new IHttpHandler<'TSource> with
+            member _.Subscribe(next) =
+                { new IHttpNext<'TSource> with
+                    member _.OnNextAsync(ctx, ?content) =
+                        next.OnNextAsync({ ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }, ?content=content)
+                    member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
+                    member _.OnCompletedAsync(ctx) = next.OnCompletedAsync(ctx)
+                }}
 
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
@@ -88,7 +94,7 @@ module Handler =
         raise error
 
     /// Composes the given handler token provider with the request. Adapts a C# renewer function to F#.
-    let withTokenRenewer<'TResult> (tokenRenewer: Func<CancellationToken, Task<string>>) (handler: HttpHandler<unit, 'TResult>) =
+    let withTokenRenewer<'TResult> (tokenRenewer: Func<CancellationToken, Task<string>>) (handler: IHttpHandler<unit, 'TResult>) =
         let renewer ct = task {
             try
                 let! token = tokenRenewer.Invoke ct
@@ -141,7 +147,7 @@ module Handler =
             return exn :> _
     }
 
-    let get<'TNext, 'TResult> (url: string) : HttpHandler<unit, 'TResult> =
+    let get<'TNext, 'TResult> (url: string) : IHttpHandler<unit, 'TResult> =
         GET
         >=> withResource url
         >=> fetch
@@ -149,13 +155,13 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let getV10<'TNext, 'TResult> (url: string)  : HttpHandler<unit, 'TResult> =
+    let getV10<'TNext, 'TResult> (url: string)  : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> get url
 
-    let inline getById (id: int64) (url: string) : HttpHandler<unit, 'TResult> =
+    let inline getById (id: int64) (url: string) : IHttpHandler<unit, 'TResult> =
         url +/ sprintf "%d" id |> getV10
 
-    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : HttpHandler<unit, ItemsWithCursor<'TResult>> =
+    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
         let parms = query.ToQueryParams ()
         GET
         >=> withVersion V10
@@ -166,7 +172,7 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let post<'T, 'TResult> (content: 'T) (url: string) : HttpHandler<unit, 'TResult> =
+    let post<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'T>(content, jsonOptions) :> _)
@@ -175,10 +181,10 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let postV10<'T, 'TResult> (content: 'T) (url: string) : HttpHandler<unit, 'TResult> =
+    let postV10<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> post content url
 
-    let postWithQuery<'T, 'TResult> (content: 'T) (query: IQueryParams) (url: string) : HttpHandler<unit, 'TResult> =
+    let postWithQuery<'T, 'TResult> (content: 'T) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
         let parms = query.ToQueryParams ()
 
         POST
@@ -191,11 +197,11 @@ module Handler =
         >=> withError decodeError
         >=> json jsonOptions
 
-    let inline list (content: 'T) (url: string) : HttpHandler<unit, 'TResult> =
+    let inline list (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> postV10 content (url +/ "list")
 
-    let inline aggregate (content: 'TSource) (url: string) : HttpHandler<unit, int> =
+    let inline aggregate (content: 'TSource) (url: string) : IHttpHandler<unit, int> =
         req {
             let url =  url +/ "aggregate"
             let! ret =
@@ -205,7 +211,7 @@ module Handler =
             return item.Count
         }
 
-    let search<'TSource, 'TResult> (content: 'TSource) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let search<'TSource, 'TResult> (content: 'TSource) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let url = url +/ "search"
             let! ret =
@@ -214,7 +220,7 @@ module Handler =
             return ret.Items
         }
 
-    let update<'TSource, 'TResult> (items: IEnumerable<UpdateItem<'TSource>>) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let update<'TSource, 'TResult> (items: IEnumerable<UpdateItem<'TSource>>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let url = url +/ "update"
             let request = ItemsWithoutCursor<UpdateItem<'TSource>>(Items = items)
@@ -222,7 +228,7 @@ module Handler =
             return ret.Items
         }
 
-    let retrieve<'TSource, 'TResult> (ids: Identity seq) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let retrieve<'TSource, 'TResult> (ids: Identity seq) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
@@ -232,7 +238,7 @@ module Handler =
             return ret.Items
         }
 
-    let retrieveIgnoreUnkownIds<'TSource, 'TResult> (ids: Identity seq) (ignoreUnknownIdsOpt: bool option) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let retrieveIgnoreUnkownIds<'TSource, 'TResult> (ids: Identity seq) (ignoreUnknownIdsOpt: bool option) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         match ignoreUnknownIdsOpt with
         | Some ignoreUnknownIds ->
             req {
@@ -245,33 +251,33 @@ module Handler =
             }
         | None -> retrieve ids url
 
-    let create<'TSource, 'TResult> (content: IEnumerable<'TSource>) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let create<'TSource, 'TResult> (content: IEnumerable<'TSource>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postV10<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' url
             return ret.Items
         }
 
-    let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : HttpHandler<unit, IEnumerable<'TResult>> =
+    let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret = postWithQuery<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' query url
             return ret.Items
         }
 
-    let createWithQueryEmpty<'TSource> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : HttpHandler<unit, EmptyResponse> =
+    let createWithQueryEmpty<'TSource> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, EmptyResponse> =
         let content' = ItemsWithoutCursor(Items=content)
         postWithQuery<ItemsWithoutCursor<'TSource>, EmptyResponse> content' query url
 
-    let createEmpty<'TSource> (content: IEnumerable<'TSource>) (url: string) : HttpHandler<unit, EmptyResponse> =
+    let createEmpty<'TSource> (content: IEnumerable<'TSource>) (url: string) : IHttpHandler<unit, EmptyResponse> =
         let content' = ItemsWithoutCursor(Items=content)
         postV10<ItemsWithoutCursor<'TSource>, EmptyResponse> content' url
 
-    let inline delete<'T, 'TNext, 'TResult> (content: 'T) (url: string) : HttpHandler<unit, 'TNext> =
+    let inline delete<'T, 'TNext, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TNext> =
         url +/ "delete" |> postV10 content
 
     /// List content using protocol buffers
-    let listProtobuf<'TSource, 'TResult> (content: 'TSource) (url: string) (parser: IO.Stream -> 'TResult): HttpHandler<unit, 'TResult> =
+    let listProtobuf<'TSource, 'TResult> (content: 'TSource) (url: string) (parser: IO.Stream -> 'TResult): IHttpHandler<unit, 'TResult> =
         let url = url +/ "list"
         POST
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -285,7 +291,7 @@ module Handler =
         >=> protobuf parser
 
     /// Create content using protocol buffers
-    let createProtobuf<'TResult> (content: Google.Protobuf.IMessage) (url: string) : HttpHandler<unit, 'TResult> =
+    let createProtobuf<'TResult> (content: Google.Protobuf.IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
         >=> withVersion V10
         >=> withResource url

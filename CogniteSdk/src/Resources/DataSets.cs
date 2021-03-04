@@ -21,8 +21,8 @@ namespace CogniteSdk.Resources
         /// The class constructor. Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
-        /// <param name="ctx">Context to use for the request.</param>
-        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, Context ctx) : base(authHandler, ctx)
+        /// <param name="ctx">The HTTP context to use for the request.</param>
+        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
         {
         }
 
