@@ -32,9 +32,9 @@ module Handler =
         >=> withResource url
         >=> withQuery parms
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let post<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         POST
@@ -57,9 +57,9 @@ module Handler =
         >=> withQuery parms
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let inline list (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         withCompletion HttpCompletionOption.ResponseHeadersRead

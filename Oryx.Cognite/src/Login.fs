@@ -20,10 +20,10 @@ module Login =
         >=> withUrl url
         >=> withLogMessage "Login:get"
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
-
+        >=> log
+        
     /// Returns the authentication information about the asking entity.
     let status () : IHttpHandler<unit, LoginStatus> =
         withLogMessage "Login:status"

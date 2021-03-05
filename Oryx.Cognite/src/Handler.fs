@@ -151,9 +151,9 @@ module HttpHandler =
         GET
         >=> withResource url
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let getV10<'TNext, 'TResult> (url: string)  : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> get url
@@ -168,18 +168,18 @@ module HttpHandler =
         >=> withResource url
         >=> withQuery parms
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let post<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'T>(content, jsonOptions) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let postV10<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> post content url
@@ -193,9 +193,9 @@ module HttpHandler =
         >=> withQuery parms
         >=> withContent (fun () -> new JsonPushStreamContent<'T>(content, jsonOptions) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let inline list (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -286,9 +286,9 @@ module HttpHandler =
         >=> withResponseType ResponseType.Protobuf
         >=> withContent (fun () -> new JsonPushStreamContent<'TSource>(content, jsonOptions) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> protobuf parser
+        >=> log
 
     /// Create content using protocol buffers
     let createProtobuf<'TResult> (content: Google.Protobuf.IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
@@ -297,6 +297,6 @@ module HttpHandler =
         >=> withResource url
         >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log

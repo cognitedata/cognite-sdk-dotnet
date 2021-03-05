@@ -27,6 +27,11 @@ The SDK may be used from both C# and F#.
 - [Login](https://docs.cognite.com/api/v1/#tag/Login) (partial)
 - [Raw](https://docs.cognite.com/api/v1/#tag/Raw)
 - [Sequences](https://docs.cognite.com/api/v1/#tag/Sequences)
+- [Relationships](https://docs.cognite.com/api/v1/#tag/Relationships)
+- [3D Models](https://docs.cognite.com/api/v1/#tag/3D-Models)
+- [3D Files](https://docs.cognite.com/api/v1/#tag/3D-Files)
+- [3D Asset Mapping](https://docs.cognite.com/api/v1/#tag/3D-Asset-Mapping)
+- [Data sets](https://docs.cognite.com/api/v1/#tag/Data-sets)
 
 ## Documentation
 * SDK Documentation. TBW.
