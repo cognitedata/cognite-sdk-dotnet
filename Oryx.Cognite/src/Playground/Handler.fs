@@ -41,9 +41,9 @@ module Handler =
         >=> withResource url
         >=> withContent (fun () -> new JsonPushStreamContent<'a>(content, jsonOptions) :> _)
         >=> fetch
-        >=> log
         >=> withError decodeError
         >=> json jsonOptions
+        >=> log
 
     let postPlayground<'a, 'b> (content: 'a) (url: string) : IHttpHandler<unit, 'b> =
         withVersion Playground >=> post content url
