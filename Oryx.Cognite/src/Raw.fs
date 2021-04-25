@@ -74,6 +74,7 @@ module Raw =
     /// <summary>
     /// Delete multiple tables in the same database.
     /// </summary>
+    /// <param name="database">The database to delete tables from.</param>
     /// <param name="items">The list of tables to delete.</param>
     /// <returns>Empty result.</returns>
     let deleteTables (database: string) (items: RawTableDelete) : IHttpHandler<unit, EmptyResponse> =

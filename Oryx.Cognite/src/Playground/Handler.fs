@@ -8,10 +8,9 @@ open System.Collections.Generic
 open System.Net.Http
 
 open Oryx
+open Oryx.Cognite
 open Oryx.SystemTextJson
 open Oryx.SystemTextJson.ResponseReader
-
-open Oryx.Cognite
 
 open CogniteSdk
 

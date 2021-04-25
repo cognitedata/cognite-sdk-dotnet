@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 namespace Oryx.Cognite
 
-open System.Net.Http
-
 open Oryx
 open Oryx.Cognite
 open Oryx.SystemTextJson.ResponseReader
@@ -23,7 +21,7 @@ module Login =
         >=> withError decodeError
         >=> json jsonOptions
         >=> log
-        
+
     /// Returns the authentication information about the asking entity.
     let status () : IHttpHandler<unit, LoginStatus> =
         withLogMessage "Login:status"

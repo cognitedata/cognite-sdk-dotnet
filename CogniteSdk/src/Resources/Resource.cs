@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
         {
             var req = _authHandler is null ? handler : withTokenRenewer(_authHandler, handler);
             var ctx = Oryx.HttpContextModule.withCancellationToken(token, _ctx);
-            return await HttpHandler.runUnsafeAsync(ctx, req).ConfigureAwait(false);
+            return await HttpHandler.runUnsafeAsync<T> (ctx, req).ConfigureAwait(false);
         }
     }
 }
