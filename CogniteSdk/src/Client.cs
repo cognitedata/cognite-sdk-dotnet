@@ -90,6 +90,9 @@ namespace CogniteSdk
         /// </summary>
         public ThreeDAssetMappingsResource ThreeDAssetMappings { get; set; }
 
+        /// <summary>
+        /// Client Token extension methods
+        /// </summary>
         public TokenResource Token { get; set; }
 
         /// <summary>
