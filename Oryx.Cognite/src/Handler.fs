@@ -31,7 +31,7 @@ module HttpHandler =
         { new IHttpHandler<'TSource> with
             member _.Subscribe(next) =
                 { new IHttpNext<'TSource> with
-                    member _.OnNextAsync(ctx, ?content) =
+                    member _.OnNextAsync(ctx, content) =
                         next.OnNextAsync(
                             { ctx with
                                 Request =
@@ -39,7 +39,7 @@ module HttpHandler =
                                         Items = ctx.Request.Items.Add(PlaceHolder.Resource, String resource)
                                     }
                             },
-                            ?content = content
+                            content = content
                         )
 
                     member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
@@ -50,7 +50,7 @@ module HttpHandler =
         { new IHttpHandler<'TSource> with
             member _.Subscribe(next) =
                 { new IHttpNext<'TSource> with
-                    member _.OnNextAsync(ctx, ?content) =
+                    member _.OnNextAsync(ctx, content) =
                         next.OnNextAsync(
                             { ctx with
                                 Request =
@@ -58,7 +58,7 @@ module HttpHandler =
                                         Items = ctx.Request.Items.Add(PlaceHolder.ApiVersion, String(version.ToString()))
                                     }
                             },
-                            ?content = content
+                            content = content
                         )
 
                     member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
@@ -81,8 +81,8 @@ module HttpHandler =
         { new IHttpHandler<'TSource> with
             member _.Subscribe(next) =
                 { new IHttpNext<'TSource> with
-                    member _.OnNextAsync(ctx, ?content) =
-                        next.OnNextAsync({ ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }, ?content=content)
+                    member _.OnNextAsync(ctx, content) =
+                        next.OnNextAsync({ ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }, content=content)
                     member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
                     member _.OnCompletedAsync(ctx) = next.OnCompletedAsync(ctx)
                 }}
@@ -108,37 +108,30 @@ module HttpHandler =
         withTokenRenewer renewer >=> handler
 
     /// Decode response message into a ResponseException.
-    let decodeError (response: HttpResponse) (content: HttpContent option) : Task<exn> = task {
+    let decodeError (response: HttpResponse) (content: HttpContent) : Task<exn> = task {
         let mediaType =
-           content
-           |> Option.bind (fun content -> content.Headers |> Option.ofObj)
+           content.Headers |> Option.ofObj
            |> Option.bind (fun headers -> headers.ContentType |> Option.ofObj)
            |> Option.bind (fun contentType -> contentType.MediaType |> Option.ofObj)
            |> Option.defaultValue String.Empty
 
         if mediaType.Contains "application/json" then
-            match content with
-            | Some content ->
-                use! stream = content.ReadAsStreamAsync ()
+            use! stream = content.ReadAsStreamAsync ()
 
-                try
-                    let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
-                    let requestId = response.Headers |> Map.tryFind "X-Request-ID"
+            try
+                let! error = JsonSerializer.DeserializeAsync<ApiResponseError>(stream, jsonOptions)
+                let requestId = response.Headers |> Map.tryFind "X-Request-ID"
 
-                    match requestId with
-                    | Some requestIds ->
-                        let requestId = Seq.tryExactlyOne requestIds |> Option.defaultValue String.Empty
-                        error.RequestId <- requestId
-                    | None -> ()
+                match requestId with
+                | Some requestIds ->
+                    let requestId = Seq.tryExactlyOne requestIds |> Option.defaultValue String.Empty
+                    error.RequestId <- requestId
+                | None -> ()
 
-                    return error.ToException ()
-                with
-                | ex ->
-                    let exn = ResponseException (response.ReasonPhrase, ex)
-                    exn.Code <- int response.StatusCode
-                    return exn :> _
-            | None ->
-                let exn = ResponseException (response.ReasonPhrase)
+                return error.ToException ()
+            with
+            | ex ->
+                let exn = ResponseException (response.ReasonPhrase, ex)
                 exn.Code <- int response.StatusCode
                 return exn :> _
         else

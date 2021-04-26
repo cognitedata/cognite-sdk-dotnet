@@ -20,7 +20,7 @@ module DataSets =
     /// <summary>
     /// Create new data sets in the given project.
     /// </summary>
-    /// <param name="assets">The data sets to create.</param>
+    /// <param name="items">The data sets to create.</param>
     /// <returns>List of created data sets.</returns>
     let create (items: DataSetCreate seq) : IHttpHandler<unit, DataSet seq> =
         withLogMessage "DataSets:create"
