@@ -3,13 +3,9 @@
 
 namespace Oryx.Cognite
 
-open System.Net.Http
-
 open Oryx
 open Oryx.Cognite
-open Oryx.Cognite
 
-open CogniteSdk
 open CogniteSdk
 
 /// Various asset HTTP handlers.
@@ -31,7 +27,7 @@ module Relationships =
     /// <summary>
     /// Create new relationships in the given project.
     /// </summary>
-    /// <param name="assets">The relationships to create.</param>
+    /// <param name="items">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
     let create (items: RelationshipCreate seq) : IHttpHandler<unit, Relationship seq> =
         withLogMessage "Relationships:create"
@@ -40,7 +36,7 @@ module Relationships =
     /// <summary>
     /// Delete multiple relationships in the same project.
     /// </summary>
-    /// <param name="relationships">The list of externalIds for relationships to delete.</param>
+    /// <param name="externalIds">The list of externalIds for relationships to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (externalIds: string seq) : IHttpHandler<unit, EmptyResponse> =
         let relationships = externalIds |> Seq.map Identity.Create

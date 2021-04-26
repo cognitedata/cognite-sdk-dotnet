@@ -45,7 +45,7 @@ module Assets =
     /// <summary>
     /// Create new assets in the given project.
     /// </summary>
-    /// <param name="assets">The assets to create.</param>
+    /// <param name="items">The assets to create.</param>
     /// <returns>List of created assets.</returns>
     let create (items: AssetCreate seq) : IHttpHandler<unit, Asset seq> =
         withLogMessage "Assets:create"
@@ -64,7 +64,8 @@ module Assets =
     /// Retrieves information about multiple assets in the same project. A maximum of 1000 assets IDs may be listed per
     /// request and all of them must be unique.
     /// </summary>
-    /// <param name="assetId">The ids of the assets to get.</param>
+    /// <param name="ids">The ids of the assets to get.</param>
+    /// <param name="ignoreUnknownIds">True if unknown ids should be ignored.</param>
     /// <returns>Assets with given ids.</returns>
     let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) : IHttpHandler<unit, #Asset seq> =
         withLogMessage "Assets:retrieve"
