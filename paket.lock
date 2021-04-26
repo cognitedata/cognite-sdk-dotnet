@@ -37,6 +37,21 @@ NUGET
       System.Buffers (>= 4.5.1)
       System.Memory (>= 4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 5.0)
+    Oryx (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1)
+      FsToolkit.ErrorHandling (>= 2.1.2)
+      Microsoft.Extensions.Logging (>= 5.0)
+      Ply (>= 0.3.1)
+    Oryx.Protobuf (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1)
+      Google.Protobuf (>= 3.15.4)
+      Oryx (>= 4.0.0-alpha-001)
+      Ply (>= 0.3.1)
+    Oryx.SystemTextJson (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1)
+      Oryx (>= 4.0.0-alpha-001)
+      Ply (>= 0.3.1)
+      System.Text.Json (>= 5.0.1)
     Ply (0.3.1)
       FSharp.Core (>= 4.6.2)
       System.Threading.Tasks.Extensions (>= 4.5.4)
@@ -63,22 +78,6 @@ NUGET
       System.Threading.Tasks.Extensions (>= 4.5.4)
     System.Threading.Tasks.Extensions (4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
-  remote: /Users/dbrattli/Developer/packages
-    Oryx (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1)
-      FsToolkit.ErrorHandling (>= 2.1.2)
-      Microsoft.Extensions.Logging (>= 5.0)
-      Ply (>= 0.3.1)
-    Oryx.Protobuf (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1)
-      Google.Protobuf (>= 3.15.4)
-      Oryx (>= 4.0.0-alpha-002)
-      Ply (>= 0.3.1)
-    Oryx.SystemTextJson (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1)
-      Oryx (>= 4.0.0-alpha-002)
-      Ply (>= 0.3.1)
-      System.Text.Json (>= 5.0.1)
 
 GROUP Playground
 STORAGE: NONE
@@ -334,6 +333,21 @@ NUGET
       System.Threading.Timer (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
       System.Xml.ReaderWriter (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.1) (< netstandard1.2) (< win8)) (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (>= net46) (< netstandard1.4)) (&& (>= netstandard1.0) (< portable-net45+win8+wpa81) (< wp8)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
       System.Xml.XDocument (>= 4.3) - restriction: || (&& (< net45) (>= netstandard1.1) (< netstandard1.2) (< win8)) (&& (< net45) (>= netstandard1.2) (< netstandard1.3) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.3) (< netstandard1.4) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.4) (< netstandard1.5) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.5) (< netstandard1.6) (< win8) (< wpa81)) (&& (< net45) (>= netstandard1.6) (< netstandard2.0) (< win8) (< wpa81)) (&& (>= netstandard1.0) (< portable-net45+win8+wpa81) (< wp8)) (&& (< netstandard1.5) (>= uap10.0) (< uap10.1))
+    Oryx (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      FsToolkit.ErrorHandling (>= 2.1.2) - restriction: >= netstandard2.0
+      Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+    Oryx.Protobuf (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      Google.Protobuf (>= 3.15.4) - restriction: >= netstandard2.0
+      Oryx (>= 4.0.0-alpha-001) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+    Oryx.SystemTextJson (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      Oryx (>= 4.0.0-alpha-001) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+      System.Text.Json (>= 5.0.1) - restriction: >= netstandard2.0
     Ply (0.3.1) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.6.2) - restriction: >= netstandard2.0
       System.Threading.Tasks.Extensions (>= 4.5.4) - restriction: >= netstandard2.0
@@ -819,22 +833,6 @@ NUGET
       System.Xml.ReaderWriter (>= 4.3) - restriction: || (&& (< monoandroid) (< monotouch) (< net45) (>= netstandard1.3) (< win8) (< wpa81) (< xamarinios) (< xamarinmac) (< xamarintvos) (< xamarinwatchos)) (&& (< monoandroid) (< net45) (>= netstandard1.0) (< netstandard1.3) (< win8) (< wp8) (< wpa81))
     TypeShape (9.0)
       FSharp.Core (>= 4.3.2) - restriction: >= netstandard2.0
-  remote: /Users/dbrattli/Developer/packages
-    Oryx (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      FsToolkit.ErrorHandling (>= 2.1.2) - restriction: >= netstandard2.0
-      Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-    Oryx.Protobuf (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      Google.Protobuf (>= 3.15.4) - restriction: >= netstandard2.0
-      Oryx (>= 4.0.0-alpha-002) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      Oryx (>= 4.0.0-alpha-002) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-      System.Text.Json (>= 5.0.1) - restriction: >= netstandard2.0
 
 GROUP Sdk
 RESTRICTION: == netstandard2.0
@@ -864,6 +862,11 @@ NUGET
       System.Buffers (>= 4.5.1)
       System.Memory (>= 4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 5.0)
+    Oryx (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1)
+      FsToolkit.ErrorHandling (>= 2.1.2)
+      Microsoft.Extensions.Logging (>= 5.0)
+      Ply (>= 0.3.1)
     Ply (0.3.1)
       FSharp.Core (>= 4.6.2)
       System.Threading.Tasks.Extensions (>= 4.5.4)
@@ -879,12 +882,6 @@ NUGET
     System.Runtime.CompilerServices.Unsafe (5.0)
     System.Threading.Tasks.Extensions (4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
-  remote: /Users/dbrattli/Developer/packages
-    Oryx (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1)
-      FsToolkit.ErrorHandling (>= 2.1.2)
-      Microsoft.Extensions.Logging (>= 5.0)
-      Ply (>= 0.3.1)
 
 GROUP Test
 STORAGE: NONE
@@ -1019,6 +1016,21 @@ NUGET
       System.Xml.XmlDocument (>= 4.3) - restriction: && (< net20) (>= netstandard1.3) (< netstandard2.0)
     NuGet.Frameworks (4.6.4) - restriction: || (&& (>= netcoreapp1.0) (< netstandard2.0)) (&& (>= netcoreapp1.0) (>= uap10.0))
       NETStandard.Library (>= 1.6) - restriction: && (< net40) (>= netstandard1.3)
+    Oryx (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      FsToolkit.ErrorHandling (>= 2.1.2) - restriction: >= netstandard2.0
+      Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+    Oryx.Protobuf (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      Google.Protobuf (>= 3.15.4) - restriction: >= netstandard2.0
+      Oryx (>= 4.0.0-alpha-001) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+    Oryx.SystemTextJson (4.0.0-alpha-001)
+      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
+      Oryx (>= 4.0.0-alpha-001) - restriction: >= netstandard2.0
+      Ply (>= 0.3.1) - restriction: >= netstandard2.0
+      System.Text.Json (>= 5.0.1) - restriction: >= netstandard2.0
     Ply (0.3.1) - restriction: >= netstandard2.0
       FSharp.Core (>= 4.6.2) - restriction: >= netstandard2.0
       System.Threading.Tasks.Extensions (>= 4.5.4) - restriction: >= netstandard2.0
@@ -1658,22 +1670,6 @@ NUGET
       NETStandard.Library (>= 1.6.1) - restriction: && (< net452) (>= netstandard1.1)
       xunit.extensibility.core (2.4.1) - restriction: >= netstandard1.1
     xunit.runner.visualstudio (2.4.3)
-  remote: /Users/dbrattli/Developer/packages
-    Oryx (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      FsToolkit.ErrorHandling (>= 2.1.2) - restriction: >= netstandard2.0
-      Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-    Oryx.Protobuf (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      Google.Protobuf (>= 3.15.4) - restriction: >= netstandard2.0
-      Oryx (>= 4.0.0-alpha-002) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (4.0.0-alpha-002)
-      FSharp.Core (>= 5.0.1) - restriction: >= netstandard2.0
-      Oryx (>= 4.0.0-alpha-002) - restriction: >= netstandard2.0
-      Ply (>= 0.3.1) - restriction: >= netstandard2.0
-      System.Text.Json (>= 5.0.1) - restriction: >= netstandard2.0
 
 GROUP Types
 RESTRICTION: == netstandard2.0

@@ -3,14 +3,12 @@ storage: none
 
 group Sdk
     source https://www.nuget.org/api/v2
-    source /Users/dbrattli/Developer/packages
     framework: netstandard2.0
 
     nuget Oryx >= 4 prerelease
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
-    source /Users/dbrattli/Developer/packages
     storage: none
     framework: netstandard2.0
 
@@ -30,7 +28,6 @@ group Types
 
 group Test
     source https://www.nuget.org/api/v2
-    source /Users/dbrattli/Developer/packages
     storage: none
 
     nuget FSharp.Core >= 4.7
@@ -47,7 +44,6 @@ group Test
 
 group Playground
     source https://www.nuget.org/api/v2
-    source /Users/dbrattli/Developer/packages
     storage: none
 
     nuget FSharp.Core >= 4.7
