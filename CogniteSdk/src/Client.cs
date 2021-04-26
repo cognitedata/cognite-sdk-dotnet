@@ -91,6 +91,11 @@ namespace CogniteSdk
         public ThreeDAssetMappingsResource ThreeDAssetMappings { get; set; }
 
         /// <summary>
+        /// Client Token extension methods
+        /// </summary>
+        public TokenResource Token { get; set; }
+
+        /// <summary>
         /// Client playground extension methods
         /// </summary>
         public PlaygroundResource Playground  { get; }
@@ -121,6 +126,7 @@ namespace CogniteSdk
             ThreeDAssetMappings = new ThreeDAssetMappingsResource(authHandler, ctx);
             Files = new FilesResource(authHandler, ctx);
             Login = new LoginResource(authHandler, ctx);
+            Token = new TokenResource(authHandler, ctx);
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);

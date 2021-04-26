@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -23,6 +23,7 @@
     <Compile Include="Sequences.fs" />
     <Compile Include="Login.fs" />
     <Compile Include="DataSets.fs" />
+    <Compile Include="Token.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
