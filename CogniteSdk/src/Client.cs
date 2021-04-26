@@ -190,6 +190,20 @@ namespace CogniteSdk
             }
 
             /// <summary>
+            /// Add User-Agent header
+            /// </summary>
+            /// <param name="userAgent">User-Agent value. Typically '<c>Product / Version (Optional comment)</c>'</param>
+            /// <returns>Updated builder.</returns>
+            public Builder SetUserAgent(string userAgent)
+            {
+                if (String.IsNullOrWhiteSpace(userAgent))
+                {
+                    throw new ArgumentNullException(nameof(userAgent));
+                }
+                return AddHeader("User-Agent", userAgent);
+            }
+
+            /// <summary>
             /// Set authentication handler.
             /// </summary>
             /// <param name="tokenProvider">Token provider for getting bearer token to use for the request.</param>
