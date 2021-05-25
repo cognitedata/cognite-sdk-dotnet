@@ -34,22 +34,4 @@
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
-  <ItemGroup>
-    <None Remove="Properties\version"></None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\version">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <PropertyGroup>
-    <PreBuildEvent Condition=" '$(OS)' == 'WINDOWS_NT' ">
-      if not exist "$(MSBuildProjectDirectory)/Properties" then mkdir "$(MSBuildProjectDirectory)/Properties"
-      echo. $(FileVersion) &gt; "$(MSBuildProjectDirectory)/Properties/version"
-    </PreBuildEvent>
-    <PreBuildEvent Condition=" '$(OS)' == 'UNIX' ">
-      mkdir -p "$(MSBuildProjectDirectory)/Properties"
-      echo $(FileVersion) &gt; "$(MSBuildProjectDirectory)/Properties/version"
-    </PreBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -11,7 +11,6 @@ open System.Text.Json
 
 open Oryx
 open CogniteSdk
-open System.IO
 
 type ApiVersion =
     | V05
@@ -106,13 +105,8 @@ module HttpContext =
         sprintf "api/%s/projects/%s%s" version project resource
         |> combine baseUrl
 
-    let private fileVersion = 
-        let assembly = Assembly.GetExecutingAssembly()
-        use stream = assembly.GetManifestResourceStream("Oryx.Cognite.Properties.version")
-        if isNull stream then ""
-        else
-            use reader = new StreamReader(stream)
-            reader.ReadToEnd().Trim()
+    let private fileVersion =
+        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
 
     let withUrlBuilder ctx =
         HttpContext.withUrlBuilder urlBuilder ctx

@@ -12,6 +12,5 @@ coverage.lcov
 .idea
 launchSettings.json
 .metals
-**/Properties
 
 .fake
