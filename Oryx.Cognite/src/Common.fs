@@ -105,7 +105,8 @@ module HttpContext =
         sprintf "api/%s/projects/%s%s" version project resource
         |> combine baseUrl
 
-    let private fileVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion
+    let private fileVersion =
+        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
 
     let withUrlBuilder ctx =
         HttpContext.withUrlBuilder urlBuilder ctx
