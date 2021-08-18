@@ -51,7 +51,7 @@ namespace CogniteSdk
         public IEnumerable<Identity> AssetSubtreeIds { get; set; }
 
         /// <summary>
-        /// Asset External IDs of related equipment that this time series relates to.
+        /// Asset External IDs of related equipment that this file relates to.
         /// </summary>
         public IEnumerable<string> AssetExternalIds { get; set; }
 
@@ -104,7 +104,7 @@ namespace CogniteSdk
         public IEnumerable<Identity> DataSetIds { get; set; }
 
         /// <summary>
-        /// Label Filter.
+        /// Label filter.
         /// </summary>
         public LabelFilter Labels { get; set; }
 
