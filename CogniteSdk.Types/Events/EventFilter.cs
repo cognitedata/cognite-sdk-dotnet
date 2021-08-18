@@ -23,6 +23,11 @@ namespace CogniteSdk
         public TimeRange EndTime { get; set; }
 
         /// <summary>
+        /// Range between two timestamps.
+        /// </summary>
+        public TimeRange ActiveAtTime { get; set; }
+
+        /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
         /// </summary>

@@ -18,6 +18,11 @@ namespace CogniteSdk
         public string Name { get; set; }
 
         /// <summary>
+        /// Filter by this (case-sensitive) prefix for the directory.
+        /// </summary>
+        public string DirectoryPrefix { get; set; }
+
+        /// <summary>
         /// File type. E.g. text/plain, application/pdf, ..
         /// </summary>
         public string MimeType { get; set; }
@@ -43,8 +48,12 @@ namespace CogniteSdk
         /// Only include files that have a related asset in a subtree rooted at any of these assetIds (including the
         /// roots given). If the total size of the given subtrees exceeds 100,000 assets, an error will be returned.
         /// </summary>
-        /// <value></value>
         public IEnumerable<Identity> AssetSubtreeIds { get; set; }
+
+        /// <summary>
+        /// Asset External IDs of related equipment that this file relates to.
+        /// </summary>
+        public IEnumerable<string> AssetExternalIds { get; set; }
 
         /// <summary>
         /// The source of the file.
@@ -93,6 +102,11 @@ namespace CogniteSdk
         /// Only include assets that belong to these datasets.
         /// </summary>
         public IEnumerable<Identity> DataSetIds { get; set; }
+
+        /// <summary>
+        /// Label filter.
+        /// </summary>
+        public LabelFilter Labels { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
