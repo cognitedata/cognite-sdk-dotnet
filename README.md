@@ -124,6 +124,12 @@ This will install the main dependencies and sub-dependencies. The main dependenc
 - [System.Text.Json](https://www.nuget.org/packages/System.Text.Json/) - for Json support.
 - [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for Protobuf support.
 
+## Running tests locally
+```sh
+sh ./test.sh
+```
+For this script AAD env variables need to be defined: `TEST_TENANT_ID_WRITE`, `TEST_CLIENT_ID_WRITE`, `TEST_CLIENT_SECRET_WRITE`.
+
 # Code of Conduct
 
 This project follows https://www.contributor-covenant.org, see our [Code of Conduct](https://github.com/cognitedata/cognite-sdk-dotnet/blob/master/CODE_OF_CONDUCT.md).

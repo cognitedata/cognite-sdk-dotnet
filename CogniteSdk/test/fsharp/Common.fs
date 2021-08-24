@@ -17,6 +17,20 @@ module Common =
             .SetBaseUrl(Uri(url))
             .Build();
 
+    let createOAuth2SdkClient accessToken project url =
+        let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))
+        let httpClient = new HttpClient(handler);
+
+        Client
+            .Builder
+            .Create(httpClient)
+            .SetAppId("TestApp")
+            .AddHeader("Authorization", $"Bearer {accessToken}")
+            .SetProject(project)
+            .SetBaseUrl(Uri(url))
+            .Build()
+
+
     let readClient =
         createClient
             (Environment.GetEnvironmentVariable "TEST_API_KEY_READ")
@@ -24,8 +38,10 @@ module Common =
             "https://api.cognitedata.com"
 
     let writeClient =
-        createClient
-            (Environment.GetEnvironmentVariable "TEST_API_KEY_WRITE")
+        let oAuth2AccessToken = Environment.GetEnvironmentVariable "TEST_TOKEN_WRITE"
+
+        createOAuth2SdkClient
+            oAuth2AccessToken
             "fusiondotnet-tests"
             "https://greenfield.cognitedata.com"
 
