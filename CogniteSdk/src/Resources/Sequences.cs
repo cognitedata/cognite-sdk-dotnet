@@ -65,7 +65,7 @@ namespace CogniteSdk.Resources
         /// <param name="sequences">Sequences to create.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<SequenceData>> CreateAsync(IEnumerable<SequenceCreate> sequences, CancellationToken token = default)
+        public async Task<IEnumerable<Sequence>> CreateAsync(IEnumerable<SequenceCreate> sequences, CancellationToken token = default)
         {
             if (sequences is null)
             {
