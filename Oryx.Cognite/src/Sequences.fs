@@ -35,7 +35,7 @@ module Sequences =
         >=> aggregate query Url
 
     /// Create new sequences in the given project. Returns list of created sequences.
-    let create (items: SequenceCreate seq) : IHttpHandler<unit, SequenceData seq> =
+    let create (items: SequenceCreate seq) : IHttpHandler<unit, Sequence seq> =
         withLogMessage "Sequences:create"
         >=> create items Url
 
