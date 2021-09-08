@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using CogniteSdk.Types.Common;
+using System.Collections.Generic;
 
 namespace CogniteSdk
 {
@@ -24,7 +25,7 @@ namespace CogniteSdk
         /// Columns to be included. Specified as list of column externalIds. In case this filter is not set, all
         /// available columns will be returned.
         /// </summary>
-        public string Columns { get; set; }
+        public IEnumerable<string> Columns { get; set; }
 
         /// <summary>
         /// A server-generated ID for the object.
