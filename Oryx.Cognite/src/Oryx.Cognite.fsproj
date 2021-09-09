@@ -24,6 +24,7 @@
     <Compile Include="Login.fs" />
     <Compile Include="DataSets.fs" />
     <Compile Include="Token.fs" />
+    <Compile Include="ExtPipes.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
