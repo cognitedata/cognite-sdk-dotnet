@@ -99,6 +99,11 @@ namespace CogniteSdk
         /// Client playground extension methods
         /// </summary>
         public PlaygroundResource Playground  { get; }
+		
+		/// <summary>
+		/// Client extraction pipelines extension methods
+		/// </summary>
+		public ExtPipesResource ExtPipes { get; }
 
         /// <summary>
         /// Client beta extension methods
@@ -127,6 +132,7 @@ namespace CogniteSdk
             Files = new FilesResource(authHandler, ctx);
             Login = new LoginResource(authHandler, ctx);
             Token = new TokenResource(authHandler, ctx);
+			ExtPipes = new ExtPipesResource(authHandler, ctx);
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);
