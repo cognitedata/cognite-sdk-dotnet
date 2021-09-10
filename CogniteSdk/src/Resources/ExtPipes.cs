@@ -57,12 +57,12 @@ namespace CogniteSdk.Resources
         /// <param name="query">Delete query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns></returns>
-        public async Task<EmptyResponse> DeleteAsync(ExtPipeDelete query, CancellationToken token = default)
+        public async Task DeleteAsync(ExtPipeDelete query, CancellationToken token = default)
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
             var req = Oryx.Cognite.ExtPipes.delete(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            await RunAsync(req, token).ConfigureAwait(false);
         }
 
 
@@ -70,57 +70,51 @@ namespace CogniteSdk.Resources
         /// Delete extraction pipelines, optionally ignoring unknown ids.
         /// </summary>
         /// <param name="ids">Ids to delete</param>
-        /// <param name="ignoreUnknownIds">True to ignore missing ids</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns></returns>
-        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        public async Task DeleteAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             if (ids is null) throw new ArgumentNullException(nameof(ids));
 
             var req = new ExtPipeDelete
             {
-                IgnoreUnknownIds = ignoreUnknownIds,
                 Items = ids
             };
-            return await DeleteAsync(req, token).ConfigureAwait(false);
+            await DeleteAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Delete extraction pipelines, optionally ignoring unknown ids.
         /// </summary>
         /// <param name="internalIds">Internal ids to delete</param>
-        /// <param name="ignoreUnknownIds">True to ignore missing ids</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns></returns>
-        public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        public async Task DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             if (internalIds is null) throw new ArgumentNullException(nameof(internalIds));
 
             var req = new ExtPipeDelete
             {
-                IgnoreUnknownIds = ignoreUnknownIds,
                 Items = internalIds.Select(Identity.Create)
             };
-            return await DeleteAsync(req, token).ConfigureAwait(false);
+            await DeleteAsync(req, token).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Delete extraction pipelines, optionally ignoring unknown ids.
         /// </summary>
         /// <param name="externalIds">External ids to delete</param>
-        /// <param name="ignoreUnknownIds">True to ignore missing ids</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns></returns>
-        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        public async Task DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             if (externalIds is null) throw new ArgumentNullException(nameof(externalIds));
 
             var req = new ExtPipeDelete
             {
-                IgnoreUnknownIds = ignoreUnknownIds,
                 Items = externalIds.Select(Identity.Create)
             };
-            return await DeleteAsync(req, token).ConfigureAwait(false);
+            await DeleteAsync(req, token).ConfigureAwait(false);
         }
         #endregion
 

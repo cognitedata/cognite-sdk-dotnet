@@ -46,10 +46,12 @@ namespace Test.CSharp.Integration
             var result = await Write.ExtPipes.CreateAsync(new[] { testPipe });
             TestPipeline = result.First();
         }
-        public new void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if (TestPipeline == null) return;
-            Write.ExtPipes.DeleteAsync(new ExtPipeDelete { IgnoreUnknownIds = true, Items = new[] { Identity.Create(TestPipeline.ExternalId) } }).Wait();
+            if (disposing)
+            {
+                Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(TestPipeline.ExternalId) } }).Wait();
+            }
         }
     }
 
@@ -129,6 +131,108 @@ namespace Test.CSharp.Integration
 
             // Assert
             Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task CreateUpdateDeleteExtPipes()
+        {
+            // Arrange
+            var extId = Guid.NewGuid().ToString();
+            var create = new ExtPipeCreate
+            {
+                Contacts = new[]
+                {
+                    new ExtPipeContact
+                    {
+                        Email = "test@test.test",
+                        Name = "test",
+                        Role = "test",
+                        SendNotification = false
+                    }
+                },
+                DataSetId = tester.DataSetId,
+                Description = "Test description",
+                Documentation = "Test documentation",
+                ExternalId = extId,
+                Metadata = new Dictionary<string, string> { { "testKey", "testValue" } },
+                Name = "test",
+                Schedule = "On trigger",
+                Source = "Some source"
+            };
+            var extId2 = Guid.NewGuid().ToString();
+            var update = new ExtPipeUpdate
+            {
+                Contacts = new UpdateEnumerable<ExtPipeContact>(new[] { new ExtPipeContact
+                {
+                    Email = "test2@test.test",
+                    Name = "test2",
+                    Role = "test2",
+                    SendNotification = false
+                } }, new[] { create.Contacts.First() }),
+                Description = new Update<string>("Test description 2"),
+                Documentation = new Update<string>("Test documentation 2"),
+                ExternalId = new Update<string>(extId2),
+                Metadata = new UpdateDictionary<string>(new Dictionary<string, string> { { "testKey2", "testValue2" } },
+                    new[] { "testKey" }),
+                Name = new Update<string>("test 2"),
+                Schedule = new Update<string>("Continuous"),
+                Source = new Update<string>("Some other source")
+            };
+
+            // Act
+            await tester.Write.ExtPipes.CreateAsync(new[] { create });
+            var result = await tester.Write.ExtPipes.UpdateAsync(new[] { new UpdateItem<ExtPipeUpdate>(extId) { Update = update } });
+            await tester.Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(extId2) } });
+
+            // Assert
+            Assert.Single(result);
+            var pipe = result.First();
+            Assert.Single(pipe.Metadata);
+            Assert.Single(pipe.Contacts);
+            Assert.Equal("Continuous", pipe.Schedule);
+        }
+        [Fact]
+        public async Task CreateListExtPipeRuns()
+        {
+            var runs = new[]
+            {
+                new ExtPipeRunCreate
+                {
+                    ExternalId = tester.TestPipeline.ExternalId,
+                    Message = "test seen",
+                    Status = ExtPipeRunStatus.seen
+                },
+                new ExtPipeRunCreate
+                {
+                    ExternalId = tester.TestPipeline.ExternalId,
+                    Message = "test fail",
+                    Status = ExtPipeRunStatus.failure
+                },
+                new ExtPipeRunCreate
+                {
+                    ExternalId = tester.TestPipeline.ExternalId,
+                    Message = "test success",
+                    Status = ExtPipeRunStatus.success
+                }
+            };
+
+            // Act
+            foreach (var run in runs)
+            {
+                await tester.Write.ExtPipes.CreateRunsAsync(new[] { run });
+            }
+            ItemsWithCursor<ExtPipeRun> read = null;
+            for (int i = 0; i < 10; i++)
+            {
+                read = await tester.Write.ExtPipes.ListRunsAsync(new ExtPipeRunQuery
+                {
+                    Filter = new ExtPipeRunFilter { ExternalId = tester.TestPipeline.ExternalId }
+                });
+                if (read.Items.Count() >= 3) break;
+                await Task.Delay(1000);
+            }
+
+            Assert.True(read.Items.Count() >= 3);
         }
     }
 }

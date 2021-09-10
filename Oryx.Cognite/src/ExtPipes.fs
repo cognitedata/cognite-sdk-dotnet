@@ -10,6 +10,11 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open Oryx.SystemTextJson
+open Oryx.SystemTextJson.ResponseReader
+open System.Net.Http
+open System.Text.Json
+open FSharp.Control.Tasks
 
 /// Various extraction pipeline HTTP handlers
 [<RequireQualifiedAccess>]
@@ -29,9 +34,18 @@ module ExtPipes =
         >=> create items Url
 
     /// Delete multiple extraction pipelines.
-    let delete (items: ExtPipeDelete) : IHttpHandler<unit, EmptyResponse> =
-        withLogMessage "ExtPipes:delete"
-        >=> delete items Url
+    /// Returns an empty response, not JSON.
+    let delete (items: ExtPipeDelete) : IHttpHandler<unit, unit> =
+        let url = Url +/ "delete"
+        POST
+        >=> withVersion V10
+        >=> withLogMessage "ExtPipes:delete"
+        >=> withContent (fun () -> new JsonPushStreamContent<ExtPipeDelete>(items, jsonOptions) :> _)
+        >=> withResource url
+        >=> fetch
+        >=> withError decodeError
+        >=> skip
+        >=> log
 
     /// Update extraction pipelines
     let update (query: IEnumerable<UpdateItem<ExtPipeUpdate>>) : IHttpHandler<unit, ExtPipe seq> =

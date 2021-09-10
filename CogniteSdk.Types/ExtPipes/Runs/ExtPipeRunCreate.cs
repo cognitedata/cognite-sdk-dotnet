@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk
@@ -14,18 +12,15 @@ namespace CogniteSdk
         /// <summary>
         /// Successful run
         /// </summary>
-        [JsonPropertyName("success")]
-        Success,
+        success,
         /// <summary>
         /// Failed run
         /// </summary>
-        [JsonPropertyName("failure")]
-        Failure,
+        failure,
         /// <summary>
         /// Run heartbeat
         /// </summary>
-        [JsonPropertyName("seen")]
-        Seen
+        seen
     }
 
     /// <summary>

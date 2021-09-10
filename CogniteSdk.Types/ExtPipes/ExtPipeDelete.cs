@@ -9,9 +9,5 @@ namespace CogniteSdk
     /// </summary>
     public class ExtPipeDelete : ItemsWithoutCursor<Identity>
     {
-        /// <summary>
-        /// Ignore IDs and external IDs that are not found. Default: false
-        /// </summary>
-        public bool? IgnoreUnknownIds { get; set; }
     }
 }

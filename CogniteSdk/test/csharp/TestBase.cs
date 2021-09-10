@@ -20,11 +20,17 @@ namespace Test.CSharp.Integration
         {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
             WriteClient = CreateOAuth2Client(Environment.GetEnvironmentVariable("TEST_TOKEN_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
-
             PopulateDataAsync();
         }
 
-        public void Dispose() { }
+        protected virtual void Dispose(bool disposing)
+        {
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
         private static Client CreateClient(string apiKey, string project, string url)
         {
