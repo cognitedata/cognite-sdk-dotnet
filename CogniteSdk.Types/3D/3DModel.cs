@@ -27,7 +27,7 @@ namespace CogniteSdk
         /// <summary>
         /// The DataSetId of the 3D Model.
         /// </summary>
-        public long DataSetId { get; set; }
+        public long? DataSetId { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value
