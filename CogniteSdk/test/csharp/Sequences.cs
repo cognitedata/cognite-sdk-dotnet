@@ -151,16 +151,21 @@ namespace Test.CSharp.Integration
             var rowQuery = new SequenceRowQuery
             {
                 Limit = 10,
-                ExternalId = "sdk-test"
+                ExternalId = "sdk-test",
+                Columns = new string[]
+                {
+                    "sdk-column"
+                }
             };
 
             // Act
             var res = await WriteClient.Sequences.ListRowsAsync(rowQuery);
 
             // Assert
-            Assert.True(res.Columns.Any());
+            Assert.Single(res.Columns);
             Assert.Equal("sdk-test", res.ExternalId);
             Assert.Equal("sdk-test-column", res.Columns.First().Name);
+            Assert.Equal("sdk-column", res.Columns.First().ExternalId);
         }
     }
 }

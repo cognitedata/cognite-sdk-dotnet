@@ -125,7 +125,11 @@ let ``Create and delete sequences is Ok`` () = task {
             Name = "Create column sdk test",
             ExternalId = columnExternalIdString,
             Description = "dotnet sdk test",
-            ValueType = MultiValueType.DOUBLE
+            ValueType = MultiValueType.DOUBLE,
+            Metadata = Dictionary(dict [
+                "key1", "value1"
+                "key2", "value2"
+            ])
         )
     let dto =
         SequenceCreate(
