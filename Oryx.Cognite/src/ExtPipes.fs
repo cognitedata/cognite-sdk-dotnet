@@ -35,17 +35,9 @@ module ExtPipes =
 
     /// Delete multiple extraction pipelines.
     /// Returns an empty response, not JSON.
-    let delete (items: ExtPipeDelete) : IHttpHandler<unit, unit> =
-        let url = Url +/ "delete"
-        POST
-        >=> withVersion V10
-        >=> withLogMessage "ExtPipes:delete"
-        >=> withContent (fun () -> new JsonPushStreamContent<ExtPipeDelete>(items, jsonOptions) :> _)
-        >=> withResource url
-        >=> fetch
-        >=> withError decodeError
-        >=> skip
-        >=> log
+    let delete (items: ExtPipeDelete) : IHttpHandler<unit, EmptyResponse> =
+        withLogMessage "ExtPipes:delete"
+        >=> delete items Url
 
     /// Update extraction pipelines
     let update (query: IEnumerable<UpdateItem<ExtPipeUpdate>>) : IHttpHandler<unit, ExtPipe seq> =
