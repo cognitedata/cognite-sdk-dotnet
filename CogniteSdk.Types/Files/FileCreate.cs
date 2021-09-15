@@ -60,6 +60,11 @@ namespace CogniteSdk
         /// Unix timestamp in milliseconds of when the source was last modified.
         /// </summary>
         public long? SourceModifiedTime { get; set; }
+        
+        /// <summary>
+        /// Ids of securityCategories this file is linked to.
+        /// </summary>
+        public IEnumerable<long> SecurityCategories { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
