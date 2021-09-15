@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-
+using System.Threading.Tasks;
 using CogniteSdk;
 
 using Xunit;
 
 namespace Test.CSharp.Integration
 {
-    public class TestFixture : IDisposable
+    public class TestFixture : IDisposable, IAsyncLifetime
     {
 
         protected static Client ReadClient;
@@ -20,7 +20,6 @@ namespace Test.CSharp.Integration
         {
             ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
             WriteClient = CreateOAuth2Client(Environment.GetEnvironmentVariable("TEST_TOKEN_WRITE"), "fusiondotnet-tests", "https://greenfield.cognitedata.com");
-            PopulateDataAsync();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -54,16 +53,17 @@ namespace Test.CSharp.Integration
                 .Build();
         }
 
-        private void PopulateDataAsync()
+        private async Task PopulateDataAsync()
         {
             try {
-                TestEvent = WriteClient.Events.RetrieveAsync(new List<string>() { "TestEvent" }).Result.FirstOrDefault();
-            } catch (AggregateException) {
-                TestEvent = CreateTestEventAsync();
+                var events = await WriteClient.Events.RetrieveAsync(new List<string>() { "TestEvent" });
+                TestEvent = events.FirstOrDefault();
+            } catch (ResponseException) {
+                TestEvent = await CreateTestEventAsync();
             }
         }
 
-        private Event CreateTestEventAsync()
+        private async Task<Event> CreateTestEventAsync()
         {
             var items = new List<EventCreate> {
                 new EventCreate
@@ -77,7 +77,18 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            return WriteClient.Events.CreateAsync(items).Result.FirstOrDefault();
+            var events = await WriteClient.Events.CreateAsync(items);
+            return events.FirstOrDefault();
+        }
+
+        public virtual async Task InitializeAsync()
+        {
+            await PopulateDataAsync();
+        }
+
+        public virtual async Task DisposeAsync()
+        {
+            await WriteClient.Events.DeleteAsync(new EventDelete { IgnoreUnknownIds = true, Items = new [] { Identity.Create("TestEvent") } });
         }
     }
 

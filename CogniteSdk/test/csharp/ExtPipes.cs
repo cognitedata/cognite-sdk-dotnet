@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Test.CSharp.Integration
 {
-    public class ExtPipesFixture : TestFixture
+    public class ExtPipesFixture : TestFixture, IAsyncLifetime
     {
         public Client Read => ReadClient;
         public Client Write => WriteClient;
@@ -16,53 +16,47 @@ namespace Test.CSharp.Integration
         public long DataSetId { get; private set; }
         public ExtPipesFixture()
         {
-            PopulateData().Wait();
+        }
+        protected override void Dispose(bool disposing)
+        {
         }
 
-        private async Task PopulateData()
+        public override async Task InitializeAsync()
         {
-            try
+            var datasets = await Write.DataSets.RetrieveAsync(new[] { "test-dataset" }, true);
+            if (!datasets.Any())
             {
-                var datasets = await Write.DataSets.RetrieveAsync(new[] { "test-dataset" }, true);
-                if (!datasets.Any())
+                datasets = await Write.DataSets.CreateAsync(new[]
                 {
-                    datasets = await Write.DataSets.CreateAsync(new[]
-                    {
                     new DataSetCreate
                     {
                         ExternalId = "test-dataset",
                         Name = "test-dataset"
                     }
                 });
-                }
-                var dataset = datasets.First();
-                DataSetId = dataset.Id;
+            }
+            var dataset = datasets.First();
+            DataSetId = dataset.Id;
 
-                var extid = Guid.NewGuid().ToString();
-                var testPipe = new ExtPipeCreate
-                {
-                    DataSetId = DataSetId,
-                    ExternalId = extid,
-                    Name = "test extpipe"
-                };
-                var result = await Write.ExtPipes.CreateAsync(new[] { testPipe });
-                TestPipeline = result.First();
-            } catch { }
-        }
-        protected override void Dispose(bool disposing)
-        {
-            try
+            var extid = Guid.NewGuid().ToString();
+            var testPipe = new ExtPipeCreate
             {
-                if (disposing)
-                {
-                    _ = Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(TestPipeline.ExternalId) } });
-                }
-            } catch { }
+                DataSetId = DataSetId,
+                ExternalId = extid,
+                Name = "test extpipe"
+            };
+            var result = await Write.ExtPipes.CreateAsync(new[] { testPipe });
+            TestPipeline = result.First();
+        }
+
+        public override async Task DisposeAsync()
+        {
+            await Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(TestPipeline.ExternalId) } });
         }
     }
 
 
-    /* public class ExtPipesTest : IClassFixture<ExtPipesFixture>
+    public class ExtPipesTest : IClassFixture<ExtPipesFixture>
     {
         private readonly ExtPipesFixture tester;
         public ExtPipesTest(ExtPipesFixture tester)
@@ -240,5 +234,5 @@ namespace Test.CSharp.Integration
 
             Assert.True(read.Items.Count() >= 3);
         }
-    } */
+    }
 }
