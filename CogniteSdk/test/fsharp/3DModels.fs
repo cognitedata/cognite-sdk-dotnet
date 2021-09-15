@@ -38,8 +38,7 @@ let ``Get 3D model by id is Ok`` () = task {
     test <@ res.Name = "Valhall PH" @>
 }
 
-// Disabled pending clarification on API behavior
-(* [<Fact>]
+[<Fact>]
 let ``Create and delete 3D models is Ok`` () = task {
     // Arrange
     let name = "sdk-test-model-" + Guid.NewGuid().ToString();
@@ -75,4 +74,4 @@ let ``Update 3D model name is Ok`` () = task {
     // Assert
     test <@ model.Name = name @>
     test <@ updatedModel.Name = newName @>
-} *)
+}
