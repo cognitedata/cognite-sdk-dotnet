@@ -106,12 +106,22 @@ namespace CogniteSdk {
         /// <returns>True if equal, false otherwise</returns>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(this, obj)) return true;
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
 
-            if (!(obj is Identity other)) return false;
+            if (!(obj is Identity other))
+            {
+                return false;
+            }
 
-            if (Id.HasValue) return Id == other.Id;
-            else return !other.Id.HasValue && ExternalId == other.ExternalId;
+            if (Id.HasValue)
+            {
+                return Id == other.Id;
+            }
+           
+            return !other.Id.HasValue && ExternalId == other.ExternalId;
         }
 
         /// <summary>
