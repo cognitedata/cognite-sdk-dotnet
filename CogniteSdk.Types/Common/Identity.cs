@@ -98,5 +98,29 @@ namespace CogniteSdk {
                 return $"{{ ExternalId = \"{ExternalId}\" }}";
             }
         }
+
+        /// <summary>
+        /// Return true if <paramref name="obj"/> is another, identitical Identity.
+        /// </summary>
+        /// <param name="obj">Object to compare</param>
+        /// <returns>True if equal, false otherwise</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj)) return true;
+
+            if (!(obj is Identity other)) return false;
+
+            if (Id.HasValue) return Id == other.Id;
+            else return !other.Id.HasValue && ExternalId == other.ExternalId;
+        }
+
+        /// <summary>
+        /// Returns a hashcode representing this Identity.
+        /// </summary>
+        /// <returns>Hashcode representing this</returns>
+        public override int GetHashCode()
+        {
+            return Id.HasValue ? Id.GetHashCode() : ExternalId?.GetHashCode() ?? 0;
+        }
     }
 }
