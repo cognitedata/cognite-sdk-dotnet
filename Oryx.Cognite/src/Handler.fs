@@ -22,6 +22,8 @@ open Oryx.Protobuf.ResponseReader
 open Oryx.Cognite
 
 open CogniteSdk
+open Google.Protobuf
+open System.IO.Compression
 
 /// Oryx HTTP handlers for specific use within the Cognite SDK
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
@@ -284,11 +286,21 @@ module HttpHandler =
         >=> log
 
     /// Create content using protocol buffers
-    let createProtobuf<'TResult> (content: Google.Protobuf.IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
+    let createProtobuf<'TResult> (content: IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
         >=> withVersion V10
         >=> withResource url
         >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+        >=> log
+
+    let createGzipProtobuf<'TResult> (content: IMessage) (compression: CompressionLevel) (url: string) : IHttpHandler<unit, 'TResult> =
+        POST
+        >=> withVersion V10
+        >=> withResource url
+        >=> withContent (fun () -> new GZipProtobufStreamContent(content, compression) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

@@ -11,6 +11,7 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
+open System.IO.Compression
 
 
 /// Various time series data points HTTP handlers
@@ -34,6 +35,10 @@ module DataPoints =
     let create (items: DataPointInsertionRequest) : IHttpHandler<unit, EmptyResponse> =
         withLogMessage "DataPoints:create"
         >=> createProtobuf items Url
+
+    let createWithGzip (items: DataPointInsertionRequest) (compression: CompressionLevel) : IHttpHandler<unit, EmptyResponse> =
+        withLogMessage "DataPoints:create"
+        >=> createGzipProtobuf items compression Url
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: DataPointsDelete) : IHttpHandler<unit, EmptyResponse> =
