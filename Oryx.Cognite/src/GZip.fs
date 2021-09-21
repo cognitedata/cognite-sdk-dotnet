@@ -18,7 +18,7 @@ module GZip =
         do base.Headers.ContentEncoding.Add "gzip"
 
         override this.SerializeToStreamAsync(stream: Stream, context: TransportContext) : Task =
-            let gzipStream = new GZipStream(stream, _compression)
+            use gzipStream = new GZipStream(stream, _compression, true)
             content.WriteTo gzipStream |> Task.FromResult :> _
 
         override this.TryComputeLength(length: byref<int64>) : bool =

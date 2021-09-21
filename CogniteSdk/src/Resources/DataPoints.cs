@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -55,6 +56,27 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.DataPoints.create(points);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+        
+        /// <summary>
+        /// Create data points, applying Gzip compression at level <paramref name="compression"/>.
+        /// </summary>
+        /// <param name="points">Data Points to create</param>
+        /// <param name="compression">Compression level</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Empty response</returns>
+        public async Task<EmptyResponse> CreateWithGzipAsync(
+            DataPointInsertionRequest points,
+            CompressionLevel compression,
+            CancellationToken token = default)
+        {
+            if (points is null)
+            {
+                throw new ArgumentNullException(nameof(points));
+            }
+
+            var req = Oryx.Cognite.DataPoints.createWithGzip(points, compression);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
