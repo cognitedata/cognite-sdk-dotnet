@@ -10,8 +10,10 @@ open System.Net.Http
 open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
+open System.IO.Compression
 
 open FSharp.Control.Tasks
+open Google.Protobuf
 
 open Oryx
 open Oryx.SystemTextJson
@@ -284,11 +286,21 @@ module HttpHandler =
         >=> log
 
     /// Create content using protocol buffers
-    let createProtobuf<'TResult> (content: Google.Protobuf.IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
+    let createProtobuf<'TResult> (content: IMessage) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
         >=> withVersion V10
         >=> withResource url
         >=> withContent (fun () -> new ProtobufPushStreamContent(content) :> _)
+        >=> fetch
+        >=> withError decodeError
+        >=> json jsonOptions
+        >=> log
+
+    let createGzipProtobuf<'TResult> (content: IMessage) (compression: CompressionLevel) (url: string) : IHttpHandler<unit, 'TResult> =
+        POST
+        >=> withVersion V10
+        >=> withResource url
+        >=> withContent (fun () -> new GZipProtobufStreamContent(content, compression) :> _)
         >=> fetch
         >=> withError decodeError
         >=> json jsonOptions

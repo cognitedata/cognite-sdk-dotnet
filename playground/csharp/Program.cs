@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using Com.Cognite.V1.Timeseries.Proto;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,6 +105,92 @@ namespace csharp {
             services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
         }
 
+        static async Task GzipPerformanceTest(Client client)
+        {
+            try
+            {
+                var ts = await client.TimeSeries.CreateAsync(
+                    Enumerable.Range(0, 100).Select(idx => new TimeSeriesCreate
+                    {
+                        Name = $"gzip-ts-test-{idx}",
+                        ExternalId = $"gzip-ts-test-{idx}"
+                    }).ToList());
+            } catch (ResponseException rex) when (rex.Duplicated?.Any() ?? false) { }
+
+            var chunks = new[]
+            {
+                (1, 100), (10, 100), (100, 100), (1, 1000), (10, 1000), (100, 1000), (1, 10000), (10, 10000)
+            };
+
+
+            Console.WriteLine("Gzip: ");
+
+            long start = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+            foreach (var pair in chunks)
+            {
+                var data = new DataPointInsertionRequest();
+                for (int i = 0; i < pair.Item1; i++)
+                {
+                    var req = new NumericDatapoints();
+                    for (int j = 0; j < pair.Item2; j++)
+                    {
+                        req.Datapoints.Add(new NumericDatapoint
+                        {
+                            Timestamp = start + i * pair.Item2 + j,
+                            Value = i * pair.Item2 + j
+                        });
+                    }
+                    data.Items.Add(new DataPointInsertionItem
+                    {
+                        ExternalId = $"gzip-ts-test-{i}",
+                        NumericDatapoints = req
+                    });
+                }
+
+                var sw = new Stopwatch();
+                sw.Start();
+                await client.DataPoints.CreateAsync(data, System.IO.Compression.CompressionLevel.Fastest);
+                sw.Stop();
+                Console.WriteLine($"Inserting {pair.Item2} datapoints for {pair.Item1} timeseries took {sw.ElapsedMilliseconds} ms");
+            }
+
+            Console.Write("Non-gzip:");
+
+            foreach (var pair in chunks)
+            {
+                var data = new DataPointInsertionRequest();
+                for (int i = 0; i < pair.Item1; i++)
+                {
+                    var req = new NumericDatapoints();
+                    for (int j = 0; j < pair.Item2; j++)
+                    {
+                        req.Datapoints.Add(new NumericDatapoint
+                        {
+                            Timestamp = start + i * pair.Item2 + j,
+                            Value = i * pair.Item2 + j
+                        });
+                    }
+                    data.Items.Add(new DataPointInsertionItem
+                    {
+                        ExternalId = $"gzip-ts-test-{i}",
+                        NumericDatapoints = req
+                    });
+                }
+
+                var sw = new Stopwatch();
+                sw.Start();
+                await client.DataPoints.CreateAsync(data);
+                sw.Stop();
+                Console.WriteLine($"Inserting {pair.Item2} datapoints for {pair.Item1} timeseries took {sw.ElapsedMilliseconds} ms");
+            }
+
+            await client.TimeSeries.DeleteAsync(new TimeSeriesDelete
+            {
+                IgnoreUnknownIds = true,
+                Items = Enumerable.Range(0, 100).Select(idx => Identity.Create($"gzip-ts-test-{idx}"))
+            });
+        }
+
         private static async Task Main() {
             Console.WriteLine("C# Client");
 
@@ -132,9 +219,10 @@ namespace csharp {
                     .SetLogLevel(LogLevel.Debug)
                     .Build();
 
-            var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
-            Console.WriteLine($"{asset}");
-            //var data = await QueryTimeseriesDataExample(client);
+            // var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
+            // Console.WriteLine($"{asset}");
+            // var data = await QueryTimeseriesDataExample(client);
+            await GzipPerformanceTest(client);
         }
     }
 }
