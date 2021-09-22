@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 using Com.Cognite.V1.Timeseries.Proto;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using CogniteSdk;
-using System.Diagnostics;
 
 namespace csharp {
 
@@ -149,7 +149,7 @@ namespace csharp {
 
                 var sw = new Stopwatch();
                 sw.Start();
-                await client.DataPoints.CreateWithGzipAsync(data, System.IO.Compression.CompressionLevel.Fastest);
+                await client.DataPoints.CreateAsync(data, System.IO.Compression.CompressionLevel.Fastest);
                 sw.Stop();
                 Console.WriteLine($"Inserting {pair.Item2} datapoints for {pair.Item1} timeseries took {sw.ElapsedMilliseconds} ms");
             }

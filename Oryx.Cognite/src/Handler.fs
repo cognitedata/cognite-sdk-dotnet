@@ -10,8 +10,10 @@ open System.Net.Http
 open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
+open System.IO.Compression
 
 open FSharp.Control.Tasks
+open Google.Protobuf
 
 open Oryx
 open Oryx.SystemTextJson
@@ -22,8 +24,6 @@ open Oryx.Protobuf.ResponseReader
 open Oryx.Cognite
 
 open CogniteSdk
-open Google.Protobuf
-open System.IO.Compression
 
 /// Oryx HTTP handlers for specific use within the Cognite SDK
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]

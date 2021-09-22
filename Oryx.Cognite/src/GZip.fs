@@ -1,12 +1,13 @@
 ﻿namespace Oryx.Cognite
 
-open Google.Protobuf
 open System.Net.Http
 open System.Net.Http.Headers
 open System.Threading.Tasks
 open System.IO
 open System.Net
 open System.IO.Compression
+
+open Google.Protobuf
 
 [<AutoOpen>]
 module GZip =

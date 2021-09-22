@@ -246,7 +246,7 @@ let ``Insert datapoints is Ok`` () = task {
     // Act
     let! _ = writeClient.TimeSeries.CreateAsync [ dto ]
     let! _ = writeClient.DataPoints.CreateAsync points
-    let! _ = writeClient.DataPoints.CreateWithGzipAsync (points, System.IO.Compression.CompressionLevel.Fastest)
+    let! _ = writeClient.DataPoints.CreateAsync (points, System.IO.Compression.CompressionLevel.Fastest)
     let! _ = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
 
     ()

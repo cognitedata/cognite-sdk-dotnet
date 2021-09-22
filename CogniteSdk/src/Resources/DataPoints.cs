@@ -66,7 +66,7 @@ namespace CogniteSdk.Resources
         /// <param name="compression">Compression level</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Empty response</returns>
-        public async Task<EmptyResponse> CreateWithGzipAsync(
+        public async Task<EmptyResponse> CreateAsync(
             DataPointInsertionRequest points,
             CompressionLevel compression,
             CancellationToken token = default)

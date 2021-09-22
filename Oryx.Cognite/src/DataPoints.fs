@@ -4,15 +4,13 @@
 namespace Oryx.Cognite
 
 open System.Collections.Generic
-open System.Net.Http
+open System.IO.Compression
 
 open Com.Cognite.V1.Timeseries.Proto
 open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open System.IO.Compression
-
 
 /// Various time series data points HTTP handlers
 
