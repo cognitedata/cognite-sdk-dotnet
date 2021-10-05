@@ -20,6 +20,7 @@
     <Compile Include="Relationships.fs" />
     <Compile Include="DataSets.fs" />
     <Compile Include="Login.fs" />
+    <Compile Include="Labels.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
