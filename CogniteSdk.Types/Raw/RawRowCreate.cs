@@ -2,30 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-
-using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
     /// <summary>
     /// Class to write a row to a table in Raw.
     /// </summary>
-    public class RawRowCreate<T>
+    public class RawRowCreate<T> : RawRowCreateJson<Dictionary<string, T>>
     {
-        /// <summary>
-        /// Row key. Unique in table.
-        /// </summary>
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Row data stored as columns of type <typeparamref name="T"/>. This gets converted to JSON.
-        /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, T> Columns { get; set; }
-
-        /// <inheritdoc />
-        public override string ToString() => Stringable.ToString(this);
     }
 }
