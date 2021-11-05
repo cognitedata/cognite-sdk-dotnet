@@ -19,7 +19,7 @@ namespace CogniteSdk
         public string Key { get; set; }
 
         /// <summary>
-        /// Row data stored as a JSON object.
+        /// Row data stored as type <typeparamref name="T"/>. This gets converted to JSON.
         /// </summary>
         [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public T Columns { get; set; }

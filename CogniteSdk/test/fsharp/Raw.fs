@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open FSharp.Control.Tasks
 open System.Text.Json
+open System.Text.Json.Serialization
 
 open Xunit
 open Swensen.Unquote
@@ -11,7 +12,6 @@ open Swensen.Unquote
 open CogniteSdk
 
 open Common
-open System.Text.Json.Serialization
 
 [<Trait("resource", "raw")>]
 [<Fact>]

@@ -16,7 +16,7 @@ namespace CogniteSdk
         public string Key { get; set; }
 
         /// <summary>
-        /// Row data stored as a JSON object.
+        /// Row data stored as type <typeparamref name="T"/>.
         /// </summary>
         public T Columns { get; set; }
 

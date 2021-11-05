@@ -4,13 +4,13 @@
 namespace Oryx.Cognite
 
 open System.Net.Http
+open System.Text.Json
+open System.Collections.Generic
 
 open Oryx
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
-open System.Text.Json
 
 /// Various event HTTP handlers.
 
