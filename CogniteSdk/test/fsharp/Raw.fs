@@ -50,7 +50,7 @@ let ``List Rows with limit is Ok`` () = task {
     let query = RawRowQuery(Limit = Nullable 10)
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync<JsonElement>("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -74,7 +74,7 @@ let ``List Rows to record is Ok`` () = task {
     let query = RawRowQuery(Limit = Nullable 10)
     
     // Act
-    let! res = writeClient.Raw.ListRowsJsonAsync<TestRecord>("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<TestRecord>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -95,7 +95,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
 }"""
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync<JsonElement>("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -110,7 +110,7 @@ let ``Get Row isOk`` () = task {
     let query = RawRowQuery(Limit = Nullable 10, Columns = ["sdk-test-col2"])
 
     // Act
-    let! res = writeClient.Raw.GetRowAsync("sdk-test-database", "sdk-test-table", "sdk-test-row")
+    let! res = writeClient.Raw.GetRowAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", "sdk-test-row")
 
     // Assert
     test <@ res.Key = "sdk-test-row" @>
@@ -120,7 +120,7 @@ let ``Get Row isOk`` () = task {
 [<Fact>]
 let ``Get Row to record isOk`` () = task {
     // Act
-    let! res = writeClient.Raw.GetRowJsonAsync<TestRecord>("sdk-test-database", "sdk-test-table", "sdk-test-row")
+    let! res = writeClient.Raw.GetRowAsync<TestRecord>("sdk-test-database", "sdk-test-table", "sdk-test-row")
 
     // Assert
     test <@ res.Key = "sdk-test-row" @>
@@ -175,7 +175,7 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     // Act
     let! table = writeClient.Raw.CreateTablesAsync(dbName, [ tableName ], true)
     let! createRes = writeClient.Raw.CreateRowsAsync(dbName, tableName, [ rowDto ], true)
-    let! res = writeClient.Raw.ListRowsAsync(dbName, tableName)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>(dbName, tableName)
     let! deleteRowRes = writeClient.Raw.DeleteRowsAsync(dbName, tableName, [
         for row in res.Items do
             RawRowDelete(Key=row.Key)])
