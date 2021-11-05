@@ -40,7 +40,7 @@ module Handler =
 
     let postWithQuery<'TSource, 'TResult> (content: 'TSource) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
         withBetaVersion
-        >=> postWithQuery content query url
+        >=> postWithQuery content query url jsonOptions
 
     let inline list (content: 'TSource) (url: string) : IHttpHandler<unit, 'TResult> =
         withCompletion HttpCompletionOption.ResponseHeadersRead

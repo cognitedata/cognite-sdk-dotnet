@@ -10,6 +10,7 @@ open Oryx.Cognite
 
 open System.Collections.Generic
 open CogniteSdk
+open System.Text.Json
 
 /// Various event HTTP handlers.
 
@@ -89,11 +90,52 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="query">The Row query.</param>
     /// <returns>The retrieved rows.</returns>
-    let listRows (database: string) (table: string) (query: RawRowQuery): IHttpHandler<unit, ItemsWithCursor<RawRow>> =
+    let listRows (database: string) (table: string) (query: RawRowQuery): IHttpHandler<unit, ItemsWithCursor<RawRow<'T>>> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         withLogMessage "Raw:listRows"
         >=> withCompletion HttpCompletionOption.ResponseHeadersRead
         >=> getWithQuery query url
+
+    /// <summary>
+    /// Retrieve rows from a table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="query">The Row query.</param>
+    /// <returns>The retrieved rows.</returns>
+    let listRowsJson (database: string) (table: string) (query: RawRowQuery): IHttpHandler<unit, ItemsWithCursor<RawRowJson<'T>>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:listRows"
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQuery query url
+
+    /// <summary>
+    /// Retrieve rows from a table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="query">The Row query.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved rows.</returns>
+    let listRowsOptions (database: string) (table: string) (query: RawRowQuery) (options: JsonSerializerOptions) : IHttpHandler<unit, ItemsWithCursor<RawRow<'T>>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:listRows"
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQueryOptions query url options
+
+    /// <summary>
+    /// Retrieve rows from a table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="query">The Row query.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved rows.</returns>
+    let listRowsOptionsJson (database: string) (table: string) (query: RawRowQuery) (options: JsonSerializerOptions) : IHttpHandler<unit, ItemsWithCursor<RawRowJson<'T>>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:listRows"
+        >=> withCompletion HttpCompletionOption.ResponseHeadersRead
+        >=> getWithQueryOptions query url options
 
     /// <summary>
     /// Get a single row from table.
@@ -102,24 +144,48 @@ module Raw =
     /// <param name="table">The ids of the events to get.</param>
     /// <param name="key">Key of row to get.</param>
     /// <returns>The retrieved row.</returns>
-    let getRow (database: string) (table: string) (key: string) : IHttpHandler<unit, RawRow> =
+    let getRow (database: string) (table: string) (key: string) : IHttpHandler<unit, RawRow<'T>> =
         let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
         withLogMessage "Raw:getRow"
         >=> getV10 url
 
     /// <summary>
-    /// Create rows in a table.
+    /// Get a single row from table.
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>
     /// <param name="table">The ids of the events to get.</param>
-    /// <param name="rows">The Rows to create.</param>
-    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
-    /// <returns>The retrieved rows.</returns>
-    let createRows (database: string) (table: string) (rows: RawRowCreate seq) (ensureParent: bool): IHttpHandler<unit, EmptyResponse> =
-        let query = RawRowCreateQuery(EnsureParent = ensureParent)
-        let url = Url +/ database +/ "tables" +/ table +/ "rows"
-        withLogMessage "Raw:createRows"
-        >=> createWithQueryEmpty rows query url
+    /// <param name="key">Key of row to get.</param>
+    /// <returns>The retrieved row.</returns>
+    let getRowJson (database: string) (table: string) (key: string) : IHttpHandler<unit, RawRowJson<'T>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
+        withLogMessage "Raw:getRow"
+        >=> getV10 url
+
+    /// <summary>
+    /// Get a single row from table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="key">Key of row to get.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved row.</returns>
+    let getRowOptions (database: string) (table: string) (key: string) (options: JsonSerializerOptions) : IHttpHandler<unit, RawRow<'T>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
+        withLogMessage "Raw:getRow"
+        >=> getV10Options url options
+
+    /// <summary>
+    /// Get a single row from table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="key">Key of row to get.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved row.</returns>
+    let getRowOptionsJson (database: string) (table: string) (key: string) (options: JsonSerializerOptions) : IHttpHandler<unit, RawRowJson<'T>> =
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
+        withLogMessage "Raw:getRow"
+        >=> getV10Options url options
 
     /// <summary>
     /// Create rows in a table.
@@ -129,11 +195,55 @@ module Raw =
     /// <param name="rows">The Rows to create.</param>
     /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
     /// <returns>The retrieved rows.</returns>
-    let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson seq) (ensureParent: bool): IHttpHandler<unit, EmptyResponse> =
+    let createRows (database: string) (table: string) (rows: RawRowCreate<'T> seq) (ensureParent: bool): IHttpHandler<unit, EmptyResponse> =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
         withLogMessage "Raw:createRows"
         >=> createWithQueryEmpty rows query url
+
+    /// <summary>
+    /// Create rows in a table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="rows">The Rows to create.</param>
+    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved rows.</returns>
+    let createRowsOptions (database: string) (table: string) (rows: RawRowCreate<'T> seq) (ensureParent: bool) (options: JsonSerializerOptions) : IHttpHandler<unit, EmptyResponse> =
+        let query = RawRowCreateQuery(EnsureParent = ensureParent)
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:createRows"
+        >=> createWithQueryEmptyOptions rows query url options
+
+    /// <summary>
+    /// Create rows in a table.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="rows">The Rows to create.</param>
+    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+    /// <returns>The retrieved rows.</returns>
+    let createRowsJson (database: string) (table: string) (rows: RawRowCreateJson<'T> seq) (ensureParent: bool): IHttpHandler<unit, EmptyResponse> =
+        let query = RawRowCreateQuery(EnsureParent = ensureParent)
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:createRows"
+        >=> createWithQueryEmpty rows query url
+
+    /// <summary>
+    /// Create rows in a table, with specified json serializer options.
+    /// </summary>
+    /// <param name="database">The ids of the events to get.</param>
+    /// <param name="table">The ids of the events to get.</param>
+    /// <param name="rows">The Rows to create.</param>
+    /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+    /// <param name="options">Json serializer options to use when deserializing.</param>
+    /// <returns>The retrieved rows.</returns>
+    let createRowsJsonOptions (database: string) (table: string) (rows: RawRowCreateJson<'T> seq) (ensureParent: bool) (options: JsonSerializerOptions) : IHttpHandler<unit, EmptyResponse> =
+        let query = RawRowCreateQuery(EnsureParent = ensureParent)
+        let url = Url +/ database +/ "tables" +/ table +/ "rows"
+        withLogMessage "Raw:createRows"
+        >=> createWithQueryEmptyOptions rows query url options
 
     /// <summary>
     /// Delete rows in a table.

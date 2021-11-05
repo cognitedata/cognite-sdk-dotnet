@@ -142,21 +142,27 @@ module HttpHandler =
             return exn :> _
     }
 
-    let get<'TNext, 'TResult> (url: string) : IHttpHandler<unit, 'TResult> =
+    let getOptions<'TNext, 'TResult> (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, 'TResult> =
         GET
         >=> withResource url
         >=> fetch
         >=> withError decodeError
-        >=> json jsonOptions
+        >=> json options
         >=> log
+
+    let get<'TNext, 'TResult> (url: string) : IHttpHandler<unit, 'TResult> =
+        getOptions url jsonOptions
 
     let getV10<'TNext, 'TResult> (url: string)  : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> get url
 
+    let getV10Options<'TNext, 'TResult> (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, 'TResult> =
+        withVersion V10 >=> getOptions url options
+
     let inline getById (id: int64) (url: string) : IHttpHandler<unit, 'TResult> =
         url +/ sprintf "%d" id |> getV10
 
-    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
+    let getWithQueryOptions<'TResult> (query: IQueryParams) (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
         let parms = query.ToQueryParams ()
         GET
         >=> withVersion V10
@@ -164,8 +170,11 @@ module HttpHandler =
         >=> withQuery parms
         >=> fetch
         >=> withError decodeError
-        >=> json jsonOptions
+        >=> json options
         >=> log
+
+    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
+        getWithQueryOptions query url jsonOptions
 
     let post<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         POST
@@ -179,17 +188,17 @@ module HttpHandler =
     let postV10<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
         withVersion V10 >=> post content url
 
-    let postWithQuery<'T, 'TResult> (content: 'T) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
+    let postWithQuery<'T, 'TResult> (content: 'T) (query: IQueryParams) (url: string) (options: JsonSerializerOptions): IHttpHandler<unit, 'TResult> =
         let parms = query.ToQueryParams ()
 
         POST
         >=> withVersion V10
         >=> withResource url
         >=> withQuery parms
-        >=> withContent (fun () -> new JsonPushStreamContent<'T>(content, jsonOptions) :> _)
+        >=> withContent (fun () -> new JsonPushStreamContent<'T>(content, options) :> _)
         >=> fetch
         >=> withError decodeError
-        >=> json jsonOptions
+        >=> json options
         >=> log
 
     let inline list (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
@@ -256,13 +265,16 @@ module HttpHandler =
     let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
         req {
             let content' = ItemsWithoutCursor(Items=content)
-            let! ret = postWithQuery<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' query url
+            let! ret = postWithQuery<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' query url jsonOptions
             return ret.Items
         }
 
-    let createWithQueryEmpty<'TSource> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, EmptyResponse> =
+    let createWithQueryEmptyOptions<'TSource> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, EmptyResponse> =
         let content' = ItemsWithoutCursor(Items=content)
-        postWithQuery<ItemsWithoutCursor<'TSource>, EmptyResponse> content' query url
+        postWithQuery<ItemsWithoutCursor<'TSource>, EmptyResponse> content' query url options
+
+    let createWithQueryEmpty<'TSource> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, EmptyResponse> =
+        createWithQueryEmptyOptions content query url jsonOptions
 
     let createEmpty<'TSource> (content: IEnumerable<'TSource>) (url: string) : IHttpHandler<unit, EmptyResponse> =
         let content' = ItemsWithoutCursor(Items=content)

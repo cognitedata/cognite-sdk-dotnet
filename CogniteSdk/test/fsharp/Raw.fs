@@ -11,6 +11,7 @@ open Swensen.Unquote
 open CogniteSdk
 
 open Common
+open System.Text.Json.Serialization
 
 [<Trait("resource", "raw")>]
 [<Fact>]
@@ -49,7 +50,7 @@ let ``List Rows with limit is Ok`` () = task {
     let query = RawRowQuery(Limit = Nullable 10)
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<JsonElement>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -58,6 +59,31 @@ let ``List Rows with limit is Ok`` () = task {
         (dto.Columns.GetValueOrDefault "sdk-test-col").ToString() = "sdk-test-value" &&
         (dto.Columns.GetValueOrDefault "sdk-test-col2").ToString() = "sdk-test-value2") @>
 }
+
+type TestRecord = { 
+    [<JsonPropertyName("sdk-test-col")>]
+    SdkTestCol: string;
+    [<JsonPropertyName("sdk-test-col2")>]
+    SdkTestCol2: string
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``List Rows to record is Ok`` () = task {
+    // Arrange
+    let query = RawRowQuery(Limit = Nullable 10)
+    
+    // Act
+    let! res = writeClient.Raw.ListRowsJsonAsync<TestRecord>("sdk-test-database", "sdk-test-table", query)
+
+    // Assert
+    test <@ Seq.length res.Items > 0 @>
+    test <@ res.Items |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
+    test <@ res.Items |> Seq.exists (fun dto ->
+        dto.Columns.SdkTestCol = "sdk-test-value" &&
+        dto.Columns.SdkTestCol2 = "sdk-test-value2") @>
+}
+
 
 [<Trait("resource", "raw")>]
 [<Fact>]
@@ -69,7 +95,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
 }"""
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<JsonElement>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -88,6 +114,18 @@ let ``Get Row isOk`` () = task {
 
     // Assert
     test <@ res.Key = "sdk-test-row" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``Get Row to record isOk`` () = task {
+    // Act
+    let! res = writeClient.Raw.GetRowJsonAsync<TestRecord>("sdk-test-database", "sdk-test-table", "sdk-test-row")
+
+    // Assert
+    test <@ res.Key = "sdk-test-row" @>
+    test <@ res.Columns.SdkTestCol = "sdk-test-value" @>
+    test <@ res.Columns.SdkTestCol2 = "sdk-test-value2" @>
 }
 
 [<Trait("resource", "raw")>]

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -268,9 +269,10 @@ namespace CogniteSdk.Resources
         /// <param name="database">The database to list rows from.</param>
         /// <param name="table">The table to list rows from.</param>
         /// <param name="query">The Row query.</param>
+        /// <param name="options">Optional json serializer options</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The retrieved rows.</returns>
-        public async Task<ItemsWithCursor<RawRow>> ListRowsAsync(string database, string table, RawRowQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<RawRow<T>>> ListRowsAsync<T>(string database, string table, RawRowQuery query, JsonSerializerOptions options = null, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))
             {
@@ -287,8 +289,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Raw.listRows(database, table, query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.listRows<T>(database, table, query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.listRowsOptions<T>(database, table, query, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -296,9 +306,25 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="database">The database to list rows from.</param>
         /// <param name="table">The table to list rows from.</param>
+        /// <param name="options">Optional json serializer options</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The retrieved rows.</returns>
-        public async Task<ItemsWithCursor<RawRow>> ListRowsAsync(string database, string table, CancellationToken token = default)
+        public async Task<ItemsWithCursor<RawRow<T>>> ListRowsAsync<T>(string database, string table, JsonSerializerOptions options = null, CancellationToken token = default)
+        {
+            var query = new RawRowQuery();
+            return await ListRowsAsync<T>(database, table, query, options, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve rows from a table.
+        /// </summary>
+        /// <param name="database">The database to list rows from.</param>
+        /// <param name="table">The table to list rows from.</param>
+        /// <param name="query">The Row query.</param>
+        /// <param name="options">Optional json serializer options</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>The retrieved rows.</returns>
+        public async Task<ItemsWithCursor<RawRowJson<T>>> ListRowsJsonAsync<T>(string database, string table, RawRowQuery query, JsonSerializerOptions options = null, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))
             {
@@ -310,8 +336,35 @@ namespace CogniteSdk.Resources
                 throw new ArgumentException("message", nameof(table));
             }
 
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.listRowsJson<T>(database, table, query);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.listRowsOptionsJson<T>(database, table, query, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
+        /// Retrieve rows from a table.
+        /// </summary>
+        /// <param name="database">The database to list rows from.</param>
+        /// <param name="table">The table to list rows from.</param>
+        /// <param name="options">Optional json serializer options</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>The retrieved rows.</returns>
+        public async Task<ItemsWithCursor<RawRowJson<T>>> ListRowsJsonAsync<T>(string database, string table, JsonSerializerOptions options = null, CancellationToken token = default)
+        {
             var query = new RawRowQuery();
-            return await ListRowsAsync(database, table, query, token).ConfigureAwait(false);
+            return await ListRowsJsonAsync<T>(database, table, query, options, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -320,9 +373,10 @@ namespace CogniteSdk.Resources
         /// <param name="database">The database to list rows from.</param>
         /// <param name="table">The table to list rows from.</param>
         /// <param name="key">Key for row to get.</param>
+        /// <param name="options">Optional json serializer options</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>The retrieved rows.</returns>
-        public async Task<RawRow> GetRowAsync(string database, string table, string key, CancellationToken token = default)
+        public async Task<RawRow<T>> GetRowAsync<T>(string database, string table, string key, JsonSerializerOptions options = null, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))
             {
@@ -339,9 +393,54 @@ namespace CogniteSdk.Resources
                 throw new ArgumentException("message", nameof(key));
             }
 
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.getRow<T>(database, table, key);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.getRowOptions<T>(database, table, key, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+        }
 
-            var req = Oryx.Cognite.Raw.getRow(database, table, key);
-            return await RunAsync(req, token).ConfigureAwait(false);
+        /// <summary>
+        /// Retrieve a single row from a table.
+        /// </summary>
+        /// <param name="database">The database to list rows from.</param>
+        /// <param name="table">The table to list rows from.</param>
+        /// <param name="key">Key for row to get.</param>
+        /// <param name="options">Optional json serializer options</param>
+        /// <param name="token">Optional cancellation token to use.</param>
+        /// <returns>The retrieved rows.</returns>
+        public async Task<RawRowJson<T>> GetRowJsonAsync<T>(string database, string table, string key, JsonSerializerOptions options = null, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("message", nameof(key));
+            }
+
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.getRowJson<T>(database, table, key);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.getRowOptionsJson<T>(database, table, key, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -351,9 +450,10 @@ namespace CogniteSdk.Resources
         /// <param name="table">The table to create rows from.</param>
         /// <param name="dtos">The rows to create</param>
         /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+        /// <param name="options">Optional json serializer options</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>An empty response.</returns>
-        public async Task<EmptyResponse> CreateRowsAsync(string database, string table, IEnumerable<RawRowCreate> dtos, bool ensureParent = false, CancellationToken token = default)
+        public async Task<EmptyResponse> CreateRowsAsync<T>(string database, string table, IEnumerable<RawRowCreate<T>> dtos, bool ensureParent = false, JsonSerializerOptions options = null, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))
             {
@@ -370,8 +470,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(dtos));
             }
 
-            var req = Oryx.Cognite.Raw.createRows(database, table, dtos, ensureParent);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.createRows(database, table, dtos, ensureParent);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.createRowsOptions(database, table, dtos, ensureParent, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -381,9 +489,10 @@ namespace CogniteSdk.Resources
         /// <param name="table">The table to create rows from.</param>
         /// <param name="dtos">The rows to create</param>
         /// <param name="ensureParent">Default: false. Create database/table if it doesn't exist already.</param>
+        /// <param name="options">Optional json serializer options</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>An empty response.</returns>
-        public async Task<EmptyResponse> CreateRowsJsonAsync(string database, string table, IEnumerable<RawRowCreateJson> dtos, bool ensureParent = false, CancellationToken token = default)
+        public async Task<EmptyResponse> CreateRowsJsonAsync<T>(string database, string table, IEnumerable<RawRowCreateJson<T>> dtos, bool ensureParent = false, JsonSerializerOptions options = null, CancellationToken token = default)
         {
             if (string.IsNullOrEmpty(database))
             {
@@ -400,8 +509,16 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(dtos));
             }
 
-            var req = Oryx.Cognite.Raw.createRowsJson(database, table, dtos, ensureParent);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            if (options == null)
+            {
+                var req = Oryx.Cognite.Raw.createRowsJson(database, table, dtos, ensureParent);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
+            else
+            {
+                var req = Oryx.Cognite.Raw.createRowsJsonOptions(database, table, dtos, ensureParent, options);
+                return await RunAsync(req, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>

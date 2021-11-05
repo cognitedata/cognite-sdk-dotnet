@@ -1,17 +1,14 @@
-// Copyright 2020 Cognite AS
+﻿// Copyright 2021 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
 
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// Class to write a row to a table in Raw.
+    /// The row read class.
     /// </summary>
-    public class RawRowCreateJson<T>
+    public class RawRowJson<T>
     {
         /// <summary>
         /// Row key. Unique in table.
@@ -21,8 +18,12 @@ namespace CogniteSdk
         /// <summary>
         /// Row data stored as a JSON object.
         /// </summary>
-        [SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
         public T Columns { get; set; }
+
+        /// <summary>
+        /// Unix timestamp in milliseconds of when the row was last updated.
+        /// </summary>
+        public long LastUpdatedTime { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
