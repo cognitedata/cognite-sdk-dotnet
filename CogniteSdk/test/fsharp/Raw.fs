@@ -4,6 +4,7 @@ open System
 open System.Collections.Generic
 open FSharp.Control.Tasks
 open System.Text.Json
+open System.Text.Json.Serialization
 
 open Xunit
 open Swensen.Unquote
@@ -49,7 +50,7 @@ let ``List Rows with limit is Ok`` () = task {
     let query = RawRowQuery(Limit = Nullable 10)
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -58,6 +59,31 @@ let ``List Rows with limit is Ok`` () = task {
         (dto.Columns.GetValueOrDefault "sdk-test-col").ToString() = "sdk-test-value" &&
         (dto.Columns.GetValueOrDefault "sdk-test-col2").ToString() = "sdk-test-value2") @>
 }
+
+type TestRecord = { 
+    [<JsonPropertyName("sdk-test-col")>]
+    SdkTestCol: string;
+    [<JsonPropertyName("sdk-test-col2")>]
+    SdkTestCol2: string
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``List Rows to record is Ok`` () = task {
+    // Arrange
+    let query = RawRowQuery(Limit = Nullable 10)
+    
+    // Act
+    let! res = writeClient.Raw.ListRowsAsync<TestRecord>("sdk-test-database", "sdk-test-table", query)
+
+    // Assert
+    test <@ Seq.length res.Items > 0 @>
+    test <@ res.Items |> Seq.exists (fun dto -> dto.Key = "sdk-test-row") @>
+    test <@ res.Items |> Seq.exists (fun dto ->
+        dto.Columns.SdkTestCol = "sdk-test-value" &&
+        dto.Columns.SdkTestCol2 = "sdk-test-value2") @>
+}
+
 
 [<Trait("resource", "raw")>]
 [<Fact>]
@@ -69,7 +95,7 @@ let ``List Rows with limit and choose columns isOk`` () = task {
 }"""
 
     // Act
-    let! res = writeClient.Raw.ListRowsAsync("sdk-test-database", "sdk-test-table", query)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", query)
 
     // Assert
     test <@ Seq.length res.Items > 0 @>
@@ -84,10 +110,22 @@ let ``Get Row isOk`` () = task {
     let query = RawRowQuery(Limit = Nullable 10, Columns = ["sdk-test-col2"])
 
     // Act
-    let! res = writeClient.Raw.GetRowAsync("sdk-test-database", "sdk-test-table", "sdk-test-row")
+    let! res = writeClient.Raw.GetRowAsync<Dictionary<string, JsonElement>>("sdk-test-database", "sdk-test-table", "sdk-test-row")
 
     // Assert
     test <@ res.Key = "sdk-test-row" @>
+}
+
+[<Trait("resource", "raw")>]
+[<Fact>]
+let ``Get Row to record isOk`` () = task {
+    // Act
+    let! res = writeClient.Raw.GetRowAsync<TestRecord>("sdk-test-database", "sdk-test-table", "sdk-test-row")
+
+    // Assert
+    test <@ res.Key = "sdk-test-row" @>
+    test <@ res.Columns.SdkTestCol = "sdk-test-value" @>
+    test <@ res.Columns.SdkTestCol2 = "sdk-test-value2" @>
 }
 
 [<Trait("resource", "raw")>]
@@ -137,7 +175,7 @@ let ``Create and delete rows from table in database is Ok`` () = task {
     // Act
     let! table = writeClient.Raw.CreateTablesAsync(dbName, [ tableName ], true)
     let! createRes = writeClient.Raw.CreateRowsAsync(dbName, tableName, [ rowDto ], true)
-    let! res = writeClient.Raw.ListRowsAsync(dbName, tableName)
+    let! res = writeClient.Raw.ListRowsAsync<Dictionary<string, JsonElement>>(dbName, tableName)
     let! deleteRowRes = writeClient.Raw.DeleteRowsAsync(dbName, tableName, [
         for row in res.Items do
             RawRowDelete(Key=row.Key)])

@@ -136,7 +136,7 @@ module ThreeDRevisions =
         let url = Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "thumbnail"
         let query = ThreeDUpdateThumbnailQuery(FileId=fileId)
         withLogMessage "3DRevisions:update"
-        >=> postWithQuery () query url
+        >=> postWithQuery () query url jsonOptions
 
     /// <summary>
     /// Retrieves list of 3DRevisionLogs matching severity.
