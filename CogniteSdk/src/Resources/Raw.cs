@@ -354,6 +354,55 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Retrieve a list of cursors for parallel reads.
+        /// </summary>
+        /// <param name="database">The database to retrieve rows from.</param>
+        /// <param name="table">The table to retrieve rows from.</param>
+        /// <param name="query">Query object</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A list of cursors</returns>
+        public async Task<IEnumerable<string>> RetrieveCursorsForParallelReads(string database, string table, RawRowCursorsQuery query, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            var req = Oryx.Cognite.Raw.retrieveCursors(database, table, query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve a list of cursors for parallel reads.
+        /// </summary>
+        /// <param name="database">The database to retrieve rows from.</param>
+        /// <param name="table">The table to retrieve rows from.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>A list of cursors</returns>
+        public async Task<IEnumerable<string>> RetrieveCursorsForParallelReads(string database, string table, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(database))
+            {
+                throw new ArgumentException("message", nameof(database));
+            }
+
+            if (string.IsNullOrEmpty(table))
+            {
+                throw new ArgumentException("message", nameof(table));
+            }
+
+            var query = new RawRowCursorsQuery();
+
+            var req = Oryx.Cognite.Raw.retrieveCursors(database, table, query);
+            return await RunAsync(req, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create rows in a table.
         /// </summary>
         /// <param name="database">The database to create rows from.</param>

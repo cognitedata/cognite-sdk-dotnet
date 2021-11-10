@@ -162,7 +162,7 @@ module HttpHandler =
     let inline getById (id: int64) (url: string) : IHttpHandler<unit, 'TResult> =
         url +/ sprintf "%d" id |> getV10
 
-    let getWithQueryOptions<'TResult> (query: IQueryParams) (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
+    let getWithQueryOptions<'TResult> (query: IQueryParams) (url: string) (options: JsonSerializerOptions) : IHttpHandler<unit, 'TResult> =
         let parms = query.ToQueryParams ()
         GET
         >=> withVersion V10
@@ -173,7 +173,7 @@ module HttpHandler =
         >=> json options
         >=> log
 
-    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TResult>> =
+    let getWithQuery<'TResult> (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
         getWithQueryOptions query url jsonOptions
 
     let post<'T, 'TResult> (content: 'T) (url: string) : IHttpHandler<unit, 'TResult> =
