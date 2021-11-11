@@ -103,6 +103,17 @@ let ``List Rows with limit and choose columns isOk`` () = task {
     test <@ res.Items |> Seq.exists (fun dto -> (dto.Columns.GetValueOrDefault "sdk-test-col2").ToString() = "sdk-test-value2") @>
 }
 
+let ``Retrieve Raw cursors for parallel reads`` () = task {
+    // Arrange
+    let query = RawRowCursorsQuery(NumberOfCursors = Nullable 3)
+    
+    // Act
+    let! res = writeClient.Raw.RetrieveCursorsForParallelReads("sdk-test-database", "sdk-test-table", query)
+
+    // Assert
+    test <@ Seq.length res = 3 @>
+}
+
 [<Trait("resource", "raw")>]
 [<Fact>]
 let ``Get Row isOk`` () = task {

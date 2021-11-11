@@ -85,6 +85,17 @@ module Raw =
         >=> post items url
 
     /// <summary>
+    /// Retrieve a list of cursors for parallel read.
+    /// </summary>
+    /// <param name="database">The database to read from.</param>
+    /// <param name="table">The table to read from.</param>
+    /// <returns>A list of retrieved cursors.</returns>
+    let retrieveCursors (database: string) (table: string) (query: RawRowCursorsQuery): IHttpHandler<unit, string seq> =
+        let url = Url +/ database +/ "tables" +/ table +/ "cursors"
+        withLogMessage "Raw:retrieveCursors"
+        >=> getWithQuery query url
+
+    /// <summary>
     /// Retrieve rows from a table.
     /// </summary>
     /// <param name="database">The ids of the events to get.</param>
