@@ -5,32 +5,33 @@ group Sdk
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget Oryx >= 4
+    nuget FSharp.Core ~> 5
+    nuget Oryx >= 4.1.1
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
     storage: none
     framework: netstandard2.0
 
-    nuget FSharp.Core >= 4.7
-    nuget System.Text.Json
+    nuget FSharp.Core ~> 5
+    nuget System.Text.Json ~> 5
     nuget CogniteSdk.Protobuf
     nuget Ply
-    nuget Oryx >= 4
-    nuget Oryx.Protobuf >= 4
-    nuget Oryx.SystemTextJson >= 4
+    nuget Oryx >= 4.1.1
+    nuget Oryx.Protobuf >= 4.1.1
+    nuget Oryx.SystemTextJson >= 4.1.1
 
 group Types
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget System.Text.Json
+    nuget System.Text.Json ~> 5
 
 group Test
     source https://www.nuget.org/api/v2
     storage: none
 
-    nuget FSharp.Core >= 4.7
+    nuget FSharp.Core ~> 5
     nuget coverlet.msbuild
     nuget Unquote ~> 5
     nuget xunit ~> 2
@@ -38,25 +39,25 @@ group Test
     nuget Microsoft.NET.Test.Sdk ~> 16
     nuget MSTest.TestAdapter ~> 1
     nuget MSTest.TestFramework ~> 1
-    nuget Oryx >= 4
-    nuget Oryx.Protobuf >= 4
-    nuget Oryx.SystemTextJson >= 4
+    nuget Oryx >= 4.1.1
+    nuget Oryx.Protobuf >= 4.1.1
+    nuget Oryx.SystemTextJson >= 4.1.1
 
 group Playground
     source https://www.nuget.org/api/v2
     storage: none
 
-    nuget FSharp.Core >= 4.7
+    nuget FSharp.Core
     nuget FsConfig ~> 2
-    nuget Microsoft.Extensions.Configuration ~> 5
+    nuget Microsoft.Extensions.Configuration
     nuget Microsoft.AspNetCore.Hosting
     nuget Microsoft.Extensions.DependencyInjection
     nuget Microsoft.Extensions.Hosting
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
-    nuget Oryx >= 4
-    nuget Oryx.Protobuf >= 4
-    nuget Oryx.SystemTextJson >= 4
+    nuget Oryx >= 4.1.1
+    nuget Oryx.Protobuf >= 4.1.1
+    nuget Oryx.SystemTextJson >= 4.1.1
     nuget CogniteSdk.Protobuf
     nuget Serilog
     nuget Serilog.Extensions.Logging
