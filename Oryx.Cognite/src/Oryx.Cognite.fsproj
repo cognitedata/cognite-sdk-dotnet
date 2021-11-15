@@ -11,6 +11,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common.fs" />
+    <Compile Include="GZip.fs" />
     <Compile Include="Handler.fs" />
     <Compile Include="3D.fs" />
     <Compile Include="Assets.fs" />
@@ -25,6 +26,7 @@
     <Compile Include="DataSets.fs" />
     <Compile Include="Token.fs" />
     <Compile Include="ExtPipes.fs" />
+    <Compile Include="Labels.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
