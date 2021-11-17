@@ -61,6 +61,17 @@ namespace CogniteSdk
     }
 
     /// <summary>
+    /// Scope containing a list of ids to some other resource, as strings.
+    /// </summary>
+    public class IdScopeString
+    {
+        /// <summary>
+        /// List of internal ids for some other resource.
+        /// </summary>
+        public IEnumerable<string> Ids { get; set; }
+    }
+
+    /// <summary>
     /// Scope for restricting access based on raw databases and tables.
     /// </summary>
     public class RawTableScope
@@ -102,6 +113,18 @@ namespace CogniteSdk
         /// </summary>
         [JsonPropertyName("idscope")]
         public IdScope IdScope { get; set; }
+    }
+
+    /// <summary>
+    /// Scope containing "idscope", restricting access based on internalIds for some other resource.
+    /// </summary>
+    public class WithIdScopeString : BaseScope
+    {
+        /// <summary>
+        /// Restrict access based on ids for some other resource.
+        /// </summary>
+        [JsonPropertyName("idscope")]
+        public IdScopeString IdScope { get; set; }
     }
 
     /// <summary>
@@ -181,6 +204,11 @@ namespace CogniteSdk
             }
         }
 
+        private static readonly JsonSerializerOptions _nestedOptions = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         /// <summary>
         /// Deserialize an acl object. This removes one layer of nesting, for convenience.
         /// </summary>
@@ -200,32 +228,32 @@ namespace CogniteSdk
 
             if (reader.TokenType != JsonTokenType.PropertyName)
             {
-                throw new JsonException("Missing required acl property");
+                throw new JsonException("Missing required acl property, no properties in group object");
             }
 
             var aclName = reader.GetString();
 
             if (!aclName.EndsWith("acl", StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new JsonException("Missing required acl property");
+                throw new JsonException($"Missing required acl property, property {aclName} does not end with acl");
             }
 
             reader.Read();
 
             if (reader.TokenType != JsonTokenType.StartObject)
             {
-                throw new JsonException("Missing required acl property");
+                throw new JsonException($"Missing required acl property, expected object got {reader.TokenType}");
             }
 
             BaseAcl result;
 
-            if (_aclTypes.TryGetValue(aclName.ToLowerInvariant(), out var type))
+            if (_aclTypes.TryGetValue(aclName, out var type))
             {
-                result = JsonSerializer.Deserialize(ref reader, type, options) as BaseAcl;
+                result = JsonSerializer.Deserialize(ref reader, type, _nestedOptions) as BaseAcl;
             }
             else
             {
-                result = JsonSerializer.Deserialize<BaseAcl>(ref reader, options);
+                result = JsonSerializer.Deserialize<BaseAcl>(ref reader, _nestedOptions);
             }
 
             reader.Read();
@@ -253,7 +281,7 @@ namespace CogniteSdk
 
             writer.WritePropertyName(name);
 
-            JsonSerializer.Serialize(writer, value, type, options);
+            JsonSerializer.Serialize(writer, value, type, _nestedOptions);
 
             writer.WriteEndObject();
         }
@@ -292,7 +320,7 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the security categories resource.
     /// </summary>
-    public class SecurityCategoriesAcl : BaseAcl<WithIdScope> { }
+    public class SecurityCategoriesAcl : BaseAcl<WithIdScopeString> { }
 
     /// <summary>
     /// Acl for access to the raw resource.
@@ -321,7 +349,7 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the api keys resource.
     /// </summary>
-    public class ApiKeysAcl : BaseAcl<WithIdScope> { }
+    public class ApiKeysAcl : BaseAcl<WithIdScopeString> { }
 
     /// <summary>
     /// Acl for access to the 3d resource.
