@@ -72,6 +72,7 @@ module Common =
             )
         options.Converters.Add(MultiValueConverter())
         options.Converters.Add(ObjectToDictionaryJsonConverter())
+        options.Converters.Add(AclConverter())
         options
 
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
