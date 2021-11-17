@@ -14,6 +14,11 @@ namespace CogniteSdk
         /// Set a new value for the string.
         /// </summary>
         public Update<string> Name { get; set; }
+        
+        /// <summary>
+        /// Set a new value for the long, or remove the value.
+        /// </summary>
+        public UpdateNullable<long?> DataSetId { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
