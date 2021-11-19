@@ -42,8 +42,8 @@ module Common =
 
         createOAuth2SdkClient
             oAuth2AccessToken
-            "einar-test"
-            "https://api.cognitedata.com"
+            "fusiondotnet-tests"
+            "https://greenfield.cognitedata.com"
 
     let noAuthClient =
         let handler = new HttpClientHandler(ServerCertificateCustomValidationCallback = (fun message cert chain errors -> true))

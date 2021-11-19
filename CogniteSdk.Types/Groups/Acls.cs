@@ -72,6 +72,17 @@ namespace CogniteSdk
     }
 
     /// <summary>
+    /// Class wrapping tables in DbsToTables in the raw table scope
+    /// </summary>
+    public class RawTableScopeWrapper
+    {
+        /// <summary>
+        /// List of tables for this database
+        /// </summary>
+        public IEnumerable<string> Tables { get; set; }
+    }
+
+    /// <summary>
     /// Scope for restricting access based on raw databases and tables.
     /// </summary>
     public class RawTableScope
@@ -79,7 +90,7 @@ namespace CogniteSdk
         /// <summary>
         /// Map from database to list of tables.
         /// </summary>
-        public Dictionary<string, IEnumerable<string>> DbsToTables { get; set; }
+        public IDictionary<string, RawTableScopeWrapper> DbsToTables { get; set; }
     }
     /// <summary>
     /// Scope for restricting access based on raw databases and tables.

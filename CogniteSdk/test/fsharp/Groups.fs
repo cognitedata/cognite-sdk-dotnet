@@ -1,11 +1,7 @@
 ﻿module Tests.Integration.Groups
 
-open System
-open System.Collections.Generic
-
 open FSharp.Control.Tasks
 open Swensen.Unquote
-open Oryx
 open Xunit
 
 open CogniteSdk
@@ -29,4 +25,29 @@ let ``List all groups is OK`` () = task {
 
     test <@ Seq.length res > 1 @>
     test <@ Seq.exists (fun (g: Group) -> g.Name = "admin") res @>
+}
+
+[<Fact>]
+let ``Create delete group is OK`` () = task {
+    // Arrange
+    let capabilities : BaseAcl list = [
+        GroupsAcl(Scope=WithCurrentUserScope(CurrentUserScope=EmptyScope()), Actions=["LIST"]);
+        RelationshipsAcl(Scope=WithDataSetsScope(All=EmptyScope()), Actions=["READ"]);
+        RawAcl(
+            Scope=WithRawTableScope(TableScope=RawTableScope(
+                DbsToTables=dict["sdk-test-database", RawTableScopeWrapper(Tables=["sdk-test-table"])])),
+            Actions=["LIST"]
+        )
+    ]
+    let group = GroupCreate(
+        Name = "sdk-test-group",
+        Capabilities=capabilities
+    )
+
+    // Act
+    let! res = writeClient.Groups.CreateAsync [group]
+    let! deleteRes = writeClient.Groups.DeleteAsync [(Seq.item 0 res).Id]
+
+    // Assert
+    test <@ Seq.length res = 1 @>
 }
