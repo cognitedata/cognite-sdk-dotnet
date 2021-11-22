@@ -31,11 +31,12 @@ let ``List all groups is OK`` () = task {
 let ``Create delete group is OK`` () = task {
     // Arrange
     let capabilities : BaseAcl list = [
-        GroupsAcl(Scope=WithCurrentUserScope(CurrentUserScope=EmptyScope()), Actions=["LIST"]);
-        RelationshipsAcl(Scope=WithDataSetsScope(All=EmptyScope()), Actions=["READ"]);
+        GroupsAcl(CurrentUserScope=BaseScope(), Actions=["LIST"]);
+        RelationshipsAcl(All=BaseScope(), Actions=["READ"]);
         RawAcl(
-            Scope=WithRawTableScope(TableScope=RawTableScope(
-                DbsToTables=dict["sdk-test-database", RawTableScopeWrapper(Tables=["sdk-test-table"])])),
+            TableScope=RawTableScope(
+                DbsToTables=dict["sdk-test-database", RawTableScopeWrapper(Tables=["sdk-test-table"])]
+            ),
             Actions=["LIST"]
         )
     ]

@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,42 +19,59 @@ namespace CogniteSdk
         /// List of actions. Valid values depend on resource type
         /// </summary>
         public IEnumerable<string> Actions { get; set; }
+        /// <summary>
+        /// If set, user has unscoped access to the resource.
+        /// </summary>
+        public BaseScope All { get; set; }
     }
 
     /// <summary>
-    /// Base generic ACL class with scope and list of actions.
+    /// ACL with IdScope
     /// </summary>
-    /// <typeparam name="TScope">Type of scope</typeparam>
-    public class BaseAcl<TScope> : BaseAcl where TScope : BaseScope
+    public class IdScopeAcl : BaseAcl
     {
         /// <summary>
-        /// Scope for the resource Acl.
+        /// Restrict access based on internal ids for some other resource.
         /// </summary>
-        public TScope Scope { get; set; }
+        [JsonPropertyName("idscope")]
+        public IdScope IdScope { get; set; }
+    }
+
+    /// <summary>
+    /// ACL with current user scope.
+    /// </summary>
+    public class CurrentUserScopeAcl : BaseAcl
+    {
+        /// <summary>
+        /// Restrict access to the current user
+        /// </summary>
+        [JsonPropertyName("currentuserscope")]
+        public BaseScope CurrentUserScope { get; set; }
+    }
+
+    /// <summary>
+    /// ACL with data set scope
+    /// </summary>
+    public class DataSetScopeAcl : BaseAcl
+    {
+        /// <summary>
+        /// Restrict access based on list of data set ids.
+        /// </summary>
+        public IdScope DatasetScope { get; set; }
     }
 
     /// <summary>
     /// Empty object for scopes.
-    /// </summary>
-    public class EmptyScope
-    {
-    }
-
-    /// <summary>
-    /// Base scope class, with all scope, which is common to all resource types.
+    /// All scope types must be subtypes of this.
     /// </summary>
     public class BaseScope
     {
-        /// <summary>
-        /// If set, user has unscoped access to the resource.
-        /// </summary>
-        public EmptyScope All { get; set; }
     }
 
     /// <summary>
     /// Scope containing a list of ids to some other resource.
     /// </summary>
-    public class IdScope
+    public class IdScope : BaseScope
     {
         /// <summary>
         /// List of internal ids for some other resource.
@@ -63,7 +82,7 @@ namespace CogniteSdk
     /// <summary>
     /// Scope containing a list of ids to some other resource, as strings.
     /// </summary>
-    public class IdScopeString
+    public class IdScopeString : BaseScope
     {
         /// <summary>
         /// List of internal ids for some other resource.
@@ -85,22 +104,12 @@ namespace CogniteSdk
     /// <summary>
     /// Scope for restricting access based on raw databases and tables.
     /// </summary>
-    public class RawTableScope
+    public class RawTableScope : BaseScope
     {
         /// <summary>
         /// Map from database to list of tables.
         /// </summary>
         public IDictionary<string, RawTableScopeWrapper> DbsToTables { get; set; }
-    }
-    /// <summary>
-    /// Scope for restricting access based on raw databases and tables.
-    /// </summary>
-    public class WithRawTableScope : BaseScope
-    {
-        /// <summary>
-        /// Collection of allowed databases with tables.
-        /// </summary>
-        public RawTableScope TableScope { get; set; }
     }
 
     /// <summary>
@@ -115,69 +124,10 @@ namespace CogniteSdk
     }
 
     /// <summary>
-    /// Scope containing "idscope", restricting access based on internalIds for some other resource.
-    /// </summary>
-    public class WithIdScope : BaseScope
-    {
-        /// <summary>
-        /// Restrict access based on internal ids for some other resource.
-        /// </summary>
-        [JsonPropertyName("idscope")]
-        public IdScope IdScope { get; set; }
-    }
-
-    /// <summary>
-    /// Scope containing "idscope", restricting access based on internalIds for some other resource.
-    /// </summary>
-    public class WithIdScopeString : BaseScope
-    {
-        /// <summary>
-        /// Restrict access based on ids for some other resource.
-        /// </summary>
-        [JsonPropertyName("idscope")]
-        public IdScopeString IdScope { get; set; }
-    }
-
-    /// <summary>
-    /// Scope with current user object.
-    /// </summary>
-    public class WithCurrentUserScope : BaseScope
-    {
-        /// <summary>
-        /// Scope access to current user.
-        /// </summary>
-        [JsonPropertyName("currentuserscope")]
-        public EmptyScope CurrentUserScope { get; set; }
-    }
-
-    /// <summary>
-    /// Scope object with list of data set ids.
-    /// </summary>
-    public class WithDataSetsScope : BaseScope
-    {
-        /// <summary>
-        /// Restrict access based on list of data set ids.
-        /// </summary>
-        public IdScope DatasetScope { get; set; }
-    }
-
-    /// <summary>
-    /// Scope access based on list of internal ids or data set ids.
-    /// </summary>
-    public class WithIdAndDatasetScope : WithIdScope
-    {
-        /// <summary>
-        /// Restrict access based on list of data set ids.
-        /// </summary>
-        public IdScope DatasetScope { get; set; }
-    }
-
-    /// <summary>
     /// JsonConverter for generic Acl objects.
     /// </summary>
     public class AclConverter : JsonConverter<BaseAcl>
     {
-
         private static readonly IDictionary<string, Type> _aclTypes = new Dictionary<string, Type>
         {
             { "groupsAcl", typeof(GroupsAcl) },
@@ -215,10 +165,21 @@ namespace CogniteSdk
             }
         }
 
-        private static readonly JsonSerializerOptions _nestedOptions = new JsonSerializerOptions
+        private string GetPropertyName(PropertyInfo prop, JsonSerializerOptions options)
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
+            var attr = prop.GetCustomAttribute<JsonPropertyNameAttribute>(inherit: false);
+            if (attr != null)
+            {
+                return attr.Name;
+            }
+            
+            if (options.PropertyNamingPolicy != null)
+            {
+                return options.PropertyNamingPolicy.ConvertName(prop.Name);
+            }
+
+            return prop.Name;
+        }
 
         /// <summary>
         /// Deserialize an acl object. This removes one layer of nesting, for convenience.
@@ -256,23 +217,81 @@ namespace CogniteSdk
                 throw new JsonException($"Missing required acl property, expected object got {reader.TokenType}");
             }
 
-            BaseAcl result;
-
-            if (_aclTypes.TryGetValue(aclName, out var type))
+            Type type;
+            if (!_aclTypes.TryGetValue(aclName, out type))
             {
-                result = JsonSerializer.Deserialize(ref reader, type, _nestedOptions) as BaseAcl;
+                type = typeof(BaseAcl);
             }
-            else
+            var result = (BaseAcl)Activator.CreateInstance(type);
+
+            while (reader.Read())
             {
-                result = JsonSerializer.Deserialize<BaseAcl>(ref reader, _nestedOptions);
+                if (reader.TokenType == JsonTokenType.EndObject) break;
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException($"Unexpected token in acl object: {reader.TokenType}");
+                }
+
+                var propertyName = reader.GetString();
+                if (propertyName == "actions")
+                {
+                    result.Actions = JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options);
+                }
+                else if (propertyName == "scope")
+                {
+                    reader.Read();
+                    if (reader.TokenType != JsonTokenType.StartObject) continue;
+
+                    while (reader.Read())
+                    {
+                        if (reader.TokenType == JsonTokenType.EndObject) break;
+                        if (reader.TokenType != JsonTokenType.PropertyName)
+                        {
+                            throw new JsonException($"Unexpected token in scope object: {reader.TokenType}");
+                        }
+
+                        var scopeName = reader.GetString();
+
+                        bool propFound = false;
+
+                        foreach (var prop in type
+                            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                            .Where(p => typeof(BaseScope).IsAssignableFrom(p.PropertyType))
+                            .Where(p => p.CanWrite))
+                        {
+                            var propName = GetPropertyName(prop, options);
+                            if (propName.Equals(scopeName, options.PropertyNameCaseInsensitive
+                                ? StringComparison.InvariantCultureIgnoreCase
+                                : StringComparison.InvariantCulture))
+                            {
+                                propFound = true;
+                                prop.SetValue(result, JsonSerializer.Deserialize(ref reader, prop.PropertyType, options));
+                                break;
+                            }
+                        }
+
+                        if (!propFound)
+                        {
+                            // Unknown capability type, skip scope
+                            // We need this to "skip" arbitrary objects.
+                            int sObj = 0, sArr = 0;
+
+                            do
+                            {
+                                if (!reader.Read()) break;
+
+                                if (reader.TokenType == JsonTokenType.StartObject) sObj++;
+                                if (reader.TokenType == JsonTokenType.EndObject) sObj--;
+                                if (reader.TokenType == JsonTokenType.StartArray) sArr++;
+                                if (reader.TokenType == JsonTokenType.EndArray) sArr--;
+
+                            } while (sObj > 0 || sArr > 0);
+                        }
+                    }
+                }
             }
 
             reader.Read();
-
-            if (reader.TokenType != JsonTokenType.EndObject)
-            {
-                throw new JsonException("Expected end of object after acl");
-            }
 
             return result;
         }
@@ -292,7 +311,29 @@ namespace CogniteSdk
 
             writer.WritePropertyName(name);
 
-            JsonSerializer.Serialize(writer, value, type, _nestedOptions);
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("actions");
+            JsonSerializer.Serialize(writer, value.Actions, options);
+
+            writer.WritePropertyName("scope");
+            writer.WriteStartObject();
+
+            var scopeProp = value.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => typeof(BaseScope).IsAssignableFrom(p.PropertyType))
+                .Where(p => p.CanRead)
+                .Where(p => p.GetValue(value) != null)
+                .First();
+
+            var scopeValue = scopeProp.GetValue(value);
+            var propName = GetPropertyName(scopeProp, options);
+            writer.WritePropertyName(propName);
+            JsonSerializer.Serialize(writer, scopeValue, options);
+
+            writer.WriteEndObject();
+
+            writer.WriteEndObject();
 
             writer.WriteEndObject();
         }
@@ -301,47 +342,60 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the groups resource. 
     /// </summary>
-    public class GroupsAcl : BaseAcl<WithCurrentUserScope> { }
+    public class GroupsAcl : CurrentUserScopeAcl { }
     
     /// <summary>
     /// Acl for access to the assets resource.
     /// </summary>
-    public class AssetsAcl : BaseAcl<WithDataSetsScope> { }
+    public class AssetsAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the events resource.
     /// </summary>
-    public class EventsAcl : BaseAcl<WithDataSetsScope> { }
+    public class EventsAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the files resource.
     /// </summary>
-    public class FilesAcl : BaseAcl<WithDataSetsScope> { }
+    public class FilesAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the users resource.
     /// </summary>
-    public class UsersAcl : BaseAcl<WithCurrentUserScope> { }
+    public class UsersAcl : CurrentUserScopeAcl { }
 
     /// <summary>
     /// Acl for access to the projects resource.
     /// </summary>
-    public class ProjectsAcl : BaseAcl<BaseScope> { }
+    public class ProjectsAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the security categories resource.
     /// </summary>
-    public class SecurityCategoriesAcl : BaseAcl<WithIdScopeString> { }
+    public class SecurityCategoriesAcl : BaseAcl
+    {
+        /// <summary>
+        /// Restrict access based on internal ids for some other resource.
+        /// </summary>
+        [JsonPropertyName("idscope")]
+        public IdScopeString IdScope { get; set; }
+    }
 
     /// <summary>
     /// Acl for access to the raw resource.
     /// </summary>
-    public class RawAcl : BaseAcl<WithRawTableScope> { }
+    public class RawAcl : BaseAcl
+    {
+        /// <summary>
+        /// Collection of allowed databases with tables.
+        /// </summary>
+        public RawTableScope TableScope { get; set; }
+    }
 
     /// <summary>
-    /// Scope for access to timeseries.
+    /// Acl for access to the timeseries resource.
     /// </summary>
-    public class TimeSeriesScope : WithIdScope
+    public class TimeSeriesAcl : IdScopeAcl
     {
         /// <summary>
         /// Restrict access based on list of root asset ids for associated assets.
@@ -352,80 +406,89 @@ namespace CogniteSdk
         /// </summary>
         public IdScope DatasetScope { get; set; }
     }
-    /// <summary>
-    /// Acl for access to the timeseries resource.
-    /// </summary>
-    public class TimeSeriesAcl : BaseAcl<TimeSeriesScope> { }
 
     /// <summary>
     /// Acl for access to the api keys resource.
     /// </summary>
-    public class ApiKeysAcl : BaseAcl<WithIdScopeString> { }
+    public class ApiKeysAcl : BaseAcl
+    {
+        /// <summary>
+        /// Restrict access based on internal ids for some other resource.
+        /// </summary>
+        [JsonPropertyName("idscope")]
+        public IdScopeString IdScope { get; set; }
+    }
 
     /// <summary>
     /// Acl for access to the 3d resource.
     /// </summary>
-    public class ThreedAcl : BaseAcl<BaseScope> { }
+    public class ThreedAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the sequences resource.
     /// </summary>
-    public class SequencesAcl : BaseAcl<WithDataSetsScope> { }
+    public class SequencesAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the labels resource.
     /// </summary>
-    public class LabelsAcl : BaseAcl<WithDataSetsScope> { }
+    public class LabelsAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the analytics resource.
     /// </summary>
-    public class AnalyticsAcl : BaseAcl<BaseScope> { }
+    public class AnalyticsAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the digital twin resource.
     /// </summary>
-    public class DigitalTwinAcl : BaseAcl<BaseScope> { }
+    public class DigitalTwinAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the relationships resource.
     /// </summary>
-    public class RelationshipsAcl : BaseAcl<WithDataSetsScope> { }
+    public class RelationshipsAcl : DataSetScopeAcl { }
 
     /// <summary>
     /// Acl for access to the datasets resource.
     /// </summary>
-    public class DatasetsAcl : BaseAcl<WithIdScope> { }
+    public class DatasetsAcl : IdScopeAcl { }
 
     /// <summary>
     /// Acl for access to the seismic resource.
     /// </summary>
-    public class SeismicAcl : BaseAcl<BaseScope> { }
+    public class SeismicAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the types resource.
     /// </summary>
-    public class TypesAcl : BaseAcl<BaseScope> { }
+    public class TypesAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the model hosting resource.
     /// </summary>
-    public class ModelHostingAcl : BaseAcl<BaseScope> { }
+    public class ModelHostingAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the functions resource.
     /// </summary>
-    public class FunctionsAcl : BaseAcl<BaseScope> { }
+    public class FunctionsAcl : BaseAcl { }
 
     /// <summary>
     /// Acl for access to the extraction pipelines resource.
     /// </summary>
-    public class ExtPipesAcl : BaseAcl<WithIdAndDatasetScope> { }
+    public class ExtPipesAcl : IdScopeAcl
+    {
+        /// <summary>
+        /// Restrict access based on list of data set ids.
+        /// </summary>
+        public IdScope DatasetScope { get; set; }
+    }
 
     /// <summary>
-    /// Scope for access to the extraction pipeline runs resource.
+    /// Acl for access to the extraction pipeline runs resource.
     /// </summary>
-    public class ExtPipeRunsScope : WithDataSetsScope
+    public class ExtPipeRunsAcl : DataSetScopeAcl
     {
         /// <summary>
         /// Scope by list of extraction pipeline internal ids.
@@ -433,9 +496,4 @@ namespace CogniteSdk
         [JsonPropertyName("extractionpipelinescope")]
         public IdScope ExtractionPipelineScope { get; set; }
     }
-
-    /// <summary>
-    /// Acl for access to the extraction pipeline runs resource.
-    /// </summary>
-    public class ExtPipeRunsAcl : BaseAcl<ExtPipeRunsScope> { }
 }
