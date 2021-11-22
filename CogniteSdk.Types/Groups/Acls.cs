@@ -179,23 +179,6 @@ namespace CogniteSdk
             return prop.Name;
         }
 
-        // Skip arbitrary json element
-        private void SkipJsonElement(ref Utf8JsonReader reader)
-        {
-            int sObj = 0, sArr = 0;
-
-            do
-            {
-                if (!reader.Read()) break;
-
-                if (reader.TokenType == JsonTokenType.StartObject) sObj++;
-                if (reader.TokenType == JsonTokenType.EndObject) sObj--;
-                if (reader.TokenType == JsonTokenType.StartArray) sArr++;
-                if (reader.TokenType == JsonTokenType.EndArray) sArr--;
-
-            } while (sObj > 0 || sArr > 0);
-        }
-
         private void ReadScope(ref Utf8JsonReader reader, BaseAcl acl, JsonSerializerOptions options)
         {
             reader.Read();
@@ -231,8 +214,7 @@ namespace CogniteSdk
 
                 if (!propFound)
                 {
-                    // Unknown capability type, skip scope
-                    SkipJsonElement(ref reader);
+                    reader.Skip();
                 }
             }
         }
@@ -272,7 +254,7 @@ namespace CogniteSdk
                 }
                 else
                 {
-                    SkipJsonElement(ref reader);
+                    reader.Skip();
                 }
             }
 
@@ -318,7 +300,7 @@ namespace CogniteSdk
                 }
                 else
                 {
-                    SkipJsonElement(ref reader);
+                    reader.Skip();
                 }
             }
 
