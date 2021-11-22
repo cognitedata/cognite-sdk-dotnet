@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 namespace Oryx.Cognite
 
-open System.Net.Http
-
 open Oryx
 open Oryx.Cognite
 open Oryx.SystemTextJson.ResponseReader

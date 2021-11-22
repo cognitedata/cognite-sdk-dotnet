@@ -27,6 +27,11 @@ namespace CogniteSdk
         /// When calling token/inspect this contains the list of projects the current capability is scoped for.
         /// </summary>
         public IEnumerable<string> ProjectsScope { get; set; }
+        /// <summary>
+        /// The name of the capability as read from CDF, useful if there is no type for the capability
+        /// in the SDK.
+        /// </summary>
+        public string CapabilityName { get; set; }
     }
 
     /// <summary>
@@ -234,6 +239,7 @@ namespace CogniteSdk
                 type = typeof(BaseAcl);
             }
             var result = (BaseAcl)Activator.CreateInstance(type);
+            result.CapabilityName = aclName;
 
             while (reader.Read())
             {
