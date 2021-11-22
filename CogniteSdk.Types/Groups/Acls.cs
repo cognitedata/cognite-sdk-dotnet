@@ -23,6 +23,10 @@ namespace CogniteSdk
         /// If set, user has unscoped access to the resource.
         /// </summary>
         public BaseScope All { get; set; }
+        /// <summary>
+        /// When calling token/inspect this contains the list of projects the current capability is scoped for.
+        /// </summary>
+        public IEnumerable<string> ProjectsScope { get; set; }
     }
 
     /// <summary>
@@ -123,42 +127,36 @@ namespace CogniteSdk
         public IEnumerable<long> RootIds { get; set; }
     }
 
+    internal class ProjectScopeWrapper
+    {
+        public IEnumerable<string> Projects { get; set; }
+    }
+
     /// <summary>
     /// JsonConverter for generic Acl objects.
     /// </summary>
     public class AclConverter : JsonConverter<BaseAcl>
     {
-        private static readonly IDictionary<string, Type> _aclTypes = new Dictionary<string, Type>
-        {
-            { "groupsAcl", typeof(GroupsAcl) },
-            { "assetsAcl", typeof(AssetsAcl) },
-            { "eventsAcl", typeof(EventsAcl) },
-            { "filesAcl", typeof(FilesAcl) },
-            { "usersAcl", typeof(UsersAcl) },
-            { "projectsAcl", typeof(ProjectsAcl) },
-            { "securityCategoriesAcl", typeof(SecurityCategoriesAcl) },
-            { "rawAcl", typeof(RawAcl) },
-            { "timeSeriesAcl", typeof(TimeSeriesAcl) },
-            { "apikeysAcl", typeof(ApiKeysAcl) },
-            { "threedAcl", typeof(ThreedAcl) },
-            { "sequencesAcl", typeof(SequencesAcl) },
-            { "labelsAcl", typeof(LabelsAcl) },
-            { "analyticsAcl", typeof(AnalyticsAcl) },
-            { "digitalTwinAcl", typeof(DigitalTwinAcl) },
-            { "relationshipsAcl", typeof(RelationshipsAcl) },
-            { "datasetsAcl", typeof(DatasetsAcl) },
-            { "seismicAcl", typeof(SeismicAcl) },
-            { "typesAcl", typeof(TypesAcl) },
-            { "modelHostingAcl", typeof(ModelHostingAcl) },
-            { "functionsAcl", typeof(FunctionsAcl) },
-            { "extractionPipelinesAcl", typeof(ExtPipesAcl) },
-            { "extractionRunsAcl", typeof(ExtPipeRunsAcl) }
-        };
-
+        // To not iterate through the entire assembly every time we serialize a capability,
+        // we can store the types here on load.
+        private static readonly IDictionary<string, Type> _aclTypes = new Dictionary<string, Type>();
         private static readonly IDictionary<Type, string> _aclNames = new Dictionary<Type, string>();
+
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeof(BaseAcl).IsAssignableFrom(typeToConvert);
+        }
 
         static AclConverter()
         {
+            var asm = Assembly.GetExecutingAssembly();
+            foreach (var type in asm.GetTypes().Where(t => typeof(BaseAcl).IsAssignableFrom(t)))
+            {
+                if (type == typeof(BaseAcl)) continue;
+                _aclTypes[JsonNamingPolicy.CamelCase.ConvertName(type.Name)] = type;
+            }
+
             foreach (var kvp in _aclTypes)
             {
                 _aclNames[kvp.Value] = kvp.Key;
@@ -181,40 +179,71 @@ namespace CogniteSdk
             return prop.Name;
         }
 
-        /// <summary>
-        /// Deserialize an acl object. This removes one layer of nesting, for convenience.
-        /// </summary>
-        /// <param name="reader">JsonReader</param>
-        /// <param name="typeToConvert">Type to convert</param>
-        /// <param name="options">Json serializer options</param>
-        /// <returns>Subtype of <see cref="BaseAcl"/></returns>
-        /// <exception cref="JsonException">If the input is not a valid Acl object</exception>
-        public override BaseAcl Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        // Skip arbitrary json element
+        private void SkipJsonElement(ref Utf8JsonReader reader)
         {
+            int sObj = 0, sArr = 0;
+
+            do
+            {
+                if (!reader.Read()) break;
+
+                if (reader.TokenType == JsonTokenType.StartObject) sObj++;
+                if (reader.TokenType == JsonTokenType.EndObject) sObj--;
+                if (reader.TokenType == JsonTokenType.StartArray) sArr++;
+                if (reader.TokenType == JsonTokenType.EndArray) sArr--;
+
+            } while (sObj > 0 || sArr > 0);
+        }
+
+        private void ReadScope(ref Utf8JsonReader reader, BaseAcl acl, JsonSerializerOptions options)
+        {
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.StartObject) return;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject) break;
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException($"Unexpected token in scope object: {reader.TokenType}");
+                }
+
+                var scopeName = reader.GetString();
+
+                bool propFound = false;
+
+                foreach (var prop in acl.GetType()
+                    .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                    .Where(p => typeof(BaseScope).IsAssignableFrom(p.PropertyType))
+                    .Where(p => p.CanWrite))
+                {
+                    var propName = GetPropertyName(prop, options);
+                    if (propName.Equals(scopeName, options.PropertyNameCaseInsensitive
+                        ? StringComparison.InvariantCultureIgnoreCase
+                        : StringComparison.InvariantCulture))
+                    {
+                        propFound = true;
+                        prop.SetValue(acl, JsonSerializer.Deserialize(ref reader, prop.PropertyType, options));
+                        break;
+                    }
+                }
+
+                if (!propFound)
+                {
+                    // Unknown capability type, skip scope
+                    SkipJsonElement(ref reader);
+                }
+            }
+        }
+
+        private BaseAcl ReadAcl(ref Utf8JsonReader reader, string aclName, JsonSerializerOptions options)
+        {
+            reader.Read();
+
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException($"JsonTokenType was of type {reader.TokenType}, must be StartObject");
-            }
-
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.PropertyName)
-            {
-                throw new JsonException("Missing required acl property, no properties in group object");
-            }
-
-            var aclName = reader.GetString();
-
-            if (!aclName.EndsWith("acl", StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new JsonException($"Missing required acl property, property {aclName} does not end with acl");
-            }
-
-            reader.Read();
-
-            if (reader.TokenType != JsonTokenType.StartObject)
-            {
-                throw new JsonException($"Missing required acl property, expected object got {reader.TokenType}");
             }
 
             Type type;
@@ -239,61 +268,66 @@ namespace CogniteSdk
                 }
                 else if (propertyName == "scope")
                 {
-                    reader.Read();
-                    if (reader.TokenType != JsonTokenType.StartObject) continue;
-
-                    while (reader.Read())
-                    {
-                        if (reader.TokenType == JsonTokenType.EndObject) break;
-                        if (reader.TokenType != JsonTokenType.PropertyName)
-                        {
-                            throw new JsonException($"Unexpected token in scope object: {reader.TokenType}");
-                        }
-
-                        var scopeName = reader.GetString();
-
-                        bool propFound = false;
-
-                        foreach (var prop in type
-                            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                            .Where(p => typeof(BaseScope).IsAssignableFrom(p.PropertyType))
-                            .Where(p => p.CanWrite))
-                        {
-                            var propName = GetPropertyName(prop, options);
-                            if (propName.Equals(scopeName, options.PropertyNameCaseInsensitive
-                                ? StringComparison.InvariantCultureIgnoreCase
-                                : StringComparison.InvariantCulture))
-                            {
-                                propFound = true;
-                                prop.SetValue(result, JsonSerializer.Deserialize(ref reader, prop.PropertyType, options));
-                                break;
-                            }
-                        }
-
-                        if (!propFound)
-                        {
-                            // Unknown capability type, skip scope
-                            // We need this to "skip" arbitrary objects.
-                            int sObj = 0, sArr = 0;
-
-                            do
-                            {
-                                if (!reader.Read()) break;
-
-                                if (reader.TokenType == JsonTokenType.StartObject) sObj++;
-                                if (reader.TokenType == JsonTokenType.EndObject) sObj--;
-                                if (reader.TokenType == JsonTokenType.StartArray) sArr++;
-                                if (reader.TokenType == JsonTokenType.EndArray) sArr--;
-
-                            } while (sObj > 0 || sArr > 0);
-                        }
-                    }
+                    ReadScope(ref reader, result, options);
+                }
+                else
+                {
+                    SkipJsonElement(ref reader);
                 }
             }
 
-            reader.Read();
-
             return result;
+        } 
+
+        /// <summary>
+        /// Deserialize an acl object. This removes one layer of nesting, for convenience.
+        /// </summary>
+        /// <param name="reader">JsonReader</param>
+        /// <param name="typeToConvert">Type to convert</param>
+        /// <param name="options">Json serializer options</param>
+        /// <returns>Subtype of <see cref="BaseAcl"/></returns>
+        /// <exception cref="JsonException">If the input is not a valid Acl object</exception>
+        public override BaseAcl Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartObject)
+            {
+                throw new JsonException($"JsonTokenType was of type {reader.TokenType}, must be StartObject");
+            }
+
+            BaseAcl acl = null;
+            IEnumerable<string> projectScope = null;
+
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject) break;
+                if (reader.TokenType != JsonTokenType.PropertyName)
+                {
+                    throw new JsonException($"Unexpected token in outer capability object: {reader.TokenType}");
+                }
+
+                var propName = reader.GetString();
+
+                if (propName.EndsWith("acl", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    acl = ReadAcl(ref reader, propName, options);
+                }
+                else if (propName.Equals("projectscope", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var wrapper = JsonSerializer.Deserialize<ProjectScopeWrapper>(ref reader, options);
+                    projectScope = wrapper?.Projects;
+                }
+                else
+                {
+                    SkipJsonElement(ref reader);
+                }
+            }
+
+            if (acl != null)
+            {
+                acl.ProjectsScope = projectScope;
+            }
+
+            return acl;
         }
 
         /// <summary>
@@ -410,7 +444,7 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the api keys resource.
     /// </summary>
-    public class ApiKeysAcl : BaseAcl
+    public class ApikeysAcl : BaseAcl
     {
         /// <summary>
         /// Restrict access based on internal ids for some other resource.
@@ -477,7 +511,7 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the extraction pipelines resource.
     /// </summary>
-    public class ExtPipesAcl : IdScopeAcl
+    public class ExtractionPipelinesAcl : IdScopeAcl
     {
         /// <summary>
         /// Restrict access based on list of data set ids.
@@ -488,7 +522,7 @@ namespace CogniteSdk
     /// <summary>
     /// Acl for access to the extraction pipeline runs resource.
     /// </summary>
-    public class ExtPipeRunsAcl : DataSetScopeAcl
+    public class ExtractionRunsAcl : DataSetScopeAcl
     {
         /// <summary>
         /// Scope by list of extraction pipeline internal ids.

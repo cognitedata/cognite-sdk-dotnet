@@ -52,3 +52,12 @@ let ``Create delete group is OK`` () = task {
     // Assert
     test <@ Seq.length res = 1 @>
 }
+
+[<Fact>]
+let ``Token inspect for capabilities is OK`` () = task {
+    // Act
+    let! res = writeClient.Token.InspectAsync ()
+
+    // Assert
+    test <@ Seq.length res.Capabilities > 0 @>
+}

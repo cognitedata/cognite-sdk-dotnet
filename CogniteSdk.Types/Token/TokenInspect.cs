@@ -21,13 +21,10 @@ namespace CogniteSdk.Token
         /// </summary>
         public IEnumerable<TokenProject> Projects { get; set; }
 
-        // TODO: This can be ignored for now. If the Groups API is implemented,
-        // then the same types can be reused here.
         /// <summary>
         /// List of capabilities associated with the token. 
         /// </summary>
-        [JsonIgnore]
-        public IEnumerable<object> Capabilities { get; set; }
+        public IEnumerable<BaseAcl> Capabilities { get; set; }
     }
 
 }
