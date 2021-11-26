@@ -19,7 +19,6 @@ module Groups =
     [<Literal>]
     let Url = "/groups"
 
-
     let list (query: GroupQuery) : IHttpHandler<unit, ItemsWithoutCursor<Group>> =
         withLogMessage "Groups:list"
         >=> getWithQuery query Url

@@ -40,10 +40,11 @@ let ``Create delete group is OK`` () = task {
             Actions=["LIST"]
         )
     ]
-    let group = GroupCreate(
-        Name = "sdk-test-group",
-        Capabilities=capabilities
-    )
+    let group =
+        GroupCreate(
+            Name = "sdk-test-group",
+            Capabilities=capabilities
+        )
 
     // Act
     let! res = writeClient.Groups.CreateAsync [group]
