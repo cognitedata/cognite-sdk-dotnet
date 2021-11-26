@@ -27,6 +27,7 @@
     <Compile Include="Token.fs" />
     <Compile Include="ExtPipes.fs" />
     <Compile Include="Labels.fs" />
+    <Compile Include="Groups.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
