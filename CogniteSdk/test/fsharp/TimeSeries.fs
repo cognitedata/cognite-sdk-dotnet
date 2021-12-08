@@ -28,7 +28,7 @@ let ``Get timeseries is Ok`` () = task {
 [<Fact>]
 let ``Count timeseries is Ok`` () = task {
     // Arrange
-    let query = TimeSeriesQuery(Limit = Nullable 10)
+    let query = TimeSeriesQuery()
 
     // Act
     let! count = readClient.TimeSeries.AggregateAsync query
