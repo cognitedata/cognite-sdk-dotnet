@@ -1,5 +1,6 @@
 ﻿// Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
+using System.Collections.Generic;
 
 using CogniteSdk.Types.Common;
 
@@ -50,6 +51,11 @@ namespace CogniteSdk
         /// Set a new value for the end time, or remove the value.
         /// </summary>
         public UpdateNullable<long?> SourceModifiedTime { get; set; }
+
+        /// <summary>
+        /// Change the Labels of the object.
+        /// </summary>
+        public UpdateLabels<IEnumerable<CogniteExternalId>> Labels { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
