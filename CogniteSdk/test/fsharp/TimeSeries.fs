@@ -28,7 +28,7 @@ let ``Get timeseries is Ok`` () = task {
 [<Fact>]
 let ``Count timeseries is Ok`` () = task {
     // Arrange
-    let query = TimeSeriesQuery(Limit = Nullable 10)
+    let query = TimeSeriesQuery()
 
     // Act
     let! count = readClient.TimeSeries.AggregateAsync query
@@ -376,7 +376,9 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
 
     // Assert
     test <@ len = 10 @>
-    test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
+    // No guarantee that _all_ elements will match the fuzzy search exactly,
+    // but a few will in this case.
+    test <@ Seq.exists (fun (n: string) -> n.Contains("Tube")) descriptions @>
 }
 
 [<Fact>]

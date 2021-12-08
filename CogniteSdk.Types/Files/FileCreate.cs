@@ -60,7 +60,12 @@ namespace CogniteSdk
         /// Unix timestamp in milliseconds of when the source was last modified.
         /// </summary>
         public long? SourceModifiedTime { get; set; }
-        
+
+        /// <summary>
+        /// List of labels to associate with the file.
+        /// </summary>
+        public IEnumerable<CogniteExternalId> Labels { get; set; }
+
         /// <summary>
         /// Ids of securityCategories this file is linked to.
         /// </summary>

@@ -185,6 +185,19 @@ namespace CogniteSdk
         /// Used to remove labels.
         /// </summary>
         public TCollection Remove { get; set; }
+
+        /// <summary>
+        /// Used to set labels
+        /// </summary>
+        public TCollection Set { get; set; }
+
+        /// <summary>
+        /// Empty constructor. Must set either add/remove or set directly.
+        /// </summary>
+        public UpdateLabels()
+        {
+        }
+
         /// <summary>
         /// Insert a Label.
         /// </summary>
