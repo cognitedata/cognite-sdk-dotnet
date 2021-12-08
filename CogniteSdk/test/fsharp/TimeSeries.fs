@@ -376,7 +376,9 @@ let ``FuzzySearch timeseries on Description is Ok`` () = task {
 
     // Assert
     test <@ len = 10 @>
-    test <@ Seq.forall (fun (n: string) -> n.Contains("Tube")) descriptions @>
+    // No guarantee that _all_ elements will match the fuzzy search exactly,
+    // but a few will in this case.
+    test <@ Seq.exists (fun (n: string) -> n.Contains("Tube")) descriptions @>
 }
 
 [<Fact>]
