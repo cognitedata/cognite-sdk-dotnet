@@ -219,7 +219,7 @@ namespace CogniteSdk
 
                 if (!propFound)
                 {
-                    reader.Skip();
+                    if (!reader.TrySkip()) throw new JsonException($"Could not skip property {scopeName}");
                 }
             }
         }
@@ -260,7 +260,7 @@ namespace CogniteSdk
                 }
                 else
                 {
-                    reader.Skip();
+                    if (!reader.TrySkip()) throw new JsonException($"Could not skip property {propertyName}");
                 }
             }
 
@@ -306,7 +306,7 @@ namespace CogniteSdk
                 }
                 else
                 {
-                    reader.Skip();
+                    if (!reader.TrySkip()) throw new JsonException($"Could not skip property {propName}");
                 }
             }
 
