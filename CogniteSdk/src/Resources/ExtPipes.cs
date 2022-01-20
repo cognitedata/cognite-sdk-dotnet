@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.FSharp.Core;
 
 namespace CogniteSdk.Resources
 {
@@ -18,7 +18,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ExtPipesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal ExtPipesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -32,7 +32,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.list(query);
+            var req = Oryx.Cognite.ExtPipes.list(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -46,7 +46,7 @@ namespace CogniteSdk.Resources
         {
             if (extPipes is null) throw new ArgumentNullException(nameof(extPipes));
 
-            var req = Oryx.Cognite.ExtPipes.create(extPipes);
+            var req = Oryx.Cognite.ExtPipes.create(extPipes, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.delete(query);
+            var req = Oryx.Cognite.ExtPipes.delete(query, _ctx);
             await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -130,7 +130,7 @@ namespace CogniteSdk.Resources
         {
             if (ids is null) throw new ArgumentNullException(nameof(ids));
 
-            var req = Oryx.Cognite.ExtPipes.retrieve(ids, ignoreUnknownIds);
+            var req = Oryx.Cognite.ExtPipes.retrieve(ids, ignoreUnknownIds, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -175,7 +175,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.update(query);
+            var req = Oryx.Cognite.ExtPipes.update(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -189,7 +189,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.listRuns(query);
+            var req = Oryx.Cognite.ExtPipes.listRuns(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -203,7 +203,7 @@ namespace CogniteSdk.Resources
         {
             if (items is null) throw new ArgumentNullException(nameof(items));
 
-            var req = Oryx.Cognite.ExtPipes.createRuns(items);
+            var req = Oryx.Cognite.ExtPipes.createRuns(items, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

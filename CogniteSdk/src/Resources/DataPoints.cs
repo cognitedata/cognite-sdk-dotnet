@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
+using Microsoft.FSharp.Core;
 using Oryx;
 namespace CogniteSdk.Resources
 {
@@ -21,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -38,7 +39,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.list(query);
+            var req = Oryx.Cognite.DataPoints.list(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -55,7 +56,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.DataPoints.create(points);
+            var req = Oryx.Cognite.DataPoints.create(points, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
         
@@ -76,7 +77,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.DataPoints.createWithGzip(points, compression);
+            var req = Oryx.Cognite.DataPoints.createWithGzip(points, compression, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -94,7 +95,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.delete(query);
+            var req = Oryx.Cognite.DataPoints.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -111,7 +112,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.latest(query);
+            var req = Oryx.Cognite.DataPoints.latest(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

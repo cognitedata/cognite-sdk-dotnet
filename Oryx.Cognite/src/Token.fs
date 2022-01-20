@@ -13,11 +13,12 @@ open CogniteSdk.Token
 module Token =
 
     /// Returns information about the OpenID-Connect/OAuth 2 token used to access CDF resources.
-    let inspect () : IHttpHandler<unit, TokenInspect> =
-        withLogMessage "Token:inspect"
-        >=> GET
-        >=> withUrl "/api/v1/token/inspect"
-        >=> fetch
-        >=> withError decodeError
-        >=> json jsonOptions
-        >=> log
+    let inspect (source: HttpHandler<unit>) : HttpHandler<TokenInspect> =
+        source
+        |> withLogMessage "Token:inspect"
+        |> GET
+        |> withUrl "/api/v1/token/inspect"
+        |> fetch
+        |> withError decodeError
+        |> json jsonOptions
+        |> log

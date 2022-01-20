@@ -6,10 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
-using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
 {
@@ -23,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -41,7 +40,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDRevisions.list(modelId, query);
+            var req = ThreeDRevisions.list(modelId, query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -55,7 +54,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of ThreeDRevision matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<ThreeDRevisionLog>> ListLogsAsync(long modelId, long revisionId, ThreeDRevisionLogQuery query, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.listLogs(modelId, revisionId, query);
+            var req = ThreeDRevisions.listLogs(modelId, revisionId, query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -74,7 +73,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDNodes.list(modelId, revisionId, query);
+            var req = ThreeDNodes.list(modelId, revisionId, query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -92,7 +91,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDRevision));
             }
 
-            var req = ThreeDRevisions.create(modelId, ThreeDRevision);
+            var req = ThreeDRevisions.create(modelId, ThreeDRevision, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -112,7 +111,7 @@ namespace CogniteSdk.Resources
             }
 
 
-            var req = ThreeDRevisions.delete(modelId, ids);
+            var req = ThreeDRevisions.delete(modelId, ids, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -145,7 +144,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<ThreeDRevision> RetrieveAsync(long modelId, long revisionId, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.retrieve(modelId, revisionId);
+            var req = ThreeDRevisions.retrieve(modelId, revisionId, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -166,7 +165,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDRevisions.update(modelId, query);
+            var req = ThreeDRevisions.update(modelId, query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -181,7 +180,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of updated ThreeDRevision.</returns>
         public async Task<EmptyResponse> UpdateThumbnailAsync (long modelId, long revisionId, long fileId, CancellationToken token = default )
         {
-            var req = ThreeDRevisions.updateThumbnail(modelId, revisionId, fileId);
+            var req = ThreeDRevisions.updateThumbnail(modelId, revisionId, fileId, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -36,7 +36,7 @@ namespace CogniteSdk.Resources
         {
             if (dataSets is null) throw new ArgumentNullException(nameof(dataSets));
 
-            var req = DataSets.create(dataSets);
+            var req = DataSets.create(dataSets, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -51,7 +51,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.list<T>(query);
+            var req = DataSets.list<T>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -76,7 +76,7 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.aggregate(query);
+            var req = DataSets.aggregate(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -97,7 +97,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds);
+            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -167,7 +167,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = DataSets.update<DataSet>(query);
+            var req = DataSets.update<DataSet>(query, _ctx);
             var ret = await RunAsync(req, token).ConfigureAwait(false);
             return ret;
         }

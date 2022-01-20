@@ -16,22 +16,22 @@ namespace CogniteSdk
         /// <summary>
         /// External Id provided by client. Must be unique within the project.
         /// </summary>
-        public string ExternalId { get; set; }
+        public string ExternalId { get; set; }
 
         /// <summary>
         /// The name of the asset.
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The parent ID of the asset.
         /// </summary>
-        public long? ParentId { get; set; }
+        public long? ParentId { get; set; }
 
         /// <summary>
         /// The description of the asset.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         /// Javascript friendly internal ID given to the object.
@@ -42,12 +42,12 @@ namespace CogniteSdk
         /// Custom, application specific metadata. String key -> String value.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
         /// The source of this asset
         /// </summary>
-        public string Source { get; set; }
+        public string Source { get; set; }
 
         /// <summary>
         /// External Id of parent asset provided by client. Must be unique within the project.

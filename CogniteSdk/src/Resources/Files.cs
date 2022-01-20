@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.FSharp.Core;
 using Oryx;
 namespace CogniteSdk.Resources
 {
@@ -19,7 +20,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authetication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal FilesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal FilesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -31,7 +32,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<File>> ListAsync(FileQuery query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.list(query);
+            var req = Oryx.Cognite.Files.list(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -48,7 +49,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Files.aggregate(query);
+            var req = Oryx.Cognite.Files.aggregate(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -60,7 +61,7 @@ namespace CogniteSdk.Resources
         /// <returns>File with the given id.</returns>
         public async Task<File> GetAsync(long fileId, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.get(fileId);
+            var req = Oryx.Cognite.Files.get(fileId, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -74,7 +75,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<File>> RetrieveAsync(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.retrieve(ids, ignoreUnknownIds);
+            var req = Oryx.Cognite.Files.retrieve(ids, ignoreUnknownIds, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -116,7 +117,7 @@ namespace CogniteSdk.Resources
         #region Download overloads
         public async Task<IEnumerable<FileDownload>> DownloadAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Files.download(ids);
+            var req = Oryx.Cognite.Files.download(ids, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -177,7 +178,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(file));
             }
 
-            var req = Oryx.Cognite.Files.upload(file, overwrite);
+            var req = Oryx.Cognite.Files.upload(file, overwrite, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -194,7 +195,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(update));
             }
 
-            var req = Oryx.Cognite.Files.update(update);
+            var req = Oryx.Cognite.Files.update(update, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -212,7 +213,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Files.delete(query);
+            var req = Oryx.Cognite.Files.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -279,7 +280,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Files.search(query);
+            var req = Oryx.Cognite.Files.search(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
-
+using Microsoft.FSharp.Core;
 using static Oryx.Cognite.HttpContextModule;
 
 namespace CogniteSdk
@@ -125,7 +125,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for this session.</param>
-        private Client(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx)
+        private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx)
         {
             // Setup resources.
             Assets = new AssetsResource(authHandler, ctx);
@@ -158,7 +158,7 @@ namespace CogniteSdk
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
-            private HttpContext _context = create();
+            private FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> _context = create();
             private Func<CancellationToken, Task<string>> _authHandler;
 
             /// <summary>
@@ -167,7 +167,7 @@ namespace CogniteSdk
             /// <param name="httpClient">Optional HttpClient to use for HTTP requests.</param>
             public Builder(HttpClient httpClient = null)
             {
-                _context = httpClient == null ? _context : HttpContextModule.withHttpClient(httpClient, _context);
+                _context = httpClient == null ? _context : HttpHandler.withHttpClient(httpClient, _context);
             }
 
             /// <summary>
@@ -188,7 +188,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                _context = HttpContextModule.withHeader(name, value, _context);
+                _context = HttpHandler.withHeader(name, value, _context);
                 return this;
             }
 
@@ -228,12 +228,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetTokenProvider(Func<CancellationToken, Task<string>> tokenProvider)
             {
-                if (tokenProvider is null)
-                {
-                    throw new ArgumentNullException(nameof(tokenProvider));
-                }
-
-                _authHandler = tokenProvider;
+                _authHandler = tokenProvider ?? throw new ArgumentNullException(nameof(tokenProvider));
                 return this;
             }
 
@@ -249,7 +244,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(project));
                 }
 
-                _context = Oryx.Cognite.HttpContextModule.withProject(project, _context);
+                _context = withProject(project, _context);
                 return this;
             }
 
@@ -281,7 +276,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(client));
                 }
 
-                _context = HttpContextModule.withHttpClient(client, _context);
+                _context = HttpHandler.withHttpClient(client, _context);
                 return this;
             }
 
@@ -313,7 +308,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(logger));
                 }
 
-                _context = HttpContextModule.withLogger(logger, _context);
+                _context = Logging.withLogger(logger, _context);
                 return this;
             }
 
@@ -324,7 +319,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogLevel(LogLevel logLevel)
             {
-                _context = HttpContextModule.withLogLevel(logLevel, _context);
+                _context = Logging.withLogLevel(logLevel, _context);
                 return this;
             }
 
@@ -340,7 +335,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(format));
                 }
 
-                _context = HttpContextModule.withLogFormat(format, _context);
+                _context = Logging.withLogFormat(format, _context);
                 return this;
             }
 
@@ -356,7 +351,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(metrics));
                 }
 
-                _context = HttpContextModule.withMetrics(metrics, _context);
+                _context = HttpHandler.withMetrics(metrics, _context);
                 return this;
             }
 
@@ -367,8 +362,8 @@ namespace CogniteSdk
             public Client Build()
             {
                 // Check for optional fields etc here
-                HttpContext ctx = _context;
-                Func<CancellationToken, Task<string>> authHandler = _authHandler;
+                var ctx = _context;
+                var authHandler = _authHandler;
 
                 // Builder is invalid after this
                 _context = null;

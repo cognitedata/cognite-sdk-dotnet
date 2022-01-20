@@ -6,8 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CogniteSdk.Login;
+using Microsoft.FSharp.Core;
 using Oryx;
-using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
 {
@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal LoginResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal LoginResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -32,7 +32,7 @@ namespace CogniteSdk.Resources
         /// <returns>The current authentication status of the request</returns>
         public async Task<LoginStatus> StatusAsync(CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Login.status();
+            var req = Oryx.Cognite.Login.status(_ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

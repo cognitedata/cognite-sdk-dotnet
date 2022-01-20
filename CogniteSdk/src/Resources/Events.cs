@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.FSharp.Core;
 using Oryx;
 namespace CogniteSdk.Resources
 {
@@ -19,7 +20,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal EventsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal EventsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -37,7 +38,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.list<T>(query);
+            var req = Oryx.Cognite.Events.list<T>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -65,7 +66,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.aggregate(query);
+            var req = Oryx.Cognite.Events.aggregate(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -82,7 +83,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(events));
             }
 
-            var req = Oryx.Cognite.Events.create<Event>(events);
+            var req = Oryx.Cognite.Events.create<Event>(events, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -95,7 +96,7 @@ namespace CogniteSdk.Resources
         /// <returns>Event with the given id.</returns>
         public async Task<T> GetAsync<T>(long eventId, CancellationToken token = default) where T : Event
         {
-            var req = Oryx.Cognite.Events.get<T>(eventId);
+            var req = Oryx.Cognite.Events.get<T>(eventId, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -123,7 +124,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.delete(query);
+            var req = Oryx.Cognite.Events.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -193,7 +194,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Events.retrieve<T>(ids, ignoreUnknownIds);
+            var req = Oryx.Cognite.Events.retrieve<T>(ids, ignoreUnknownIds, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -275,7 +276,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.search<T>(query);
+            var req = Oryx.Cognite.Events.search<T>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -310,7 +311,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.update<Event>(query);
+            var req = Oryx.Cognite.Events.update<Event>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

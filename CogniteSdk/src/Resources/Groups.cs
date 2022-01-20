@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal GroupsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal GroupsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -36,7 +36,7 @@ namespace CogniteSdk.Resources
         {
             var query = new GroupQuery { All = all };
 
-            var req = Oryx.Cognite.Groups.list(query);
+            var req = Oryx.Cognite.Groups.list(query, _ctx);
             var result = await RunAsync(req, token).ConfigureAwait(false);
             return result.Items;
         }
@@ -59,7 +59,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of created groups</returns>
         public async Task<IEnumerable<Group>> CreateAsync(IEnumerable<GroupCreate> items, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Groups.create(items);
+            var req = Oryx.Cognite.Groups.create(items, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -76,7 +76,7 @@ namespace CogniteSdk.Resources
                 Items = ids
             };
 
-            var req = Oryx.Cognite.Groups.delete(query);
+            var req = Oryx.Cognite.Groups.delete(query, _ctx);
             await RunAsync(req, token).ConfigureAwait(false);
         }
     }

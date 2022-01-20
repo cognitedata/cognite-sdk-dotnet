@@ -3,7 +3,8 @@
 
 using System;
 
-namespace CogniteSdk {
+namespace CogniteSdk
+{
     /// <summary>
     /// Identity class. Set either Id or ExternalId.
     /// </summary>
@@ -120,7 +121,7 @@ namespace CogniteSdk {
             {
                 return Id == other.Id;
             }
-           
+
             return !other.Id.HasValue && ExternalId == other.ExternalId;
         }
 

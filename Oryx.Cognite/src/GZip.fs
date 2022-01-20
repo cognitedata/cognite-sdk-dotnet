@@ -11,8 +11,8 @@ open Google.Protobuf
 
 [<AutoOpen>]
 module GZip =
-    type GZipProtobufStreamContent (content: IMessage, compression: CompressionLevel) =
-        inherit HttpContent ()
+    type GZipProtobufStreamContent(content: IMessage, compression: CompressionLevel) =
+        inherit HttpContent()
         let _content = content
         let _compression = compression
         do base.Headers.ContentType <- MediaTypeHeaderValue "application/protobuf"

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 
 namespace CogniteSdk.Resources
@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -34,7 +34,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of time series matching given filters and optional cursor</returns>
         public async Task<IItemsWithCursor<T>> ListAsync<T>(TimeSeriesQuery query, CancellationToken token = default) where T : TimeSeries
         {
-            var req = Oryx.Cognite.TimeSeries.list<T>(query);
+            var req = Oryx.Cognite.TimeSeries.list<T>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -62,7 +62,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.TimeSeries.aggregate(query);
+            var req = Oryx.Cognite.TimeSeries.aggregate(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -74,7 +74,7 @@ namespace CogniteSdk.Resources
         /// <returns></returns>
         public async Task<IEnumerable<TimeSeries>> CreateAsync(IEnumerable<TimeSeriesCreate> timeseries, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.create<TimeSeries>(timeseries);
+            var req = Oryx.Cognite.TimeSeries.create<TimeSeries>(timeseries, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -87,7 +87,7 @@ namespace CogniteSdk.Resources
         /// <returns>Time series with the given id.</returns>
         public async Task<T> GetAsync<T>(long tsId, CancellationToken token = default) where T : TimeSeries
         {
-            var req = Oryx.Cognite.TimeSeries.get<T>(tsId);
+            var req = Oryx.Cognite.TimeSeries.get<T>(tsId, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -109,7 +109,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<EmptyResponse> DeleteAsync(TimeSeriesDelete query, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.TimeSeries.delete(query);
+            var req = Oryx.Cognite.TimeSeries.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -121,7 +121,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<long> internalIds, CancellationToken token = default)
         {
             var query = new TimeSeriesDelete { Items=internalIds.Select(Identity.Create) };
-            var req = Oryx.Cognite.TimeSeries.delete(query);
+            var req = Oryx.Cognite.TimeSeries.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -133,7 +133,7 @@ namespace CogniteSdk.Resources
         public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
         {
             var query = new TimeSeriesDelete { Items=externalIds.Select(Identity.Create) };
-            var req = Oryx.Cognite.TimeSeries.delete(query);
+            var req = Oryx.Cognite.TimeSeries.delete(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -147,7 +147,7 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<IEnumerable<T>> RetrieveAsync<T>(IEnumerable<Identity> ids, bool? ignoreUnknownIds = null, CancellationToken token = default) where T : TimeSeries
         {
-            var req = Oryx.Cognite.TimeSeries.retrieve<T>(ids, ignoreUnknownIds);
+            var req = Oryx.Cognite.TimeSeries.retrieve<T>(ids, ignoreUnknownIds, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -207,7 +207,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.TimeSeries.search<T>(query);
+            var req = Oryx.Cognite.TimeSeries.search<T>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -237,7 +237,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.TimeSeries.update<TimeSeries>(query);
+            var req = Oryx.Cognite.TimeSeries.update<TimeSeries>(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -254,7 +254,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.TimeSeries.syntheticQuery(query);
+            var req = Oryx.Cognite.TimeSeries.syntheticQuery(query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

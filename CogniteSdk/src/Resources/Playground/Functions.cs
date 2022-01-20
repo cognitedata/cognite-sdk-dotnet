@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.FSharp.Core;
 
 using Oryx;
 using Oryx.Cognite.Playground;
@@ -21,7 +22,7 @@ namespace CogniteSdk.Resources.Playground
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal FunctionResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal FunctionResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -32,7 +33,7 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of Functions</returns>
         public async Task<ItemsWithoutCursor<Function>> ListAsync(CancellationToken token = default)
         {
-            var req = Functions.list();
+            var req = Functions.list(_ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -49,7 +50,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(functions));
             }
 
-            var req = Functions.create(functions);
+            var req = Functions.create(functions, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -66,7 +67,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.delete(ids);
+            var req = Functions.delete(ids, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -83,7 +84,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.retrieve(ids);
+            var req = Functions.retrieve(ids, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
     }

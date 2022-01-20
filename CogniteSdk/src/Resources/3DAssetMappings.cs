@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
 using static Oryx.Cognite.HttpHandlerModule;
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ThreeDAssetMappingsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal ThreeDAssetMappingsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -42,7 +42,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDAssetMappings.list(modelId, revisionId, query);
+            var req = ThreeDAssetMappings.list(modelId, revisionId, query, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -61,7 +61,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDAssetMapping));
             }
 
-            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping);
+            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
@@ -81,7 +81,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids);
+            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids, _ctx);
             return await RunAsync(req, token).ConfigureAwait(false);
         }
 
