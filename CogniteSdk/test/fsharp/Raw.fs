@@ -2,7 +2,7 @@ module Tests.Integration.Raw
 
 open System
 open System.Collections.Generic
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 open System.Text.Json
 open System.Text.Json.Serialization
 

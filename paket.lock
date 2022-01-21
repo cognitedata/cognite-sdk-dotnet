@@ -69,17 +69,17 @@ NUGET
     System.Threading.Tasks.Extensions (4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
   remote: C:\Users\dag\Developer\Packages
-    Oryx (5.0.0-alpha-002)
+    Oryx (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1)
       FsToolkit.ErrorHandling (>= 2.13)
       Microsoft.Extensions.Logging (>= 5.0)
-    Oryx.Protobuf (5.0.0-alpha-002)
+    Oryx.Protobuf (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1)
       Google.Protobuf (>= 3.19.3)
-      Oryx (>= 5.0.0-alpha-002)
-    Oryx.SystemTextJson (5.0.0-alpha-002)
+      Oryx (>= 5.0.0-alpha-004)
+    Oryx.SystemTextJson (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1)
-      Oryx (>= 5.0.0-alpha-002)
+      Oryx (>= 5.0.0-alpha-004)
       System.Text.Json (>= 6.0.1)
 
 GROUP Playground
@@ -820,17 +820,17 @@ NUGET
       FSharp.Core (>= 4.5.4) - restriction: >= netstandard2.0
       System.Reflection.Emit.Lightweight (>= 4.7) - restriction: && (< netcoreapp3.1) (>= netstandard2.0)
   remote: C:\Users\dag\Developer\Packages
-    Oryx (5.0.0-alpha-002)
+    Oryx (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
       FsToolkit.ErrorHandling (>= 2.13) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
-    Oryx.Protobuf (5.0.0-alpha-002)
+    Oryx.Protobuf (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
       Google.Protobuf (>= 3.19.3) - restriction: >= netstandard2.0
-      Oryx (>= 5.0.0-alpha-002) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (5.0.0-alpha-002)
+      Oryx (>= 5.0.0-alpha-004) - restriction: >= netstandard2.0
+    Oryx.SystemTextJson (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
-      Oryx (>= 5.0.0-alpha-002) - restriction: >= netstandard2.0
+      Oryx (>= 5.0.0-alpha-004) - restriction: >= netstandard2.0
       System.Text.Json (>= 6.0.1) - restriction: >= netstandard2.0
 
 GROUP Sdk
@@ -881,7 +881,7 @@ NUGET
     System.Threading.Tasks.Extensions (4.5.4)
       System.Runtime.CompilerServices.Unsafe (>= 4.5.3)
   remote: C:\Users\dag\Developer\Packages
-    Oryx (5.0.0-alpha-002)
+    Oryx (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1)
       FsToolkit.ErrorHandling (>= 2.13)
       Microsoft.Extensions.Logging (>= 5.0)
@@ -1579,17 +1579,17 @@ NUGET
       xunit.extensibility.core (2.4.1) - restriction: >= netstandard1.1
     xunit.runner.visualstudio (2.4.3)
   remote: C:\Users\dag\Developer\Packages
-    Oryx (5.0.0-alpha-002)
+    Oryx (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
       FsToolkit.ErrorHandling (>= 2.13) - restriction: >= netstandard2.0
       Microsoft.Extensions.Logging (>= 5.0) - restriction: >= netstandard2.0
-    Oryx.Protobuf (5.0.0-alpha-002)
+    Oryx.Protobuf (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
       Google.Protobuf (>= 3.19.3) - restriction: >= netstandard2.0
-      Oryx (>= 5.0.0-alpha-002) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (5.0.0-alpha-002)
+      Oryx (>= 5.0.0-alpha-004) - restriction: >= netstandard2.0
+    Oryx.SystemTextJson (5.0.0-alpha-004)
       FSharp.Core (>= 6.0.1) - restriction: >= netstandard2.0
-      Oryx (>= 5.0.0-alpha-002) - restriction: >= netstandard2.0
+      Oryx (>= 5.0.0-alpha-004) - restriction: >= netstandard2.0
       System.Text.Json (>= 6.0.1) - restriction: >= netstandard2.0
 
 GROUP Types

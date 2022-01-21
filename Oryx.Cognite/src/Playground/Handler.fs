@@ -40,7 +40,7 @@ module Handler =
         |> json jsonOptions
         |> log
 
-    let post<'TContent, 'TResult> (content: 'a) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let post<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         source
         |> POST
         |> withResource url
@@ -104,10 +104,10 @@ module Handler =
             return ret
         }
 
-    let update<'TContent, 'TResult> (items: IEnumerable<UpdateItem<'a>>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'TResult>> =
+    let update<'TContent, 'TResult> (items: IEnumerable<UpdateItem<'TContent>>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'TResult>> =
         http {
             let url = url +/ "update"
-            let request = ItemsWithoutCursor<UpdateItem<'a>>(Items = items)
+            let request = ItemsWithoutCursor<UpdateItem<'TContent>>(Items = items)
             let! ret =
                 source
                 |> postPlayground<ItemsWithoutCursor<UpdateItem<'TContent>>, ItemsWithoutCursor<'TResult>> request url
@@ -115,17 +115,17 @@ module Handler =
         }
 
     let retrieve<'TContent, 'TResult> (ids: Identity seq) (url: string) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<'TResult>> =
-        req {
+        http {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
             let! ret =
                 source
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
-                |> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'a>> request url
+                |> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'TResult>> request url
             return ret.Items
         }
 
-    let create<'a, 'b> (content: IEnumerable<'a>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'b>> =
+    let create<'TContent, 'TResult> (content: IEnumerable<'TContent>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'TResult>> =
         http {
             let content' = ItemsWithoutCursor(Items=content)
             let! ret =

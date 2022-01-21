@@ -7,6 +7,7 @@ namespace Oryx.Cognite
 open System
 open System.Collections.Generic
 open System.Net.Http
+open System.Reflection
 open System.Text.Json
 open System.Threading
 open System.Threading.Tasks
@@ -15,6 +16,7 @@ open System.IO.Compression
 open FSharp.Control.TaskBuilder
 open Google.Protobuf
 
+open Microsoft.Extensions.Logging
 open Oryx
 open Oryx.SystemTextJson
 open Oryx.SystemTextJson.ResponseReader
@@ -29,6 +31,76 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module HttpHandler =
+    let urlBuilder (request: HttpRequest) =
+
+        let items = request.Items
+
+        let version =
+            match Map.tryFind PlaceHolder.ApiVersion items with
+            | Some (Value.String version) -> version
+            | _ -> failwith "API version not set."
+
+        let project =
+            match Map.tryFind PlaceHolder.Project items with
+            | Some (Value.String project) -> project
+            | _ -> failwith "Client must set project."
+
+        let resource =
+            match Map.tryFind PlaceHolder.Resource items with
+            | Some (Value.String resource) -> resource
+            | _ -> failwith "Resource not set."
+
+        let baseUrl =
+            match Map.tryFind PlaceHolder.BaseUrl items with
+            | Some (Value.Url url) -> url.ToString()
+            | _ -> "https://api.cognitedata.com"
+
+        if not (Map.containsKey PlaceHolder.HasAppId items) then
+            failwith "Client must set the Application ID (appId)."
+
+        sprintf "api/%s/projects/%s%s" version project resource
+        |> combine baseUrl
+
+    let private fileVersion =
+        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+            .InformationalVersion
+
+    let withUrlBuilder urlBuilder (source: HttpHandler<unit>) : HttpHandler<unit> =
+        source
+        |> withUrlBuilder urlBuilder
+
+    /// Set the project to connect to.
+    let withProject (project: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        source
+        |> update (fun ctx ->
+            { ctx with
+                Request =
+                    { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Project, Value.String project) } })
+
+    let withAppId (appId: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        source
+        |> update (fun ctx ->
+            { ctx with
+                Request =
+                    { ctx.Request with
+                        Headers = ctx.Request.Headers.Add("x-cdp-app", appId)
+                        Items = ctx.Request.Items.Add(PlaceHolder.HasAppId, Value.String "true") } })
+
+    let withBaseUrl (baseUrl: Uri) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        source
+        |> update (fun ctx ->
+            { ctx with
+                Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } })
+        
+    let withLogLevel (logLevel: LogLevel) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
+        Oryx.Logging.withLogLevel logLevel source
+        
+    let empty : HttpHandler<unit> =
+        httpRequest
+        |> withUrlBuilder urlBuilder
+        |> withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
+        |> withLogMessage "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
+        
     let withResource (resource: string) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         fun next ->
             fun ctx ->

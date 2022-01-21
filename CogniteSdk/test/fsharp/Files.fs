@@ -7,7 +7,7 @@ open Xunit
 open Swensen.Unquote
 
 open Common
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 
 open CogniteSdk
 

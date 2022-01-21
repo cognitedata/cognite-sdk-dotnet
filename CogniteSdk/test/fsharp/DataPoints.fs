@@ -2,7 +2,7 @@ module Tests.Integration.Datapoints
 
 open System
 
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 open Swensen.Unquote
 open Xunit
 open Com.Cognite.V1.Timeseries.Proto

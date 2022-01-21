@@ -3,7 +3,7 @@ module Tests.Integration.Events
 open System
 open System.Collections.Generic
 
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 open Xunit
 open Swensen.Unquote
 

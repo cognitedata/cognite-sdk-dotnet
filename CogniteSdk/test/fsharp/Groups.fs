@@ -1,6 +1,6 @@
 ﻿module Tests.Integration.Groups
 
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 open Swensen.Unquote
 open Xunit
 

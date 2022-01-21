@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
 using Microsoft.FSharp.Core;
-using static Oryx.Cognite.HttpContextModule;
+using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk
 {
@@ -158,7 +158,7 @@ namespace CogniteSdk
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
-            private FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> _context = create();
+            private FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> _context = empty;
             private Func<CancellationToken, Task<string>> _authHandler;
 
             /// <summary>
@@ -319,7 +319,7 @@ namespace CogniteSdk
             /// <returns>Updated builder.</returns>
             public Builder SetLogLevel(LogLevel logLevel)
             {
-                _context = Logging.withLogLevel(logLevel, _context);
+                _context = withLogLevel(logLevel, _context);
                 return this;
             }
 
