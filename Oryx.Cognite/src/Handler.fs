@@ -99,7 +99,7 @@ module HttpHandler =
         httpRequest
         |> withUrlBuilder urlBuilder
         |> withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
-        |> withLogMessage "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
+        |> withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
         
     let withResource (resource: string) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         fun next ->
@@ -110,7 +110,6 @@ module HttpHandler =
                             { ctx.Request with
                                 Items = ctx.Request.Items.Add(PlaceHolder.Resource, Value.String resource) } }
             |> source
-
 
     let withVersion<'TSource> (version: ApiVersion) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         fun next ->
@@ -139,7 +138,6 @@ module HttpHandler =
         fun next ->
             fun ctx -> next { ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }
             |> source
-
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
     /// need to open the Oryx namespace.
