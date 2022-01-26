@@ -32,8 +32,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.list(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.ExtPipes.list(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
             if (extPipes is null) throw new ArgumentNullException(nameof(extPipes));
 
             var req = Oryx.Cognite.ExtPipes.create(extPipes, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -61,8 +61,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.delete(query, _ctx);
-            await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.ExtPipes.delete(query, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
         }
 
 
@@ -131,7 +131,7 @@ namespace CogniteSdk.Resources
             if (ids is null) throw new ArgumentNullException(nameof(ids));
 
             var req = Oryx.Cognite.ExtPipes.retrieve(ids, ignoreUnknownIds, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -175,8 +175,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.update(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.ExtPipes.update(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Oryx.Cognite.ExtPipes.listRuns(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.ExtPipes.listRuns(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace CogniteSdk.Resources
             if (items is null) throw new ArgumentNullException(nameof(items));
 
             var req = Oryx.Cognite.ExtPipes.createRuns(items, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

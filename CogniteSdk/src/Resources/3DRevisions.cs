@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler,FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
+        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -40,8 +40,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDRevisions.list(modelId, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.list(modelId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace CogniteSdk.Resources
         /// <returns>List of ThreeDRevision matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<ThreeDRevisionLog>> ListLogsAsync(long modelId, long revisionId, ThreeDRevisionLogQuery query, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.listLogs(modelId, revisionId, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.listLogs(modelId, revisionId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDNodes.list(modelId, revisionId, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDNodes.list(modelId, revisionId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDRevision));
             }
 
-            var req = ThreeDRevisions.create(modelId, ThreeDRevision, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.create(modelId, ThreeDRevision, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -110,9 +110,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-
-            var req = ThreeDRevisions.delete(modelId, ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.delete(modelId, ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -144,8 +143,8 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<ThreeDRevision> RetrieveAsync(long modelId, long revisionId, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.retrieve(modelId, revisionId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.retrieve(modelId, revisionId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #endregion
@@ -158,15 +157,15 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of ThreeDRevision to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated ThreeDRevision.</returns>
-        public async Task<IEnumerable<ThreeDRevision>> UpdateAsync (long modelId, IEnumerable<ThreeDRevisionUpdateItem> query, CancellationToken token = default )
+        public async Task<IEnumerable<ThreeDRevision>> UpdateAsync(long modelId, IEnumerable<ThreeDRevisionUpdateItem> query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDRevisions.update(modelId, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.update(modelId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -178,10 +177,10 @@ namespace CogniteSdk.Resources
         /// <param name="fileId">The 3D file to update thumbnail on.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated ThreeDRevision.</returns>
-        public async Task<EmptyResponse> UpdateThumbnailAsync (long modelId, long revisionId, long fileId, CancellationToken token = default )
+        public async Task<EmptyResponse> UpdateThumbnailAsync(long modelId, long revisionId, long fileId, CancellationToken token = default)
         {
-            var req = ThreeDRevisions.updateThumbnail(modelId, revisionId, fileId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDRevisions.updateThumbnail(modelId, revisionId, fileId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

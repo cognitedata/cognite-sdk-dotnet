@@ -38,8 +38,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.list<T>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.list<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of events matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<Event>> ListAsync(EventQuery query, CancellationToken token = default)
         {
-            return (ItemsWithCursor<Event>) await ListAsync<Event>(query, token).ConfigureAwait(false);
+            return (ItemsWithCursor<Event>)await ListAsync<Event>(query, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.aggregate(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.aggregate(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(events));
             }
 
-            var req = Oryx.Cognite.Events.create<Event>(events, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.create<Event>(events, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace CogniteSdk.Resources
         /// <returns>Event with the given id.</returns>
         public async Task<T> GetAsync<T>(long eventId, CancellationToken token = default) where T : Event
         {
-            var req = Oryx.Cognite.Events.get<T>(eventId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.get<T>(eventId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -124,8 +124,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.delete(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.delete(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -194,8 +194,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Events.retrieve<T>(ids, ignoreUnknownIds, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.retrieve<T>(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -276,8 +276,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.search<T>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.search<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -304,15 +304,15 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated events.</returns>
-        public async Task<IEnumerable<Event>> UpdateAsync (IEnumerable<EventUpdateItem> query, CancellationToken token = default )
+        public async Task<IEnumerable<Event>> UpdateAsync(IEnumerable<EventUpdateItem> query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Events.update<Event>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Events.update<Event>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

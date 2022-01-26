@@ -34,8 +34,8 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Function call with the given id.</returns>
         public async Task<FunctionCall> GetAsync(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.get(functionId, callId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = FunctionCalls.get(functionId, callId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace CogniteSdk.Resources.Playground
             {
                 throw new ArgumentNullException(nameof(filter));
             }
-            var req = FunctionCalls.list(functionId, filter, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = FunctionCalls.list(functionId, filter, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of Functions</returns>
         public async Task<ItemsWithoutCursor<FunctionCallLogEntry>> ListLogsAsync(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.listLogs(functionId, callId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = FunctionCalls.listLogs(functionId, callId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Response from function call.</returns>
         public async Task<FunctionCallResponse> RetrieveResponse(long functionId, long callId, CancellationToken token = default)
         {
-            var req = FunctionCalls.retrieveResponse(functionId, callId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = FunctionCalls.retrieveResponse(functionId, callId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>Response from function call.</returns>
         public async Task<FunctionCall> CallFunction<T>(long functionId, T data, CancellationToken token = default)
         {
-            var req = FunctionCalls.callFunction<T>(functionId, data, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = FunctionCalls.callFunction<T>(functionId, data, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

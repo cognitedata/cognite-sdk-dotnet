@@ -42,8 +42,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDAssetMappings.list(modelId, revisionId, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.list(modelId, revisionId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDAssetMapping));
             }
 
-            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -81,8 +81,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>

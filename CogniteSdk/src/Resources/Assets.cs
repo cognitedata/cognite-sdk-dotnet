@@ -40,8 +40,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.list<T>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.list<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of assets matching given filters and optional cursor</returns>
         public async Task<ItemsWithCursor<Asset>> ListAsync(AssetQuery query, CancellationToken token = default)
         {
-            return (ItemsWithCursor<Asset>) await ListAsync<Asset>(query, token).ConfigureAwait(false);
+            return (ItemsWithCursor<Asset>)await ListAsync<Asset>(query, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -68,8 +68,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.aggregate(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.aggregate(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(assets));
             }
 
-            var req = Assets.create(assets, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.create(assets, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace CogniteSdk.Resources
         /// <returns>Asset with the given id.</returns>
         public async Task<T> GetAsync<T>(long assetId, CancellationToken token = default) where T : Asset
         {
-            var req = Assets.get<T>(assetId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.get<T>(assetId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,8 +127,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.delete(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.delete(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -197,8 +197,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Assets.retrieve<T>(ids, ignoreUnknownIds, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.retrieve<T>(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -269,8 +269,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.search<T>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Assets.search<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -299,8 +299,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Assets.update<Asset>(query, _ctx);
-            var ret = await RunAsync<IEnumerable<Asset>>(req, token).ConfigureAwait(false);
+            var req = Assets.update<Asset>(query, GetContext(token));
+            var ret = await RunAsync<IEnumerable<Asset>>(req).ConfigureAwait(false);
             return ret;
         }
     }

@@ -40,8 +40,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDModels.list(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDModels.list(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDModel));
             }
 
-            var req = ThreeDModels.create(ThreeDModel, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDModels.create(ThreeDModel, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -75,8 +75,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = ThreeDModels.delete(ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDModels.delete(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace CogniteSdk.Resources
         /// <param name="token">Optional cancellation token.</param>
         public async Task<ThreeDModel> RetrieveAsync(long modelId, CancellationToken token = default)
         {
-            var req = ThreeDModels.retrieve(modelId, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDModels.retrieve(modelId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #endregion
@@ -119,15 +119,15 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of ThreeDModel to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated ThreeDModel.</returns>
-        public async Task<IEnumerable<ThreeDModel>> UpdateAsync (IEnumerable<ThreeDModelUpdateItem> query, CancellationToken token = default )
+        public async Task<IEnumerable<ThreeDModel>> UpdateAsync(IEnumerable<ThreeDModelUpdateItem> query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDModels.update(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDModels.update(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

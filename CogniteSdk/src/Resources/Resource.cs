@@ -38,17 +38,27 @@ namespace CogniteSdk.Resources
         }
 
         /// <summary>
+        /// Get initial HTTP handler with context.
+        /// </summary>
+        /// <param name="token">The cancellation token to use.</param>
+        /// <returns>HTTP handler with context</returns>
+        internal FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> GetContext(CancellationToken token)
+        {
+            var ctx = _authHandler is null ? _ctx : withTokenRenewer(_authHandler, _ctx);
+            var ctx_ = HttpHandler.withCancellationToken(token, ctx);
+
+            return ctx_;
+        }
+        
+        /// <summary>
         /// Helper method for running an Oryx handler in the client context with authentication handling.
         /// </summary>
         /// <param name="handler">The handler to run.</param>
-        /// <param name="token">The cancellation token to use.</param>
         /// <typeparam name="T">The type of the response.</typeparam>
         /// <returns>Result.</returns>
-        protected async Task<T> RunAsync<T>(FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<T, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> handler, CancellationToken token)
+        protected async Task<T> RunAsync<T>(FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<T, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> handler)
         {
-            var req = _authHandler is null ? handler : withTokenRenewer(_authHandler, handler);
-            var req_ = HttpHandler.withCancellationToken(token, req);
-            return await HttpHandler.runUnsafeAsync(req_).ConfigureAwait(false);
+            return await HttpHandler.runUnsafeAsync(handler).ConfigureAwait(false);
         }
     }
 }

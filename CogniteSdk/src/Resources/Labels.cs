@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Labels.list(query, _ctx);
-            return await RunAsync(req, token);
+            var req = Labels.list(query, GetContext(token));
+            return await RunAsync(req);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace CogniteSdk.Resources
             if (labels is null) throw new ArgumentNullException(nameof(labels));
 
             var req = Labels.create(labels, _ctx);
-            return await RunAsync(req, token);
+            return await RunAsync(req);
         }
 
         #region Delete overloads
@@ -65,8 +65,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Labels.delete(query, _ctx);
-            await RunAsync(req, token).ConfigureAwait(false);
+            var req = Labels.delete(query, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
         }
 
 

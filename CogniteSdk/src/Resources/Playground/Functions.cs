@@ -33,8 +33,8 @@ namespace CogniteSdk.Resources.Playground
         /// <returns>List of Functions</returns>
         public async Task<ItemsWithoutCursor<Function>> ListAsync(CancellationToken token = default)
         {
-            var req = Functions.list(_ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Functions.list(GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,8 +50,8 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(functions));
             }
 
-            var req = Functions.create(functions, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Functions.create(functions, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -67,8 +67,8 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.delete(ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Functions.delete(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,8 +84,8 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Functions.retrieve(ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Functions.retrieve(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

@@ -39,8 +39,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Relationships.list(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Relationships.list(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(relationships));
             }
 
-            var req = Oryx.Cognite.Relationships.create(relationships, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Relationships.create(relationships, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(externalIds));
             }
 
-            var req = Oryx.Cognite.Relationships.delete(externalIds, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Relationships.delete(externalIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Relationships.retrieve(ids, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Relationships.retrieve(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

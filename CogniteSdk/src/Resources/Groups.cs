@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             var query = new GroupQuery { All = all };
 
-            var req = Oryx.Cognite.Groups.list(query, _ctx);
-            var result = await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.list(query, GetContext(token));
+            var result = await RunAsync(req).ConfigureAwait(false);
             return result.Items;
         }
 
@@ -59,8 +59,8 @@ namespace CogniteSdk.Resources
         /// <returns>List of created groups</returns>
         public async Task<IEnumerable<Group>> CreateAsync(IEnumerable<GroupCreate> items, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Groups.create(items, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.create(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace CogniteSdk.Resources
                 Items = ids
             };
 
-            var req = Oryx.Cognite.Groups.delete(query, _ctx);
-            await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.delete(query, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

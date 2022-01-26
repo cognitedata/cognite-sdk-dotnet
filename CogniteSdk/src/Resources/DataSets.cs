@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             if (dataSets is null) throw new ArgumentNullException(nameof(dataSets));
 
-            var req = DataSets.create(dataSets, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.create(dataSets, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.list<T>(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.list<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.aggregate(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.aggregate(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Retrieve overloads
@@ -97,8 +97,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -167,8 +167,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = DataSets.update<DataSet>(query, _ctx);
-            var ret = await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.update<DataSet>(query, GetContext(token));
+            var ret = await RunAsync(req).ConfigureAwait(false);
             return ret;
         }
     }

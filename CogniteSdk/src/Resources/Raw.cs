@@ -39,8 +39,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Raw.listDatabases(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Raw.listDatabases(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace CogniteSdk.Resources
         public async Task<ItemsWithCursor<RawDatabase>> ListDatabasesAsync(CancellationToken token = default)
         {
             var query = new RawDatabaseQuery();
-            var req = Oryx.Cognite.Raw.listDatabases(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Raw.listDatabases(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.createDatabases(items, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Raw.deleteDatabases(query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Raw.deleteDatabases(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.listTables(database, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.createTables(database, items, ensureParent, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.deleteTables(database, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(tables));
             }
 
-            var dto = new RawTableDelete() { Items = tables.Select(table => new RawTable { Name = table })};
+            var dto = new RawTableDelete() { Items = tables.Select(table => new RawTable { Name = table }) };
             return await DeleteTablesAsync(database, dto, token).ConfigureAwait(false);
         }
 
@@ -291,12 +291,12 @@ namespace CogniteSdk.Resources
             if (options == null)
             {
                 var req = Oryx.Cognite.Raw.listRows<T>(database, table, query, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
             else
             {
                 var req = Oryx.Cognite.Raw.listRowsWithOptions<T>(database, table, query, options, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
         }
 
@@ -343,12 +343,12 @@ namespace CogniteSdk.Resources
             if (options == null)
             {
                 var req = Oryx.Cognite.Raw.getRow<T>(database, table, key, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
             else
             {
                 var req = Oryx.Cognite.Raw.getRowWithOptions<T>(database, table, key, options, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
         }
 
@@ -373,7 +373,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.retrieveCursors(database, table, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -398,7 +398,7 @@ namespace CogniteSdk.Resources
             var query = new RawRowCursorsQuery();
 
             var req = Oryx.Cognite.Raw.retrieveCursors(database, table, query, _ctx);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -431,12 +431,12 @@ namespace CogniteSdk.Resources
             if (options == null)
             {
                 var req = Oryx.Cognite.Raw.createRows(database, table, dtos, ensureParent, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
             else
             {
                 var req = Oryx.Cognite.Raw.createRowsWithOptions(database, table, dtos, ensureParent, options, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
         }
 
@@ -470,12 +470,12 @@ namespace CogniteSdk.Resources
             if (options == null)
             {
                 var req = Oryx.Cognite.Raw.createRows<T>(database, table, dtos, ensureParent, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
             else
             {
                 var req = Oryx.Cognite.Raw.createRowsWithOptions<T>(database, table, dtos, ensureParent, options, _ctx);
-                return await RunAsync(req, token).ConfigureAwait(false);
+                return await RunAsync(req).ConfigureAwait(false);
             }
         }
 
@@ -505,7 +505,7 @@ namespace CogniteSdk.Resources
             }
 
             var req = Oryx.Cognite.Raw.deleteRows(database, table, dtos, _ctx);
-            return await RunAsync<EmptyResponse>(req, token).ConfigureAwait(false);
+            return await RunAsync<EmptyResponse>(req).ConfigureAwait(false);
         }
     }
 }
