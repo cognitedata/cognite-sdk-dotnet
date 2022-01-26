@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext,FSharpFunc<Unit,Task<Unit>>>,Task<Unit>> ctx) : base(authHandler, ctx)
+        internal PlaygroundResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
             Functions = new Playground.FunctionResource(authHandler, ctx);
             FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);

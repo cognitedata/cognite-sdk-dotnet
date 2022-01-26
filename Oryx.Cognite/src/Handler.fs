@@ -65,17 +65,14 @@ module HttpHandler =
         Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             .InformationalVersion
 
-    let withUrlBuilder urlBuilder (source: HttpHandler<unit>) : HttpHandler<unit> =
-        source
-        |> withUrlBuilder urlBuilder
+    let withUrlBuilder urlBuilder (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withUrlBuilder urlBuilder
 
     /// Set the project to connect to.
     let withProject (project: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
         source
         |> update (fun ctx ->
             { ctx with
-                Request =
-                    { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Project, Value.String project) } })
+                Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Project, Value.String project) } })
 
     let withAppId (appId: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
         source
@@ -91,16 +88,16 @@ module HttpHandler =
         |> update (fun ctx ->
             { ctx with
                 Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } })
-        
+
     let withLogLevel (logLevel: LogLevel) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         Oryx.Logging.withLogLevel logLevel source
-        
-    let empty : HttpHandler<unit> =
+
+    let empty: HttpHandler<unit> =
         httpRequest
         |> withUrlBuilder urlBuilder
         |> withHeader ("x-cdp-sdk", sprintf "CogniteNetSdk:%s" fileVersion)
         |> withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
-        
+
     let withResource (resource: string) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         fun next ->
             fun ctx ->
@@ -213,14 +210,16 @@ module HttpHandler =
         |> log
 
     let get<'TResult> (url: string) (source: HttpHandler<unit>) =
-        source
-        |> getOptions<'TResult> url jsonOptions
+        source |> getOptions<'TResult> url jsonOptions
 
     let getV10<'TResult> (url: string) source =
-        source
-        |> withVersion V10 |> get<'TResult> url
+        source |> withVersion V10 |> get<'TResult> url
 
-    let getV10Options<'TResult> (url: string) (options: JsonSerializerOptions) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let getV10Options<'TResult>
+        (url: string)
+        (options: JsonSerializerOptions)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source
         |> withVersion V10
         |> getOptions url options
@@ -229,7 +228,12 @@ module HttpHandler =
         source
         |> getV10<'TResult> (url +/ sprintf "%d" id)
 
-    let getWithQueryOptions<'TResult> (query: IQueryParams) (url: string) (options: JsonSerializerOptions) (source: HttpHandler<unit>) : HttpHandler<'TResult> = // : HttpHandler<'TResult> =
+    let getWithQueryOptions<'TResult>
+        (query: IQueryParams)
+        (url: string)
+        (options: JsonSerializerOptions)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         let parms = query.ToQueryParams()
 
         source
@@ -245,7 +249,11 @@ module HttpHandler =
     let getWithQuery<'TResult> (query: IQueryParams) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         getWithQueryOptions query url jsonOptions source
 
-    let post<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let post<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source
         |> POST
         |> withResource url
@@ -255,7 +263,11 @@ module HttpHandler =
         |> json<'TResult> jsonOptions
         |> log
 
-    let postV10<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let postV10<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source
         |> withVersion V10
         |> post<'TContent, 'TResult> content url
@@ -298,7 +310,11 @@ module HttpHandler =
             return item.Count
         }
 
-    let search<'TSource, 'TResult> (content: 'TSource) (url: string) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<'TResult>> =
+    let search<'TSource, 'TResult>
+        (content: 'TSource)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
             let url = url +/ "search"
 
@@ -326,7 +342,11 @@ module HttpHandler =
             return ret.Items
         }
 
-    let retrieve<'TResult> (ids: Identity seq) (url: string) (source : HttpHandler<unit>) : HttpHandler<IEnumerable<'TResult>> =
+    let retrieve<'TResult>
+        (ids: Identity seq)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
@@ -418,7 +438,11 @@ module HttpHandler =
         source
         |> createWithQueryEmptyOptions content query url jsonOptions
 
-    let createEmpty<'TSource> (content: IEnumerable<'TSource>) (url: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let createEmpty<'TSource>
+        (content: IEnumerable<'TSource>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
         let content' = ItemsWithoutCursor(Items = content)
 
         source
