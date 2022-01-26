@@ -15,14 +15,13 @@ open System.IO.Compression
 
 open FSharp.Control.TaskBuilder
 open Google.Protobuf
-
 open Microsoft.Extensions.Logging
+
 open Oryx
 open Oryx.SystemTextJson
 open Oryx.SystemTextJson.ResponseReader
 open Oryx.Protobuf
 open Oryx.Protobuf.ResponseReader
-
 open Oryx.Cognite
 
 open CogniteSdk

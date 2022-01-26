@@ -4,7 +4,6 @@
 namespace Oryx.Cognite
 
 open System
-open System.Net.Http
 
 open Oryx
 open Oryx.Cognite

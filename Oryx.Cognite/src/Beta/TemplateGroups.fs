@@ -3,9 +3,6 @@
 
 namespace Oryx.Cognite.Beta
 
-open System
-open System.Net.Http
-
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Beta

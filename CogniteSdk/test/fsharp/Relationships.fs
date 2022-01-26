@@ -1,11 +1,9 @@
 module Tests.Integration.Relationships
 
 open System
-open System.Collections.Generic
 
 open FSharp.Control.TaskBuilder
 open Swensen.Unquote
-open Oryx
 open Xunit
 
 open CogniteSdk

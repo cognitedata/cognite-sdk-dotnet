@@ -5,7 +5,6 @@ namespace Oryx.Cognite
 
 open System
 open System.Collections.Generic
-open System.Net
 open System.Net.Http
 
 open Oryx

@@ -4,11 +4,11 @@
 namespace Oryx.Cognite
 
 open System
+open System.Collections.Generic
 
 open Oryx
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
 
 /// Various asset HTTP handlers.

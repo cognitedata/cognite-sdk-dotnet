@@ -10,11 +10,6 @@ open Oryx
 open Oryx.Cognite
 
 open CogniteSdk
-open Oryx.SystemTextJson
-open Oryx.SystemTextJson.ResponseReader
-open System.Net.Http
-open System.Text.Json
-open FSharp.Control.TaskBuilder
 
 /// Various extraction pipeline HTTP handlers
 [<RequireQualifiedAccess>]

@@ -4,10 +4,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CogniteSdk;
 using Microsoft.FSharp.Core;
 using Oryx;
-using Oryx.Cognite;
+
 using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk.Resources
@@ -45,9 +44,7 @@ namespace CogniteSdk.Resources
         internal FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> GetContext(CancellationToken token)
         {
             var ctx = _authHandler is null ? _ctx : withTokenRenewer(_authHandler, _ctx);
-            var ctx_ = HttpHandler.withCancellationToken(token, ctx);
-
-            return ctx_;
+            return HttpHandler.withCancellationToken(token, ctx);
         }
         
         /// <summary>
