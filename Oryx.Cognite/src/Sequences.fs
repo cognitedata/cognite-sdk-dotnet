@@ -52,7 +52,7 @@ module Sequences =
     /// Delete multiple sequences in the same project. Returns empty result.
     let delete (items: Identity seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let req = ItemsWithoutCursor(Items = items)
-        
+
         source
         |> withLogMessage "Sequences:delete"
         |> delete req Url
@@ -66,7 +66,11 @@ module Sequences =
 
     /// Retrieves information about multiple sequences in the same project. A maximum of 1000 event IDs may be listed per
     /// request and all of them must be unique. Returns sequences with given ids.
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<Sequence seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Sequence seq> =
         source
         |> withLogMessage "Sequences:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url
@@ -78,7 +82,10 @@ module Sequences =
         |> search query Url
 
     /// Update one or more sequences. Supports partial updates, meaning that fields omitted from the requests are not changed. Returns list of updated sequences.</returns>
-    let update (query: IEnumerable<UpdateItem<SequenceUpdate>>) (source: HttpHandler<unit>) : HttpHandler<Sequence seq> =
+    let update
+        (query: IEnumerable<UpdateItem<SequenceUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Sequence seq> =
         source
         |> withLogMessage "Sequences:update"
         |> update query Url

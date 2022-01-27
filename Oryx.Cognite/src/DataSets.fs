@@ -53,7 +53,11 @@ module DataSets =
     /// <param name="ids">The ids of the data sets to get.</param>
     /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found.</param>
     /// <returns>Data sets with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<#DataSet seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#DataSet seq> =
         source
         |> withLogMessage "DataSets:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url

@@ -70,4 +70,3 @@ module Common =
         options.Converters.Add(ObjectToDictionaryJsonConverter())
         options.Converters.Add(AclConverter())
         options
-        

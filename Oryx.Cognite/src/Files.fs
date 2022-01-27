@@ -57,7 +57,11 @@ module Files =
             return ret.Items
         }
 
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<File>> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<File>> =
         source
         |> withLogMessage "Files:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url

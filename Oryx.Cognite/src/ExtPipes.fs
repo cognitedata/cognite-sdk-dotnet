@@ -45,7 +45,11 @@ module ExtPipes =
         |> update query Url
 
     /// Retrieve a list of extraction pipelines. Optionally ignore unknown ids.
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<ExtPipe seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ExtPipe seq> =
         source
         |> withLogMessage "ExtPipes:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url
@@ -57,7 +61,7 @@ module ExtPipes =
         |> HttpHandler.list query RunsUrl
 
     /// Create new extraction pipeline runs in the given project. Returns list of created extraction pipeline runs.
-    let createRuns (items: ExtPipeRunCreate seq) (source: HttpHandler<unit>): HttpHandler<ExtPipeRun seq> =
+    let createRuns (items: ExtPipeRunCreate seq) (source: HttpHandler<unit>) : HttpHandler<ExtPipeRun seq> =
         source
         |> withLogMessage "ExtPipeRuns:create"
         |> HttpHandler.create items RunsUrl

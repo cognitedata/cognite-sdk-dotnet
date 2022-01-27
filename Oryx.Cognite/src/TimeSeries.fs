@@ -39,7 +39,10 @@ module TimeSeries =
         |> aggregate query Url
 
     /// Create one or more new time series. Returns list of created time series.
-    let create (items: IEnumerable<TimeSeriesCreate>) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<#TimeSeries>> =
+    let create
+        (items: IEnumerable<TimeSeriesCreate>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<#TimeSeries>> =
         source
         |> withLogMessage "TimeSeries:create"
         |> create items Url
@@ -52,7 +55,11 @@ module TimeSeries =
 
     /// Retrieves information about multiple time series in the same project. A maximum of 1000 time series IDs may be
     /// listed per request and all of them must be unique. Returns the time series with the given ids.
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<#TimeSeries seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#TimeSeries seq> =
         source
         |> withLogMessage "TimeSeries:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url
@@ -66,20 +73,28 @@ module TimeSeries =
 
     /// Updates multiple time series within the same project. This operation supports partial updates, meaning that
     /// fields omitted from the requests are not changed Returns list of updated time series.
-    let update (query: IEnumerable<UpdateItem<TimeSeriesUpdate>>) (source: HttpHandler<unit>) : HttpHandler<#TimeSeries seq> =
+    let update
+        (query: IEnumerable<UpdateItem<TimeSeriesUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#TimeSeries seq> =
         source
-        |>withLogMessage "TimeSeries:update"
+        |> withLogMessage "TimeSeries:update"
         |> update query Url
 
     /// Executes an on-the-fly synthetic query
     /// For example you can use the expression "24 * ts{externalId='production/hour'}" to convert from hourly to daily production rates.
     /// More about synthetic queries https://docs.cognite.com/dev/concepts/resource_types/timeseries.html#synthetic-time-series
-    let syntheticQuery (query: TimeSeriesSyntheticQuery) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<DataPointsSyntheticItem>> =
+    let syntheticQuery
+        (query: TimeSeriesSyntheticQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<DataPointsSyntheticItem>> =
         http {
             let url = Url +/ "synthetic/query"
+
             let! ret =
                 source
                 |> withLogMessage "TimeSeries:syntheticQuery"
                 |> postV10<TimeSeriesSyntheticQuery, ItemsWithoutCursor<DataPointsSyntheticItem>> query url
+
             return ret.Items
         }

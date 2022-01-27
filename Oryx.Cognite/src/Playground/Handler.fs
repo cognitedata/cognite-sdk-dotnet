@@ -19,17 +19,19 @@ open CogniteSdk
 [<AutoOpen>]
 module Handler =
     let getPlayground<'TResult> (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
-        source
-        |> withVersion Playground
-        |> get url
+        source |> withVersion Playground |> get url
 
     let inline getByIdz<'TResult> (id: int64) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         let url = url +/ sprintf "%d" id
         source |> getPlayground url
 
-    let getWithQuery<'a, 'b> (query: IQueryParams) (url: string) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<'a>> =
-        let parms = query.ToQueryParams ()
-        
+    let getWithQuery<'a, 'b>
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<'a>> =
+        let parms = query.ToQueryParams()
+
         source
         |> GET
         |> withVersion Playground
@@ -40,7 +42,11 @@ module Handler =
         |> json jsonOptions
         |> log
 
-    let post<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let post<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source
         |> POST
         |> withResource url
@@ -50,13 +56,22 @@ module Handler =
         |> json jsonOptions
         |> log
 
-    let postPlayground<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let postPlayground<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source
         |> withVersion Playground
         |> post content url
 
-    let postWithQuery<'TContent, 'TResult> (content: 'TContent) (query: IQueryParams) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
-        let parms = query.ToQueryParams ()
+    let postWithQuery<'TContent, 'TResult>
+        (content: 'TContent)
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        let parms = query.ToQueryParams()
 
         source
         |> POST
@@ -72,77 +87,116 @@ module Handler =
     let inline list (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         source
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
-        |> postPlayground  content (url +/ "list")
+        |> postPlayground content (url +/ "list")
 
     let inline count (content: 'a) (url: string) (source: HttpHandler<unit>) : HttpHandler<int> =
         http {
-            let url =  url +/ "count"
+            let url = url +/ "count"
+
             let! item =
                 source
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postPlayground<'a, AggregateCount> content url
+
             return item.Count
         }
 
     let search<'a, 'b> (content: 'a) (url: string) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<'b>> =
         http {
             let url = url +/ "search"
+
             let! ret =
                 source
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postPlayground<'a, ItemsWithoutCursor<'b>> content url
+
             return ret.Items
         }
 
-    let searchPlayground<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let searchPlayground<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         http {
             let url = url +/ "search"
+
             let! ret =
                 source
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postPlayground<'TContent, 'TResult> content url
+
             return ret
         }
 
-    let update<'TContent, 'TResult> (items: IEnumerable<UpdateItem<'TContent>>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'TResult>> =
+    let update<'TContent, 'TResult>
+        (items: IEnumerable<UpdateItem<'TContent>>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
             let url = url +/ "update"
             let request = ItemsWithoutCursor<UpdateItem<'TContent>>(Items = items)
+
             let! ret =
                 source
                 |> postPlayground<ItemsWithoutCursor<UpdateItem<'TContent>>, ItemsWithoutCursor<'TResult>> request url
+
             return ret.Items
         }
 
-    let retrieve<'TContent, 'TResult> (ids: Identity seq) (url: string) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<'TResult>> =
+    let retrieve<'TContent, 'TResult>
+        (ids: Identity seq)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
             let url = url +/ "byids"
             let request = ItemsWithoutCursor<Identity>(Items = ids)
+
             let! ret =
                 source
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postPlayground<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'TResult>> request url
+
             return ret.Items
         }
 
-    let create<'TContent, 'TResult> (content: IEnumerable<'TContent>) (url: string) (source: HttpHandler<unit>): HttpHandler<IEnumerable<'TResult>> =
+    let create<'TContent, 'TResult>
+        (content: IEnumerable<'TContent>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
-            let content' = ItemsWithoutCursor(Items=content)
+            let content' = ItemsWithoutCursor(Items = content)
+
             let! ret =
                 source
                 |> postPlayground<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' url
+
             return ret.Items
         }
 
-    let createWithQuery<'TContent, 'TResult> (content: IEnumerable<'TContent>) (query: IQueryParams) (url: string)(source: HttpHandler<unit>) : HttpHandler<IEnumerable<'TResult>> =
+    let createWithQuery<'TContent, 'TResult>
+        (content: IEnumerable<'TContent>)
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         http {
-            let content' = ItemsWithoutCursor(Items=content)
+            let content' = ItemsWithoutCursor(Items = content)
+
             let! ret =
                 source
                 |> postWithQuery<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' query url
+
             return ret.Items
         }
 
-    let inline delete<'TContent, 'TResult> (content: 'TContent) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+    let inline delete<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         let url = url +/ "delete"
         source |> postPlayground content url

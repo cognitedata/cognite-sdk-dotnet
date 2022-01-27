@@ -74,7 +74,11 @@ module Events =
     /// <param name="ids">The ids of the events to get.</param>
     /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
     /// <returns>Events with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<#Event seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#Event seq> =
         source
         |> withLogMessage "Events:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url

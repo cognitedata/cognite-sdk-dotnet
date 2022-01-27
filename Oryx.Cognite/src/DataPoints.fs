@@ -53,12 +53,17 @@ module DataPoints =
         |> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
-    let latest (query: DataPointsLatestQuery) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<DataPointsItem<DataPoint>>> =
+    let latest
+        (query: DataPointsLatestQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<DataPointsItem<DataPoint>>> =
         http {
             let url = Url +/ "latest"
+
             let! ret =
                 source
                 |> withLogMessage "DataPoints:latest"
                 |> postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>> query url
+
             return ret.Items
         }

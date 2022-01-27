@@ -62,7 +62,10 @@ module ThreeDModels =
 
     /// Update one or more 3DModels. Supports partial updates, meaning that
     /// fields omitted from the requests are not changed. Returns list of updated 3DModels.
-    let update (query: IEnumerable<UpdateItem<ThreeDModelUpdate>>) (source: HttpHandler<unit>) : HttpHandler<ThreeDModel seq> =
+    let update
+        (query: IEnumerable<UpdateItem<ThreeDModelUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ThreeDModel seq> =
         source
         |> withLogMessage "3DModels:update"
         |> update query Url
@@ -77,7 +80,11 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="query">The query to use.</param>
     /// <returns>List of 3DRevisions matching given filters and optional cursor</returns>
-    let list (modelId: int64) (query: ThreeDRevisionQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<ThreeDRevision>> =
+    let list
+        (modelId: int64)
+        (query: ThreeDRevisionQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<ThreeDRevision>> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
         source
@@ -90,7 +97,11 @@ module ThreeDRevisions =
     /// <param name="modelId">The model to get revisions from.</param>
     /// <param name="items">The 3D Revisions to create.</param>
     /// <returns>List of created 3D Revisions.</returns>
-    let create (modelId: int64) (items: ThreeDRevisionCreate seq) (source: HttpHandler<unit>) : HttpHandler<ThreeDRevision seq> =
+    let create
+        (modelId: int64)
+        (items: ThreeDRevisionCreate seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ThreeDRevision seq> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
         source
@@ -135,7 +146,7 @@ module ThreeDRevisions =
     let update
         (modelId: int64)
         (query: IEnumerable<UpdateItem<ThreeDRevisionUpdate>>)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<ThreeDRevision seq> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
@@ -151,7 +162,12 @@ module ThreeDRevisions =
     /// <param name="revisionId">The revision to get logs from.</param>
     /// <param name="query">The update query.</param>
     /// <returns>Corresponing revisions after applying the updates.</returns>
-    let updateThumbnail (modelId: int64) (revisionId: int64) (fileId: int64) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let updateThumbnail
+        (modelId: int64)
+        (revisionId: int64)
+        (fileId: int64)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
         let url =
             Url
             +/ sprintf "%d" modelId
@@ -176,7 +192,7 @@ module ThreeDRevisions =
         (modelId: int64)
         (revisionId: int64)
         (query: ThreeDRevisionLogQuery)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ThreeDRevisionLog>> =
         let url =
             Url
@@ -202,7 +218,7 @@ module ThreeDNodes =
         (modelId: int64)
         (revisionId: int64)
         (query: ThreeDNodeQuery)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ThreeDNode>> =
         let url =
             Url
@@ -229,7 +245,7 @@ module ThreeDAssetMappings =
         (modelId: int64)
         (revisionId: int64)
         (query: ThreeDAssetMappingQuery)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ThreeDAssetMapping>> =
         let url =
             Url
@@ -253,7 +269,7 @@ module ThreeDAssetMappings =
         (modelId: int64)
         (revisionId: int64)
         (items: ThreeDAssetMappingCreate seq)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<ThreeDAssetMapping seq> =
         let url =
             Url
@@ -276,7 +292,7 @@ module ThreeDAssetMappings =
         (modelId: int64)
         (revisionId: int64)
         (assetMappings: IEnumerable<Identity>)
-        (source: HttpHandler<unit>) 
+        (source: HttpHandler<unit>)
         : HttpHandler<EmptyResponse> =
         let url =
             Url

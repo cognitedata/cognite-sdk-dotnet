@@ -15,8 +15,7 @@ module TemplateGroups =
     [<Literal>]
     let Url = "/templategroups"
 
-    let templateGroupVersionsUrl externalId =
-        Url +/ externalId +/ "versions"
+    let templateGroupVersionsUrl externalId = Url +/ externalId +/ "versions"
 
     /// <summary>
     /// Retrieves list of template groups and a cursor if given limit is exceeded.
@@ -25,7 +24,7 @@ module TemplateGroups =
     /// <returns>List of domains.</returns>
     let list (query: TemplateGroupFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroup>> =
         let url = Url
-        
+
         source
         |> withLogMessage "templategroups:list"
         |> list query url
@@ -33,9 +32,13 @@ module TemplateGroups =
     /// <summary>
     /// Retrieves a list of versions of a given template group, and a version if given limit is exceeded.
     /// </summary>
-    let listVersions (externalId: string) (query: TemplateGroupVersionFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroupVersion>> =
+    let listVersions
+        (externalId: string)
+        (query: TemplateGroupVersionFilter)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<TemplateGroupVersion>> =
         let url = templateGroupVersionsUrl externalId
-        
+
         source
         |> withLogMessage "templategroups:listVersions"
         |> Handler.list query url
@@ -47,7 +50,12 @@ module TemplateGroups =
     /// <param name="templateGroupVersion">Select a specific version of the Template Group schema</param>
     /// <param name="query">The GraphQL query.</param>
     /// <returns>The GraphQL result.</returns>
-    let graphql (externalId: string) (templateGroupVersion: int) (query: string) (source: HttpHandler<unit>) : HttpHandler<GraphQlResult> =
+    let graphql
+        (externalId: string)
+        (templateGroupVersion: int)
+        (query: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<GraphQlResult> =
         let url =
             templateGroupVersionsUrl externalId
             +/ (templateGroupVersion |> string)

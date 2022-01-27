@@ -71,7 +71,11 @@ module Assets =
     /// <param name="ids">The ids of the assets to get.</param>
     /// <param name="ignoreUnknownIds">True if unknown ids should be ignored.</param>
     /// <returns>Assets with given ids.</returns>
-    let retrieve (ids: Identity seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<#Asset seq> =
+    let retrieve
+        (ids: Identity seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#Asset seq> =
         source
         |> withLogMessage "Assets:retrieve"
         |> retrieveIgnoreUnknownIds ids (Option.ofNullable ignoreUnknownIds) Url

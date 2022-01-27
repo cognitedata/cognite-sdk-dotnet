@@ -40,8 +40,8 @@ module Functions =
     /// <param name="ids">The list of ids for Functions to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let items = ItemsWithoutCursor(Items=ids)
-        
+        let items = ItemsWithoutCursor(Items = ids)
+
         source
         |> withLogMessage "Functions:delete"
         |> delete items Url
@@ -65,7 +65,7 @@ module FunctionCalls =
     /// Retrieves information about a function call given an functionId and a callId.
     let get (functionId: int64) (callId: int64) (source: HttpHandler<unit>) : HttpHandler<FunctionCall> =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
-        
+
         source
         |> withLogMessage "FunctionCalls:get"
         |> getById callId url
@@ -75,10 +75,14 @@ module FunctionCalls =
     /// </summary>
     /// <param name="functionId">Id for function to get call from.</param>
     /// <returns>List of FunctionCalls.</returns>
-    let list (functionId: int64) (filter: FunctionCallFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<FunctionCall>> =
+    let list
+        (functionId: int64)
+        (filter: FunctionCallFilter)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<FunctionCall>> =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
-        let filterQuery = FunctionCallQuery(Filter=filter)
-        
+        let filterQuery = FunctionCallQuery(Filter = filter)
+
         source
         |> withLogMessage "FunctionCalls:list"
         |> list filterQuery url
@@ -89,9 +93,18 @@ module FunctionCalls =
     /// <param name="functionId">Id for function to get call from.</param>
     /// <param name="callId">Id for function call to get.</param>
     /// <returns>List of logs from function call.</returns>
-    let listLogs (functionId: int64) (callId: int64) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<FunctionCallLogEntry>> =
-        let url = Url +/ sprintf "%d" functionId +/ "calls" +/ sprintf "%d" callId +/ "logs"
-        
+    let listLogs
+        (functionId: int64)
+        (callId: int64)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<FunctionCallLogEntry>> =
+        let url =
+            Url
+            +/ sprintf "%d" functionId
+            +/ "calls"
+            +/ sprintf "%d" callId
+            +/ "logs"
+
         source
         |> withLogMessage "FunctionCalls:listLogs"
         |> getPlayground url
@@ -102,9 +115,18 @@ module FunctionCalls =
     /// <param name="functionId">Id for function to get call from.</param>
     /// <param name="callId">Id for function call to get.</param>
     /// <returns>Response from function call.</returns>
-    let retrieveResponse (functionId: int64) (callId: int64) (source: HttpHandler<unit>) : HttpHandler<FunctionCallResponse> =
-        let url = Url +/ sprintf "%d" functionId +/ "calls" +/ sprintf "%d" callId +/ "response"
-        
+    let retrieveResponse
+        (functionId: int64)
+        (callId: int64)
+        (source: HttpHandler<unit>)
+        : HttpHandler<FunctionCallResponse> =
+        let url =
+            Url
+            +/ sprintf "%d" functionId
+            +/ "calls"
+            +/ sprintf "%d" callId
+            +/ "response"
+
         source
         |> withLogMessage "FunctionCalls:retrieveResponse"
         |> getPlayground url
@@ -117,8 +139,8 @@ module FunctionCalls =
     /// <returns>Function call response.</returns>
     let callFunction (functionId: int64) (data: 'b) (source: HttpHandler<unit>) : HttpHandler<FunctionCall> =
         let url = Url +/ sprintf "%d" functionId +/ "call"
-        let dataDto = FunctionCallData(Data=data)
-        
+        let dataDto = FunctionCallData(Data = data)
+
         source
         |> withLogMessage "FunctionCalls:CallFunction"
         |> postPlayground dataDto url
@@ -142,7 +164,10 @@ module FunctionSchedules =
     /// </summary>
     /// <param name="functionSchedules">The FunctionSchedules to create.</param>
     /// <returns>List of created FunctionSchedules.</returns>
-    let create (functionSchedules: FunctionScheduleCreate seq) (source: HttpHandler<unit>) : HttpHandler<FunctionSchedule seq> =
+    let create
+        (functionSchedules: FunctionScheduleCreate seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<FunctionSchedule seq> =
         source
         |> withLogMessage "FunctionSchedules:create"
         |> create functionSchedules Url
@@ -153,8 +178,8 @@ module FunctionSchedules =
     /// <param name="ids">The list of server-ids for FunctionSchedules to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (ids: int64 seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let items = ItemsWithoutCursor(Items=ids)
-        
+        let items = ItemsWithoutCursor(Items = ids)
+
         source
         |> withLogMessage "FunctionSchedules:delete"
         |> delete items Url
