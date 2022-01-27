@@ -3,24 +3,22 @@ storage: none
 
 group Sdk
     source https://www.nuget.org/api/v2
-    source C:\Users\dag\Developer\Packages
     framework: netstandard2.0
 
     nuget FSharp.Core ~> 6
-    nuget Oryx = 5.0.0-alpha-005
+    nuget Oryx prerelease
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
-    source C:\Users\dag\Developer\Packages
     storage: none
     framework: netstandard2.0
 
     nuget FSharp.Core ~> 6
     nuget System.Text.Json ~> 6
     nuget CogniteSdk.Protobuf
-    nuget Oryx = 5.0.0-alpha-005
-    nuget Oryx.Protobuf = 5.0.0-alpha-005
-    nuget Oryx.SystemTextJson = 5.0.0-alpha-005
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
 
 group Types
     source https://www.nuget.org/api/v2
@@ -30,7 +28,6 @@ group Types
 
 group Test
     source https://www.nuget.org/api/v2
-    source C:\Users\dag\Developer\Packages
     storage: none
 
     nuget FSharp.Core ~> 6
@@ -41,13 +38,12 @@ group Test
     nuget Microsoft.NET.Test.Sdk ~> 16
     nuget MSTest.TestAdapter ~> 1
     nuget MSTest.TestFramework ~> 1
-    nuget Oryx = 5.0.0-alpha-005
-    nuget Oryx.Protobuf = 5.0.0-alpha-005
-    nuget Oryx.SystemTextJson = 5.0.0-alpha-005
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
 
 group Playground
     source https://www.nuget.org/api/v2
-    source C:\Users\dag\Developer\Packages
     storage: none
 
     nuget FSharp.Core
@@ -58,9 +54,9 @@ group Playground
     nuget Microsoft.Extensions.Hosting
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
-    nuget Oryx = 5.0.0-alpha-005
-    nuget Oryx.Protobuf = 5.0.0-alpha-005
-    nuget Oryx.SystemTextJson = 5.0.0-alpha-005
+    nuget Oryx prerelease
+    nuget Oryx.Protobuf prerelease
+    nuget Oryx.SystemTextJson prerelease
     nuget CogniteSdk.Protobuf
     nuget Serilog
     nuget Serilog.Extensions.Logging

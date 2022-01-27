@@ -46,7 +46,7 @@ namespace CogniteSdk.Resources
             var ctx = _authHandler is null ? _ctx : withTokenRenewer(_authHandler, _ctx);
             return HttpHandler.withCancellationToken(token, ctx);
         }
-        
+
         /// <summary>
         /// Helper method for running an Oryx handler in the client context with authentication handling.
         /// </summary>

@@ -89,7 +89,7 @@ module HttpHandler =
                 Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } })
 
     let withLogLevel (logLevel: LogLevel) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
-        Oryx.Logging.withLogLevel logLevel source
+        withLogLevel logLevel source
 
     let empty: HttpHandler<unit> =
         httpRequest
