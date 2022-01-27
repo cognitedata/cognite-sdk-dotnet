@@ -32,12 +32,12 @@ group Test
 
     nuget FSharp.Core ~> 6
     nuget coverlet.msbuild
-    nuget Unquote ~> 5
+    nuget Unquote ~> 6
     nuget xunit ~> 2
     nuget xunit.runner.visualstudio ~> 2
-    nuget Microsoft.NET.Test.Sdk ~> 16
-    nuget MSTest.TestAdapter ~> 1
-    nuget MSTest.TestFramework ~> 1
+    nuget Microsoft.NET.Test.Sdk ~> 17
+    nuget MSTest.TestAdapter ~> 2
+    nuget MSTest.TestFramework ~> 2
     nuget Oryx prerelease
     nuget Oryx.Protobuf prerelease
     nuget Oryx.SystemTextJson prerelease
