@@ -98,9 +98,9 @@ module HttpHandler =
         |> withLogFormat "CDF ({Message}): {Url}\n→ {RequestContent}\n← {ResponseContent}"
 
     let withResource (resource: string) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
-        fun next ->
+        fun onSuccess ->
             fun ctx ->
-                next
+                onSuccess
                     { ctx with
                         Request =
                             { ctx.Request with
@@ -108,9 +108,9 @@ module HttpHandler =
             |> source
 
     let withVersion<'TSource> (version: ApiVersion) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
-        fun next ->
+        fun onSuccess ->
             fun ctx ->
-                next
+                onSuccess
                     { ctx with
                         Request =
                             { ctx.Request with
@@ -131,8 +131,8 @@ module HttpHandler =
 
             baseUrl +/ url
 
-        fun next ->
-            fun ctx -> next { ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }
+        fun onSuccess ->
+            fun ctx -> onSuccess { ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } }
             |> source
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't

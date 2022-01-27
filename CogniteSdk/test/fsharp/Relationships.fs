@@ -52,14 +52,20 @@ let ``create and delete relationships is ok`` () = task {
     let! createRes = writeClient.Relationships.CreateAsync relationshipCreateObject
     let! getExtIds = writeClient.Relationships.ListAsync listFilter
 
-    let relationshipWasCreated = createRes |> Seq.map (fun r -> r.ExternalId = externalId) |> Seq.contains true
+    let relationshipWasCreated =
+        createRes
+             |> List.ofSeq
+             |> List.map (fun r ->
+                let res = r.ExternalId = externalId
+                res)
+             |> (fun s -> List.contains true s)
 
     // cleanup
     let deleteIds = getExtIds.Items |> Seq.map (fun relationship -> relationship.ExternalId)
     let! deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
-    test <@ relationshipWasCreated@>
+    test <@ relationshipWasCreated @>
     test <@ createRes |> Seq.length >= 1 @>
     test <@ getExtIds.Items |> Seq.length > 0 @>
 }
