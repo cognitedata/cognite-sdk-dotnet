@@ -16,12 +16,14 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.100
+          dotnet-version: 6.0.101
 
-      - name: Setup dotnet manifest
-        run: dotnet new tool-manifest
-      - name: Setup paket
-        run: dotnet tool install Paket
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Install dependencies
+        run: dotnet restore
+
       - name: Dotnet Pack
         run: dotnet pack -c release -p:PackageVersion=${GITHUB_REF##*/v} -p:FileVersion=${GITHUB_REF##*/v} -p:InformationalVersion=${GITHUB_REF##*/v}
 
