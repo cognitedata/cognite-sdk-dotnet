@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal LabelsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal LabelsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Labels.list(query);
-            return await RunAsync(req, token);
+            var req = Labels.list(query, GetContext(token));
+            return await RunAsync(req);
         }
 
         /// <summary>
@@ -50,8 +50,8 @@ namespace CogniteSdk.Resources
         {
             if (labels is null) throw new ArgumentNullException(nameof(labels));
 
-            var req = Labels.create(labels);
-            return await RunAsync(req, token);
+            var req = Labels.create(labels, _ctx);
+            return await RunAsync(req);
         }
 
         #region Delete overloads
@@ -65,8 +65,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = Labels.delete(query);
-            await RunAsync(req, token).ConfigureAwait(false);
+            var req = Labels.delete(query, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
         }
 
 

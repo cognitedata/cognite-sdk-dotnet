@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal DataSetsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             if (dataSets is null) throw new ArgumentNullException(nameof(dataSets));
 
-            var req = DataSets.create(dataSets);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.create(dataSets, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.list<T>(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.list<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace CogniteSdk.Resources
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 
-            var req = DataSets.aggregate(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.aggregate(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Retrieve overloads
@@ -97,8 +97,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.retrieve<T>(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -167,8 +167,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = DataSets.update<DataSet>(query);
-            var ret = await RunAsync(req, token).ConfigureAwait(false);
+            var req = DataSets.update<DataSet>(query, GetContext(token));
+            var ret = await RunAsync(req).ConfigureAwait(false);
             return ret;
         }
     }

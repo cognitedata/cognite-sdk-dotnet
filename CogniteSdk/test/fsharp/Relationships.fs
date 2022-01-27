@@ -1,15 +1,13 @@
 module Tests.Integration.Relationships
 
 open System
-open System.Collections.Generic
 
-open FSharp.Control.Tasks
+open FSharp.Control.TaskBuilder
 open Swensen.Unquote
-open Oryx
 open Xunit
 
 open CogniteSdk
-open Common
+open Tests.Integration.Common
 
 [<Fact>]
 let ``Relationships resource available`` () = task {
@@ -51,23 +49,30 @@ let ``create and delete relationships is ok`` () = task {
         )
 
     // Act
-    let! createRes = writeClient.Relationships.CreateAsync relationshipCreateObject
+    let! createRes =
+        task {
+            let! res = writeClient.Relationships.CreateAsync relationshipCreateObject
+            return res |> Seq.toList
+        }
     let! getExtIds = writeClient.Relationships.ListAsync listFilter
 
-    let relationshipWasCreated = createRes |> Seq.map (fun r -> r.ExternalId = externalId) |> Seq.contains true
+    let relationshipWasCreated =
+        createRes
+             |> List.map (fun r -> r.ExternalId = externalId)
+             |> List.contains true
 
     // cleanup
     let deleteIds = getExtIds.Items |> Seq.map (fun relationship -> relationship.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync deleteIds
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
-    test <@ relationshipWasCreated@>
-    test <@ createRes |> Seq.length >= 1 @>
+    test <@ relationshipWasCreated @>
+    test <@ createRes |> List.length >= 1 @>
     test <@ getExtIds.Items |> Seq.length > 0 @>
 }
 
 [<Fact>]
-let ``retrieve relationship is ok`` () = task{
+let ``retrieve relationship is ok`` () = task {
     // Arrange
     // create relationship to use for retrieval test
     let srcExternalId = "Temp-RelationshipTestRetrieveSource"
@@ -103,7 +108,7 @@ let ``retrieve relationship is ok`` () = task{
     let! relationshipsBySourceExtId = writeClient.Relationships.ListAsync relationshipsFilter
     let deleteIds = relationshipsBySourceExtId.Items |> Seq.map (fun relationship -> relationship.ExternalId)
 
-    let! deleteResult = writeClient.Relationships.DeleteAsync deleteIds
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 1 @>
@@ -166,7 +171,7 @@ let ``filter by SourceExternalId is ok`` () = task {
                 )
         )
     let deleteIds = deleteRelationships.Items|> Seq.map (fun r -> r.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync (deleteIds)
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -230,7 +235,7 @@ let ``filter by TargetExternalId is ok`` () = task {
                 )
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync (deleteIds)
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -298,7 +303,7 @@ let ``filter by SourceType is ok`` () = task {
                 )
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync (deleteIds)
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -365,7 +370,7 @@ let ``filter by TargetType is ok`` () = task {
                 )
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync (deleteIds)
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>
@@ -434,7 +439,7 @@ let ``filter by Confidence is ok`` () = task {
                 )
         )
     let deleteIds = deleteRelationships.Items |> Seq.map (fun r -> r.ExternalId)
-    let! deleteResult = writeClient.Relationships.DeleteAsync (deleteIds)
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
 
     // Assert
     test <@ createRes |> Seq.length = 2 @>

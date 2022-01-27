@@ -16,79 +16,133 @@ open CogniteSdk
 [<CompilationRepresentation(CompilationRepresentationFlags.ModuleSuffix)>]
 [<AutoOpen>]
 module Handler =
-    let withBetaHeader<'TResult> : IHttpHandler<unit> =
-        withHeader "version" "beta"
+    let withBetaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
+        source |> withHeader ("version", "beta")
 
-    let withBetaVersion<'TResult> : IHttpHandler<unit> =
-        withBetaHeader<'TResult>
-        >=> withVersion V10
+    let withBetaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
+        source
+        |> withBetaHeader<'TSource>
+        |> withVersion V10
 
-    let get (url: string) : IHttpHandler<unit> =
-        withBetaVersion
-        >=> get url
+    let get (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withBetaVersion |> get url
 
-    let inline getById (id: int64) (url: string) : IHttpHandler<unit> =
-        url +/ sprintf "%d" id |> get
+    let inline getById (id: int64) (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        let url = url +/ sprintf "%d" id
+        source |> get url
 
-    let getWithQuery<'TNext> (query: IQueryParams) (url: string) : IHttpHandler<unit, ItemsWithCursor<'TNext>> =
-        withBetaVersion
-        >=> getWithQuery query url
+    let getWithQuery<'TResult>
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<'TResult>> =
+        source
+        |> withBetaVersion
+        |> getWithQuery query url
 
-    let post<'TSource, 'TResult> (content: 'TSource) (url: string) : IHttpHandler<unit, 'TResult> =
-        withBetaVersion
-        >=> post content url
+    let post<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        source
+        |> withBetaVersion
+        |> post<'TContent, 'TResult> content url
 
-    let postWithQuery<'TSource, 'TResult> (content: 'TSource) (query: IQueryParams) (url: string) : IHttpHandler<unit, 'TResult> =
-        withBetaVersion
-        >=> postWithQuery content query url jsonOptions
+    let postWithQuery<'TContent, 'TResult>
+        (content: 'TContent)
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        source
+        |> withBetaVersion
+        |> postWithQuery<'TContent, 'TResult> content query url jsonOptions
 
-    let inline list (content: 'TSource) (url: string) : IHttpHandler<unit, 'TResult> =
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> post content (url +/ "list")
+    let inline list (content: 'TSource) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+        source
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> post content (url +/ "list")
 
-    let inline count (content: 'TSource) (url: string) : IHttpHandler<unit, int> =
-        let url =  url +/ "count"
+    let inline count (content: 'TSource) (url: string) (source: HttpHandler<unit>) : HttpHandler<int> =
+        let url = url +/ "count"
 
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> post<'TSource, AggregateCount> content url
-        >=> HttpHandler.map (fun item -> item.Count)
+        source
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> post<'TSource, AggregateCount> content url
+        |> HttpHandler.map (fun item -> item.Count)
 
-    let search<'TSource, 'TResult> (content: 'TSource) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
+    let search<'TSource, 'TResult>
+        (content: 'TSource)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         let url = url +/ "search"
 
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> post<'TSource, ItemsWithoutCursor<'TResult>> content url
-        >=> HttpHandler.map (fun ret -> ret.Items)
+        source
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> post<'TSource, ItemsWithoutCursor<'TResult>> content url
+        |> HttpHandler.map (fun ret -> ret.Items)
 
-    let update<'TSource, 'TResult> (items: IEnumerable<UpdateItem<'TSource>>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
-        req {
+    let update<'TContent, 'TResult>
+        (items: IEnumerable<UpdateItem<'TContent>>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
+        http {
             let url = url +/ "update"
-            let request = ItemsWithoutCursor<UpdateItem<'TSource>>(Items = items)
-            let! ret = post<ItemsWithoutCursor<UpdateItem<'TSource>>, ItemsWithoutCursor<'TResult>> request url
+            let request = ItemsWithoutCursor<UpdateItem<'TContent>>(Items = items)
+
+            let! ret =
+                source
+                |> post<ItemsWithoutCursor<UpdateItem<'TContent>>, ItemsWithoutCursor<'TResult>> request url
+
             return ret.Items
         }
 
-    let retrieve<'T> (ids: Identity seq) (url: string) : IHttpHandler<unit, IEnumerable<'T>> =
+    let retrieve<'TResult>
+        (ids: Identity seq)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
         let url = url +/ "byids"
         let request = ItemsWithoutCursor<Identity>(Items = ids)
 
-        withCompletion HttpCompletionOption.ResponseHeadersRead
-        >=> post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'T>> request url
-        >=> HttpHandler.map (fun ret -> ret.Items)
+        source
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> post<ItemsWithoutCursor<Identity>, ItemsWithoutCursor<'TResult>> request url
+        |> HttpHandler.map (fun ret -> ret.Items)
 
-    let create<'TSource, 'TResult> (content: IEnumerable<'TSource>) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
-        req {
-            let content' = ItemsWithoutCursor(Items=content)
-            let! ret = post<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' url
+    let create<'TSource, 'TResult>
+        (content: IEnumerable<'TSource>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
+        http {
+            let content' = ItemsWithoutCursor(Items = content)
+
+            let! ret =
+                source
+                |> post<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' url
+
             return ret.Items
         }
 
-    let createWithQuery<'TSource, 'TResult> (content: IEnumerable<'TSource>) (query: IQueryParams) (url: string) : IHttpHandler<unit, IEnumerable<'TResult>> =
-        req {
-            let content' = ItemsWithoutCursor(Items=content)
-            let! ret = postWithQuery<ItemsWithoutCursor<'TSource>, ItemsWithoutCursor<'TResult>> content' query url
+    let createWithQuery<'TContent, 'TResult>
+        (content: IEnumerable<'TContent>)
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
+        http {
+            let content' = ItemsWithoutCursor(Items = content)
+
+            let! ret =
+                source
+                |> postWithQuery<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' query url
+
             return ret.Items
         }
 
-    let inline delete<'T> (content: 'T) (url: string) : IHttpHandler<unit> =
-        url +/ "delete" |> post content
+    let inline delete<'T> (content: 'T) (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        let url = url +/ "delete"
+        source |> post content url

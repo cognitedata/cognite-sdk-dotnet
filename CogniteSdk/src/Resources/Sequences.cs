@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.FSharp.Core;
 using Oryx;
 
 namespace CogniteSdk.Resources
@@ -21,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal SequencesResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal SequencesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -38,8 +39,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.list(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.list(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -55,8 +56,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.aggregate(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.aggregate(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -72,8 +73,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(sequences));
             }
 
-            var req = Oryx.Cognite.Sequences.create(sequences);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.create(sequences, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -89,8 +90,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.delete(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.delete(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -141,8 +142,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Sequences.retrieve(ids, ignoreUnknownIds);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.retrieve(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -188,15 +189,15 @@ namespace CogniteSdk.Resources
         /// <param name="query">Search query.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of assets matching given criteria.</returns>
-        public async Task<IEnumerable<Sequence>> SearchAsync (SequenceSearch query, CancellationToken token = default)
+        public async Task<IEnumerable<Sequence>> SearchAsync(SequenceSearch query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.search(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.search(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -205,15 +206,15 @@ namespace CogniteSdk.Resources
         /// <param name="query">The list of events to update.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>List of updated assets.</returns>
-        public async Task<IEnumerable<Sequence>> UpdateAsync (IEnumerable<UpdateItem<SequenceUpdate>> query, CancellationToken token = default)
+        public async Task<IEnumerable<Sequence>> UpdateAsync(IEnumerable<UpdateItem<SequenceUpdate>> query, CancellationToken token = default)
         {
             if (query is null)
             {
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.update(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.update(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -231,8 +232,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.listRows(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.listRows(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -248,8 +249,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.createRows(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.createRows(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -265,8 +266,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Sequences.deleteRows(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Sequences.deleteRows(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

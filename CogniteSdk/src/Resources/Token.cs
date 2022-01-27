@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using CogniteSdk.Token;
+using Microsoft.FSharp.Core;
 using Oryx;
 
 namespace CogniteSdk.Resources
@@ -19,7 +20,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        public TokenResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        public TokenResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -30,8 +31,8 @@ namespace CogniteSdk.Resources
         /// <returns></returns>
         public async Task<TokenInspect> InspectAsync(CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Token.inspect();
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Token.inspect(GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
     }

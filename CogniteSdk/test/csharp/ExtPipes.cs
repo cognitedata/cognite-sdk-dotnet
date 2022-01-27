@@ -14,9 +14,7 @@ namespace Test.CSharp.Integration
         public Client Write => WriteClient;
         public ExtPipe TestPipeline { get; private set; }
         public long DataSetId { get; private set; }
-        public ExtPipesFixture()
-        {
-        }
+        
         protected override void Dispose(bool disposing)
         {
         }

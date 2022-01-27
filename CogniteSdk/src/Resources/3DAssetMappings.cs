@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite;
 using static Oryx.Cognite.HttpHandlerModule;
@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ThreeDAssetMappingsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal ThreeDAssetMappingsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -42,8 +42,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = ThreeDAssetMappings.list(modelId, revisionId, query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.list(modelId, revisionId, query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -61,8 +61,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ThreeDAssetMapping));
             }
 
-            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.create(modelId, revisionId, ThreeDAssetMapping, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         #region Delete overloads
@@ -81,8 +81,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = ThreeDAssetMappings.delete(modelId, revisionId, ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>

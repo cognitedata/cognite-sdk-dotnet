@@ -129,10 +129,10 @@ namespace Test.CSharp.Integration
         {
             // Arrange
             var numOfAssets = 10;
-            var query = new AssetSearch()
+            var query = new AssetSearch
             {
                 Limit = numOfAssets,
-                Search = new Search()
+                Search = new Search
                 {
                     Name = "23"
                 }
@@ -151,12 +151,12 @@ namespace Test.CSharp.Integration
         public async Task FilterAssetsReturnsTheExpectedNumberOfAssetsAsync()
         {
             // Arrange
-            var numOfAssets = 10;
-            var id = 6687602007296940;
-            var query = new AssetQuery() {
+            const int numOfAssets = 10;
+            const long id = 6687602007296940;
+            var query = new AssetQuery {
                 Limit = numOfAssets,
-                Filter = new AssetFilter() {
-                    RootIds = new List<Identity>() { Identity.Create(id) }
+                Filter = new AssetFilter {
+                    RootIds = new List<Identity> { Identity.Create(id) }
                 }
             };
 
@@ -182,11 +182,11 @@ namespace Test.CSharp.Integration
             };
             var deletes = new AssetDelete
             {
-                Items = new List<Identity>() {Identity.Create(externalIdString)}
+                Items = new List<Identity> {Identity.Create(externalIdString)}
             };
 
             // Act
-            var res = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { newAsset });
+            var res = await WriteClient.Assets.CreateAsync(new List<AssetCreate> { newAsset });
             await WriteClient.Assets.DeleteAsync(deletes);
 
             // Assert
@@ -200,7 +200,7 @@ namespace Test.CSharp.Integration
         public async Task AssetDeleteFailsWhenIdIsInvalidAsync()
         {
             // Arrange
-            var id = 0;
+            const int id = 0;
             var caughtException = false;
 
             var query = new AssetDelete
@@ -242,7 +242,7 @@ namespace Test.CSharp.Integration
             {
                 new AssetUpdateItem(externalId: externalIdString)
                 {
-                    Update = new AssetUpdate()
+                    Update = new AssetUpdate
                     {
                         Name = new Update<string>(newName),
                         Metadata = new UpdateDictionary<string>(add: newMetadata, remove: new List<string> { "oldkey1" })

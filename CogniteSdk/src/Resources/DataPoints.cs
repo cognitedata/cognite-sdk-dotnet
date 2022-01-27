@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Com.Cognite.V1.Timeseries.Proto;
+using Microsoft.FSharp.Core;
 using Oryx;
 namespace CogniteSdk.Resources
 {
@@ -21,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal DataPointsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -38,8 +39,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.list(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.DataPoints.list(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -55,10 +56,10 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.DataPoints.create(points);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.DataPoints.create(points, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Create data points, applying Gzip compression at level <paramref name="compression"/>.
         /// </summary>
@@ -76,8 +77,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.DataPoints.createWithGzip(points, compression);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.DataPoints.createWithGzip(points, compression, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -94,8 +95,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.delete(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.DataPoints.delete(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -111,8 +112,8 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.DataPoints.latest(query);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.DataPoints.latest(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
     }
 }

@@ -1,7 +1,6 @@
 group Oryx.Cognite
     System.Text.Json
     FSharp.Core
-    Ply
     Oryx
     Oryx.SystemTextJson
     Oryx.Protobuf

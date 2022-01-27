@@ -8,7 +8,6 @@
 coverage.lcov
 .ionide
 *.swp
-.config
 .idea
 launchSettings.json
 .metals

@@ -3,13 +3,9 @@
 
 namespace Oryx.Cognite
 
-open System
-open System.Net.Http
-
 open Oryx
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
 
 /// Various asset HTTP handlers.
@@ -19,14 +15,17 @@ module Groups =
     [<Literal>]
     let Url = "/groups"
 
-    let list (query: GroupQuery) : IHttpHandler<unit, ItemsWithoutCursor<Group>> =
-        withLogMessage "Groups:list"
-        >=> getWithQuery query Url
+    let list (query: GroupQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Group>> =
+        source
+        |> withLogMessage "Groups:list"
+        |> getWithQuery query Url
 
-    let create (items: GroupCreate seq) : IHttpHandler<unit, Group seq> =
-        withLogMessage "Groups:create"
-        >=> create items Url
+    let create (items: GroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<Group seq> =
+        source
+        |> withLogMessage "Groups:create"
+        |> create items Url
 
-    let delete (items: GroupDelete) : IHttpHandler<unit, EmptyResponse> =
-        withLogMessage "Groups:delete"
-        >=> delete items Url
+    let delete (items: GroupDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+        source
+        |> withLogMessage "Groups:delete"
+        |> delete items Url

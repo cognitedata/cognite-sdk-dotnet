@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 
 
@@ -22,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal GroupsResource(Func<CancellationToken, Task<string>> authHandler, HttpContext ctx) : base(authHandler, ctx)
+        internal GroupsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -36,8 +36,8 @@ namespace CogniteSdk.Resources
         {
             var query = new GroupQuery { All = all };
 
-            var req = Oryx.Cognite.Groups.list(query);
-            var result = await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.list(query, GetContext(token));
+            var result = await RunAsync(req).ConfigureAwait(false);
             return result.Items;
         }
 
@@ -59,8 +59,8 @@ namespace CogniteSdk.Resources
         /// <returns>List of created groups</returns>
         public async Task<IEnumerable<Group>> CreateAsync(IEnumerable<GroupCreate> items, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Groups.create(items);
-            return await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.create(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace CogniteSdk.Resources
                 Items = ids
             };
 
-            var req = Oryx.Cognite.Groups.delete(query);
-            await RunAsync(req, token).ConfigureAwait(false);
+            var req = Oryx.Cognite.Groups.delete(query, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
         }
     }
 }
