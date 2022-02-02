@@ -126,5 +126,10 @@ namespace CogniteSdk
         /// Details for the running job for this transformation, if one exists.
         /// </summary>
         public TransformationJob RunningJob { get; set; }
+
+        /// <summary>
+        /// Details for the schedule if the transformation is scheduled.
+        /// </summary>
+        public TransformationSchedule Schedule { get; set; }
     }
 }
