@@ -117,5 +117,14 @@ namespace CogniteSdk
         /// </summary>
         public bool HasDestinationOidcCredentials { get; set; }
 
+        /// <summary>
+        /// Details for the last finished job of this transformation.
+        /// </summary>
+        public TransformationJob LastFinishedJob { get; set; }
+
+        /// <summary>
+        /// Details for the running job for this transformation, if one exists.
+        /// </summary>
+        public TransformationJob RunningJob { get; set; }
     }
 }
