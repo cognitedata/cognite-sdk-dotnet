@@ -28,7 +28,7 @@ namespace CogniteSdk
         }
 
         /// <inheritdoc/>
-        public List<(string, string)> ToQueryParams()
+        public virtual List<(string, string)> ToQueryParams()
         {
             var list = new List<(string, string)>();
             if (Limit.HasValue)
