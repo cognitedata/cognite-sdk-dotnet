@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Types.Transformations.Configs
+namespace CogniteSdk
 {
     /// <summary>
     /// Object for retrieving transformations.
     /// </summary>
-    public class TransformationsRetrieve : ItemsWithIgnoreUnknownIds<Identity>
+    public class TransformationRetrieve : ItemsWithIgnoreUnknownIds<Identity>
     {
         /// <summary>
         /// Whether the transformations will be returned with last running and last created job details.
