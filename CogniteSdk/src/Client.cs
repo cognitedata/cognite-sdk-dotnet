@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Oryx;
 using CogniteSdk.Resources;
 using Microsoft.FSharp.Core;
+using Oryx.Pipeline;
 using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk
@@ -125,7 +126,7 @@ namespace CogniteSdk
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for this session.</param>
-        private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> ctx)
+        private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx)
         {
             // Setup resources.
             Assets = new AssetsResource(authHandler, ctx);
@@ -158,7 +159,7 @@ namespace CogniteSdk
         [SuppressMessage("Design", "CA1034:Nested types should not be visible", Justification = "Builder pattern.")]
         public sealed class Builder
         {
-            private FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Unit, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, FSharpFunc<Exception, Task<Unit>>>, FSharpFunc<FSharpFunc<HttpContext, Task<Unit>>, Task<Unit>>>> _context = empty;
+            private FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> _context = empty;
             private Func<CancellationToken, Task<string>> _authHandler;
 
             /// <summary>
