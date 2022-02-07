@@ -102,9 +102,8 @@ module HttpHandler =
         |> update (fun ctx ->
             { ctx with
                 Request =
-                    { ctx.Request with
-                        Items = ctx.Request.Items.Add(PlaceHolder.Resource, Value.String resource) } })
-    
+                    { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Resource, Value.String resource) } })
+
     let withVersion<'TSource> (version: ApiVersion) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         source
         |> update (fun ctx ->
@@ -112,7 +111,7 @@ module HttpHandler =
                 Request =
                     { ctx.Request with
                         Items = ctx.Request.Items.Add(PlaceHolder.ApiVersion, Value.String(version.ToString())) } })
-    
+
     let withUrl (url: string) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         let urlBuilder (request: HttpRequest) =
             let extra = request.Items
