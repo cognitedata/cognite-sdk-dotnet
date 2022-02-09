@@ -20,7 +20,7 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// The context.
         /// </summary>
-        protected readonly FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> _ctx;
+        private readonly FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> _ctx;
         /// <summary>
         /// The authentication handler.
         /// </summary>
