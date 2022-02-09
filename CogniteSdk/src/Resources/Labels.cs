@@ -51,7 +51,7 @@ namespace CogniteSdk.Resources
         {
             if (labels is null) throw new ArgumentNullException(nameof(labels));
 
-            var req = Labels.create(labels, _ctx);
+            var req = Labels.create(labels, GetContext(token));
             return await RunAsync(req);
         }
 

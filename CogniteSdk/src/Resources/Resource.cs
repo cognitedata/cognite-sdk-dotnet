@@ -44,7 +44,7 @@ namespace CogniteSdk.Resources
         /// <returns>HTTP handler with context</returns>
         internal FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> GetContext(CancellationToken token)
         {
-            var ctx = _authHandler is null ? _ctx : withTokenRenewer(_authHandler, _ctx);
+            var ctx = _authHandler is null ? _ctx : withTokenRenewer(_authHandler, GetContext(token));
             return HttpHandler.withCancellationToken(token, ctx);
         }
 
