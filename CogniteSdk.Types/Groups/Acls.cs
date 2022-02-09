@@ -85,18 +85,8 @@ namespace CogniteSdk
         /// <summary>
         /// List of internal ids for some other resource.
         /// </summary>
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public IEnumerable<long> Ids { get; set; }
-    }
-
-    /// <summary>
-    /// Scope containing a list of ids to some other resource, as strings.
-    /// </summary>
-    public class IdScopeString : BaseScope
-    {
-        /// <summary>
-        /// List of internal ids for some other resource.
-        /// </summary>
-        public IEnumerable<string> Ids { get; set; }
     }
 
     /// <summary>
@@ -129,6 +119,7 @@ namespace CogniteSdk
         /// <summary>
         /// List of root asset internal ids.
         /// </summary>
+        [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
         public IEnumerable<long> RootIds { get; set; }
     }
 
@@ -400,7 +391,7 @@ namespace CogniteSdk
         /// Restrict access based on internal ids for some other resource.
         /// </summary>
         [JsonPropertyName("idscope")]
-        public IdScopeString IdScope { get; set; }
+        public IdScope IdScope { get; set; }
     }
 
     /// <summary>
@@ -438,7 +429,7 @@ namespace CogniteSdk
         /// Restrict access based on internal ids for some other resource.
         /// </summary>
         [JsonPropertyName("idscope")]
-        public IdScopeString IdScope { get; set; }
+        public IdScope IdScope { get; set; }
     }
 
     /// <summary>
