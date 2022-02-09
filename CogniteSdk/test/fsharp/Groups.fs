@@ -40,12 +40,6 @@ let ``Create delete group is OK`` () = task {
                 DbsToTables=dict["sdk-test-database", RawTableScopeWrapper(Tables=["sdk-test-table"])]
             ),
             Actions=["LIST"]
-        );
-        TimeSeriesAcl(
-            DatasetScope=IdScope(
-                Ids=[ 5272329852941732L; 2452112635370053L ]
-            ),
-            Actions=["READ"]
         )
     ]
     let group =
