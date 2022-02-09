@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
         {
             if (extPipes is null) throw new ArgumentNullException(nameof(extPipes));
 
-            var req = Oryx.Cognite.ExtPipes.create(extPipes, _ctx);
+            var req = Oryx.Cognite.ExtPipes.create(extPipes, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -131,7 +131,7 @@ namespace CogniteSdk.Resources
         {
             if (ids is null) throw new ArgumentNullException(nameof(ids));
 
-            var req = Oryx.Cognite.ExtPipes.retrieve(ids, ignoreUnknownIds, _ctx);
+            var req = Oryx.Cognite.ExtPipes.retrieve(ids, ignoreUnknownIds, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -204,7 +204,7 @@ namespace CogniteSdk.Resources
         {
             if (items is null) throw new ArgumentNullException(nameof(items));
 
-            var req = Oryx.Cognite.ExtPipes.createRuns(items, _ctx);
+            var req = Oryx.Cognite.ExtPipes.createRuns(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }
