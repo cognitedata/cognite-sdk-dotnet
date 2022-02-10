@@ -55,10 +55,13 @@ namespace Test.CSharp.Integration
 
         private async Task PopulateDataAsync()
         {
-            try {
+            try
+            {
                 var events = await WriteClient.Events.RetrieveAsync(new List<string>() { "TestEvent" });
                 TestEvent = events.FirstOrDefault();
-            } catch (ResponseException) {
+            }
+            catch (ResponseException)
+            {
                 TestEvent = await CreateTestEventAsync();
             }
         }
@@ -88,7 +91,7 @@ namespace Test.CSharp.Integration
 
         public virtual async Task DisposeAsync()
         {
-            await WriteClient.Events.DeleteAsync(new EventDelete { IgnoreUnknownIds = true, Items = new [] { Identity.Create("TestEvent") } });
+            await WriteClient.Events.DeleteAsync(new EventDelete { IgnoreUnknownIds = true, Items = new[] { Identity.Create("TestEvent") } });
         }
     }
 
