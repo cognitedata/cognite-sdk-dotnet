@@ -247,7 +247,7 @@ module HttpHandler =
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        
+
         source
         |> POST
         |> withResource url

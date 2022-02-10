@@ -53,7 +53,7 @@ let updateAssetsExample (ctx: HttpHandler<unit>) =
         let query =
             [ UpdateItem(id = 84025677715833721L, Update = AssetUpdate(Name = Update("string3"))) ]
 
-        let! res = ctx |> Assets.update query |> runAsync 
+        let! res = ctx |> Assets.update query |> runAsync
 
         match res with
         | Ok res -> printfn "%A" res
@@ -64,7 +64,7 @@ let searchAssetsExample (ctx: HttpHandler<unit>) =
     task {
 
         let query = AssetSearch(Search = Search(Name = "VAL"), Limit = Nullable 10)
-        let! res = ctx |> Assets.search query |> runAsync 
+        let! res = ctx |> Assets.search query |> runAsync
 
         match res with
         | Ok res -> printfn "%A" res
@@ -121,7 +121,7 @@ let insertDataPointsProtoStyle ctx =
         item.ExternalId <- "testts"
         request.Items.Add(item)
 
-        let! result = ctx |> DataPoints.create request |> runAsync 
+        let! result = ctx |> DataPoints.create request |> runAsync
 
         match result with
         | Ok res -> printfn "%A" res
@@ -140,7 +140,7 @@ let syntheticQueryExample (ctx: HttpHandler<unit>) =
         let! res =
             ctx
             |> TimeSeries.syntheticQuery query
-            |> runUnsafeAsync 
+            |> runUnsafeAsync
 
         printfn "%A" res
     }
