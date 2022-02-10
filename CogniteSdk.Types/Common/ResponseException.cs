@@ -35,14 +35,14 @@ namespace CogniteSdk
         /// <summary>
         /// Default empty constructor.
         /// </summary>
-        public ResponseException() {}
+        public ResponseException() { }
 
         /// <summary>
         /// The response exception constructor.
         /// </summary>
         /// <param name="message">Error message</param>
         /// <returns>New response exception.</returns>
-        public ResponseException(string message) : base(message) {}
+        public ResponseException(string message) : base(message) { }
 
         /// <summary>
         /// The response exception constructor.
@@ -50,6 +50,6 @@ namespace CogniteSdk
         /// <param name="message">Error message.</param>
         /// <param name="innerException">Original exception to be stored as inner exception.</param>
         /// <returns>New response exception.</returns>
-        public ResponseException(string message, Exception innerException) : base(message, innerException) {}
+        public ResponseException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

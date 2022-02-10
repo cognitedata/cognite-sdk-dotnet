@@ -28,11 +28,12 @@ namespace CogniteSdk
         /// Create a new empty File search with pre-initialized emtpy Filter and Search.
         /// </summary>
         /// <returns>New instance of the FileSearch.</returns>
-        public static FileSearch Empty ()
+        public static FileSearch Empty()
         {
-            return new FileSearch {
-                Filter=new FileFilter(),
-                Search=new NameSearch()
+            return new FileSearch
+            {
+                Filter = new FileFilter(),
+                Search = new NameSearch()
             };
         }
     }

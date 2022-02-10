@@ -166,7 +166,7 @@ namespace CogniteSdk
             {
                 return attr.Name;
             }
-            
+
             if (options.PropertyNamingPolicy != null)
             {
                 return options.PropertyNamingPolicy.ConvertName(prop.Name);
@@ -256,7 +256,7 @@ namespace CogniteSdk
             }
 
             return result;
-        } 
+        }
 
         /// <summary>
         /// Deserialize an acl object. This removes one layer of nesting, for convenience.
@@ -356,7 +356,7 @@ namespace CogniteSdk
     /// Acl for access to the groups resource. 
     /// </summary>
     public class GroupsAcl : CurrentUserScopeAcl { }
-    
+
     /// <summary>
     /// Acl for access to the assets resource.
     /// </summary>

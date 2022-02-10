@@ -15,7 +15,7 @@ namespace CogniteSdk
         /// <summary>
         /// Number of elements matching the query
         /// </summary>
-        public int Count {get; set;}
+        public int Count { get; set; }
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this.Count);
     }

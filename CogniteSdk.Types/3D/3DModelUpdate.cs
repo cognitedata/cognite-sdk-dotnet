@@ -14,7 +14,7 @@ namespace CogniteSdk
         /// Set a new value for the string.
         /// </summary>
         public Update<string> Name { get; set; }
-        
+
         /// <summary>
         /// Set a new value for the long, or remove the value.
         /// </summary>

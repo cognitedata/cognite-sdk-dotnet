@@ -20,7 +20,7 @@ namespace CogniteSdk
         /// Include relationships which source is of any of the specified resource types
         /// Valid values are: Asset, TimeSeries, File, Event, Sequence
         /// </summary>
-        public IEnumerable<RelationshipVertexType> SourceTypes {get; set;}
+        public IEnumerable<RelationshipVertexType> SourceTypes { get; set; }
 
         /// <summary>
         /// Targets to include.
