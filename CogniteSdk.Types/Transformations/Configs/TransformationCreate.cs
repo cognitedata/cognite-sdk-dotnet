@@ -48,7 +48,7 @@ namespace CogniteSdk
         /// Api key used for reading from source.
         /// </summary>
         public string SourceApiKey { get; set; }
-        
+
         /// <summary>
         /// Api key used for writing to destination.
         /// </summary>

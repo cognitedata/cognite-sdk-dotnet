@@ -8,7 +8,7 @@ namespace CogniteSdk
     /// <summary>
     /// Result of a transformations preview.
     /// </summary>
-    public class TransformationQueryResult
+    public class TransformationPreviewResult
     {
         /// <summary>
         /// Schema of results.

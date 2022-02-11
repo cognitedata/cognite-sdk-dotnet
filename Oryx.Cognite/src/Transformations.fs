@@ -92,3 +92,52 @@ module Transformations =
         |> withLogMessage "Transformations:retrieveSchedules"
         |> retrieveIgnoreUnknownIds items ignoreUnknownIds (Url +/ "schedules")
 
+    let listSchedules (query: TransformationScheduleQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TransformationSchedule>> =
+        source
+        |> withLogMessage "Transformations:listSchedules"
+        |> getWithQuery query (Url +/ "schedules")
+
+    let schedule (items: TransformationScheduleCreate seq) (source: HttpHandler<unit>) : HttpHandler<TransformationSchedule seq> =
+        source
+        |> withLogMessage "Transformations:schedule"
+        |> HttpHandler.create items (Url +/ "schedules")
+
+    let unschedule (items: TransformationScheduleDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+        source
+        |> withLogMessage "Transformations:unschedule"
+        |> HttpHandler.delete items (Url +/ "schedules")
+
+    let updateSchedules (items: UpdateItem<TransformationSchedule> seq) (source: HttpHandler<unit>) : HttpHandler<TransformationSchedule seq> =
+        source
+        |> withLogMessage "Transformations:updateSchedules"
+        |> HttpHandler.update items (Url +/ "schedules")
+
+    let listNotifications (query: TransformationNotificationQuery) (source: HttpHandler<unit>) : HttpHandler<TransformationNotification seq> =
+        source
+        |> withLogMessage "Transformations:listNotifications"
+        |> getWithQuery query (Url +/ "notifications")
+
+    let subscribe (items: TransformationNotificationCreate seq) (source: HttpHandler<unit>) : HttpHandler<TransformationNotification seq> =
+        source
+        |> withLogMessage "Transformations:subscribe"
+        |> HttpHandler.create items (Url +/ "notifications")
+
+    let deleteNotifications (items: int64 seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+        let idts = items |> Seq.map Identity.Create
+        source
+        |> withLogMessage "Transformations:deleteNotifications"
+        |> HttpHandler.delete idts (Url +/ "notifications")
+
+    let preview (query: TransformationPreview) (source: HttpHandler<unit>) : HttpHandler<TransformationPreviewResult> =
+        source
+        |> withLogMessage "Transformations:preview"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 query (Url +/ "query/run")
+
+    let getSchema (schemaType: TransformationDestinationType) (conflictMode: TransformationConflictMode) (source: HttpHandler<unit>) : HttpHandler<TransformationPreviewResult> =
+        let query = TransformationSchemaQuery (ConflictMode = conflictMode)
+        let url = (Url +/ "schema" +/ schemaType.ToString())
+        source
+        |> withLogMessage "Transformations:schema"
+        |> getWithQuery query url
+        
