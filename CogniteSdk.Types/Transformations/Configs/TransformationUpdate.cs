@@ -64,26 +64,4 @@ namespace CogniteSdk
         /// </summary>
         public UpdateNullable<TransformationOidcCredentials> DestinationOidcCredentials { get; set; }
     }
-
-    /// <summary>
-    /// Item containing an update to a transformation by internal or external id.
-    /// </summary>
-    public class TransformationUpdateItem : UpdateItem<TransformationUpdate>
-    {
-        /// <summary>
-        /// Initialize transformation update item with external id.
-        /// </summary>
-        /// <param name="externalId">Transformation external id</param>
-        public TransformationUpdateItem(string externalId) : base(externalId)
-        {
-        }
-
-        /// <summary>
-        /// Initialize transformation update item with internal id.
-        /// </summary>
-        /// <param name="internalId">Transformation internal id</param>
-        public TransformationUpdateItem(long internalId) : base(internalId)
-        {
-        }
-    }
 }

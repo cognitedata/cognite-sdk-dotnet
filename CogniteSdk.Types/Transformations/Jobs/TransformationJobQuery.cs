@@ -26,7 +26,7 @@ namespace CogniteSdk
             var list = base.ToQueryParams();
             if (TransformationId.HasValue)
                 list.Add(("transformationId", TransformationId.ToString()));
-            if (TransformationExternalId != null)
+            else if (TransformationExternalId != null)
                 list.Add(("transformationExternalId", TransformationExternalId));
 
             return list;

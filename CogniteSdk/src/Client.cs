@@ -117,6 +117,11 @@ namespace CogniteSdk
         public GroupsResource Groups { get; }
 
         /// <summary>
+        /// Client transformations extension methods
+        /// </summary>
+        public TransformationsResource Transformations { get; }
+
+        /// <summary>
         /// Client beta extension methods
         /// </summary>
         public BetaResource Beta { get; }
@@ -146,6 +151,7 @@ namespace CogniteSdk
             ExtPipes = new ExtPipesResource(authHandler, ctx);
             Labels = new LabelsResource(authHandler, ctx);
             Groups = new GroupsResource(authHandler, ctx);
+            Transformations = new TransformationsResource(authHandler, ctx);
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);

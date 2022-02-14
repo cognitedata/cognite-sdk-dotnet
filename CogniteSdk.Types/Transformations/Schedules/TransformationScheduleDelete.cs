@@ -6,11 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// Delete a list of transformation schedules, optionally ignoring unknown ids.
     /// </summary>
-    public class TransformationScheduleDelete : ItemsWithoutCursor<Identity>
+    public class TransformationScheduleDelete : ItemsWithIgnoreUnknownIds<Identity>
     {
-        /// <summary>
-        /// Ignore IDs and external IDs that are not found. Default: false
-        /// </summary>
-        public bool? IgnoreUnknownIds { get; set; }
     }
 }

@@ -18,26 +18,4 @@ namespace CogniteSdk
         /// </summary>
         public Update<bool> IsPaused { get; set; }
     }
-
-    /// <summary>
-    /// Item containing an update to a transformation schedule by transformation internal or external id.
-    /// </summary>
-    public class TransformationScheduleUpdateItem : UpdateItem<TransformationScheduleUpdate>
-    {
-        /// <summary>
-        /// Initialize transformation schedule update item with external id.
-        /// </summary>
-        /// <param name="externalId">Transformation external id</param>
-        public TransformationScheduleUpdateItem(string externalId) : base(externalId)
-        {
-        }
-
-        /// <summary>
-        /// Initialize transformation schedule update item with internal id.
-        /// </summary>
-        /// <param name="internalId">Transformation internal id</param>
-        public TransformationScheduleUpdateItem(long internalId) : base(internalId)
-        {
-        }
-    }
 }
