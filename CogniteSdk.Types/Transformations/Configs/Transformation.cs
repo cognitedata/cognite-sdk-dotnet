@@ -90,7 +90,7 @@ namespace CogniteSdk
         /// <summary>
         /// Owner of the transformation.
         /// </summary>
-        public string Owner { get; set; }
+        public TransformationOwner Owner { get; set; }
 
         /// <summary>
         /// Indicates if the transformation belongs to the current user.
@@ -131,5 +131,10 @@ namespace CogniteSdk
         /// Details for the schedule if the transformation is scheduled.
         /// </summary>
         public TransformationSchedule Schedule { get; set; }
+
+        /// <summary>
+        /// Gives information about whether the transformation is blocked.
+        /// </summary>
+        public TransformationBlockedInfo Blocked { get; set; }
     }
 }

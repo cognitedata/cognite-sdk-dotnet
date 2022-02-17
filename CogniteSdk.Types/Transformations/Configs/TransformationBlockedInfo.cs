@@ -1,7 +1,7 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace CogniteSdk.Types.Transformations
+namespace CogniteSdk
 {
     /// <summary>
     /// Indicates why and when a transformation was blocked.

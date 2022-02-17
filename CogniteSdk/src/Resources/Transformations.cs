@@ -309,7 +309,7 @@ namespace CogniteSdk.Resources
         /// <param name="query">Query with some optional filters</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>List of notifications</returns>
-        public async Task<IEnumerable<TransformationNotification>> ListNotificationsAsync(TransformationNotificationQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<TransformationNotification>> ListNotificationsAsync(TransformationNotificationQuery query, CancellationToken token = default)
         {
             if (query is null) throw new ArgumentNullException(nameof(query));
 

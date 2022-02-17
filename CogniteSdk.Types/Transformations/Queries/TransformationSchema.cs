@@ -34,6 +34,12 @@ namespace CogniteSdk
         public bool Nullable { get; set; }
     }
 
+    // Small hack to do this "string|object" union type.
+    internal class TransformationJsonSchemaFieldObj : TransformationJsonSchemaField
+    {
+    }
+
+
 
     /// <summary>
     /// Part of Json schema structure for transformation schema inference.
@@ -86,14 +92,13 @@ namespace CogniteSdk
         /// <exception cref="JsonException"></exception>
         public override TransformationJsonSchemaField Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            reader.Read();
             if (reader.TokenType == JsonTokenType.String)
             {
                 return new TransformationJsonSchemaField { Type = reader.GetString() };
             }
             else if (reader.TokenType == JsonTokenType.StartObject)
             {
-                return JsonSerializer.Deserialize<TransformationJsonSchemaField>(ref reader, options);
+                return JsonSerializer.Deserialize<TransformationJsonSchemaFieldObj>(ref reader, options);
             }
             else
             {

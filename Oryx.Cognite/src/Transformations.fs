@@ -127,7 +127,7 @@ module Transformations =
         |> HttpHandler.update items (Url +/ "schedules")
 
     /// List notifications, optionally restricted to a single transformation, with pagination.
-    let listNotifications (query: TransformationNotificationQuery) (source: HttpHandler<unit>) : HttpHandler<TransformationNotification seq> =
+    let listNotifications (query: TransformationNotificationQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TransformationNotification>> =
         source
         |> withLogMessage "Transformations:listNotifications"
         |> getWithQuery query (Url +/ "notifications")
@@ -141,9 +141,10 @@ module Transformations =
     /// Delete notifications for transformations.
     let deleteNotifications (items: int64 seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let idts = items |> Seq.map Identity.Create
+        let req = ItemsWithoutCursor(Items = idts)
         source
         |> withLogMessage "Transformations:deleteNotifications"
-        |> HttpHandler.delete idts (Url +/ "notifications")
+        |> HttpHandler.delete req (Url +/ "notifications")
 
     /// Run a transformation query to preview the result.
     let preview (query: TransformationPreview) (source: HttpHandler<unit>) : HttpHandler<TransformationPreviewResult> =
@@ -156,7 +157,12 @@ module Transformations =
     let getSchema (schemaType: TransformationDestinationType) (conflictMode: TransformationConflictMode) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<TransformationColumnType>> =
         let query = TransformationSchemaQuery (ConflictMode = conflictMode)
         let url = (Url +/ "schema" +/ schemaType.ToString())
-        source
-        |> withLogMessage "Transformations:schema"
-        |> getWithQuery query url
+        http {
+            let! result = 
+                source
+                |> withLogMessage "Transformations:schema"
+                |> getWithQuery<ItemsWithoutCursor<TransformationColumnType>> query url
+            result.Items
+        }
+        
         
