@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// <summary>
     /// The Event query class.
     /// </summary>
-    public class EventQuery : CursorQueryBase
+    public class EventQuery : CursorQueryBase, IPartitionedQuery
     {
         /// <summary>
         /// Filter on assets with strict matching.
