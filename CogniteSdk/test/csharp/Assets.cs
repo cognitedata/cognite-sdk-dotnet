@@ -35,8 +35,10 @@ namespace Test.CSharp.Integration
         public async Task CountAssetsReturnIntAsync()
         {
             // Arrange
-            var option = new AssetQuery {
-                Filter = new AssetFilter(){
+            var option = new AssetQuery
+            {
+                Filter = new AssetFilter()
+                {
                     Metadata = new Dictionary<string, string>{
                         {"WMT_SAFETYCRITICALELEMENT_ID", "1060"}
                     }
@@ -54,8 +56,10 @@ namespace Test.CSharp.Integration
         public async Task CountAssetsWithNoMatchesReturnZeroAsync()
         {
             // Arrange
-            var option = new AssetQuery {
-                Filter = new AssetFilter(){
+            var option = new AssetQuery
+            {
+                Filter = new AssetFilter()
+                {
                     Metadata = new Dictionary<string, string>{
                         {"ThisMetaDataFilterhasNoMatches", "ThereIsNoSpoon"}
                     }
@@ -69,7 +73,7 @@ namespace Test.CSharp.Integration
         }
 
         [Fact]
-        [Trait("Description","Ensures that getting an asset by ID returns the correct asset")]
+        [Trait("Description", "Ensures that getting an asset by ID returns the correct asset")]
 
         public async Task AssetByIdReturnsCorrectAssetAsync()
         {
@@ -92,9 +96,12 @@ namespace Test.CSharp.Integration
             bool caughtException = false;
 
             // Act
-            try {
+            try
+            {
                 var res = await ReadClient.Assets.GetAsync(assetId);
-            } catch (ResponseException) {
+            }
+            catch (ResponseException)
+            {
                 caughtException = true;
             }
 
@@ -153,9 +160,11 @@ namespace Test.CSharp.Integration
             // Arrange
             const int numOfAssets = 10;
             const long id = 6687602007296940;
-            var query = new AssetQuery {
+            var query = new AssetQuery
+            {
                 Limit = numOfAssets,
-                Filter = new AssetFilter {
+                Filter = new AssetFilter
+                {
                     RootIds = new List<Identity> { Identity.Create(id) }
                 }
             };
@@ -182,7 +191,7 @@ namespace Test.CSharp.Integration
             };
             var deletes = new AssetDelete
             {
-                Items = new List<Identity> {Identity.Create(externalIdString)}
+                Items = new List<Identity> { Identity.Create(externalIdString) }
             };
 
             // Act
@@ -209,9 +218,12 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            try {
+            try
+            {
                 await WriteClient.Assets.DeleteAsync(query);
-            } catch (ResponseException) {
+            }
+            catch (ResponseException)
+            {
                 caughtException = true;
             }
 
@@ -234,7 +246,7 @@ namespace Test.CSharp.Integration
                 ExternalId = externalIdString,
                 Name = "Update Assets c# sdk test",
                 Description = "Just a test",
-                Metadata = new Dictionary<string, string>() {{"oldkey1", "oldvalue1"}, {"oldkey2", "oldvalue2"}}
+                Metadata = new Dictionary<string, string>() { { "oldkey1", "oldvalue1" }, { "oldkey2", "oldvalue2" } }
             };
             var newName = "Updated update asset";
 
@@ -279,11 +291,11 @@ namespace Test.CSharp.Integration
                 ExternalId = externalIdString,
                 Name = "Update Assets Label c# sdk test",
                 Description = "Just a test",
-                Labels = new List<CogniteExternalId>{ new CogniteExternalId("AssetTestUpdateLabel1") }
+                Labels = new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel1") }
             };
 
             var newName = "Updated asset name";
-            var newLabels = new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel2")};
+            var newLabels = new List<CogniteExternalId> { new CogniteExternalId("AssetTestUpdateLabel2") };
             var update = new List<AssetUpdateItem>
             {
                 new AssetUpdateItem(externalId: externalIdString)

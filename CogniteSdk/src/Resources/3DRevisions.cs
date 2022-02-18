@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler,FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        internal ThreeDRevisionsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 

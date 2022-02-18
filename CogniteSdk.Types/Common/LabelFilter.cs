@@ -22,7 +22,7 @@ namespace CogniteSdk
         /// <summary>
         /// Default constructor.
         /// </summary>
-        public LabelContainsAnyFilter() {}
+        public LabelContainsAnyFilter() { }
 
         /// <summary>
         /// Create a LabelContainsAnyFilter with the provided set of labels (CogniteExternalIds).
@@ -121,7 +121,7 @@ namespace CogniteSdk
         /// <returns>Label filter.</returns>
         public static LabelFilter All(string label)
         {
-            return new LabelFilter(new LabelContainsAllFilter(new [] { label }));
+            return new LabelFilter(new LabelContainsAllFilter(new[] { label }));
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace CogniteSdk
         /// <returns>Label filter.</returns>
         public static LabelFilter Any(string label)
         {
-            return new LabelFilter(new LabelContainsAnyFilter(new [] { label }));
+            return new LabelFilter(new LabelContainsAnyFilter(new[] { label }));
         }
 
         /// <inheritdoc />

@@ -18,7 +18,7 @@ namespace CogniteSdk
         /// unit (in UTC timezone). Daily granularities (d) are rounded to 0:00 AM; hourly granularities (h) to the
         /// start of the hour, etc.
         /// </summary>
-        public string Start  { get; set; }
+        public string Start { get; set; }
 
         /// <summary>
         /// Get data points up to, but excluding, this point in time. Same format as for start. Note that when using

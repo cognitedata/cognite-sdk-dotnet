@@ -36,7 +36,7 @@ namespace CogniteSdk
         /// <summary>
         /// Resource items of type T.
         /// </summary>
-        public IEnumerable<T> Items { get;  }
+        public IEnumerable<T> Items { get; }
 
         /// <inheritdoc />
         public string ToString();

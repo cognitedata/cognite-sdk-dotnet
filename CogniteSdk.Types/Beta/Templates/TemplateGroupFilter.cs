@@ -13,6 +13,6 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Filter on owners
         /// </summary>
-        public IEnumerable<string> Owners {get; set;}
+        public IEnumerable<string> Owners { get; set; }
     }
 }
