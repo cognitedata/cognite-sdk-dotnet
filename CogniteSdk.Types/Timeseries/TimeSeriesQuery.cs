@@ -8,7 +8,7 @@ namespace CogniteSdk
     /// <summary>
     /// The time series query class.
     /// </summary>
-    public class TimeSeriesQuery : CursorQueryBase
+    public class TimeSeriesQuery : CursorQueryBase, IPartitionedQuery
     {
         /// <summary>
         /// Filter on time series with strict matching.

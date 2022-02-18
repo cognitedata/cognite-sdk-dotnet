@@ -9,7 +9,7 @@ namespace CogniteSdk
     /// <summary>
     /// The Asset query class.
     /// </summary>
-    public class AssetQuery : CursorQueryBase
+    public class AssetQuery : CursorQueryBase, IPartitionedQuery
     {
         /// <summary>
         /// Filter on assets with strict matching.
