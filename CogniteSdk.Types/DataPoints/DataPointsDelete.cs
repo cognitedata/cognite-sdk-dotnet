@@ -39,5 +39,5 @@ namespace CogniteSdk
     /// <summary>
     /// Data Points delete type.
     /// </summary>
-    public class DataPointsDelete : ItemsWithoutCursor<IdentityWithRange> {}
+    public class DataPointsDelete : ItemsWithoutCursor<IdentityWithRange> { }
 }

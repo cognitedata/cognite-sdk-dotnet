@@ -15,7 +15,7 @@ namespace CogniteSdk
         /// Query definition
         /// Read about its syntax here https://docs.cognite.com/dev/concepts/resource_types/timeseries.html#synthetic-time-series
         /// </summary>
-        public string Expression  { get; set; }
+        public string Expression { get; set; }
 
         /// <summary>
         /// Get data points starting from, and including, this time. The format is N[timeunit]-ago where time unit is
@@ -24,7 +24,7 @@ namespace CogniteSdk
         /// unit (in UTC timezone). Daily granularities (d) are rounded to 0:00 AM; hourly granularities (h) to the
         /// start of the hour, etc.
         /// </summary>
-        public string Start  { get; set; }
+        public string Start { get; set; }
 
         /// <summary>
         /// Get data points up to, but excluding, this point in time. Same format as for start. Note that when using

@@ -66,13 +66,13 @@ namespace CogniteSdk
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
         /// leap seconds.
         /// </summary>
-        public long CreatedTime { get; set; }
+        public long CreatedTime { get; set; }
 
         /// <summary>
         /// The number of milliseconds since 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC), minus
         /// leap seconds.
         /// </summary>
-        public long LastUpdatedTime { get; set; }
+        public long LastUpdatedTime { get; set; }
 
         /// <summary>
         /// Custom, application specific metadata. Maximum length of key is 32 bytes, value 512 bytes, up to 16

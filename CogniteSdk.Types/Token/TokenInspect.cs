@@ -13,7 +13,7 @@ namespace CogniteSdk.Token
         /// <summary>
         /// Subject (sub claim) of JWT.
         /// </summary>
-        public string Subject { get; set;}
+        public string Subject { get; set; }
 
         /// <summary>
         /// List of projects associated with the token.

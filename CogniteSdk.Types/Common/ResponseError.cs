@@ -59,7 +59,8 @@ namespace CogniteSdk
         /// </summary>
         public Exception ToException()
         {
-            var exn = new ResponseException(this.Error.Message) {
+            var exn = new ResponseException(this.Error.Message)
+            {
                 Code = this.Error.Code,
                 Duplicated = this.Error.Duplicated,
                 Missing = this.Error.Missing,

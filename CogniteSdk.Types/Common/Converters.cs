@@ -110,7 +110,7 @@ namespace CogniteSdk
         /// </summary>
         public override void Write(Utf8JsonWriter writer, Dictionary<string, object> value, JsonSerializerOptions options)
         {
-            throw new NotSupportedException ();
+            throw new NotSupportedException();
         }
 
         private object ReadValue(ref Utf8JsonReader reader, JsonSerializerOptions options)

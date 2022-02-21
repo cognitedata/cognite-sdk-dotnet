@@ -53,7 +53,7 @@ namespace CogniteSdk
         /// Custom, application specific metadata. String key -> String value
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, string> Metadata { get; set; }
+        public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <param name="obj">The object to compare with the current object.</param>

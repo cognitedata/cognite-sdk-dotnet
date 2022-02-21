@@ -74,12 +74,14 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new SequenceColumnWrite {
+            var column = new SequenceColumnWrite
+            {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = MultiValueType.DOUBLE
             };
-            var sequence = new SequenceCreate {
+            var sequence = new SequenceCreate
+            {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
@@ -103,20 +105,23 @@ namespace Test.CSharp.Integration
             var externalIdString = Guid.NewGuid().ToString();
             var columnExternalIdString = Guid.NewGuid().ToString();
 
-            var column = new SequenceColumnWrite {
+            var column = new SequenceColumnWrite
+            {
                 ExternalId = columnExternalIdString,
                 Name = "Create column C# test",
                 ValueType = MultiValueType.DOUBLE
             };
 
-            var sequence = new SequenceCreate {
+            var sequence = new SequenceCreate
+            {
                 ExternalId = externalIdString,
                 Name = "Create Sequences c# sdk test",
                 Description = "Just a test",
                 Columns = new List<SequenceColumnWrite> { column }
             };
 
-            var data = new SequenceDataCreate() {
+            var data = new SequenceDataCreate()
+            {
                 Columns = new List<string> { columnExternalIdString },
                 Rows = new List<SequenceRow>
                 {

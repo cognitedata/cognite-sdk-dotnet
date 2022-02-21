@@ -25,7 +25,7 @@ namespace CogniteSdk
         /// <summary>
         /// The resource type of the source
         /// </summary>
-        public RelationshipVertexType SourceType {get; set;}
+        public RelationshipVertexType SourceType { get; set; }
 
         /// <summary>
         /// The target of the relationship.
@@ -35,7 +35,7 @@ namespace CogniteSdk
         /// <summary>
         /// The resource type of the target
         /// </summary>
-        public RelationshipVertexType TargetType {get; set;}
+        public RelationshipVertexType TargetType { get; set; }
 
         /// <summary>
         /// Time when the relationship started.

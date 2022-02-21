@@ -23,17 +23,19 @@ namespace CogniteSdk
     /// <summary>
     /// The event search class.
     /// </summary>
-    public class EventSearch : SearchQuery<EventFilter, DescriptionSearch> {
+    public class EventSearch : SearchQuery<EventFilter, DescriptionSearch>
+    {
 
         /// <summary>
         /// Create a new empty Event search DTO with pre-initialized emtpy Filter and Search.
         /// </summary>
         /// <returns>New instance of the EventSearch.</returns>
-        public static EventSearch Empty ()
+        public static EventSearch Empty()
         {
-            return new EventSearch {
-                Filter=new EventFilter(),
-                Search=new DescriptionSearch()
+            return new EventSearch
+            {
+                Filter = new EventFilter(),
+                Search = new DescriptionSearch()
             };
         }
     }

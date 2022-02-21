@@ -14,7 +14,7 @@ namespace CogniteSdk.Token
         /// Project url name.
         /// </summary>
         public string ProjectUrlName { get; set; }
-        
+
         /// <summary>
         /// Group IDs.
         /// </summary>

@@ -69,7 +69,7 @@ namespace CogniteSdk
         /// <summary>
         /// Client Sequences extension methods
         /// </summary>
-        public SequencesResource Sequences  { get; }
+        public SequencesResource Sequences { get; }
 
         /// <summary>
         /// Client DataSets extension methods
@@ -99,8 +99,8 @@ namespace CogniteSdk
         /// <summary>
         /// Client playground extension methods
         /// </summary>
-        public PlaygroundResource Playground  { get; }
-        
+        public PlaygroundResource Playground { get; }
+
         /// <summary>
         /// Client extraction pipelines extension methods
         /// </summary>
