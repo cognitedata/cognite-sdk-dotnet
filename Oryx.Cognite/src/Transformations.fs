@@ -205,5 +205,5 @@ module Transformations =
                 |> withLogMessage "Transformations:schema"
                 |> getWithQuery<ItemsWithoutCursor<TransformationColumnType>> query url
 
-            result.Items
+            return result.Items
         }
