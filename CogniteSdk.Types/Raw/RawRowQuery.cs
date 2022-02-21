@@ -31,7 +31,7 @@ namespace CogniteSdk
         public long? MaxLastUpdatedTime { get; set; }
 
         /// <inheritdoc/>
-        public new List<(string, string)> ToQueryParams()
+        public override List<(string, string)> ToQueryParams()
         {
             var list = base.ToQueryParams();
             if (Columns != null)
