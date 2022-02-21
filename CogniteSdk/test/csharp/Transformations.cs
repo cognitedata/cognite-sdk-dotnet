@@ -58,8 +58,10 @@ namespace Test.CSharp.Integration
 
         public override async Task DisposeAsync()
         {
-            await Write.Transformations.DeleteAsync(new TransformationDelete {
-                Items = TransformationIds.Select(Identity.Create), IgnoreUnknownIds = true
+            await Write.Transformations.DeleteAsync(new TransformationDelete
+            {
+                Items = TransformationIds.Select(Identity.Create),
+                IgnoreUnknownIds = true
             });
         }
     }
@@ -137,7 +139,7 @@ namespace Test.CSharp.Integration
                 Items = new[] { Identity.Create(config.ExternalId) }
             });
         }
-        
+
         [Fact]
         public async Task CreateListDeleteNotifications()
         {
