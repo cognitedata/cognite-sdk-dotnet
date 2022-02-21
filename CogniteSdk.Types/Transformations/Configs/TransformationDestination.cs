@@ -14,51 +14,51 @@ namespace CogniteSdk
         /// <summary>
         /// Assets with no extra logic.
         /// </summary>
-        assets,
+        assets = 0,
         /// <summary>
         /// Timeseries
         /// </summary>
-        timeseries,
+        timeseries = 1,
         /// <summary>
         /// Construct an asset hierarchy from the result.
         /// </summary>
-        asset_hierarchy,
+        asset_hierarchy = 2,
         /// <summary>
         /// Events
         /// </summary>
-        events,
+        events = 3,
         /// <summary>
         /// Numerical datapoints.
         /// </summary>
-        datapoints,
+        datapoints = 4,
         /// <summary>
         /// String datapoints.
         /// </summary>
-        string_datapoints,
+        string_datapoints = 5,
         /// <summary>
         /// Sequences
         /// </summary>
-        sequences,
+        sequences = 6,
         /// <summary>
         /// Files
         /// </summary>
-        files,
+        files = 7,
         /// <summary>
         /// Labels
         /// </summary>
-        labels,
+        labels = 8,
         /// <summary>
         /// Relationships
         /// </summary>
-        relationships,
+        relationships = 9,
         /// <summary>
         /// Raw, requires specifying table and database.
         /// </summary>
-        raw,
+        raw = 10,
         /// <summary>
         /// Data sets.
         /// </summary>
-        data_sets
+        data_sets = 11
     }
 
 

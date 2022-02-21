@@ -14,19 +14,19 @@ namespace CogniteSdk
         /// <summary>
         /// Update or insert.
         /// </summary>
-        upsert,
+        upsert = 0,
         /// <summary>
         /// Abort if a conflict is encountered.
         /// </summary>
-        abort,
+        abort = 1,
         /// <summary>
         /// Update existing data, fail if it does not exist.
         /// </summary>
-        update,
+        update = 2,
         /// <summary>
         /// Delete any matches.
         /// </summary>
-        delete
+        delete = 3
     }
 
     /// <summary>

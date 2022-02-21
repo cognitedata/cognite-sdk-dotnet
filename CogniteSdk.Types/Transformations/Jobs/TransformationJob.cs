@@ -1,29 +1,32 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Text.Json.Serialization;
+
 namespace CogniteSdk
 {
     /// <summary>
     /// Status of a transformation job.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TransformationJobStatus
     {
         /// <summary>
         /// Job is running
         /// </summary>
-        Running,
+        Running = 0,
         /// <summary>
         /// Job has been created, but is not yet running.
         /// </summary>
-        Created,
+        Created = 1,
         /// <summary>
         /// Job has been completed successfully.
         /// </summary>
-        Completed,
+        Completed = 2,
         /// <summary>
         /// Job has failed.
         /// </summary>
-        Failed
+        Failed = 3
     }
 
     /// <summary>
