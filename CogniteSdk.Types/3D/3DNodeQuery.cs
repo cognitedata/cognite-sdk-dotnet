@@ -31,7 +31,7 @@ namespace CogniteSdk
         public override string ToString() => Stringable.ToString<ThreeDNodeQuery>(this);
 
         /// <inheritdoc/>
-        public new List<(string, string)> ToQueryParams()
+        public override List<(string, string)> ToQueryParams()
         {
             var list = new List<(string, string)>();
             if (Limit.HasValue)
