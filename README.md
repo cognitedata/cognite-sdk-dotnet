@@ -10,7 +10,7 @@
 
 CogniteSdk for .NET is a cross platform asynchronous SDK for accessing the [Cognite Data Fusion](https://docs.cognite.com/) [API (v1)](https://docs.cognite.com/api/v1/) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) that works for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework).
 
-**Unofficial:**: please note that this is an unofficial and community
+**Unofficial**: please note that this is an unofficial and community
 driven SDK. Feel free to open issues, or provide PRs if you want to
 improve the library.
 
