@@ -61,7 +61,9 @@ type AssetFilter =
 
         filter
 
-    member x.Merge(other: AssetFilter option) : AssetFilter =
+    /// Merge with other filter. Optional values are merged using `Option.orElse`.
+    /// Collections are merged to the union of the two collections.
+    member x.MergeWith(other: AssetFilter option) : AssetFilter =
         match other with
         | None -> x
         | Some other ->

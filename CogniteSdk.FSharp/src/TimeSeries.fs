@@ -71,7 +71,9 @@ type TimeSeriesFilter =
 
         filter
 
-    member x.Merge(other: TimeSeriesFilter option) : TimeSeriesFilter =
+    /// Merge with other filter. Optional values are merged using `Option.orElse`.
+    /// Collections are merged to the union of the two collections.
+    member x.MergeWith(other: TimeSeriesFilter option) : TimeSeriesFilter =
         match other with
         | None -> x
         | Some other ->

@@ -81,7 +81,9 @@ type EventFilter =
 
         filter
 
-    member x.Merge(other: EventFilter option) : EventFilter =
+    /// Merge with other filter. Optional values are merged using `Option.orElse`.
+    /// Collections are merged to the union of the two collections.
+    member x.MergeWith(other: EventFilter option) : EventFilter =
         match other with
         | None -> x
         | Some other ->
