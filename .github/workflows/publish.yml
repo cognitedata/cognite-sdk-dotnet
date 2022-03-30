@@ -36,6 +36,9 @@ jobs:
       - name: Push Oryx.Cognite Nuget
         run: dotnet nuget push Oryx.Cognite/src/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
         continue-on-error: false
+      - name: Push CogniteSdk.FSharp Nuget
+        run: dotnet nuget push CogniteSdk.FSharp/src/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        continue-on-error: false
 
       - name: Create Release
         uses: actions/create-release@master
