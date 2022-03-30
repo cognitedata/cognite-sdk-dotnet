@@ -23,7 +23,7 @@ jobs:
 
       - name: Check formatting
         run: |
-          dotnet fantomas Oryx.Cognite/src/ --check
+          dotnet fantomas Oryx.Cognite/src/  ./CogniteSdk.FSharp/src --check
           dotnet format --include ./CogniteSdk.Types ./CogniteSdk/src ./CogniteSdk/test/csharp/ --verify-no-changes
 
       - name: Install dependencies
