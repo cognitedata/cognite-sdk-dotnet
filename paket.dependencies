@@ -20,6 +20,14 @@ group Oryx.Cognite
     nuget Oryx.Protobuf ~> 5
     nuget Oryx.SystemTextJson ~> 5
 
+group CogniteSdk.FSharp
+    source https://www.nuget.org/api/v2
+    storage: none
+    framework: netstandard2.0
+
+    nuget FSharp.Core ~> 6
+    nuget Oryx ~> 5
+
 group Types
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
