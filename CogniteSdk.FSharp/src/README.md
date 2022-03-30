@@ -1,4 +1,4 @@
 # CogniteSdk FSharp
 
-The start of F# types for CogniteSdk. Will be moved to CogniteSdk later
-when more complete, but keep here for now for faster iteration.
+F# types for CogniteSdk i.e Oryx.Cognite so you can work with F# types
+for filters and queries.
