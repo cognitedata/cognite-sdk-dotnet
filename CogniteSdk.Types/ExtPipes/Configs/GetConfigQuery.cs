@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections.Generic;
 
 namespace CogniteSdk
 {

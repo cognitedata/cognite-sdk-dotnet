@@ -89,13 +89,14 @@ module ExtPipes =
         |> withLogMessage "ExtPipeConfigs:getRevision"
         |> HttpHandler.getWithQuery (GetConfigQuery(Revision = revision)) (ConfigsUrl +/ extPipeId)
 
-    /// BETA: List config revisions
+    /// BETA: List config revisions without details
     let listConfigRevisions (extPipeId: string) (query: ListConfigQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<ExtPipeConfig>> =
         source
         |> withVersion ApiVersion.Playground
         |> withLogMessage "ExtPipeConfigs:listRevisions"
         |> HttpHandler.getWithQuery query (ConfigsUrl +/ "revisions" +/ extPipeId)
 
+    /// BETA: Revert to a previous config revision
     let revertConfigRevision (extPipeId: string) (revision: int) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
         source
         |> withVersion ApiVersion.Playground

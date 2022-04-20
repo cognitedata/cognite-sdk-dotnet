@@ -1,4 +1,7 @@
-﻿namespace CogniteSdk
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace CogniteSdk
 {
     /// <summary>
     /// Request to create a new configuration revision for an extraction pipeline.
