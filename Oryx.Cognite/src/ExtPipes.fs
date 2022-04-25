@@ -111,13 +111,20 @@ module ExtPipes =
         |> getWithQueryPlayground query ConfigsUrl
 
     /// BETA: List config revisions without details
-    let listConfigRevisions (query: ListConfigQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<ExtPipeConfig>> =
+    let listConfigRevisions
+        (query: ListConfigQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<ExtPipeConfig>> =
         source
         |> withLogMessage "ExtPipeConfigs:listRevisions"
         |> getWithQueryPlayground query (ConfigsUrl +/ "revisions")
 
     /// BETA: Revert to a previous config revision
-    let revertConfigRevision (extPipeId: string) (revision: int) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
+    let revertConfigRevision
+        (extPipeId: string)
+        (revision: int)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ExtPipeConfig> =
         source
         |> withVersion ApiVersion.Playground
         |> withLogMessage "ExtPipeConfigs:revert"

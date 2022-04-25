@@ -312,7 +312,7 @@ namespace Test.CSharp.Integration
         {
             // Arrange
             var extId = await CreateConfigExtPipe();
-            
+
             try
             {
                 // Act
@@ -322,7 +322,7 @@ namespace Test.CSharp.Integration
                     Description = "test description",
                     ExternalId = extId
                 });
-                var first = await tester.Write.Playground.ExtPipeConfigs.GetConfigRevision(extId, 1); 
+                var first = await tester.Write.Playground.ExtPipeConfigs.GetConfigRevision(extId, 1);
             }
             finally
             {

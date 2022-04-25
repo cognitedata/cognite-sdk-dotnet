@@ -180,6 +180,7 @@ module HttpHandler =
 
                         error.RequestId <- requestId
                     | None -> ()
+
                     let ex: exn =
                         match error.Error with
                         | null ->
@@ -187,6 +188,7 @@ module HttpHandler =
                             exn.Code <- int response.StatusCode
                             exn :> _
                         | _ -> error.ToException()
+
                     return ex
                 with
                 | ex ->
