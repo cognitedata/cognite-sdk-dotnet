@@ -1,9 +1,11 @@
-﻿using CogniteSdk;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using CogniteSdk;
+
 using Xunit;
 
 namespace Test.CSharp.Integration
@@ -49,6 +51,7 @@ namespace Test.CSharp.Integration
 
         public override async Task DisposeAsync()
         {
+            if (TestPipeline?.ExternalId == null) return;
             await Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(TestPipeline.ExternalId) } });
         }
     }
@@ -231,6 +234,156 @@ namespace Test.CSharp.Integration
             }
 
             Assert.True(read.Items.Count() >= 3);
+        }
+
+        private async Task<string> CreateConfigExtPipe()
+        {
+            var extId = Guid.NewGuid().ToString();
+            var pipe = new ExtPipeCreate
+            {
+                DataSetId = tester.DataSetId,
+                ExternalId = extId,
+                Name = "test extpipe"
+            };
+
+            await tester.Write.ExtPipes.CreateAsync(new[] { pipe });
+            await tester.Write.Playground.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+            {
+                Config = "initial config",
+                Description = "test description",
+                ExternalId = extId
+            });
+            return extId;
+        }
+        private async Task CleanupExtPipe(string id)
+        {
+            await tester.Write.ExtPipes.DeleteAsync(new ExtPipeDelete { Items = new[] { Identity.Create(id) } });
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task CreateExtPipeConfig()
+        {
+            // Arrange
+            var extId = await CreateConfigExtPipe();
+
+            try
+            {
+                // Act
+                var result = await tester.Write.Playground.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                {
+                    Config = "test config",
+                    Description = "test description",
+                    ExternalId = extId
+                });
+
+                // Assert
+                Assert.Equal(2, result.Revision);
+                Assert.Equal("test config", result.Config);
+            }
+            finally
+            {
+                await CleanupExtPipe(extId);
+            }
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task GetCurrentConfig()
+        {
+            // Arrange
+            var extId = await CreateConfigExtPipe();
+
+            try
+            {
+                // Act
+                var latest = await tester.Write.Playground.ExtPipeConfigs.GetCurrentConfig(extId);
+
+                // Assert
+                Assert.Equal(1, latest.Revision);
+                Assert.Equal("initial config", latest.Config);
+            }
+            finally
+            {
+                await CleanupExtPipe(extId);
+            }
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task GetConfigRevision()
+        {
+            // Arrange
+            var extId = await CreateConfigExtPipe();
+            
+            try
+            {
+                // Act
+                await tester.Write.Playground.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                {
+                    Config = "test config 2",
+                    Description = "test description",
+                    ExternalId = extId
+                });
+                var first = await tester.Write.Playground.ExtPipeConfigs.GetConfigRevision(extId, 1); 
+            }
+            finally
+            {
+                await CleanupExtPipe(extId);
+            }
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task ListConfigRevisions()
+        {
+            // Arrange
+            var extId = await CreateConfigExtPipe();
+
+            try
+            {
+                // Act
+                await tester.Write.Playground.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                {
+                    Config = "test config 2",
+                    Description = "test description",
+                    ExternalId = extId
+                });
+                var first = await tester.Write.Playground.ExtPipeConfigs.ListConfigRevisions(new ListConfigQuery { Limit = 1, ExtPipeId = extId });
+                var second = await tester.Write.Playground.ExtPipeConfigs.ListConfigRevisions(new ListConfigQuery { Cursor = first.NextCursor, Limit = 1, ExtPipeId = extId });
+
+                // Assert
+                Assert.Single(first.Items);
+                Assert.NotNull(first.NextCursor);
+
+                Assert.Single(second.Items);
+                Assert.Null(second.NextCursor);
+            }
+            finally
+            {
+                await CleanupExtPipe(extId);
+            }
+        }
+
+        [Fact(Timeout = 10000)]
+        public async Task RevertConfigRevisions()
+        {
+            // Arrange
+            var extId = await CreateConfigExtPipe();
+
+            try
+            {
+                // Act
+                await tester.Write.Playground.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                {
+                    Config = "test config 2",
+                    Description = "test description",
+                    ExternalId = extId
+                });
+                var reverted = await tester.Write.Playground.ExtPipeConfigs.RevertConfigRevision(extId, 1);
+                Assert.Equal(3, reverted.Revision);
+                Assert.Equal("initial config", reverted.Config);
+            }
+            finally
+            {
+                await CleanupExtPipe(extId);
+            }
         }
     }
 }

@@ -1,13 +1,15 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using Microsoft.FSharp.Core;
-using Oryx;
-using Oryx.Cognite;
-using Oryx.Pipeline;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Oryx;
+using Oryx.Cognite;
+using Oryx.Pipeline;
+
+using Microsoft.FSharp.Core;
 
 namespace CogniteSdk.Resources.Playground
 {
@@ -29,7 +31,7 @@ namespace CogniteSdk.Resources.Playground
         /// <param name="config">Configuration object to add</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Created config objects</returns>
-        public async Task<ExtPipeConfig> Create(CreateExtPipeConfig config, CancellationToken token = default)
+        public async Task<ExtPipeConfig> Create(ExtPipeConfigCreate config, CancellationToken token = default)
         {
             var req = ExtPipes.createConfig(config, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -63,13 +65,12 @@ namespace CogniteSdk.Resources.Playground
         /// <summary>
         /// List config revisions for the specified extraction pipeline, with optional limit and cursor.
         /// </summary>
-        /// <param name="extPipeId">Extraction pipeline id</param>
         /// <param name="query">Query with optional limit and cursor</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Retrieved list of configuration objects</returns>
-        public async Task<ItemsWithCursor<ExtPipeConfig>> ListConfigRevisions(string extPipeId, ListConfigQuery query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<ExtPipeConfig>> ListConfigRevisions(ListConfigQuery query, CancellationToken token = default)
         {
-            var req = ExtPipes.listConfigRevisions(extPipeId, query, GetContext(token));
+            var req = ExtPipes.listConfigRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

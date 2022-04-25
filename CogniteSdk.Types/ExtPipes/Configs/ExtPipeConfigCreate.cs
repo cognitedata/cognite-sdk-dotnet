@@ -6,7 +6,7 @@ namespace CogniteSdk
     /// <summary>
     /// Request to create a new configuration revision for an extraction pipeline.
     /// </summary>
-    public class CreateExtPipeConfig
+    public class ExtPipeConfigCreate
     {
         /// <summary>
         /// ExternalId of the extraction pipeline this configuration belongs to.
