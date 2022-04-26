@@ -1,4 +1,4 @@
-// Copyright 2020 Cognite AS
+﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Class for reading templategroups.
+    /// Class for writing templategroups.
     /// </summary>
-    public class TemplateGroup
+    public class TemplateGroupCreate
     {
         /// <summary>
         /// The external ID provided by the client. Must be unique for the resource type.
@@ -24,16 +24,6 @@ namespace CogniteSdk.Beta
         /// The owners of the Template Group.
         /// </summary>
         public IEnumerable<string> Owners { get; set; }
-
-        /// <summary>
-        /// Timestamp this group was created in milliseconds since 01/01/1970
-        /// </summary>
-        public long CreatedTime { get; set; }
-
-        /// <summary>
-        /// Timestamp since this group was last updated in milliseconds since 01/01/1970
-        /// </summary>
-        public long LastUpdatedTime { get; set; }
 
         /// <summary>
         /// Optional data set id
