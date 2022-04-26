@@ -4,13 +4,13 @@
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Query for fetching template groups
+    /// Item for deleting or referencing template group versions.
     /// </summary>
-    public class TemplateGroupQuery : CursorQueryBase
+    public class TemplateGroupVersionItem
     {
         /// <summary>
-        /// Optional filter
+        /// Version reference
         /// </summary>
-        public TemplateGroupFilter Filter { get; set; }
+        public int Version { get; set; }
     }
 }

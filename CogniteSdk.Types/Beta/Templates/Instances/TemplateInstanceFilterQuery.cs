@@ -4,13 +4,13 @@
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Query for fetching template groups
+    /// Query for fetching template instances.
     /// </summary>
-    public class TemplateGroupQuery : CursorQueryBase
+    public class TemplateInstanceFilterQuery : CursorQueryBase
     {
         /// <summary>
         /// Optional filter
         /// </summary>
-        public TemplateGroupFilter Filter { get; set; }
+        public TemplateInstanceFilter Filter { get; set; }
     }
 }

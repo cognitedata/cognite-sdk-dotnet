@@ -1,21 +1,22 @@
-// Copyright 2021 Cognite AS
+// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 namespace CogniteSdk.Beta
 {
+
     /// <summary>
     /// Class for querying Template Group Versions.
     /// </summary>
-    public class TemplateGroupVersion : CursorQueryBase
+    public class TemplateGroupVersionFilter : CursorQueryBase
     {
         /// <summary>
-        /// Version of the Template Group
+        /// Minimum version of template
         /// </summary>
-        public int Version { get; set; }
+        public int? MinVersion { get; set; }
 
         /// <summary>
-        /// Schema of the Template Group
+        /// Maximum version of template
         /// </summary>
-        public string Schema { get; set; }
+        public int? MaxVersion { get; set; }
     }
 }
