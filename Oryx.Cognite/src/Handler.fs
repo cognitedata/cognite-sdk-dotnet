@@ -181,7 +181,12 @@ module HttpHandler =
                         error.RequestId <- requestId
                     | None -> ()
 
-                    return error.ToException()
+                    let ex: exn =
+                        match error.Error with
+                        | null -> error.ToException(response.ReasonPhrase, int response.StatusCode)
+                        | _ -> error.ToException()
+
+                    return ex
                 with
                 | ex ->
                     let exn = ResponseException(response.ReasonPhrase, ex)

@@ -70,6 +70,21 @@ namespace CogniteSdk
             return exn;
         }
 
+        /// <summary>
+        /// Convert error to exception when ResponseError is missing.
+        /// </summary>
+        /// <param name="message">Exception message</param>
+        /// <param name="code">Exception http error code</param>
+        /// <returns>Converted exception</returns>
+        public Exception ToException(string message, int code)
+        {
+            return new ResponseException(message)
+            {
+                Code = code,
+                RequestId = this.RequestId,
+            };
+        }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
