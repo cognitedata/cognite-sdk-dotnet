@@ -3,6 +3,8 @@
 
 namespace Oryx.Cognite.Beta
 
+open System
+
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Beta
@@ -17,17 +19,38 @@ module TemplateGroups =
 
     let templateGroupVersionsUrl externalId = Url +/ externalId +/ "versions"
 
-    /// <summary>
-    /// Retrieves list of template groups and a cursor if given limit is exceeded.
-    /// </summary>
-    /// <param name="query">The query with limit and cursor.</param>
-    /// <returns>List of domains.</returns>
-    let list (query: TemplateGroupFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroup>> =
-        let url = Url
+    let templateGroupInstanceUrl externalId version = Url +/ externalId +/ "versions" +/ (version |> string)
 
+    /// Create a list of template groups
+    let create (items: TemplateGroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateGroup seq> =
         source
-        |> withLogMessage "templategroups:list"
-        |> list query url
+        |> withLogMessage "templategroups:create"
+        |> create items Url
+
+
+    let upsert (items: TemplateGroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateGroup seq> =
+        source
+        |> withLogMessage "templategroups:upsert"
+        |> Handler.create items (Url +/ "upsert")
+
+    
+    let retrieve (items: string seq) (ignoreUnkownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<TemplateGroup seq> =
+        source
+        |> withLogMessage "templategroups:retrieve"
+        |> retrieveIgnoreUnknownIds (items |> Seq.map (fun id -> Identity.Create id)) (Option.ofNullable ignoreUnkownIds) Url
+
+
+    let filter (query: TemplateInstanceFilterQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroup>> =
+        source
+        |> withLogMessage "templategroups:filter"
+        |> list query Url
+
+
+    let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        let query = ItemsWithIgnoreUnknownIds(Items=(items |> Seq.map (fun id -> CogniteExternalId(id))), IgnoreUnknownIds=ignoreUnknownIds)
+        source
+        |> withLogMessage "templategroups:delete"
+        |> delete query Url
 
     /// <summary>
     /// Retrieves a list of versions of a given template group, and a version if given limit is exceeded.
