@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace CogniteSdk.Beta
 {
@@ -41,7 +40,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Map of field resolvers for this instance
         /// </summary>
-        public Dictionary<string, JsonElement> FieldResolvers { get; set; }
+        public Dictionary<string, BaseFieldResolver> FieldResolvers { get; set; }
         /// <summary>
         /// Object referencing another resource this template extends
         /// </summary>

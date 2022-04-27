@@ -4,7 +4,6 @@
 namespace Oryx.Cognite.Beta
 
 open System
-open System.Text.Json
 
 open Oryx
 open Oryx.Cognite
