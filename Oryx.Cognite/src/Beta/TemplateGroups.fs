@@ -114,25 +114,25 @@ module TemplateGroups =
         |> Handler.delete query (instancesUrl externalId version)
 
     /// Create a list of views for the given template group version.
-    let createViews (externalId: string) (version: int) (items: TemplateViewCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateView seq> =
+    let createViews (externalId: string) (version: int) (items: TemplateViewCreate<'TFilter> seq) (source: HttpHandler<unit>) : HttpHandler<TemplateView<'TFilter> seq> =
         source
         |> withLogMessage "templateviews:create"
         |> Handler.create items (viewsUrl externalId version)
 
     /// Upsert a list of views for the given template group version.
-    let upsertViews (externalId: string) (version: int) (items: TemplateViewCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateView seq> =
+    let upsertViews (externalId: string) (version: int) (items: TemplateViewCreate<'TFilter> seq) (source: HttpHandler<unit>) : HttpHandler<TemplateView<'TFilter> seq> =
         source
         |> withLogMessage "templateviews:upsert"
         |> Handler.create items ((viewsUrl externalId version) +/ "upsert")
 
     /// List views for the given template group version with optional filter, returns cursor if the number of results exceed limit.
-    let filterViews (externalId: string) (version: int) (query: TemplateViewFilterQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateView>> =
+    let filterViews (externalId: string) (version: int) (query: TemplateViewFilterQuery<'TFilter>) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateView<'TResultFilter>>> =
         source
         |> withLogMessage "templateviews:filter"
         |> Handler.list query (viewsUrl externalId version)
 
     /// Resolve the view for the given template group version, returning a list of results with cursor if the number of results exceed limit.
-    let resolveView (externalId: string) (version: int) (req: TemplateViewResolveRequest) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<JsonElement>> =
+    let resolveView (externalId: string) (version: int) (req: TemplateViewResolveRequest<'TFilter>) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<'TResult>> =
         source
         |> withLogMessage "templateviews:resolve"
         |> postV10 req ((viewsUrl externalId version) +/ "resolve")
@@ -145,7 +145,7 @@ module TemplateGroups =
         |> Handler.delete query (viewsUrl externalId version)
 
     /// Query the given template group version.
-    let query (externalId: string) (version: int) (query: GraphQlQuery) (source: HttpHandler<unit>) : HttpHandler<GraphQlResult> =
+    let query (externalId: string) (version: int) (query: GraphQlQuery) (source: HttpHandler<unit>) : HttpHandler<GraphQlResult<'TResult>> =
         source
         |> withLogMessage "templateversions:query"
         |> postV10 query ((baseVersionedUrl externalId version) +/ "graphql")

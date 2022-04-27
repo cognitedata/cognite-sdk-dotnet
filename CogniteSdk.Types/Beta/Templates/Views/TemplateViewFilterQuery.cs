@@ -8,11 +8,11 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Query for filtering template views.
     /// </summary>
-    public class TemplateViewFilterQuery : CursorQueryBase
+    public class TemplateViewFilterQuery<T> : CursorQueryBase
     {
         /// <summary>
         /// Optional filter
         /// </summary>
-        public JsonElement Filter { get; set; }
+        public T Filter { get; set; }
     }
 }

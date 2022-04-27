@@ -2,14 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace CogniteSdk.Beta
 {
     /// <summary>
     /// Request to resolve a view.
     /// </summary>
-    public class TemplateViewResolveRequest : CursorQueryBase
+    public class TemplateViewResolveRequest<T> : CursorQueryBase
     {
         /// <summary>
         /// View external id.
@@ -18,6 +17,6 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// View input.
         /// </summary>
-        public Dictionary<string, JsonElement> Input { get; set; }
+        public Dictionary<string, T> Input { get; set; }
     }
 }

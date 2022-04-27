@@ -9,7 +9,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Source of a template view
     /// </summary>
-    public class TemplateViewSource
+    public class TemplateViewSource<T>
     {
         /// <summary>
         /// Template field mappings
@@ -22,15 +22,15 @@ namespace CogniteSdk.Beta
         public string Type { get; set; }
 
         /// <summary>
-        /// Filter of type given by "Type".
+        /// Filter on data
         /// </summary>
-        public JsonElement Filter { get; set; }
+        public T Filter { get; set; }
     }
 
     /// <summary>
     /// Create a template view
     /// </summary>
-    public class TemplateViewCreate
+    public class TemplateViewCreate<T>
     {
         /// <summary>
         /// External id
@@ -45,6 +45,6 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Template view source.
         /// </summary>
-        public TemplateViewSource Source { get; set; }
+        public TemplateViewSource<T> Source { get; set; }
     }
 }

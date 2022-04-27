@@ -6,7 +6,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Class representing a retrieved template view
     /// </summary>
-    public class TemplateView
+    public class TemplateView<T>
     {
         /// <summary>
         /// External id
@@ -21,7 +21,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Template view source.
         /// </summary>
-        public TemplateViewSource Source { get; set; }
+        public TemplateViewSource<T> Source { get; set; }
 
         /// <summary>
         /// Time this instance was created in milliseconds since 01/01/1970
