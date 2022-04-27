@@ -115,8 +115,19 @@ type MyType @template {
             Assert.Equal(insertResult.Schema, version.Schema);
         }
 
+        class QueryResult
+        {
+            public string MyStringField { get; set; }
+            public int MyIntField { get; set; }
+        }
+
+        class QueryResultWrapper
+        {
+            public ItemsWithCursor<QueryResult> MyTypeQuery { get; set; }
+        }
+
         [Fact]
-        public async Task CreateUpsertRetrieveDeleteInstance()
+        public async Task CreateUpsertRetrieveQueryDeleteInstance()
         {
             // Arrange
             var extid = Guid.NewGuid().ToString();
@@ -137,7 +148,30 @@ type MyType @template {
             instance.FieldResolvers["myIntField"] = new ConstantFieldResolver { Value = JsonDocument.Parse("123").RootElement };
             var upsertResult = await tester.Write.Beta.Templates.UpsertInstancesAsync(groupId, version, new[] { instance });
             var retrieveResult = await tester.Write.Beta.Templates.RetrieveInstancesAsync(groupId, version, new[] { extid }, true);
-            await tester.Write.Beta.Templates.DeleteInstancesAsync(groupId, version, new[] { extid }, true);
+
+            try
+            {
+                var queryResult = await tester.Write.Beta.Templates.QueryAsync<QueryResultWrapper>(groupId, version, new GraphQlQuery
+                {
+                    Query = @"
+{
+  myTypeQuery {
+    items {
+      myStringField
+      myIntField
+    }
+  }
+}
+"
+                });
+                Assert.Equal(123, queryResult.Data.MyTypeQuery.Items.First().MyIntField);
+                Assert.Equal("some-value", queryResult.Data.MyTypeQuery.Items.First().MyStringField);
+            }
+            finally
+            {
+                await tester.Write.Beta.Templates.DeleteInstancesAsync(groupId, version, new[] { extid }, true);
+            }
+
 
             // Assert
             Assert.Single(createResult.First().FieldResolvers.Where(kvp => kvp.Value != null));

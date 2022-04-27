@@ -18,7 +18,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Variables to query.
         /// </summary>
-        public JsonElement Variables { get; set; }
+        public JsonElement? Variables { get; set; }
 
         /// <summary>
         /// Name of operation
