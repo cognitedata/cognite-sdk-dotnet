@@ -11,7 +11,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Version of the Template Group
         /// </summary>
-        public int? Version { get; set; }
+        public int Version { get; set; }
 
         /// <summary>
         /// Schema of the Template Group

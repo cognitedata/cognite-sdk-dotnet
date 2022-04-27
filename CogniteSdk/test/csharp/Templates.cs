@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -89,6 +90,59 @@ type NonTemplateType { # Non template type
             Assert.Equal("Test group", createResult.First().Description);
             Assert.Equal("Test group 2", upsertResult.First().Description);
             Assert.Equal("Test group 2", retrieveResult.First().Description);
+        }
+
+        [Fact]
+        public async Task InsertDeleteVersion()
+        {
+            // Arrange
+            var version = new TemplateVersionCreate
+            {
+                ConflictMode = TemplateGroupConflictMode.Update,
+                Schema = @"
+type MyType @template {
+  myStringField: String
+}
+"
+            };
+
+            // Act
+            var insertResult = await tester.Write.Beta.Templates.UpsertVersionAsync(tester.TestGroup.ExternalId, version);
+            await tester.Write.Beta.Templates.DeleteVersionsAsync(tester.TestGroup.ExternalId, insertResult.Version);
+
+            // Assert
+            Assert.True(insertResult.Version > 1);
+            Assert.Equal(insertResult.Schema, version.Schema);
+        }
+
+        [Fact]
+        public async Task CreateUpsertRetrieveDeleteInstance()
+        {
+            // Arrange
+            var extid = Guid.NewGuid().ToString();
+            var instance = new TemplateInstanceCreate
+            {
+                ExternalId = extid,
+                TemplateName = "MyType",
+                FieldResolvers = new Dictionary<string, BaseFieldResolver>
+                {
+                    { "myStringField", new ConstantFieldResolver { Value = JsonDocument.Parse("\"some-value\"").RootElement } }
+                }
+            };
+            var groupId = tester.TestGroup.ExternalId;
+            var version = tester.TestVersion.Version;
+
+            // Act
+            var createResult = await tester.Write.Beta.Templates.CreateInstancesAsync(groupId, version, new[] { instance });
+            instance.FieldResolvers["myIntField"] = new ConstantFieldResolver { Value = JsonDocument.Parse("123").RootElement };
+            var upsertResult = await tester.Write.Beta.Templates.UpsertInstancesAsync(groupId, version, new[] { instance });
+            var retrieveResult = await tester.Write.Beta.Templates.RetrieveInstancesAsync(groupId, version, new[] { extid }, true);
+            await tester.Write.Beta.Templates.DeleteInstancesAsync(groupId, version, new[] { extid }, true);
+
+            // Assert
+            Assert.Single(createResult.First().FieldResolvers.Where(kvp => kvp.Value != null));
+            Assert.Equal(2, upsertResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
+            Assert.Equal(2, retrieveResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
         }
     }
 }

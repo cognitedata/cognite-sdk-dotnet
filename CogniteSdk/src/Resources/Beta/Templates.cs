@@ -152,20 +152,6 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Update a list of template instances.
-        /// </summary>
-        /// <param name="externalId">Template group externalId.</param>
-        /// <param name="version">Template version.</param>
-        /// <param name="items">Template instance updates.</param>
-        /// <param name="token">Optional cancellation token.</param>
-        /// <returns>Updated template instances.</returns>
-        public async Task<IEnumerable<TemplateInstance>> UpdateInstancesAsync(string externalId, int version, IEnumerable<UpdateItem<TemplateInstanceUpdate>> items, CancellationToken token = default)
-        {
-            var req = TemplateGroups.updateInstances(externalId, version, items, GetContext(token));
-            return await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Retrieve a list of template instances.
         /// </summary>
         /// <param name="externalId">Template group externalId.</param>

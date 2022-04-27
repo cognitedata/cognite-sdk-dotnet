@@ -67,7 +67,7 @@ module TemplateGroups =
         |> list query Url
 
     /// Delete a list of template groups.
-    let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<unit> =
+    let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let query =
             ItemsWithIgnoreUnknownIds(
                 Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
@@ -76,7 +76,7 @@ module TemplateGroups =
 
         source
         |> withLogMessage "templategroups:delete"
-        |> delete query Url
+        |> HttpHandler.delete query Url
 
     /// Upsert a version. If the "version" number is left out, this will create a new template version.
     let upsertVersion
@@ -99,10 +99,10 @@ module TemplateGroups =
         |> Handler.list query (versionsUrl externalId)
 
     /// Delete a given version from the template group.
-    let deleteVersions (externalId: string) (item: int) (source: HttpHandler<unit>) : HttpHandler<unit> =
+    let deleteVersions (externalId: string) (item: int) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "templateversions:delete"
-        |> Handler.delete (TemplateVersionItem(Version = item)) (versionsUrl externalId)
+        |> HttpHandler.delete (TemplateVersionItem(Version = item)) (versionsUrl externalId)
 
     /// Create a list of instances for the given template group version.
     let createInstances
@@ -125,17 +125,6 @@ module TemplateGroups =
         source
         |> withLogMessage "templateinstances:create"
         |> Handler.create items ((instancesUrl externalId version) +/ "upsert")
-
-    /// Update instances for the given template group version.
-    let updateInstances
-        (externalId: string)
-        (version: int)
-        (items: UpdateItem<TemplateInstanceUpdate> seq)
-        (source: HttpHandler<unit>)
-        : HttpHandler<TemplateInstance seq> =
-        source
-        |> withLogMessage "templateinstances:update"
-        |> Handler.update items ((instancesUrl externalId version) +/ "update")
 
     /// Retrieve instances for the given template group version, optionally ignoring unknown ids.
     let retrieveInstances
@@ -170,7 +159,7 @@ module TemplateGroups =
         (items: string seq)
         (ignoreUnknownIds: bool)
         (source: HttpHandler<unit>)
-        : HttpHandler<unit> =
+        : HttpHandler<EmptyResponse> =
         let query =
             ItemsWithIgnoreUnknownIds(
                 Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
@@ -179,7 +168,7 @@ module TemplateGroups =
 
         source
         |> withLogMessage "templateinstances:delete"
-        |> Handler.delete query (instancesUrl externalId version)
+        |> HttpHandler.delete query (instancesUrl externalId version)
 
     /// Create a list of views for the given template group version.
     let createViews
@@ -232,7 +221,7 @@ module TemplateGroups =
         (items: string seq)
         (ignoreUnknownIds: bool)
         (source: HttpHandler<unit>)
-        : HttpHandler<unit> =
+        : HttpHandler<EmptyResponse> =
         let query =
             ItemsWithIgnoreUnknownIds(
                 Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
@@ -241,7 +230,7 @@ module TemplateGroups =
 
         source
         |> withLogMessage "templateinstances:delete"
-        |> Handler.delete query (viewsUrl externalId version)
+        |> HttpHandler.delete query (viewsUrl externalId version)
 
     /// Query the given template group version.
     let query

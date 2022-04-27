@@ -84,7 +84,7 @@ namespace CogniteSdk.Beta
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, BaseFieldResolver value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, value.GetType(), options);
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 
