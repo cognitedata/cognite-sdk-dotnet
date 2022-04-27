@@ -18,7 +18,7 @@ namespace Test.CSharp.Integration
 
         public TestFixture()
         {
-            // ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
+            ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
             WriteClient = CreateOAuth2Client(
                 Environment.GetEnvironmentVariable("TEST_TOKEN_WRITE"),
                 Environment.GetEnvironmentVariable("TEST_PROJECT_WRITE") ?? "fusiondotnet-tests",

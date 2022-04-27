@@ -58,10 +58,7 @@ module TemplateGroups =
             Url
 
     /// Filter template groups.
-    let filter
-        (query: TemplateGroupQuery)
-        (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithCursor<TemplateGroup>> =
+    let filter (query: TemplateGroupQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroup>> =
         source
         |> withLogMessage "templategroups:filter"
         |> list query Url
