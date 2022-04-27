@@ -1,12 +1,17 @@
-﻿using CogniteSdk;
-using CogniteSdk.Beta;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+
 using Xunit;
+
+using CogniteSdk;
+using CogniteSdk.Beta;
 
 namespace Test.CSharp.Integration
 {
@@ -177,6 +182,34 @@ type MyType @template {
             Assert.Single(createResult.First().FieldResolvers.Where(kvp => kvp.Value != null));
             Assert.Equal(2, upsertResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
             Assert.Equal(2, retrieveResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
+        }
+
+        [Fact]
+        public async Task CreateUpsertDeleteView()
+        {
+            // Arrange
+            var extid = Guid.NewGuid().ToString();
+            var view = new TemplateViewCreate<object>
+            {
+                ExternalId = extid,
+                Source = new TemplateViewSource<object>
+                {
+                    Filter = new object(),
+                    Type = "assets"
+                }
+            };
+            var groupId = tester.TestGroup.ExternalId;
+            var version = tester.TestVersion.Version;
+
+            // Act
+            var createResult = await tester.Write.Beta.Templates.CreateViewsAsync(groupId, version, new[] { view });
+            view.Source.Type = "events";
+            var upsertResult = await tester.Write.Beta.Templates.UpsertViewsAsync(groupId, version, new[] { view });
+            await tester.Write.Beta.Templates.DeleteAsync(new[] { extid }, true);
+
+            // Assert
+            Assert.Equal("assets", createResult.First().Source.Type);
+            Assert.Equal("events", upsertResult.First().Source.Type);
         }
     }
 }
