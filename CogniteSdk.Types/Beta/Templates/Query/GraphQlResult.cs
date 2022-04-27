@@ -15,7 +15,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// The GraphQL data result.
         /// </summary>
-        public Dictionary<string, object> Data { get; set; }
+        public JsonElement Data { get; set; }
 
         /// <summary>
         /// The GraphQL errors if any.

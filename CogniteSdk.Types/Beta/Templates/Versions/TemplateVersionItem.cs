@@ -6,7 +6,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Item for deleting or referencing template group versions.
     /// </summary>
-    public class TemplateGroupVersionItem
+    public class TemplateVersionItem
     {
         /// <summary>
         /// Version reference

@@ -6,7 +6,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Query for template versions.
     /// </summary>
-    public class TemplateGroupVersionQuery : CursorQueryBase
+    public class TemplateVersionQuery : CursorQueryBase
     {
         /// <summary>
         /// Optional filter to use.

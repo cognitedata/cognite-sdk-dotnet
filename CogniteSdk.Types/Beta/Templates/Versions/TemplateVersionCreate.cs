@@ -27,9 +27,9 @@ namespace CogniteSdk.Beta
 
 
     /// <summary>
-    /// Class for querying Template Group Versions.
+    /// Class for creating template group versions
     /// </summary>
-    public class TemplateGroupVersion : CursorQueryBase
+    public class TemplateVersionCreate
     {
         /// <summary>
         /// Version of the Template Group

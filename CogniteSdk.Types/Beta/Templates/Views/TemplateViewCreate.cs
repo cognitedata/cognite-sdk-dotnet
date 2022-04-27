@@ -15,10 +15,12 @@ namespace CogniteSdk.Beta
         /// Template field mappings
         /// </summary>
         public Dictionary<string, string> Mappings { get; set; }
+
         /// <summary>
         /// View type
         /// </summary>
         public string Type { get; set; }
+
         /// <summary>
         /// Filter of type given by "Type".
         /// </summary>
@@ -34,9 +36,15 @@ namespace CogniteSdk.Beta
         /// External id
         /// </summary>
         public string ExternalId { get; set; }
+
         /// <summary>
         /// Optional data set id.
         /// </summary>
         public long? DataSetId { get; set; }
+
+        /// <summary>
+        /// Template view source.
+        /// </summary>
+        public TemplateViewSource Source { get; set; }
     }
 }

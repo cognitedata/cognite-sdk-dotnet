@@ -7,7 +7,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Class for querying Template Group Versions.
     /// </summary>
-    public class TemplateGroupVersionFilter : CursorQueryBase
+    public class TemplateVersionFilter : CursorQueryBase
     {
         /// <summary>
         /// Minimum version of template
