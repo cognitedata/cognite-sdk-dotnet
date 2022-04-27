@@ -59,7 +59,7 @@ module TemplateGroups =
 
     /// Filter template groups.
     let filter
-        (query: TemplateInstanceFilterQuery)
+        (query: TemplateGroupQuery)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<TemplateGroup>> =
         source

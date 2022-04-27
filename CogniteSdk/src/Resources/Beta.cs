@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using CogniteSdk.Resources.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Pipeline;
@@ -16,8 +17,9 @@ namespace CogniteSdk.Resources
     public class BetaResource : Resource
     {
         /// <summary>
-        /// Client Relationships extension methods
+        /// Client Templates extension methods
         /// </summary>
+        public TemplatesResource Templates { get; }
 
         /// <summary>
         /// Will only be instantiated by the client.
@@ -26,6 +28,7 @@ namespace CogniteSdk.Resources
         /// <param name="ctx">Context to use for the request.</param>
         internal BetaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
+            Templates = new TemplatesResource(authHandler, ctx);
         }
     }
 }
