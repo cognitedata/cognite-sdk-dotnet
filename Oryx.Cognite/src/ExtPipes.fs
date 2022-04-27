@@ -8,6 +8,7 @@ open System.Collections.Generic
 
 open Oryx
 open Oryx.Cognite
+open Oryx.SystemTextJson.ResponseReader
 
 open CogniteSdk
 
@@ -18,6 +19,8 @@ module ExtPipes =
     let Url = "/extpipes"
 
     let RunsUrl = Url +/ "runs"
+
+    let ConfigsUrl = Url +/ "config"
 
     /// Retrieves list of extraction pipelines matching filter, and a cursor if given limit is exceeded.
     let list (query: ExtPipeQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<ExtPipe>> =
@@ -65,3 +68,64 @@ module ExtPipes =
         source
         |> withLogMessage "ExtPipeRuns:create"
         |> HttpHandler.create items RunsUrl
+
+    let getWithQueryPlayground<'TResult>
+        (query: IQueryParams)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        let parms = query.ToQueryParams()
+
+        source
+        |> GET
+        |> withVersion ApiVersion.Playground
+        |> withResource url
+        |> withQuery parms
+        |> fetch
+        |> withError decodeError
+        |> json Common.jsonOptions
+        |> log
+
+    /// BETA: Create a new configuration revision for the given extraction pipeline.
+    let createConfig (item: ExtPipeConfigCreate) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
+        source
+        |> withVersion ApiVersion.Playground
+        |> withLogMessage "ExtPipeConfigs:create"
+        |> HttpHandler.post item ConfigsUrl
+
+    /// BETA: Get the current config revision
+    let getCurrentConfig (extPipeId: string) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
+        source
+        |> withLogMessage "ExtPipeConfigs:getLatest"
+        |> getWithQueryPlayground (GetConfigQuery(ExtPipeId = extPipeId)) ConfigsUrl
+
+    /// BETA: Get a specific config revision
+    let getConfigRevision (extPipeId: string) (revision: int) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
+        source
+        |> withLogMessage "ExtPipeConfigs:getRevision"
+        |> getWithQueryPlayground (GetConfigQuery(ExtPipeId = extPipeId, Revision = revision)) ConfigsUrl
+
+    let getConfigWithQuery (query: GetConfigQuery) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
+        source
+        |> withLogMessage "ExtPipeConfigs:getConfigWithQuery"
+        |> getWithQueryPlayground query ConfigsUrl
+
+    /// BETA: List config revisions without details
+    let listConfigRevisions
+        (query: ListConfigQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<ExtPipeConfig>> =
+        source
+        |> withLogMessage "ExtPipeConfigs:listRevisions"
+        |> getWithQueryPlayground query (ConfigsUrl +/ "revisions")
+
+    /// BETA: Revert to a previous config revision
+    let revertConfigRevision
+        (extPipeId: string)
+        (revision: int)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ExtPipeConfig> =
+        source
+        |> withVersion ApiVersion.Playground
+        |> withLogMessage "ExtPipeConfigs:revert"
+        |> HttpHandler.post (RevertConfigRequest(ExternalId = extPipeId, Revision = revision)) (ConfigsUrl +/ "revert")
