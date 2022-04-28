@@ -7,6 +7,7 @@ namespace Oryx.Cognite
 open System.Text.Json
 
 open CogniteSdk
+open CogniteSdk.Beta
 
 type ApiVersion =
     | V05
@@ -70,4 +71,5 @@ module Common =
         options.Converters.Add(ObjectToDictionaryJsonConverter())
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
+        options.Converters.Add(FieldResolverConverter())
         options

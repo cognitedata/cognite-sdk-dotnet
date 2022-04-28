@@ -14,5 +14,10 @@ namespace CogniteSdk.Beta
         /// Filter on owners
         /// </summary>
         public IEnumerable<string> Owners { get; set; }
+
+        /// <summary>
+        /// Filter on data set ids
+        /// </summary>
+        public IEnumerable<long> DataSetIds { get; set; }
     }
 }
