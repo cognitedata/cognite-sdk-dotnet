@@ -25,6 +25,7 @@ namespace Test.CSharp.Integration
                 Environment.GetEnvironmentVariable("TEST_HOST_WRITE") ?? "https://greenfield.cognitedata.com");
         }
 
+
         protected virtual void Dispose(bool disposing)
         {
         }
