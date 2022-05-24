@@ -31,6 +31,7 @@
     <Compile Include="Transformations.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
+    <Compile Include="Playground/Annotations.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
