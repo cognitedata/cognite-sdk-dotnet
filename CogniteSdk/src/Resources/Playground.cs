@@ -35,6 +35,10 @@ namespace CogniteSdk.Resources
         /// Extraction pipeline configs
         /// </summary>
         public Playground.ExtPipeConfigs ExtPipeConfigs { get; set; }
+        /// <summary>
+        /// Client Annotations extension methods
+        /// </summary>
+        public Playground.AnnotationsResource Annotations { get; set; }
 
         /// <summary>
         /// Will only be instantiated by the client.
@@ -47,6 +51,7 @@ namespace CogniteSdk.Resources
             FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);
             FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);
             ExtPipeConfigs = new Playground.ExtPipeConfigs(authHandler, ctx);
+            Annotations = new Playground.AnnotationsResource(authHandler, ctx);
         }
     }
 }

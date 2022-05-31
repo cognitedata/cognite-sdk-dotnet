@@ -176,6 +176,22 @@ module Handler =
 
             return ret.Items
         }
+        
+    let suggest<'TContent, 'TResult>
+        (content: IEnumerable<'TContent>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
+        http {
+            let url = url +/ "suggest"
+            let content' = ItemsWithoutCursor(Items = content)
+
+            let! ret =
+                source
+                |> postPlayground<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' url
+
+            return ret.Items
+        }
 
     let createWithQuery<'TContent, 'TResult>
         (content: IEnumerable<'TContent>)
