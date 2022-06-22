@@ -42,7 +42,7 @@ namespace CogniteSdk
         /// <summary>
         /// The homogeneous transformation matrix
         /// </summary>
-        public float[] Matrix {get; set;}
+        public double[] Matrix {get; set;}
     }
     /// <summary>
     /// A cylinder in 3D space, defined by the centers of two sides and the radius.
@@ -51,15 +51,15 @@ namespace CogniteSdk
         /// <summary>
         /// The center of the first cap.
         /// </summary>
-        public float[] CenterA {get; set;}
+        public double[] CenterA {get; set;}
         /// <summary>
         /// The center of the second cap.
         /// </summary>
-        public float[] CenterB {get; set;}
+        public double[] CenterB {get; set;}
         /// <summary>
         /// The radius of the cylinder.
         /// </summary>  
-        public float Radius {get; set;}
+        public double Radius {get; set;}
     }
     /// <summary>
     /// The metadata of a geometric object
@@ -68,7 +68,7 @@ namespace CogniteSdk
         /// <summary>
         /// Mixin that can be used to add confidence score to a thing
         /// </summary> 
-        public float Confidence {get; set;}
+        public double Confidence {get; set;}
         /// <summary>
         /// "Mixin that can be used to add a label string to a thing
         /// </summary> 
