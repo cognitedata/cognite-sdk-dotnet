@@ -53,8 +53,8 @@ namespace Test.CSharp.Integration
                     {
                         Cylinder = new Cylinder()
                         {
-                            CenterA = new float[] {0, 1, 2},
-                            CenterB = new float[] {2, 3, 4},
+                            CenterA = new double[] {0, 1, 2},
+                            CenterB = new double[] {2, 3, 4},
                             Radius = 3
 
                         }
@@ -100,8 +100,8 @@ namespace Test.CSharp.Integration
                     {
                         Cylinder = new Cylinder()
                         {
-                            CenterA = new float[] {0, 1, 2},
-                            CenterB = new float[] {2, 3, 4},
+                            CenterA = new double[] {0, 1, 2},
+                            CenterB = new double[] {2, 3, 4},
                             Radius = 3
 
                         }
@@ -150,7 +150,7 @@ namespace Test.CSharp.Integration
             {
                 Region = new List<Geometry> {
                     new Geometry{Box=new Box {
-                        Matrix = new float[] {0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15}
+                        Matrix = new double[] {0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15}
                     }}
                 }
             };
