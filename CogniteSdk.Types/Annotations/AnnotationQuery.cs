@@ -12,7 +12,7 @@ namespace CogniteSdk
         /// <summary>
         /// A filter to apply on annotations
         /// </summary>
-        public AnnotationFilter Filter {get; set;}
+        public AnnotationFilter Filter { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

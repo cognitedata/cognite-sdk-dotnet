@@ -15,10 +15,11 @@ namespace CogniteSdk
     /// <summary>
     /// Annotation Id.
     /// </summary>
-    public class AnnotationId {
+    public class AnnotationId
+    {
         /// <summary>
         /// Annotation Id.
         /// </summary>
-        public long Id {get; set;}
+        public long Id { get; set; }
     }
 }
