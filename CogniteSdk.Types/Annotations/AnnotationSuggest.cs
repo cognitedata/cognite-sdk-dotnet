@@ -7,12 +7,12 @@ namespace CogniteSdk
     /// <summary>
     /// The Annotation create class
     /// </summary>
-    public class AnnotationSuggest: AnnotationCommon
+    public class AnnotationSuggest : AnnotationCommon
     {
         /// <summary>
         /// The annotation information. The format of this object is decided by and validated against the 'AnnotationType' attribute.
         /// </summary>
-        public BoundingVolume Data {get; set;}
+        public BoundingVolume Data { get; set; }
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }

@@ -11,7 +11,7 @@ using Oryx.Pipeline;
 
 using Microsoft.FSharp.Core;
 
-namespace CogniteSdk.Resources.Playground
+namespace CogniteSdk.Resources.Beta
 {
     /// <summary>
     /// Resource for extractor configuration
