@@ -12,15 +12,15 @@ namespace CogniteSdk
         /// <summary>
         /// Change the annotation type of the object.
         /// </summary>
-        public Update<string> AnnotationType {get; set;}
+        public Update<string> AnnotationType { get; set; }
         /// <summary>
         /// Change the annotation payload of the object.
         /// </summary>
-        public Update<BoundingVolume> Data {get; set;}
+        public Update<BoundingVolume> Data { get; set; }
         /// <summary>
         /// Change the status of the object.
         /// </summary>
-        public Update<string> Status {get; set;}
+        public Update<string> Status { get; set; }
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }

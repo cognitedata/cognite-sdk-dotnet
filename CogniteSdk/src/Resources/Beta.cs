@@ -22,6 +22,11 @@ namespace CogniteSdk.Resources
         public TemplatesResource Templates { get; }
 
         /// <summary>
+        /// Extraction pipeline configs
+        /// </summary>
+        public ExtPipeConfigs ExtPipeConfigs { get; set; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -29,6 +34,7 @@ namespace CogniteSdk.Resources
         internal BetaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Templates = new TemplatesResource(authHandler, ctx);
+            ExtPipeConfigs = new ExtPipeConfigs(authHandler, ctx);
         }
     }
 }

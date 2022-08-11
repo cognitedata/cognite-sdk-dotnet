@@ -36,11 +36,11 @@ namespace CogniteSdk.Resources.Playground
         public async Task<IEnumerable<Annotation>> CreateAsync(IEnumerable<AnnotationCreate> annotations, CancellationToken token = default)
         {
             if (annotations is null) throw new ArgumentNullException(nameof(annotations));
-            
+
             var req = Annotations.create(annotations, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Suggest Annotation definitions.
         /// </summary>
@@ -50,7 +50,7 @@ namespace CogniteSdk.Resources.Playground
         public async Task<IEnumerable<Annotation>> SuggestAsync(IEnumerable<AnnotationSuggest> annotations, CancellationToken token = default)
         {
             if (annotations is null) throw new ArgumentNullException(nameof(annotations));
-            
+
             var req = Annotations.suggest(annotations, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
