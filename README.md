@@ -106,13 +106,23 @@ var result = await client.Assets.ListAsync(query);
 
 There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDF project and API key as environment variables.
 
-## Dependencies
+## Developing
+
+### Dotnet Tools 
+
+A dotnet tools manifest is used to version tools used by this repo.  Install these tools with:
+
+```sh
+> dotnet tool restore
+```
+
+This will install Paket locally which is used for dependency management.
+
+### Dependencies
 
 Dependencies for all projects are handled using [Paket](https://fsprojects.github.io/Paket/). To install dependencies:
 
 ```sh
-> dotnet new tool-manifest
-> dotnet tool install Paket
 > dotnet paket install
 ```
 
@@ -126,7 +136,7 @@ This will install the main dependencies and sub-dependencies. The main dependenc
 - [System.Text.Json](https://www.nuget.org/packages/System.Text.Json/) - for Json support.
 - [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for Protobuf support.
 
-## Running tests locally
+### Running tests locally
 ```sh
 sh ./test.sh
 ```
