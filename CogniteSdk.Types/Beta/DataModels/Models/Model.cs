@@ -29,7 +29,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of models this model extends.
         /// </summary>
-        public IEnumerable<IEnumerable<string>> Extends { get; set; }
+        public IEnumerable<ModelIdentifier> Extends { get; set; }
         /// <summary>
         /// List of indexes in this model.
         /// </summary>
@@ -56,10 +56,9 @@ namespace CogniteSdk.Beta
         /// </summary>
         public bool Nullable { get; set; } = true;
         /// <summary>
-        /// A reference to a model. Consists of an array of spaceExternalId and modelExternalId,
-        /// or just [ edge ] or [ node ], which don't belong to any space.
+        /// A reference to a model.
         /// </summary>
-        public IEnumerable<string> TargetModel { get; set; }
+        public ModelIdentifier TargetModel { get; set; }
     }
 
     /// <summary>

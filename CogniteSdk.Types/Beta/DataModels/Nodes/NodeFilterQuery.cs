@@ -10,10 +10,14 @@ namespace CogniteSdk.Beta
     public class NodeSyncQuery : CursorQueryBase
     {
         /// <summary>
-        /// A reference to a model. Consists of an array of spaceExternalId and modelExternalId,
-        /// or just [ edge ] or [ node ], which don't belong to any space.
+        /// Identifier for the space.
         /// </summary>
-        public IEnumerable<string> Model { get; set; }
+        public string SpaceExternalId { get; set; }
+
+        /// <summary>
+        /// A reference to a model.
+        /// </summary>
+        public ModelIdentifier Model { get; set; }
 
         /// <summary>
         /// A complex filter on nodes.
