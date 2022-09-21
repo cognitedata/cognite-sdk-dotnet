@@ -186,4 +186,79 @@ namespace CogniteSdk.Beta
             writer.WriteEndArray();
         }
     }
+
+    /// <summary>
+    /// Identifier for a direct reference, serializes to an array with exactly two elements
+    /// </summary>
+    public class DirectRelationIdentifier
+    {
+        /// <summary>
+        /// Space externalId. Null for "edge" or "node" models.
+        /// </summary>
+        public string Space { get; }
+
+        /// <summary>
+        /// Node externalId.
+        /// </summary>
+        public string Node { get; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="space">Space externalId. Null for "edge" or "node" models.</param>
+        /// <param name="node">Model externalId.</param>
+        /// <exception cref="ArgumentNullException">If model is null</exception>
+        public DirectRelationIdentifier(string space, string node)
+        {
+            Space = space;
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            Node = node;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            return obj is DirectRelationIdentifier other && other.Node == Node && other.Space == Space;
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+        {
+            return (Space, Node).GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// JsonConverter for DirectRelationIdentifier.
+    /// </summary>
+    public class DirectRelationIdentifierConverter : JsonConverter<DirectRelationIdentifier>
+    {
+        /// <inheritdoc />
+        public override DirectRelationIdentifier Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType != JsonTokenType.StartArray)
+            {
+                throw new JsonException($"JsonTokenType was of type {reader.TokenType}, must be StartArray");
+            }
+
+            var arr = JsonSerializer.Deserialize<string[]>(ref reader, options);
+            if (arr.Length == 2)
+            {
+                return new DirectRelationIdentifier(arr[0], arr[1]);
+            }
+            else
+            {
+                throw new JsonException($"Expected array of length 2, got {arr.Length}");
+            }
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, DirectRelationIdentifier value, JsonSerializerOptions options)
+        {
+            writer.WriteStartArray();
+            writer.WriteStringValue(value.Space);
+            writer.WriteStringValue(value.Node);
+            writer.WriteEndArray();
+        }
+    }
 }
