@@ -72,4 +72,8 @@ module Common =
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
         options.Converters.Add(FieldResolverConverter())
+        options.Converters.Add(ModelIdentifierConverter())
+        options.Converters.Add(PropertyIdentifierConverter())
+        options.Converters.Add(DirectRelationIdentifierConverter())
+        options.Converters.Add(DmsFilterConverter())
         options

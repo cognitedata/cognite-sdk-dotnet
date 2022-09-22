@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Response to a query listing nodes.
+    /// Response to a query listing edges.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class NodeListResponse<T> : ItemsWithCursor<T> where T : BaseNode
+    public class EdgeListResponse<T> : ItemsWithCursor<T> where T : BaseEdge
     {
         /// <summary>
         /// List of all properties in the retrieved model.
