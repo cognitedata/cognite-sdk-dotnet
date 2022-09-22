@@ -1,4 +1,7 @@
-﻿namespace Oryx.Cognite.Beta
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+namespace Oryx.Cognite.Beta
 
 open Oryx
 open Oryx.Cognite

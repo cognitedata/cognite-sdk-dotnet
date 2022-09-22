@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
+using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

@@ -25,7 +25,7 @@ module Handler =
         |> withVersion V10
 
     let withAlphaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
-        source |> withHeader ("version", "alpha")
+        source |> withHeader ("cdf-version", "alpha")
 
     let withAlphaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         source
