@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Text.Json;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -33,6 +33,11 @@ namespace CogniteSdk
         /// The duplicated entries if any.
         /// </summary>
         public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
+
+        /// <summary>
+        /// Complex extras object
+        /// </summary>
+        public JsonElement Extra { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
@@ -64,7 +69,8 @@ namespace CogniteSdk
                 Code = this.Error.Code,
                 Duplicated = this.Error.Duplicated,
                 Missing = this.Error.Missing,
-                RequestId = this.RequestId
+                RequestId = this.RequestId,
+                Extra = this.Error.Extra
             };
 
             return exn;

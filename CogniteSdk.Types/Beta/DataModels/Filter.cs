@@ -59,22 +59,34 @@ namespace CogniteSdk.Beta
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, IDMSFilter value, JsonSerializerOptions options)
         {
-            writer.WriteStartObject();
+            if (value is ICompositeDMSFilter)
+            {
+                JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            }
+            else
+            {
+                writer.WriteStartObject();
 
-            var typeName = value.GetType().Name;
-            var propertyName = char.ToLower(typeName[0]) + typeName.Substring(1);
-            writer.WritePropertyName(propertyName);
+                var typeName = value.GetType().Name;
+                var propertyName = (char.ToLower(typeName[0]) + typeName.Substring(1)).Replace("Filter", "");
+                writer.WritePropertyName(propertyName);
 
-            JsonSerializer.Serialize(writer, value.GetType(), options);
+                JsonSerializer.Serialize(writer, value, value.GetType(), options);
 
-            writer.WriteEndObject();
+                writer.WriteEndObject();
+            }
         }
     }
 
     /// <summary>
+    /// Interface indicating that this is a composite filter that should not be nested in its own name.
+    /// </summary>
+    public interface ICompositeDMSFilter { }
+
+    /// <summary>
     /// Filter AND-ing together a list of other filters.
     /// </summary>
-    public class AndFilter : IDMSFilter
+    public class AndFilter : IDMSFilter, ICompositeDMSFilter
     {
         /// <summary>
         /// List of clauses to be AND-ed together.
@@ -85,7 +97,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Filter OR-ing together a list of other filters.
     /// </summary>
-    public class OrFilter : IDMSFilter
+    public class OrFilter : IDMSFilter, ICompositeDMSFilter
     {
         /// <summary>
         /// List of clauses to be OR-ed together.
@@ -96,7 +108,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Filter inverting another filter.
     /// </summary>
-    public class NotFilter : IDMSFilter
+    public class NotFilter : IDMSFilter, ICompositeDMSFilter
     {
         /// <summary>
         /// Clause to be inverted.
@@ -112,7 +124,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
         /// <summary>
         /// List of required values.
         /// </summary>
@@ -127,7 +139,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
         /// <summary>
         /// List of values.
         /// </summary>
@@ -142,7 +154,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
         /// <summary>
         /// Value of property.
         /// </summary>
@@ -157,7 +169,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
     }
 
     /// <summary>
@@ -168,7 +180,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
         /// <summary>
         /// List of values.
         /// </summary>
@@ -183,7 +195,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of models, each specified by spaceExternalId and modelExternalId, or just "edge" or "node".
         /// </summary>
-        public IEnumerable<IEnumerable<string>> Models { get; set; }
+        public IEnumerable<ModelIdentifier> Models { get; set; }
     }
 
     /// <summary>
@@ -201,7 +213,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
         /// <summary>
         /// Prefix
         /// </summary>
@@ -217,7 +229,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Property { get; set; }
+        public PropertyIdentifier Property { get; set; }
 
         /// <summary>
         /// Value must be greater than this
@@ -252,7 +264,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of strings defining the property containing the direct_relation by spaceExternalId, modelExternalId and property name.
         /// </summary>
-        public IEnumerable<string> Scope { get; set; }
+        public PropertyIdentifier Scope { get; set; }
 
         /// <summary>
         /// Filter on the referenced node.

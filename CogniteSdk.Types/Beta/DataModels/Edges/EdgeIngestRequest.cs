@@ -15,7 +15,7 @@ namespace CogniteSdk.Beta
         /// A reference to a model. Consists of an array of spaceExternalId and modelExternalId,
         /// or just [ edge ] or [ node ], which don't belong to any space.
         /// </summary>
-        public IEnumerable<string> Model { get; set; }
+        public ModelIdentifier Model { get; set; }
 
         /// <summary>
         /// If overwrite is enabled, the items in the bulk will completely overwrite existing data.
@@ -24,5 +24,15 @@ namespace CogniteSdk.Beta
         /// – assuming the columns are nullable
         /// </summary>
         public bool Overwrite { get; set; } = false;
+
+        /// <summary>
+        /// Automatically create start nodes that do not exist
+        /// </summary>
+        public bool AutoCreateStartNodes { get; set; }
+
+        /// <summary>
+        /// Automatically create end nodes that do not exist
+        /// </summary>
+        public bool AutoCreateEndNodes { get; set; }
     }
 }

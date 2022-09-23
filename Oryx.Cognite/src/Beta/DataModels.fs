@@ -61,11 +61,15 @@ module DataModels =
             Items = items,
             SpaceExternalId = space
         )
-        source
-        |> withLogMessage "dms:models:apply"
-        |> withAlphaHeader
-        |> postV10 request modelsUrl
-
+        http {
+            let! res = 
+                source
+                |> withLogMessage "dms:models:apply"
+                |> withAlphaHeader
+                |> postV10<ItemsWithSpaceExternalId<ModelCreate>, ItemsWithoutCursor<Model>> request modelsUrl
+            return res.Items
+        }
+        
     /// Delete a list of data models in the given space
     let deleteModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let query =
@@ -83,10 +87,14 @@ module DataModels =
     let listModels (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
         let request = ListModelsQuery(SpaceExternalId = space)
 
-        source
-        |> withLogMessage "dms:models:list"
-        |> withAlphaHeader
-        |> HttpHandler.list request modelsUrl
+        http {
+            let! res =
+                source
+                |> withLogMessage "dms:models:list"
+                |> withAlphaHeader
+                |> HttpHandler.list<ListModelsQuery, ItemsWithoutCursor<Model>> request modelsUrl
+            return res.Items
+        }
 
     /// Retrieve models by externalId in the given space
     let retrieveModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
@@ -94,11 +102,14 @@ module DataModels =
             Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
             SpaceExternalId = space
         )
-
-        source
-        |> withLogMessage "dms:models:retrieve"
-        |> withAlphaHeader
-        |> postV10 query (modelsUrl +/ "byids")
+        http {
+            let! res =
+                source
+                |> withLogMessage "dms:models:retrieve"
+                |> withAlphaHeader
+                |> postV10<ItemsWithSpaceExternalId<CogniteExternalId>, ItemsWithoutCursor<Model>> query (modelsUrl +/ "byids")
+            return res.Items
+        }
 
     /// Ingest a list of nodes
     let ingestNodes (request: NodeIngestRequest<'T>) (source: HttpHandler<unit>) : HttpHandler<'T seq> =

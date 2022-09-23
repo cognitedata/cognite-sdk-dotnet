@@ -186,6 +186,7 @@ namespace CogniteSdk.Beta
             writer.WriteStartArray();
             if (value.Space != null) writer.WriteStringValue(value.Space);
             writer.WriteStringValue(value.Model);
+            writer.WriteStringValue(value.PropertyId);
             writer.WriteEndArray();
         }
     }

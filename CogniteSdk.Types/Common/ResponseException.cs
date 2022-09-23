@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace CogniteSdk
 {
@@ -25,6 +26,11 @@ namespace CogniteSdk
         /// Duplicated values.
         /// </summary>
         public IEnumerable<Dictionary<string, MultiValue>> Duplicated { get; set; }
+
+        /// <summary>
+        /// Complex extras object
+        /// </summary>
+        public JsonElement Extra { get; set; }
 
         /// <summary>
         /// Request ID extracted from the response header.
