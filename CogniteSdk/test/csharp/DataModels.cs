@@ -296,7 +296,7 @@ namespace CogniteSdk.Test
 
             var filtered = await tester.Write.Beta.DataModels.FilterEdges<TestEdgeType>(request);
             Assert.Single(filtered.Items);
-            
+
 
             await tester.Write.Beta.DataModels.DeleteEdges(new[] { id }, tester.TestSpace);
         }
