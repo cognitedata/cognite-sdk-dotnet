@@ -332,5 +332,51 @@ namespace CogniteSdk.Test
             var eqFilter = Assert.IsType<EqualsFilter>(andFilter.And.First());
             Assert.Equal(123.123, (eqFilter.Value as DMSFilterValue<double>).Value);
         }
+
+        [Fact]
+        public async Task TestRunQuery()
+        {
+            var model = new ModelIdentifier(tester.TestSpace, tester.TestModel);
+            var id = $"{tester.Prefix}node2";
+            var node = new TestNodeType
+            {
+                ExternalId = id,
+                IntProp = 123,
+                Prop = "Some property 2",
+            };
+
+            var created = await tester.Write.Beta.DataModels.IngestNodes(new NodeIngestRequest<TestNodeType>
+            {
+                Items = new[] { node },
+                Model = model,
+                SpaceExternalId = tester.TestSpace
+            });
+
+            // Return types here are extremely unpleasant, which is why this method is generic.
+            // Usually you would probably create DTOs to handle this result in a better way.
+            var queryResult = await tester.Write.Beta.DataModels.GraphQuery<Dictionary<string, IEnumerable<Dictionary<string, Dictionary<string, string>>>>>(new GraphQuery
+            {
+                // This is a bit painful. A better API for building this query might be nice, perhaps something fluent.
+                Select = new Dictionary<string, SelectModelProperties>
+                {
+                    { "res1", new SelectModelProperties {
+                        Models = new Dictionary<string, ModelQueryProperties> {
+                            { "prop1", new ModelQueryProperties { Model = model, Properties = new[] { "prop" } } }
+                        }
+                    } }
+                },
+                With = new Dictionary<string, QueryExpression>
+                {
+                    { "res1", new QueryExpression { Nodes = new NodeQueryExpression {
+                        Filter = new EqualsFilter {
+                            Property = new PropertyIdentifier(ModelIdentifier.Node, "externalId"),
+                            Value = new DMSFilterValue<string>(id)
+                        }
+                    } } }
+                }
+            });
+
+            Assert.Equal("Some property 2", queryResult["res1"].First()["prop1"]["prop"]);
+        }
     }
 }
