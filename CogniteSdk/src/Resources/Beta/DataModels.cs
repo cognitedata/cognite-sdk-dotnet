@@ -1,12 +1,18 @@
-﻿using CogniteSdk.Beta;
-using Microsoft.FSharp.Core;
-using Oryx;
-using Oryx.Cognite.Beta;
-using Oryx.Pipeline;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+using CogniteSdk.Beta;
+
+using Oryx;
+using Oryx.Cognite.Beta;
+using Oryx.Pipeline;
+
+using Microsoft.FSharp.Core;
 
 namespace CogniteSdk.Resources.Beta
 {

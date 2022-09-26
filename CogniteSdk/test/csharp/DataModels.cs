@@ -1,14 +1,19 @@
-﻿using CogniteSdk.Beta;
+﻿// Copyright 2022 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Test.CSharp.Integration;
+
+using CogniteSdk;
+using CogniteSdk.Beta;
+
 using Xunit;
 
-namespace CogniteSdk.Test
+namespace Test.CSharp.Integration
 {
     public class DataModelsFixture : TestFixture, IAsyncLifetime
     {

@@ -34,7 +34,7 @@
     <Compile Include="Playground/Annotations.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
-	<Compile Include="Beta/DataModels.fs" />
+    <Compile Include="Beta/DataModels.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
