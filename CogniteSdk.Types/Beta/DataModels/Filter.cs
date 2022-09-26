@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -40,9 +41,9 @@ namespace CogniteSdk.Beta
             IDMSFilter filter = null;
             switch (propertyName)
             {
-                case "and": filter = JsonSerializer.Deserialize<AndFilter>(ref reader, options); break;
-                case "or": filter = JsonSerializer.Deserialize<OrFilter>(ref reader, options); break;
-                case "not": filter = JsonSerializer.Deserialize<NotFilter>(ref reader, options); break;
+                case "and": filter = new AndFilter { And = JsonSerializer.Deserialize<IEnumerable<IDMSFilter>>(ref reader, options) }; break;
+                case "or": filter = new OrFilter { Or = JsonSerializer.Deserialize<IEnumerable<IDMSFilter>>(ref reader, options) }; break;
+                case "not": filter = new NotFilter { Not = JsonSerializer.Deserialize<IDMSFilter>(ref reader, options) }; break;
                 case "containsAll": filter = JsonSerializer.Deserialize<ContainsAllFilter>(ref reader, options); break;
                 case "containsAny": filter = JsonSerializer.Deserialize<ContainsAnyFilter>(ref reader, options); break;
                 case "equals": filter = JsonSerializer.Deserialize<EqualsFilter>(ref reader, options); break;
@@ -54,6 +55,7 @@ namespace CogniteSdk.Beta
                 case "range": filter = JsonSerializer.Deserialize<RangeFilter>(ref reader, options); break;
                 case "nested": filter = JsonSerializer.Deserialize<NestedFilter>(ref reader, options); break;
             }
+            reader.Read();
             return filter;
         }
         /// <inheritdoc />
@@ -79,7 +81,94 @@ namespace CogniteSdk.Beta
     }
 
     /// <summary>
+    /// Converter for DMSFilterValue
+    /// </summary>
+    public class DmsFilterValueConverter : JsonConverter<IDMSFilterValue>
+    {
+        /// <inheritdoc />
+        public override IDMSFilterValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Number)
+            {
+                return new DMSFilterValue<double>(JsonSerializer.Deserialize<double>(ref reader, options));
+            }
+            else if (reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True)
+            {
+                return new DMSFilterValue<bool>(JsonSerializer.Deserialize<bool>(ref reader, options));
+            }
+            else if (reader.TokenType == JsonTokenType.String)
+            {
+                return new DMSFilterValue<string>(JsonSerializer.Deserialize<string>(ref reader, options));
+            }
+            else if (reader.TokenType == JsonTokenType.StartArray)
+            {
+                var res = JsonSerializer.Deserialize<IEnumerable<IDMSFilterValue>>(ref reader, options);
+                var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct().ToList();
+                if (types.Count() > 1) throw new JsonException("Contents of DMSFilterValue as array must all be same type");
+                var type = types.First();
+
+                var arrayType = type.MakeArrayType();
+                var resultType = typeof(DMSFilterValue<>).MakeGenericType(arrayType);
+                var result = Activator.CreateInstance(resultType);
+                resultType.GetProperty("Value").SetValue(result, res);
+                return (IDMSFilterValue)result;
+            }
+            else
+            {
+                throw new JsonException("Unexpected filter value type");
+            }
+
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, IDMSFilterValue value, JsonSerializerOptions options)
+        {
+            var innerValue = value.GetType().GetProperty("Value").GetValue(value);
+            if (innerValue == null)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                JsonSerializer.Serialize(writer, innerValue, innerValue.GetType(), options);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Interface used for serializing the DMSFilterValue type.
+    /// </summary>
+    public interface IDMSFilterValue { }
+
+    /// <summary>
+    /// A value 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class DMSFilterValue<T> : IDMSFilterValue
+    {
+        /// <summary>
+        /// Value of this filter. Should be string, double, boolean, or an array of these.
+        /// </summary>
+        public T Value { get; set; }
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public DMSFilterValue() { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="value">Value, should be string, double, boolean, or an array of these</param>
+        public DMSFilterValue(T value)
+        {
+            Value = value;
+        }
+    }
+
+    /// <summary>
     /// Interface indicating that this is a composite filter that should not be nested in its own name.
+    /// Necessary because a type cannot also be a list.
     /// </summary>
     public interface ICompositeDMSFilter { }
 
@@ -128,7 +217,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of required values.
         /// </summary>
-        public IEnumerable<JsonElement> Values { get; set; }
+        public IEnumerable<IDMSFilterValue> Values { get; set; }
     }
 
     /// <summary>
@@ -143,7 +232,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of values.
         /// </summary>
-        public IEnumerable<JsonElement> Values { get; set; }
+        public IEnumerable<IDMSFilterValue> Values { get; set; }
     }
 
     /// <summary>
@@ -158,7 +247,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Value of property.
         /// </summary>
-        public JsonElement Value { get; set; }
+        public IDMSFilterValue Value { get; set; }
     }
 
     /// <summary>
@@ -184,7 +273,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of values.
         /// </summary>
-        public IEnumerable<JsonElement> Values { get; set; }
+        public IEnumerable<IDMSFilterValue> Values { get; set; }
     }
 
     /// <summary>
@@ -235,25 +324,25 @@ namespace CogniteSdk.Beta
         /// Value must be greater than this
         /// </summary>
         [JsonPropertyName("gt")]
-        public JsonElement? GreaterThan { get; set; }
+        public IDMSFilterValue GreaterThan { get; set; }
 
         /// <summary>
         /// Value must be greater than or equal to this
         /// </summary>
         [JsonPropertyName("gte")]
-        public JsonElement? GreaterThanEqual { get; set; }
+        public IDMSFilterValue GreaterThanEqual { get; set; }
 
         /// <summary>
         /// Value must be less than this
         /// </summary>
         [JsonPropertyName("lt")]
-        public JsonElement? LessThan { get; set; }
+        public IDMSFilterValue LessThan { get; set; }
 
         /// <summary>
         /// Value must be less than or equal to this
         /// </summary>
         [JsonPropertyName("lte")]
-        public JsonElement? LessThanEqual { get; set; }
+        public IDMSFilterValue LessThanEqual { get; set; }
     }
 
     /// <summary>

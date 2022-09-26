@@ -217,12 +217,12 @@ namespace CogniteSdk.Test
                         new EqualsFilter
                         {
                             Property = new PropertyIdentifier(model, "externalId"),
-                            Value = JsonDocument.Parse($"\"{id}\"").RootElement
+                            Value = new DMSFilterValue<string>(id)
                         },
                         new EqualsFilter
                         {
                             Property = new PropertyIdentifier(model, "prop"),
-                            Value = JsonDocument.Parse("\"Some other value\"").RootElement
+                            Value = new DMSFilterValue<string>("Some other value")
                         }
                     }
                 }
@@ -278,12 +278,12 @@ namespace CogniteSdk.Test
                     new EqualsFilter
                     {
                         Property = new PropertyIdentifier(model, "prop"),
-                        Value = JsonDocument.Parse("\"Prop\"").RootElement
+                        Value = new DMSFilterValue<string>("Prop")
                     },
                     new EqualsFilter
                     {
                         Property = new PropertyIdentifier(ModelIdentifier.Edge, "externalId"),
-                        Value = JsonDocument.Parse($"\"{id}\"").RootElement
+                        Value = new DMSFilterValue<string>(id)
                     }
                 }
             };
@@ -293,13 +293,44 @@ namespace CogniteSdk.Test
                 SpaceExternalId = tester.TestSpace,
                 Model = model,
             };
-            // throw new Exception(JsonSerializer.Serialize(request, Oryx.Cognite.Common.jsonOptions));
 
             var filtered = await tester.Write.Beta.DataModels.FilterEdges<TestEdgeType>(request);
             Assert.Single(filtered.Items);
             
 
             await tester.Write.Beta.DataModels.DeleteEdges(new[] { id }, tester.TestSpace);
+        }
+
+        [Fact]
+        public void TestFilterSerializer()
+        {
+            var filter = new AndFilter
+            {
+                And = new IDMSFilter[]
+                {
+                    new EqualsFilter
+                    {
+                        Property = new PropertyIdentifier(new ModelIdentifier("space", "model"), "prop"),
+                        Value = new DMSFilterValue<double>(123.123)
+                    },
+                    new NotFilter
+                    {
+                        Not = new PrefixFilter
+                        {
+                            Property = new PropertyIdentifier(ModelIdentifier.Edge, "externalId"),
+                            Value = "prefix"
+                        }
+                    }
+                }
+            };
+
+            Assert.Equal(@"{""and"":[{""equals"":{""property"":[""space"",""model"",""prop""],""value"":123.123}},{""not"":{""prefix"":{""property"":[""edge"",""externalId""],""value"":""prefix""}}}]}",
+                JsonSerializer.Serialize(filter, Oryx.Cognite.Common.jsonOptions));
+            var reversed = JsonSerializer.Deserialize<IDMSFilter>(JsonSerializer.Serialize(filter, Oryx.Cognite.Common.jsonOptions), Oryx.Cognite.Common.jsonOptions);
+            var andFilter = Assert.IsType<AndFilter>(reversed);
+            Assert.Equal(2, andFilter.And.Count());
+            var eqFilter = Assert.IsType<EqualsFilter>(andFilter.And.First());
+            Assert.Equal(123.123, (eqFilter.Value as DMSFilterValue<double>).Value);
         }
     }
 }

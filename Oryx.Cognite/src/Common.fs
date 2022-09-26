@@ -76,4 +76,5 @@ module Common =
         options.Converters.Add(PropertyIdentifierConverter())
         options.Converters.Add(DirectRelationIdentifierConverter())
         options.Converters.Add(DmsFilterConverter())
+        options.Converters.Add(DmsFilterValueConverter())
         options
