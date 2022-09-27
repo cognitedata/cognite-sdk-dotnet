@@ -24,6 +24,14 @@ module Handler =
         |> withBetaHeader<'TSource>
         |> withVersion V10
 
+    let withAlphaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
+        source |> withHeader ("cdf-version", "alpha")
+
+    let withAlphaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
+        source
+        |> withAlphaHeader<'TSource>
+        |> withVersion V10
+
     let get (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withBetaVersion |> get url
 
     let inline getById (id: int64) (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> =

@@ -402,7 +402,7 @@ let ``Search Files on Name is Ok`` () = task {
 
     // Assert
     test <@ len > 0 @>
-    test <@ Seq.forall (fun (n: string) -> n.Contains "test") names @>
+    test <@ Seq.forall (fun (n: string) -> n.ToLower().Contains "test") names @>
 }
 
 [<Trait("resource", "files")>]
