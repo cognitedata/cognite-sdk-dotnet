@@ -24,7 +24,12 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// Extraction pipeline configs
         /// </summary>
-        public ExtPipeConfigs ExtPipeConfigs { get; set; }
+        public ExtPipeConfigs ExtPipeConfigs { get; }
+
+        /// <summary>
+        /// Flexible data models
+        /// </summary>
+        public DataModelsResource DataModels { get; }
 
         /// <summary>
         /// Will only be instantiated by the client.
@@ -35,6 +40,7 @@ namespace CogniteSdk.Resources
         {
             Templates = new TemplatesResource(authHandler, ctx);
             ExtPipeConfigs = new ExtPipeConfigs(authHandler, ctx);
+            DataModels = new DataModelsResource(authHandler, ctx);
         }
     }
 }
