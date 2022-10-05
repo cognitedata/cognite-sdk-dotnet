@@ -22,11 +22,6 @@ namespace CogniteSdk.Resources
         public TemplatesResource Templates { get; }
 
         /// <summary>
-        /// Extraction pipeline configs
-        /// </summary>
-        public ExtPipeConfigs ExtPipeConfigs { get; }
-
-        /// <summary>
         /// Flexible data models
         /// </summary>
         public DataModelsResource DataModels { get; }
@@ -39,7 +34,6 @@ namespace CogniteSdk.Resources
         internal BetaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Templates = new TemplatesResource(authHandler, ctx);
-            ExtPipeConfigs = new ExtPipeConfigs(authHandler, ctx);
             DataModels = new DataModelsResource(authHandler, ctx);
         }
     }

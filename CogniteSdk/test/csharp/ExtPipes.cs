@@ -247,7 +247,7 @@ namespace Test.CSharp.Integration
             };
 
             await tester.Write.ExtPipes.CreateAsync(new[] { pipe });
-            await tester.Write.Beta.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+            await tester.Write.ExtPipes.CreateConfigAsync(new ExtPipeConfigCreate
             {
                 Config = "initial config",
                 Description = "test description",
@@ -269,7 +269,7 @@ namespace Test.CSharp.Integration
             try
             {
                 // Act
-                var result = await tester.Write.Beta.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                var result = await tester.Write.ExtPipes.CreateConfigAsync(new ExtPipeConfigCreate
                 {
                     Config = "test config",
                     Description = "test description",
@@ -295,7 +295,7 @@ namespace Test.CSharp.Integration
             try
             {
                 // Act
-                var latest = await tester.Write.Beta.ExtPipeConfigs.GetCurrentConfig(extId);
+                var latest = await tester.Write.ExtPipes.GetCurrentConfigAsync(extId);
 
                 // Assert
                 Assert.Equal(1, latest.Revision);
@@ -316,13 +316,13 @@ namespace Test.CSharp.Integration
             try
             {
                 // Act
-                await tester.Write.Beta.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                await tester.Write.ExtPipes.CreateConfigAsync(new ExtPipeConfigCreate
                 {
                     Config = "test config 2",
                     Description = "test description",
                     ExternalId = extId
                 });
-                var first = await tester.Write.Beta.ExtPipeConfigs.GetConfigRevision(extId, 1);
+                var first = await tester.Write.ExtPipes.GetConfigRevisionAsync(extId, 1);
             }
             finally
             {
@@ -339,14 +339,14 @@ namespace Test.CSharp.Integration
             try
             {
                 // Act
-                await tester.Write.Beta.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                await tester.Write.ExtPipes.CreateConfigAsync(new ExtPipeConfigCreate
                 {
                     Config = "test config 2",
                     Description = "test description",
                     ExternalId = extId
                 });
-                var first = await tester.Write.Beta.ExtPipeConfigs.ListConfigRevisions(new ListConfigQuery { Limit = 1, ExtPipeId = extId });
-                var second = await tester.Write.Beta.ExtPipeConfigs.ListConfigRevisions(new ListConfigQuery { Cursor = first.NextCursor, Limit = 1, ExtPipeId = extId });
+                var first = await tester.Write.ExtPipes.ListConfigRevisionsAsync(new ListConfigQuery { Limit = 1, ExtPipeId = extId });
+                var second = await tester.Write.ExtPipes.ListConfigRevisionsAsync(new ListConfigQuery { Cursor = first.NextCursor, Limit = 1, ExtPipeId = extId });
 
                 // Assert
                 Assert.Single(first.Items);
@@ -370,13 +370,13 @@ namespace Test.CSharp.Integration
             try
             {
                 // Act
-                await tester.Write.Beta.ExtPipeConfigs.Create(new ExtPipeConfigCreate
+                await tester.Write.ExtPipes.CreateConfigAsync(new ExtPipeConfigCreate
                 {
                     Config = "test config 2",
                     Description = "test description",
                     ExternalId = extId
                 });
-                var reverted = await tester.Write.Beta.ExtPipeConfigs.RevertConfigRevision(extId, 1);
+                var reverted = await tester.Write.ExtPipes.RevertConfigRevisionAsync(extId, 1);
                 Assert.Equal(3, reverted.Revision);
                 Assert.Equal("initial config", reverted.Config);
             }
