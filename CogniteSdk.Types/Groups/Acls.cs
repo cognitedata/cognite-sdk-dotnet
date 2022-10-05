@@ -509,4 +509,16 @@ namespace CogniteSdk
         [JsonPropertyName("extractionpipelinescope")]
         public IdScope ExtractionPipelineScope { get; set; }
     }
+
+    /// <summary>
+    /// Acl for access to the extraction pipeline configs resource.
+    /// </summary>
+    public class ExtractionConfigsAcl : DataSetScopeAcl
+    {
+        /// <summary>
+        /// Scope by list of extraction pipeline internal ids.
+        /// </summary>
+        [JsonPropertyName("extractionpipelinescope")]
+        public IdScope ExtractionPipelineScope { get; set; }
+    }
 }

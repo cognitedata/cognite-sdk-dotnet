@@ -207,5 +207,67 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.ExtPipes.createRuns(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Create a new config revision
+        /// </summary>
+        /// <param name="config">Configuration object to add</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Created config objects</returns>
+        public async Task<ExtPipeConfig> CreateConfigAsync(ExtPipeConfigCreate config, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.ExtPipes.createConfig(config, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get current config revision
+        /// </summary>
+        /// <param name="extPipeId">Extraction pipeline id</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved config object</returns>
+        public async Task<ExtPipeConfig> GetCurrentConfigAsync(string extPipeId, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.ExtPipes.getCurrentConfig(extPipeId, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get a specific config revision
+        /// </summary>
+        /// <param name="extPipeId">Extraction pipeline id</param>
+        /// <param name="revision">Revision to fetch</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved config object</returns>
+        public async Task<ExtPipeConfig> GetConfigRevisionAsync(string extPipeId, int revision, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.ExtPipes.getConfigRevision(extPipeId, revision, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// List config revisions for the specified extraction pipeline, with optional limit and cursor.
+        /// </summary>
+        /// <param name="query">Query with optional limit and cursor</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved list of configuration objects</returns>
+        public async Task<ItemsWithCursor<ExtPipeConfig>> ListConfigRevisionsAsync(ListConfigQuery query, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.ExtPipes.listConfigRevisions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Revert to a previous config revision. This adds a new revision equal to the old one.
+        /// </summary>
+        /// <param name="extPipeId">Extraction pipeline id</param>
+        /// <param name="revision">Revision to revert to</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>New revision</returns>
+        public async Task<ExtPipeConfig> RevertConfigRevisionAsync(string extPipeId, int revision, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.ExtPipes.revertConfigRevision(extPipeId, revision, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
     }
 }
