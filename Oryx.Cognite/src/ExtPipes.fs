@@ -72,50 +72,44 @@ module ExtPipes =
         |> withLogMessage "ExtPipeRuns:create"
         |> HttpHandler.create items RunsUrl
 
-    /// BETA: Create a new configuration revision for the given extraction pipeline.
+    /// Create a new configuration revision for the given extraction pipeline.
     let createConfig (item: ExtPipeConfigCreate) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
         source
         |> withLogMessage "ExtPipeConfigs:create"
-        |> withBetaHeader
         |> postV10 item ConfigsUrl
 
-    /// BETA: Get the current config revision
+    /// Get the current config revision
     let getCurrentConfig (extPipeId: string) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
         source
         |> withLogMessage "ExtPipeConfigs:getLatest"
-        |> withBetaHeader
         |> getWithQuery (GetConfigQuery(ExtPipeId = extPipeId)) ConfigsUrl
 
-    /// BETA: Get a specific config revision
+    /// Get a specific config revision
     let getConfigRevision (extPipeId: string) (revision: int) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
         source
         |> withLogMessage "ExtPipeConfigs:getRevision"
-        |> withBetaHeader
         |> getWithQuery (GetConfigQuery(ExtPipeId = extPipeId, Revision = revision)) ConfigsUrl
 
     let getConfigWithQuery (query: GetConfigQuery) (source: HttpHandler<unit>) : HttpHandler<ExtPipeConfig> =
         source
         |> withLogMessage "ExtPipeConfigs:getConfigWithQuery"
-        |> withBetaHeader
         |> getWithQuery query ConfigsUrl
 
-    /// BETA: List config revisions without details
+    /// List config revisions without details
     let listConfigRevisions
         (query: ListConfigQuery)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ExtPipeConfig>> =
         source
         |> withLogMessage "ExtPipeConfigs:listRevisions"
-        |> withBetaHeader
         |> getWithQuery query (ConfigsUrl +/ "revisions")
 
-    /// BETA: Revert to a previous config revision
+    /// Revert to a previous config revision
     let revertConfigRevision
         (extPipeId: string)
         (revision: int)
         (source: HttpHandler<unit>)
         : HttpHandler<ExtPipeConfig> =
         source
-        |> withBetaHeader
         |> withLogMessage "ExtPipeConfigs:revert"
         |> postV10 (RevertConfigRequest(ExternalId = extPipeId, Revision = revision)) (ConfigsUrl +/ "revert")
