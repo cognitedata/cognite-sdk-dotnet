@@ -18,7 +18,10 @@ namespace Test.CSharp.Integration
 
         public TestFixture()
         {
-            ReadClient = CreateClient(Environment.GetEnvironmentVariable("TEST_API_KEY_READ"), "publicdata", "https://api.cognitedata.com");
+            ReadClient = CreateOAuth2Client(
+                Environment.GetEnvironmentVariable("TEST_TOKEN_READ"),
+                Environment.GetEnvironmentVariable("TEST_PROJECT_READ") ?? "publicdata",
+                Environment.GetEnvironmentVariable("TEST_HOST_READ") ?? "https://api.cognitedata.com");
             WriteClient = CreateOAuth2Client(
                 Environment.GetEnvironmentVariable("TEST_TOKEN_WRITE"),
                 Environment.GetEnvironmentVariable("TEST_PROJECT_WRITE") ?? "fusiondotnet-tests",
@@ -33,17 +36,6 @@ namespace Test.CSharp.Integration
         public void Dispose()
         {
             Dispose(true);
-        }
-
-        private static Client CreateClient(string apiKey, string project, string url)
-        {
-            var httpClient = new HttpClient();
-            return Client.Builder.Create(httpClient)
-                .SetAppId("TestApp")
-                .AddHeader("api-key", apiKey)
-                .SetProject(project)
-                .SetBaseUrl(new Uri(url))
-                .Build();
         }
 
         private static Client CreateOAuth2Client(string accessToken, string project, string url)
