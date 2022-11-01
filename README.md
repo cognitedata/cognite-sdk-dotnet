@@ -142,6 +142,8 @@ sh ./test.sh
 ```
 For this script AAD env variables need to be defined: `TEST_TENANT_ID_WRITE`, `TEST_CLIENT_ID_WRITE`, `TEST_CLIENT_SECRET_WRITE`.
 
+You also need read credentials for publicdata project `TEST_TENANT_ID_READ`, `TEST_CLIENT_ID_READ`, `TEST_CLIENT_SECRET_READ`.
+
 # Code of Conduct
 
 This project follows https://www.contributor-covenant.org, see our [Code of Conduct](https://github.com/cognitedata/cognite-sdk-dotnet/blob/master/CODE_OF_CONDUCT.md).
