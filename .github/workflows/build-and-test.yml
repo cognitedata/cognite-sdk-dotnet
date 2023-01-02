@@ -35,10 +35,12 @@ jobs:
       - name: Test
         run: ./test.sh
         env:
-          TEST_API_KEY_READ: ${{ secrets.TEST_API_KEY_READ }}
           TEST_TENANT_ID_WRITE: ${{ secrets.TEST_TENANT_ID_WRITE }}
           TEST_CLIENT_ID_WRITE: ${{ secrets.TEST_CLIENT_ID_WRITE }}
           TEST_CLIENT_SECRET_WRITE: ${{ secrets.TEST_CLIENT_SECRET_WRITE }}
+          TEST_TENANT_ID_READ: ${{ secrets.TEST_TENANT_ID_READ }}
+          TEST_CLIENT_ID_READ: ${{ secrets.TEST_CLIENT_ID_READ }}
+          TEST_CLIENT_SECRET_READ: ${{ secrets.TEST_CLIENT_SECRET_READ }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
