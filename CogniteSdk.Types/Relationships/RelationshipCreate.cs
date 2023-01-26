@@ -59,7 +59,7 @@ namespace CogniteSdk
         /// <summary>
         /// The id of the dataset this relationship belongs to.
         /// </summary>
-        public Int64? DataSetId { get; set; }
+        public long? DataSetId { get; set; }
 
         /// <summary>
         /// List of labels to associate with the relationship.

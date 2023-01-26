@@ -71,6 +71,50 @@ let ``create and delete relationships is ok`` () = task {
     test <@ getExtIds.Items |> Seq.length > 0 @>
 }
 
+let ```create, update, delete relationships is ok`` () = task {
+    let externalId = Guid.NewGuid().ToString()
+    let label = "RelationshipsTestCreateAndDeleteLabel"
+    let relationshipCreateObject =
+        seq {
+            RelationshipCreate(
+                ExternalId = externalId,
+                SourceExternalId = "RelationshipTestCreateAndDeleteSource",
+                SourceType = RelationshipVertexType.Asset,
+                TargetExternalId = "RelationshipTestCreateAndDeleteTarget",
+                TargetType = RelationshipVertexType.Asset,
+                Confidence = Nullable 0.999F,
+                Labels = ( CogniteExternalId(label) |> Seq.singleton )
+            )
+        }
+
+    let update = RelationshipUpdate(
+        Confidence = UpdateNullable<float32>(0.123F)
+    )
+    let updateItem = UpdateItem(externalId=externalId, Update=update)
+
+    // Act
+    let! createRes =
+        task {
+            let! res = writeClient.Relationships.CreateAsync relationshipCreateObject
+            return res |> Seq.toList
+        }
+
+    let! updateRes =
+        task {
+            let! res = writeClient.Relationships.UpdateAsync(seq { updateItem })
+            return res |> Seq.toList
+        }
+
+
+    // cleanup
+    let deleteIds = seq { externalId }
+    let! _deleteResult = writeClient.Relationships.DeleteAsync deleteIds
+
+    // Assert
+    test <@ createRes |> List.length = 1 @>
+    test <@ updateRes |> List.length = 1 @>
+}
+
 [<Fact>]
 let ``retrieve relationship is ok`` () = task {
     // Arrange
