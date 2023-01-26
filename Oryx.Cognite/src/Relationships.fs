@@ -4,7 +4,7 @@
 namespace Oryx.Cognite
 
 open System
-open System.Collections.Generic;
+open System.Collections.Generic
 
 open Oryx
 open Oryx.Cognite
@@ -43,9 +43,15 @@ module Relationships =
     /// </summary>
     /// <param name="externalIds">The list of externalIds for relationships to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (externalIds: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let delete
+        (externalIds: string seq)
+        (ignoreUnknownIds: bool)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
         let relationships = externalIds |> Seq.map Identity.Create
-        let items = ItemsWithIgnoreUnknownIds(Items = relationships, IgnoreUnknownIds = ignoreUnknownIds)
+
+        let items =
+            ItemsWithIgnoreUnknownIds(Items = relationships, IgnoreUnknownIds = ignoreUnknownIds)
 
         source
         |> withLogMessage "Relationships:delete"
@@ -57,7 +63,11 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) (ignoreUnknownIds: Nullable<bool>) (source: HttpHandler<unit>) : HttpHandler<Relationship seq> =
+    let retrieve
+        (ids: string seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Relationship seq> =
         let relationships = ids |> Seq.map Identity.Create
 
         source
@@ -70,7 +80,10 @@ module Relationships =
     /// </summary>
     /// <param name="query">List of update items</param>
     /// <returns> Updated relationships.</returns>
-    let update (query: IEnumerable<UpdateItem<RelationshipUpdate>>) (source: HttpHandler<unit>) : HttpHandler<Relationship seq> =
+    let update
+        (query: IEnumerable<UpdateItem<RelationshipUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Relationship seq> =
         source
         |> withLogMessage "Relationships:update"
         |> update query Url
