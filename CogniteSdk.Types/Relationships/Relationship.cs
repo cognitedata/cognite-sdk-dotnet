@@ -59,7 +59,7 @@ namespace CogniteSdk
         /// <summary>
         /// String describing the source system storing or generating the relationship.
         /// </summary>
-        public Int64? DataSetId { get; set; }
+        public long? DataSetId { get; set; }
 
         /// <summary>
         /// A list of labels associated with the relationships

@@ -3,6 +3,9 @@
 
 namespace Oryx.Cognite
 
+open System
+open System.Collections.Generic
+
 open Oryx
 open Oryx.Cognite
 
@@ -40,9 +43,15 @@ module Relationships =
     /// </summary>
     /// <param name="externalIds">The list of externalIds for relationships to delete.</param>
     /// <returns>Empty result.</returns>
-    let delete (externalIds: string seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let delete
+        (externalIds: string seq)
+        (ignoreUnknownIds: bool)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
         let relationships = externalIds |> Seq.map Identity.Create
-        let items = ItemsWithoutCursor(Items = relationships)
+
+        let items =
+            ItemsWithIgnoreUnknownIds(Items = relationships, IgnoreUnknownIds = ignoreUnknownIds)
 
         source
         |> withLogMessage "Relationships:delete"
@@ -54,9 +63,27 @@ module Relationships =
     /// </summary>
     /// <param name="ids">The ids of the relationships to get.</param>
     /// <returns>Relationships with given ids.</returns>
-    let retrieve (ids: string seq) (source: HttpHandler<unit>) : HttpHandler<Relationship seq> =
+    let retrieve
+        (ids: string seq)
+        (ignoreUnknownIds: Nullable<bool>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Relationship seq> =
         let relationships = ids |> Seq.map Identity.Create
 
         source
         |> withLogMessage "Relationships:retrieve"
-        |> retrieve relationships Url
+        |> retrieveIgnoreUnknownIds relationships (Option.ofNullable ignoreUnknownIds) Url
+
+    /// <summary>
+    /// Updates multiple relationships within the same project. This operation supports partial updates, meaning that
+    /// fields omitted from the requests are not changed. Returns list of updated relationships.
+    /// </summary>
+    /// <param name="query">List of update items</param>
+    /// <returns> Updated relationships.</returns>
+    let update
+        (query: IEnumerable<UpdateItem<RelationshipUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Relationship seq> =
+        source
+        |> withLogMessage "Relationships:update"
+        |> update query Url
