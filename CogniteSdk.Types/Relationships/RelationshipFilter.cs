@@ -7,6 +7,22 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
+    /// Relationship vertex type and externalId, used in the sourcesOrTargets filter on relationships.
+    /// </summary>
+    public class VertexTypeWithExternalId
+    {
+        /// <summary>
+        /// Vertex type.
+        /// </summary>
+        public RelationshipVertexType Type { get; set; }
+
+        /// <summary>
+        /// Resource externalId
+        /// </summary>
+        public string ExternalId { get; set; }
+    }
+
+    /// <summary>
     /// Class for filtering relationships.
     /// </summary>
     public class RelationshipFilter
@@ -75,6 +91,11 @@ namespace CogniteSdk
         /// Limits result to Relationships that match the LabelFilter.
         /// </summary>
         public LabelFilter Labels { get; set; }
+
+        /// <summary>
+        /// Include relationships that match any of the resources in either their source- or target-related fields.
+        /// </summary>
+        public IEnumerable<VertexTypeWithExternalId> SourcesOrTargets { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);

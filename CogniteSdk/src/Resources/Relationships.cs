@@ -66,15 +66,16 @@ namespace CogniteSdk.Resources
         /// hierarchy if recursive is true.
         /// </summary>
         /// <param name="externalIds">The externalIds of relationships to delete.</param>
+        /// <param name="ignoreUnknownIds">If true, ignore any unknown externalIds in the request</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<string> externalIds, bool ignoreUnknownIds = false, CancellationToken token = default)
         {
             if (externalIds is null)
             {
                 throw new ArgumentNullException(nameof(externalIds));
             }
 
-            var req = Oryx.Cognite.Relationships.delete(externalIds, GetContext(token));
+            var req = Oryx.Cognite.Relationships.delete(externalIds, ignoreUnknownIds, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -83,15 +84,34 @@ namespace CogniteSdk.Resources
         /// may be listed per request and all of them must be unique.
         /// </summary>
         /// <param name="ids">The list of relationships identities to retrieve.</param>
+        /// <param name="ignoreUnknownIds">If true, ignore any unknown externalIds in the request</param>
         /// <param name="token">Optional cancellation token.</param>
-        public async Task<IEnumerable<Relationship>> RetrieveAsync(IEnumerable<string> ids, CancellationToken token = default)
+        public async Task<IEnumerable<Relationship>> RetrieveAsync(IEnumerable<string> ids, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Oryx.Cognite.Relationships.retrieve(ids, GetContext(token));
+            var req = Oryx.Cognite.Relationships.retrieve(ids, ignoreUnknownIds, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Updates multiple relationships within the same project. This operation supports partial updates, meaning that
+        /// fields omitted from the requests are not changed. Returns list of updated relationships.
+        /// </summary>
+        /// <param name="items">List of update items</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns> Updated relationships.</returns>
+        public async Task<IEnumerable<Relationship>> UpdateAsync(IEnumerable<UpdateItem<RelationshipUpdate>> items, CancellationToken token = default)
+        {
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            var req = Oryx.Cognite.Relationships.update(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }
