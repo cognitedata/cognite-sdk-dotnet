@@ -24,9 +24,7 @@ module Relationships =
     /// <param name="query">The query with limit and cursor.</param>
     /// <returns>List of relationships.</returns>
     let list (query: RelationshipQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<Relationship>> =
-        source
-        |> withLogMessage "Relationships:list"
-        |> list query Url
+        source |> withLogMessage "Relationships:list" |> list query Url
 
     /// <summary>
     /// Create new relationships in the given project.
@@ -34,9 +32,7 @@ module Relationships =
     /// <param name="items">The relationships to create.</param>
     /// <returns>List of created relationships.</returns>
     let create (items: RelationshipCreate seq) (source: HttpHandler<unit>) : HttpHandler<Relationship seq> =
-        source
-        |> withLogMessage "Relationships:create"
-        |> create items Url
+        source |> withLogMessage "Relationships:create" |> create items Url
 
     /// <summary>
     /// Delete multiple relationships in the same project.
@@ -53,9 +49,7 @@ module Relationships =
         let items =
             ItemsWithIgnoreUnknownIds(Items = relationships, IgnoreUnknownIds = ignoreUnknownIds)
 
-        source
-        |> withLogMessage "Relationships:delete"
-        |> delete items Url
+        source |> withLogMessage "Relationships:delete" |> delete items Url
 
     /// <summary>
     /// Retrieves information about multiple relationships in the same project. A maximum of 1000 relationships IDs may
@@ -84,6 +78,4 @@ module Relationships =
         (query: IEnumerable<UpdateItem<RelationshipUpdate>>)
         (source: HttpHandler<unit>)
         : HttpHandler<Relationship seq> =
-        source
-        |> withLogMessage "Relationships:update"
-        |> update query Url
+        source |> withLogMessage "Relationships:update" |> update query Url

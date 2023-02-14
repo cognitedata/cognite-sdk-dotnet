@@ -33,15 +33,9 @@ let getDatapointsExample (ctx: HttpHandler<unit>) =
 
 let getAssetsExample (ctx: HttpHandler<unit>) =
     task {
-        let! res =
-            ctx
-            |> Assets.list (AssetQuery(Limit = Nullable 2))
-            |> runUnsafeAsync
+        let! res = ctx |> Assets.list (AssetQuery(Limit = Nullable 2)) |> runUnsafeAsync
 
-        let! res =
-            ctx
-            |> Assets.list (AssetQuery(Limit = Nullable 2))
-            |> runAsync
+        let! res = ctx |> Assets.list (AssetQuery(Limit = Nullable 2)) |> runAsync
 
         match res with
         | Ok res -> () //printfn "%A" res
@@ -85,10 +79,11 @@ let createAssetsExample ctx =
             }
 
         let request =
-            concurrent [ let chunks = Seq.chunkBySize 10 assets
+            concurrent
+                [ let chunks = Seq.chunkBySize 10 assets
 
-                         for chunk in chunks do
-                             yield ctx |> Assets.create chunk ]
+                  for chunk in chunks do
+                      yield ctx |> Assets.create chunk ]
 
         let! result = request |> runAsync
 
@@ -106,10 +101,7 @@ let insertDataPointsProtoStyle ctx =
                 for i in 0L .. 100L do
                     let point = NumericDatapoint()
 
-                    point.Timestamp <-
-                        DateTimeOffset(DateTime.Now)
-                            .ToUnixTimeMilliseconds()
-                        - i * 10L
+                    point.Timestamp <- DateTimeOffset(DateTime.Now).ToUnixTimeMilliseconds() - i * 10L
 
                     point.Value <- float ((1L + i) % 5L)
                     yield point
@@ -137,10 +129,7 @@ let syntheticQueryExample (ctx: HttpHandler<unit>) =
                     [ TimeSeriesSyntheticQueryItem(Expression = "ts{externalId='pi:160627'} + 1", Start = "30d-ago") ]
             )
 
-        let! res =
-            ctx
-            |> TimeSeries.syntheticQuery query
-            |> runUnsafeAsync
+        let! res = ctx |> TimeSeries.syntheticQuery query |> runUnsafeAsync
 
         printfn "%A" res
     }

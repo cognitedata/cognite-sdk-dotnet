@@ -23,7 +23,7 @@ type Cursor =
 
     member x.TryDataPointAggregate() =
         match x with
-        | DataPointAggregateCursor (nextPoints, granularity) -> Some(nextPoints, granularity)
+        | DataPointAggregateCursor(nextPoints, granularity) -> Some(nextPoints, granularity)
         | _ -> None
 
     static member TryCreate(cursor: string) =
@@ -36,9 +36,7 @@ type Cursor =
         match nextPoints, granularity with
         | points, _ when points |> Seq.isEmpty -> None
         | points, None -> None
-        | points, Some granularity ->
-            DataPointAggregateCursor(points, granularity)
-            |> Some
+        | points, Some granularity -> DataPointAggregateCursor(points, granularity) |> Some
 
 type LabelFilter =
     | ContainsAny of string list
@@ -48,8 +46,8 @@ type LabelFilter =
 
         let filter =
             match x with
-            | ContainsAny (xs) -> CogniteSdk.LabelFilter(CogniteSdk.LabelContainsAnyFilter(xs))
-            | ContainsAll (xs) -> CogniteSdk.LabelFilter(CogniteSdk.LabelContainsAllFilter(xs))
+            | ContainsAny(xs) -> CogniteSdk.LabelFilter(CogniteSdk.LabelContainsAnyFilter(xs))
+            | ContainsAll(xs) -> CogniteSdk.LabelFilter(CogniteSdk.LabelContainsAllFilter(xs))
 
         filter
 
@@ -62,11 +60,9 @@ type Search =
         let search = CogniteSdk.Search()
         x.Name |> Option.iter (fun x -> search.Name <- x)
 
-        x.Description
-        |> Option.iter (fun x -> search.Description <- x)
+        x.Description |> Option.iter (fun x -> search.Description <- x)
 
-        x.Query
-        |> Option.iter (fun x -> search.Query <- x)
+        x.Query |> Option.iter (fun x -> search.Query <- x)
 
         search
 
@@ -76,8 +72,7 @@ type SearchDescription =
     member x.ToSearch() =
         let search = CogniteSdk.DescriptionSearch()
 
-        x.Description
-        |> Option.iter (fun x -> search.Description <- x)
+        x.Description |> Option.iter (fun x -> search.Description <- x)
 
         search
 
@@ -159,7 +154,7 @@ type TimeFilter =
 
     member x.ToTimeRange() =
         match x with
-        | Range (range) -> range.ToTimeRange()
+        | Range(range) -> range.ToTimeRange()
         | IsNull ->
             let tr = CogniteSdk.TimeRange()
             tr.IsNull <- true

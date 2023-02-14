@@ -36,32 +36,33 @@ module HttpHandler =
 
         let version =
             match Map.tryFind PlaceHolder.ApiVersion items with
-            | Some (Value.String version) -> version
+            | Some(Value.String version) -> version
             | _ -> failwith "API version not set."
 
         let project =
             match Map.tryFind PlaceHolder.Project items with
-            | Some (Value.String project) -> project
+            | Some(Value.String project) -> project
             | _ -> failwith "Client must set project."
 
         let resource =
             match Map.tryFind PlaceHolder.Resource items with
-            | Some (Value.String resource) -> resource
+            | Some(Value.String resource) -> resource
             | _ -> failwith "Resource not set."
 
         let baseUrl =
             match Map.tryFind PlaceHolder.BaseUrl items with
-            | Some (Value.Url url) -> url.ToString()
+            | Some(Value.Url url) -> url.ToString()
             | _ -> "https://api.cognitedata.com"
 
         if not (Map.containsKey PlaceHolder.HasAppId items) then
             failwith "Client must set the Application ID (appId)."
 
-        sprintf "api/%s/projects/%s%s" version project resource
-        |> combine baseUrl
+        sprintf "api/%s/projects/%s%s" version project resource |> combine baseUrl
 
     let private fileVersion =
-        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+        Assembly
+            .GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
             .InformationalVersion
 
     let withUrlBuilder urlBuilder (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withUrlBuilder urlBuilder
@@ -71,7 +72,9 @@ module HttpHandler =
         source
         |> update (fun ctx ->
             { ctx with
-                Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Project, Value.String project) } })
+                Request =
+                    { ctx.Request with
+                        Items = ctx.Request.Items.Add(PlaceHolder.Project, Value.String project) } })
 
     let withAppId (appId: string) (source: HttpHandler<unit>) : HttpHandler<unit> =
         source
@@ -86,7 +89,9 @@ module HttpHandler =
         source
         |> update (fun ctx ->
             { ctx with
-                Request = { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } })
+                Request =
+                    { ctx.Request with
+                        Items = ctx.Request.Items.Add(PlaceHolder.BaseUrl, Value.Url baseUrl) } })
 
     let withLogLevel (logLevel: LogLevel) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         withLogLevel logLevel source
@@ -102,7 +107,8 @@ module HttpHandler =
         |> update (fun ctx ->
             { ctx with
                 Request =
-                    { ctx.Request with Items = ctx.Request.Items.Add(PlaceHolder.Resource, Value.String resource) } })
+                    { ctx.Request with
+                        Items = ctx.Request.Items.Add(PlaceHolder.Resource, Value.String resource) } })
 
     let withVersion<'TSource> (version: ApiVersion) (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         source
@@ -118,7 +124,7 @@ module HttpHandler =
 
             let baseUrl =
                 match Map.tryFind PlaceHolder.BaseUrl extra with
-                | Some (Value.Url url) -> url.ToString()
+                | Some(Value.Url url) -> url.ToString()
                 | _ -> "https://api.cognitedata.com"
 
             if not (Map.containsKey PlaceHolder.HasAppId extra) then
@@ -127,7 +133,11 @@ module HttpHandler =
             baseUrl +/ url
 
         source
-        |> update (fun ctx -> { ctx with Request = { ctx.Request with UrlBuilder = urlBuilder } })
+        |> update (fun ctx ->
+            { ctx with
+                Request =
+                    { ctx.Request with
+                        UrlBuilder = urlBuilder } })
 
     /// Raises error for C# extension methods. Translates Oryx errors into CogniteSdk equivalents so clients don't
     /// need to open the Oryx namespace.
@@ -145,12 +155,9 @@ module HttpHandler =
 
                     match Option.ofObj token with
                     | Some token -> return Ok token
-                    | None ->
-                        return
-                            (ArgumentNullException "No token received." :> exn)
-                            |> Error
-                with
-                | ex -> return ex |> Error
+                    | None -> return (ArgumentNullException "No token received." :> exn) |> Error
+                with ex ->
+                    return ex |> Error
             }
 
         source |> withTokenRenewer renewer
@@ -174,9 +181,7 @@ module HttpHandler =
 
                     match requestId with
                     | Some requestIds ->
-                        let requestId =
-                            Seq.tryExactlyOne requestIds
-                            |> Option.defaultValue String.Empty
+                        let requestId = Seq.tryExactlyOne requestIds |> Option.defaultValue String.Empty
 
                         error.RequestId <- requestId
                     | None -> ()
@@ -187,8 +192,7 @@ module HttpHandler =
                         | _ -> error.ToException()
 
                     return ex
-                with
-                | ex ->
+                with ex ->
                     let exn = ResponseException(response.ReasonPhrase, ex)
                     exn.Code <- int response.StatusCode
                     return exn :> _
@@ -218,13 +222,10 @@ module HttpHandler =
         (options: JsonSerializerOptions)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        source
-        |> withVersion V10
-        |> getOptions url options
+        source |> withVersion V10 |> getOptions url options
 
     let inline getById<'TResult> (id: int64) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
-        source
-        |> getV10<'TResult> (url +/ sprintf "%d" id)
+        source |> getV10<'TResult> (url +/ sprintf "%d" id)
 
     let getWithQueryOptions<'TResult>
         (query: IQueryParams)
@@ -267,9 +268,7 @@ module HttpHandler =
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        source
-        |> withVersion V10
-        |> post<'TContent, 'TResult> content url
+        source |> withVersion V10 |> post<'TContent, 'TResult> content url
 
     let postWithQuery<'TContent, 'TResult>
         (content: 'TContent)
@@ -434,8 +433,7 @@ module HttpHandler =
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<EmptyResponse> =
-        source
-        |> createWithQueryEmptyOptions content query url jsonOptions
+        source |> createWithQueryEmptyOptions content query url jsonOptions
 
     let createEmpty<'TSource>
         (content: IEnumerable<'TSource>)
@@ -444,8 +442,7 @@ module HttpHandler =
         : HttpHandler<EmptyResponse> =
         let content' = ItemsWithoutCursor(Items = content)
 
-        source
-        |> postV10<ItemsWithoutCursor<'TSource>, EmptyResponse> content' url
+        source |> postV10<ItemsWithoutCursor<'TSource>, EmptyResponse> content' url
 
     let inline delete<'T, 'TNext, 'TResult> (content: 'T) (url: string) source : HttpHandler<'TNext> =
         source |> postV10 content (url +/ "delete")

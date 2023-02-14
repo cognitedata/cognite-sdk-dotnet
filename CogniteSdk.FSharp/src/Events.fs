@@ -26,25 +26,19 @@ type EventFilter =
     member x.ToEventFilter() =
         let filter = CogniteSdk.EventFilter()
 
-        x.StartTime
-        |> Option.iter (fun x -> filter.StartTime <- x.ToTimeRange())
+        x.StartTime |> Option.iter (fun x -> filter.StartTime <- x.ToTimeRange())
 
-        x.EndTime
-        |> Option.iter (fun x -> filter.EndTime <- x.ToTimeRange())
+        x.EndTime |> Option.iter (fun x -> filter.EndTime <- x.ToTimeRange())
 
-        x.ActiveAtTime
-        |> Option.iter (fun x -> filter.ActiveAtTime <- x.ToTimeRange())
+        x.ActiveAtTime |> Option.iter (fun x -> filter.ActiveAtTime <- x.ToTimeRange())
 
-        x.ExternalIdPrefix
-        |> Option.iter (fun x -> filter.ExternalIdPrefix <- x)
+        x.ExternalIdPrefix |> Option.iter (fun x -> filter.ExternalIdPrefix <- x)
 
         x.Type |> Option.iter (fun x -> filter.Type <- x)
 
-        x.SubType
-        |> Option.iter (fun x -> filter.Subtype <- x)
+        x.SubType |> Option.iter (fun x -> filter.Subtype <- x)
 
-        x.Source
-        |> Option.iter (fun x -> filter.Source <- x)
+        x.Source |> Option.iter (fun x -> filter.Source <- x)
 
         if not (List.isEmpty x.AssetIds) then
             filter.AssetIds <- x.AssetIds |> Array.ofList
@@ -53,25 +47,15 @@ type EventFilter =
             filter.AssetExternalIds <- x.AssetExternalIds |> Array.ofList
 
         if not (List.isEmpty x.AssetSubtreeIds) then
-            filter.AssetSubtreeIds <-
-                x.AssetSubtreeIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.AssetSubtreeIds <- x.AssetSubtreeIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
         if not (List.isEmpty x.RootAssetIds) then
-            filter.RootAssetIds <-
-                x.RootAssetIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.RootAssetIds <- x.RootAssetIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
         if not (List.isEmpty x.DataSetIds) then
-            filter.DataSetIds <-
-                x.DataSetIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.DataSetIds <- x.DataSetIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
-        x.CreatedTime
-        |> Option.iter (fun x -> filter.CreatedTime <- x.ToTimeRange())
+        x.CreatedTime |> Option.iter (fun x -> filter.CreatedTime <- x.ToTimeRange())
 
         x.LastUpdatedTime
         |> Option.iter (fun x -> filter.LastUpdatedTime <- x.ToTimeRange())
@@ -97,29 +81,15 @@ type EventFilter =
 
               AssetIds = set (x.AssetIds @ other.AssetIds) |> List.ofSeq
 
-              RootAssetIds =
-                  set (x.RootAssetIds @ other.RootAssetIds)
-                  |> List.ofSeq
-              AssetExternalIds =
-                set (x.AssetExternalIds @ other.AssetExternalIds)
-                |> List.ofSeq
-              AssetSubtreeIds =
-                set (x.AssetSubtreeIds @ other.AssetSubtreeIds)
-                |> List.ofSeq
-              DataSetIds =
-                set (x.DataSetIds @ other.DataSetIds)
-                |> List.ofSeq
-              MetaData =
-                Map.toList x.MetaData @ Map.toList other.MetaData
-                |> Map.ofList
+              RootAssetIds = set (x.RootAssetIds @ other.RootAssetIds) |> List.ofSeq
+              AssetExternalIds = set (x.AssetExternalIds @ other.AssetExternalIds) |> List.ofSeq
+              AssetSubtreeIds = set (x.AssetSubtreeIds @ other.AssetSubtreeIds) |> List.ofSeq
+              DataSetIds = set (x.DataSetIds @ other.DataSetIds) |> List.ofSeq
+              MetaData = Map.toList x.MetaData @ Map.toList other.MetaData |> Map.ofList
 
               CreatedTime = x.CreatedTime |> Option.orElse other.CreatedTime
-              LastUpdatedTime =
-                x.LastUpdatedTime
-                |> Option.orElse other.LastUpdatedTime
-              ExternalIdPrefix =
-                x.ExternalIdPrefix
-                |> Option.orElse other.ExternalIdPrefix }
+              LastUpdatedTime = x.LastUpdatedTime |> Option.orElse other.LastUpdatedTime
+              ExternalIdPrefix = x.ExternalIdPrefix |> Option.orElse other.ExternalIdPrefix }
 
     static member Empty =
         { StartTime = None
@@ -154,11 +124,9 @@ type EventQuery =
 
         x.Limit |> Option.iter (fun x -> query.Limit <- x)
 
-        x.Partition
-        |> Option.iter (fun x -> query.Partition <- x)
+        x.Partition |> Option.iter (fun x -> query.Partition <- x)
 
-        x.Cursor
-        |> Option.iter (fun x -> query.Cursor <- x)
+        x.Cursor |> Option.iter (fun x -> query.Cursor <- x)
 
         if not (List.isEmpty x.Sort) then
             query.Sort <- x.Sort |> Array.ofList
@@ -180,11 +148,9 @@ type EventsSearch =
     member x.ToEventSearch() =
         let search = CogniteSdk.EventSearch()
 
-        x.Filter
-        |> Option.iter (fun x -> search.Filter <- x.ToEventFilter())
+        x.Filter |> Option.iter (fun x -> search.Filter <- x.ToEventFilter())
 
-        x.Limit
-        |> Option.iter (fun x -> search.Limit <- Nullable(x))
+        x.Limit |> Option.iter (fun x -> search.Limit <- Nullable(x))
 
         search.Search <- x.Search.ToSearch()
 

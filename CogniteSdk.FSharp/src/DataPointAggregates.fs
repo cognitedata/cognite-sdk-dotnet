@@ -60,20 +60,15 @@ type DataPointAggregatesQueryItem =
     member x.ToDataPointsQueryItem() =
         let query = CogniteSdk.DataPointsQueryItem()
 
-        x.Id
-        |> Option.iter (fun internalId -> query.Id <- internalId)
+        x.Id |> Option.iter (fun internalId -> query.Id <- internalId)
 
-        x.ExternalId
-        |> Option.iter (fun externalId -> query.ExternalId <- externalId)
+        x.ExternalId |> Option.iter (fun externalId -> query.ExternalId <- externalId)
 
-        x.Start
-        |> Option.iter (fun start -> query.Start <- start)
+        x.Start |> Option.iter (fun start -> query.Start <- start)
 
-        x.End
-        |> Option.iter (fun end' -> query.End <- end')
+        x.End |> Option.iter (fun end' -> query.End <- end')
 
-        x.Limit
-        |> Option.iter (fun limit -> query.Limit <- limit)
+        x.Limit |> Option.iter (fun limit -> query.Limit <- limit)
 
         x.Aggregates
         |> Option.iter (function
@@ -110,17 +105,13 @@ type DataPointAggregatesQuery =
     member x.ToDataPointsQuery() =
         let query = CogniteSdk.DataPointsQuery()
 
-        x.Start
-        |> Option.iter (fun start -> query.Start <- start)
+        x.Start |> Option.iter (fun start -> query.Start <- start)
 
-        x.End
-        |> Option.iter (fun end' -> query.End <- end')
+        x.End |> Option.iter (fun end' -> query.End <- end')
 
-        x.Granularity
-        |> Option.iter (fun g -> query.Granularity <- g)
+        x.Granularity |> Option.iter (fun g -> query.Granularity <- g)
 
-        x.Limit
-        |> Option.iter (fun limit -> query.Limit <- limit)
+        x.Limit |> Option.iter (fun limit -> query.Limit <- limit)
 
         query.Aggregates <-
             match x.Aggregates with
@@ -131,9 +122,7 @@ type DataPointAggregatesQuery =
         x.IncludeOutsidePoints
         |> Option.iter (fun toInclude -> query.IncludeOutsidePoints <- toInclude)
 
-        query.Items <-
-            x.Items
-            |> List.map (fun queryItem -> queryItem.ToDataPointsQueryItem())
+        query.Items <- x.Items |> List.map (fun queryItem -> queryItem.ToDataPointsQueryItem())
 
         query
 
@@ -199,8 +188,7 @@ module DataPointAggregates =
         let convertResponse (dataPointAggregateResponse: DataPointListResponse) (granularity: string option) =
 
             let resultPerTimeseries =
-                dataPointAggregateResponse
-                |> getAggregateResultPerTimeseries
+                dataPointAggregateResponse |> getAggregateResultPerTimeseries
 
             resultPerTimeseries
             |> Seq.map (fun resultFromSingleTimeseries ->
@@ -227,9 +215,7 @@ module DataPointAggregates =
             |> getAggregateResultPerTimeseries
             |> Seq.map (fun dpAggList ->
                 // pick the last datapoint for each timeseries in the response
-                (dpAggList.AggregateDatapoints.Datapoints
-                 |> Seq.tryLast,
-                 dpAggList.ExternalId))
+                (dpAggList.AggregateDatapoints.Datapoints |> Seq.tryLast, dpAggList.ExternalId))
             |> Seq.choose (function
                 // filter out exhausted timeseries (without last point)
                 | Some dpAgg, extId ->
