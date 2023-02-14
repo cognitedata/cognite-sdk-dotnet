@@ -61,9 +61,7 @@ module Handler =
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        source
-        |> withVersion Playground
-        |> post content url
+        source |> withVersion Playground |> post content url
 
     let postWithQuery<'TContent, 'TResult>
         (content: 'TContent)
@@ -176,7 +174,7 @@ module Handler =
 
             return ret.Items
         }
-        
+
     let suggest<'TContent, 'TResult>
         (content: IEnumerable<'TContent>)
         (url: string)

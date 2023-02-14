@@ -22,9 +22,7 @@ module ThreeDModels =
     /// <param name="query">The query to use.</param>
     /// <returns>List of 3DModels matching given filters and optional cursor</returns>
     let list (query: ThreeDModelQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<ThreeDModel>> =
-        source
-        |> withLogMessage "3DModels:list"
-        |> getWithQuery query Url
+        source |> withLogMessage "3DModels:list" |> getWithQuery query Url
 
     /// <summary>
     /// Create new 3D models in the given project.
@@ -32,9 +30,7 @@ module ThreeDModels =
     /// <param name="items">The 3D models to create.</param>
     /// <returns>List of created 3D models.</returns>
     let create (items: ThreeDModelCreate seq) (source: HttpHandler<unit>) : HttpHandler<ThreeDModel seq> =
-        source
-        |> withLogMessage "3DModel:create"
-        |> create items Url
+        source |> withLogMessage "3DModel:create" |> create items Url
 
     /// <summary>
     /// Delete multiple 3DModels in the same project.
@@ -44,9 +40,7 @@ module ThreeDModels =
     let delete (ids: IEnumerable<Identity>) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let items = ItemsWithoutCursor(Items = ids)
 
-        source
-        |> withLogMessage "3DModel:delete"
-        |> delete items Url
+        source |> withLogMessage "3DModel:delete" |> delete items Url
 
     /// <summary>
     /// Retrieves information about a 3DModel in the same project.
@@ -56,9 +50,7 @@ module ThreeDModels =
     let retrieve (modelId: int64) (source: HttpHandler<unit>) : HttpHandler<ThreeDModel> =
         let url = Url
 
-        source
-        |> withLogMessage "3DModels:retrieve"
-        |> getById modelId url
+        source |> withLogMessage "3DModels:retrieve" |> getById modelId url
 
     /// Update one or more 3DModels. Supports partial updates, meaning that
     /// fields omitted from the requests are not changed. Returns list of updated 3DModels.
@@ -66,9 +58,7 @@ module ThreeDModels =
         (query: IEnumerable<UpdateItem<ThreeDModelUpdate>>)
         (source: HttpHandler<unit>)
         : HttpHandler<ThreeDModel seq> =
-        source
-        |> withLogMessage "3DModels:update"
-        |> update query Url
+        source |> withLogMessage "3DModels:update" |> update query Url
 
 [<RequireQualifiedAccess>]
 module ThreeDRevisions =
@@ -87,9 +77,7 @@ module ThreeDRevisions =
         : HttpHandler<ItemsWithCursor<ThreeDRevision>> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
-        source
-        |> withLogMessage "3DRevisions:list"
-        |> getWithQuery query url
+        source |> withLogMessage "3DRevisions:list" |> getWithQuery query url
 
     /// <summary>
     /// Create new 3D Revisions in the given project.
@@ -104,9 +92,7 @@ module ThreeDRevisions =
         : HttpHandler<ThreeDRevision seq> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
-        source
-        |> withLogMessage "3DRevision:create"
-        |> create items url
+        source |> withLogMessage "3DRevision:create" |> create items url
 
     /// <summary>
     /// Delete multiple 3DRevisions in the same project.
@@ -118,9 +104,7 @@ module ThreeDRevisions =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
         let items = ItemsWithoutCursor(Items = ids)
 
-        source
-        |> withLogMessage "3DRevision:delete"
-        |> delete items url
+        source |> withLogMessage "3DRevision:delete" |> delete items url
 
     /// <summary>
     /// Retrieves information about multiple 3DRevisions in the same project. A maximum of 1000 3DRevision IDs may be listed per
@@ -132,9 +116,7 @@ module ThreeDRevisions =
     let retrieve (modelId: int64) (revisionId: int64) (source: HttpHandler<unit>) : HttpHandler<ThreeDRevision> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
-        source
-        |> withLogMessage "3DRevisions:retrieve"
-        |> getById revisionId url
+        source |> withLogMessage "3DRevisions:retrieve" |> getById revisionId url
 
     /// <summary>
     /// Update one or more 3DRevisions. Supports partial updates, meaning that
@@ -150,9 +132,7 @@ module ThreeDRevisions =
         : HttpHandler<ThreeDRevision seq> =
         let url = Url +/ sprintf "%d" modelId +/ "revisions"
 
-        source
-        |> withLogMessage "3DRevisions:update"
-        |> update query url
+        source |> withLogMessage "3DRevisions:update" |> update query url
 
     /// <summary>
     /// Update one or more 3DRevisions. Supports partial updates, meaning that
@@ -195,15 +175,9 @@ module ThreeDRevisions =
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ThreeDRevisionLog>> =
         let url =
-            Url
-            +/ sprintf "%d" modelId
-            +/ "revisions"
-            +/ sprintf "%d" revisionId
-            +/ "logs"
+            Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "logs"
 
-        source
-        |> withLogMessage "3DRevisionLogs:list"
-        |> getWithQuery query url
+        source |> withLogMessage "3DRevisionLogs:list" |> getWithQuery query url
 
 module ThreeDNodes =
     let Url = "/3d/models"
@@ -221,15 +195,9 @@ module ThreeDNodes =
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<ThreeDNode>> =
         let url =
-            Url
-            +/ sprintf "%d" modelId
-            +/ "revisions"
-            +/ sprintf "%d" revisionId
-            +/ "nodes"
+            Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "nodes"
 
-        source
-        |> withLogMessage "3DNode:list"
-        |> getWithQuery query url
+        source |> withLogMessage "3DNode:list" |> getWithQuery query url
 
 module ThreeDAssetMappings =
     let Url = "3d/models"
@@ -254,9 +222,7 @@ module ThreeDAssetMappings =
             +/ sprintf "%d" revisionId
             +/ "mappings"
 
-        source
-        |> withLogMessage "3DAssetMapping:list"
-        |> list query url
+        source |> withLogMessage "3DAssetMapping:list" |> list query url
 
     /// <summary>
     /// Create new 3D AssetMapping in the given project.
@@ -278,9 +244,7 @@ module ThreeDAssetMappings =
             +/ sprintf "%d" revisionId
             +/ "mappings"
 
-        source
-        |> withLogMessage "3DAssetMapping:create"
-        |> create items url
+        source |> withLogMessage "3DAssetMapping:create" |> create items url
 
     /// Delete 3D AssetMappings in the given project.
     /// </summary>
@@ -303,6 +267,4 @@ module ThreeDAssetMappings =
 
         let items = ItemsWithoutCursor(Items = assetMappings)
 
-        source
-        |> withLogMessage "3DAssetMapping:delete"
-        |> delete items url
+        source |> withLogMessage "3DAssetMapping:delete" |> delete items url

@@ -26,10 +26,7 @@ module Login =
     /// Returns the authentication information about the asking entity.
     let status (source: HttpHandler<unit>) : HttpHandler<LoginStatus> =
         http {
-            let! data =
-                source
-                |> withLogMessage "Login:status"
-                |> get<LoginDataRead> "/login/status"
+            let! data = source |> withLogMessage "Login:status" |> get<LoginDataRead> "/login/status"
 
             return data.Data
         }

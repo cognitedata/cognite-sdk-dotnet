@@ -20,9 +20,7 @@ module Functions =
     /// </summary>
     /// <returns>List of Functions.</returns>
     let list (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Function>> =
-        source
-        |> withLogMessage "Functions:list"
-        |> getPlayground Url
+        source |> withLogMessage "Functions:list" |> getPlayground Url
 
     /// <summary>
     /// Create new Functions in the given project.
@@ -30,9 +28,7 @@ module Functions =
     /// <param name="functions">The Functions to create.</param>
     /// <returns>List of created Functions.</returns>
     let create (functions: FunctionCreate seq) (source: HttpHandler<unit>) : HttpHandler<Function seq> =
-        source
-        |> withLogMessage "Functions:create"
-        |> create functions Url
+        source |> withLogMessage "Functions:create" |> create functions Url
 
     /// <summary>
     /// Delete multiple Functions in the same project.
@@ -42,9 +38,7 @@ module Functions =
     let delete (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let items = ItemsWithoutCursor(Items = ids)
 
-        source
-        |> withLogMessage "Functions:delete"
-        |> delete items Url
+        source |> withLogMessage "Functions:delete" |> delete items Url
 
     /// <summary>
     /// Retrieves information about multiple Functions in the same project. A maximum of 1000 Functions IDs may be listed per
@@ -53,9 +47,7 @@ module Functions =
     /// <param name="ids">The ids of the Functions to get.</param>
     /// <returns>Functions with given ids.</returns>
     let retrieve (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<Function seq> =
-        source
-        |> withLogMessage "Functions:retrieve"
-        |> retrieve ids Url
+        source |> withLogMessage "Functions:retrieve" |> retrieve ids Url
 
 [<RequireQualifiedAccess>]
 module FunctionCalls =
@@ -66,9 +58,7 @@ module FunctionCalls =
     let get (functionId: int64) (callId: int64) (source: HttpHandler<unit>) : HttpHandler<FunctionCall> =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
 
-        source
-        |> withLogMessage "FunctionCalls:get"
-        |> getById callId url
+        source |> withLogMessage "FunctionCalls:get" |> getById callId url
 
     /// <summary>
     /// Retrieves list of functionCalls matching filter.
@@ -83,9 +73,7 @@ module FunctionCalls =
         let url = Url +/ sprintf "%d" functionId +/ "calls"
         let filterQuery = FunctionCallQuery(Filter = filter)
 
-        source
-        |> withLogMessage "FunctionCalls:list"
-        |> list filterQuery url
+        source |> withLogMessage "FunctionCalls:list" |> list filterQuery url
 
     /// <summary>
     /// Retrieves list of logs from function call.
@@ -98,16 +86,9 @@ module FunctionCalls =
         (callId: int64)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithoutCursor<FunctionCallLogEntry>> =
-        let url =
-            Url
-            +/ sprintf "%d" functionId
-            +/ "calls"
-            +/ sprintf "%d" callId
-            +/ "logs"
+        let url = Url +/ sprintf "%d" functionId +/ "calls" +/ sprintf "%d" callId +/ "logs"
 
-        source
-        |> withLogMessage "FunctionCalls:listLogs"
-        |> getPlayground url
+        source |> withLogMessage "FunctionCalls:listLogs" |> getPlayground url
 
     /// <summary>
     /// Retrieves response for function call.
@@ -121,15 +102,9 @@ module FunctionCalls =
         (source: HttpHandler<unit>)
         : HttpHandler<FunctionCallResponse> =
         let url =
-            Url
-            +/ sprintf "%d" functionId
-            +/ "calls"
-            +/ sprintf "%d" callId
-            +/ "response"
+            Url +/ sprintf "%d" functionId +/ "calls" +/ sprintf "%d" callId +/ "response"
 
-        source
-        |> withLogMessage "FunctionCalls:retrieveResponse"
-        |> getPlayground url
+        source |> withLogMessage "FunctionCalls:retrieveResponse" |> getPlayground url
 
     /// <summary>
     /// Call a function synchronously.
@@ -155,9 +130,7 @@ module FunctionSchedules =
     /// </summary>
     /// <returns>List of FunctionSchedules.</returns>
     let list (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<FunctionSchedule>> =
-        source
-        |> withLogMessage "FunctionSchedules:list"
-        |> getPlayground Url
+        source |> withLogMessage "FunctionSchedules:list" |> getPlayground Url
 
     /// <summary>
     /// Create new FunctionSchedules in the given project.
@@ -180,6 +153,4 @@ module FunctionSchedules =
     let delete (ids: int64 seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let items = ItemsWithoutCursor(Items = ids)
 
-        source
-        |> withLogMessage "FunctionSchedules:delete"
-        |> delete items Url
+        source |> withLogMessage "FunctionSchedules:delete" |> delete items Url
