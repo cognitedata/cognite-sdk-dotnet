@@ -225,14 +225,13 @@ module DataPointAggregates =
 
             dataPointAggregateResponse
             |> getAggregateResultPerTimeseries
-            |> Seq.map
-                /// pick the last datapoint for each timeseries in the response
-                (fun dpAggList ->
-                    (dpAggList.AggregateDatapoints.Datapoints
-                     |> Seq.tryLast,
-                     dpAggList.ExternalId))
-            /// filter out exhausted timeseries (without last point)
+            |> Seq.map (fun dpAggList ->
+                // pick the last datapoint for each timeseries in the response
+                (dpAggList.AggregateDatapoints.Datapoints
+                 |> Seq.tryLast,
+                 dpAggList.ExternalId))
             |> Seq.choose (function
+                // filter out exhausted timeseries (without last point)
                 | Some dpAgg, extId ->
                     Some(
                         extId,

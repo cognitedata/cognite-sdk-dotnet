@@ -176,7 +176,7 @@ module Handler =
 
             return ret.Items
         }
-        
+
     let suggest<'TContent, 'TResult>
         (content: IEnumerable<'TContent>)
         (url: string)

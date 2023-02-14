@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 namespace Oryx.Cognite.Playground
+
 open System.Collections.Generic
 
 open Oryx
@@ -35,8 +36,8 @@ module Annotations =
     let suggest (annotations: AnnotationSuggest seq) (source: HttpHandler<unit>) : HttpHandler<Annotation seq> =
         source
         |> withLogMessage "Annotation:suggest"
-        |> suggest annotations Url    
-    
+        |> suggest annotations Url
+
     /// <summary>
     /// Delete multiple annotations in the same project.
     /// </summary>
@@ -58,7 +59,10 @@ module Annotations =
         |> list query Url
 
     /// Update one or more annotations. Supports partial updates, meaning that fields omitted from the requests are not changed.
-    let update (query: IEnumerable<UpdateItem<AnnotationUpdate>>) (source: HttpHandler<unit>) : HttpHandler<#Annotation seq> =
+    let update
+        (query: IEnumerable<UpdateItem<AnnotationUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#Annotation seq> =
         source
         |> withLogMessage "Annotations:update"
         |> update query Url

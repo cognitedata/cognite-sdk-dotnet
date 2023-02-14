@@ -30,10 +30,8 @@ module DataModels =
     /// Delete a list of spaces
     let deleteSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let query =
-            ItemsWithoutCursor(
-                Items = (items |> Seq.map (fun id -> CogniteExternalId(id)))
-            )
-        
+            ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> CogniteExternalId(id))))
+
         source
         |> withLogMessage "dms:spaces:delete"
         |> withAlphaHeader
@@ -42,7 +40,7 @@ module DataModels =
     /// List all spaces
     let listSpaces (source: HttpHandler<unit>) : HttpHandler<Space seq> =
         let query = EmptyResponse()
-        
+
         source
         |> withLogMessage "dms:spaces:list"
         |> withAlphaHeader
@@ -57,19 +55,19 @@ module DataModels =
 
     /// Apply a list of data models in the given space
     let applyModels (items: ModelCreate seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
-        let request = ItemsWithSpaceExternalId<ModelCreate>(
-            Items = items,
-            SpaceExternalId = space
-        )
+        let request =
+            ItemsWithSpaceExternalId<ModelCreate>(Items = items, SpaceExternalId = space)
+
         http {
-            let! res = 
+            let! res =
                 source
                 |> withLogMessage "dms:models:apply"
                 |> withAlphaHeader
                 |> postV10<ItemsWithSpaceExternalId<ModelCreate>, ItemsWithoutCursor<Model>> request modelsUrl
+
             return res.Items
         }
-        
+
     /// Delete a list of data models in the given space
     let deleteModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         let query =
@@ -93,21 +91,27 @@ module DataModels =
                 |> withLogMessage "dms:models:list"
                 |> withAlphaHeader
                 |> HttpHandler.list<ListModelsQuery, ItemsWithoutCursor<Model>> request modelsUrl
+
             return res.Items
         }
 
     /// Retrieve models by externalId in the given space
     let retrieveModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
-        let query = ItemsWithSpaceExternalId(
-            Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
-            SpaceExternalId = space
-        )
+        let query =
+            ItemsWithSpaceExternalId(
+                Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
+                SpaceExternalId = space
+            )
+
         http {
             let! res =
                 source
                 |> withLogMessage "dms:models:retrieve"
                 |> withAlphaHeader
-                |> postV10<ItemsWithSpaceExternalId<CogniteExternalId>, ItemsWithoutCursor<Model>> query (modelsUrl +/ "byids")
+                |> postV10<ItemsWithSpaceExternalId<CogniteExternalId>, ItemsWithoutCursor<Model>>
+                    query
+                    (modelsUrl +/ "byids")
+
             return res.Items
         }
 
@@ -119,6 +123,7 @@ module DataModels =
                 |> withLogMessage "dms:nodes:create"
                 |> withAlphaHeader
                 |> postV10<NodeIngestRequest<'T>, ItemsWithoutCursor<'T>> request nodesUrl
+
             return res.Items
         }
 
@@ -141,7 +146,7 @@ module DataModels =
         |> withLogMessage "dms:nodes:list"
         |> withAlphaHeader
         |> HttpHandler.list query nodesUrl
-        
+
     /// Search nodes, retrieves up to 1000
     let searchNodes (query: NodeSearchQuery) (source: HttpHandler<unit>) : HttpHandler<NodeListResponse<'T>> =
         source
@@ -164,6 +169,7 @@ module DataModels =
                 |> withLogMessage "dms:edges:create"
                 |> withAlphaHeader
                 |> postV10<EdgeIngestRequest<'T>, ItemsWithoutCursor<'T>> request edgesUrl
+
             return res.Items
         }
 
@@ -186,7 +192,7 @@ module DataModels =
         |> withLogMessage "dms:edges:list"
         |> withAlphaHeader
         |> HttpHandler.list query edgesUrl
-        
+
     /// Search edges, retrieves up to 1000
     let searchEdges (query: NodeSearchQuery) (source: HttpHandler<unit>) : HttpHandler<EdgeListResponse<'T>> =
         source
@@ -207,5 +213,3 @@ module DataModels =
         |> withLogMessage "dms:query"
         |> withAlphaHeader
         |> postV10 query (Url +/ "graphquery")
-
-

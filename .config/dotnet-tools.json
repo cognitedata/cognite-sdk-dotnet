@@ -19,6 +19,12 @@
       "commands": [
         "dotnet-format"
       ]
+    },
+    "fantomas": {
+      "version": "5.2.1",
+      "commands": [
+        "fantomas"
+      ]
     }
   }
 }
