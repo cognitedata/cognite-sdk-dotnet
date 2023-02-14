@@ -43,7 +43,7 @@ jobs:
           TEST_CLIENT_SECRET_READ: ${{ secrets.TEST_CLIENT_SECRET_READ }}
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage.lcov
