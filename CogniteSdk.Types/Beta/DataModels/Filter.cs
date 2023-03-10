@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Beta
@@ -55,6 +56,10 @@ namespace CogniteSdk.Beta
                 case "range": filter = JsonSerializer.Deserialize<RangeFilter>(ref reader, options); break;
                 case "nested": filter = JsonSerializer.Deserialize<NestedFilter>(ref reader, options); break;
             }
+            if (filter == null)
+            {
+                if (!reader.TrySkip()) throw new JsonException("Failed to skip unknown filter");
+            }
             reader.Read();
             return filter;
         }
@@ -90,15 +95,15 @@ namespace CogniteSdk.Beta
         {
             if (reader.TokenType == JsonTokenType.Number)
             {
-                return new DMSFilterValue<double>(JsonSerializer.Deserialize<double>(ref reader, options));
+                return new RawPropertyValue<double>(JsonSerializer.Deserialize<double>(ref reader, options));
             }
             else if (reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True)
             {
-                return new DMSFilterValue<bool>(JsonSerializer.Deserialize<bool>(ref reader, options));
+                return new RawPropertyValue<bool>(JsonSerializer.Deserialize<bool>(ref reader, options));
             }
             else if (reader.TokenType == JsonTokenType.String)
             {
-                return new DMSFilterValue<string>(JsonSerializer.Deserialize<string>(ref reader, options));
+                return new RawPropertyValue<string>(JsonSerializer.Deserialize<string>(ref reader, options));
             }
             else if (reader.TokenType == JsonTokenType.StartArray)
             {
@@ -108,10 +113,18 @@ namespace CogniteSdk.Beta
                 var type = types.First();
 
                 var arrayType = type.MakeArrayType();
-                var resultType = typeof(DMSFilterValue<>).MakeGenericType(arrayType);
+                var resultType = typeof(RawPropertyValue<>).MakeGenericType(arrayType);
                 var result = Activator.CreateInstance(resultType);
                 resultType.GetProperty("Value").SetValue(result, res);
                 return (IDMSFilterValue)result;
+            }
+            else if (reader.TokenType == JsonTokenType.StartObject)
+            {
+                // This can (unfortunately) be either an _arbitrary_ json object, or one of the two special value types.
+                // Since we really have no good way to distinguish between them, we just store it as JsonElement.
+                // It is an edge case either way.
+                var res = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
+                return new RawPropertyValue<JsonElement>();
             }
             else
             {
@@ -123,14 +136,21 @@ namespace CogniteSdk.Beta
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, IDMSFilterValue value, JsonSerializerOptions options)
         {
-            var innerValue = value.GetType().GetProperty("Value").GetValue(value);
-            if (innerValue == null)
+            if (value is IRawPropertyValue)
             {
-                writer.WriteNullValue();
+                var innerValue = value.GetType().GetProperty("Value").GetValue(value);
+                if (innerValue == null)
+                {
+                    writer.WriteNullValue();
+                }
+                else
+                {
+                    JsonSerializer.Serialize(writer, innerValue, innerValue.GetType(), options);
+                }
             }
             else
             {
-                JsonSerializer.Serialize(writer, innerValue, innerValue.GetType(), options);
+                JsonSerializer.Serialize(writer, value, value.GetType(), options);
             }
         }
     }
@@ -141,10 +161,15 @@ namespace CogniteSdk.Beta
     public interface IDMSFilterValue { }
 
     /// <summary>
+    /// Non-generic base class of RawPropertyValue[T].
+    /// </summary>
+    public interface IRawPropertyValue : IDMSFilterValue { }
+
+    /// <summary>
     /// A value 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class DMSFilterValue<T> : IDMSFilterValue
+    public class RawPropertyValue<T> : IRawPropertyValue
     {
         /// <summary>
         /// Value of this filter. Should be string, double, boolean, or an array of these.
@@ -154,16 +179,38 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public DMSFilterValue() { }
+        public RawPropertyValue() { }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="value">Value, should be string, double, boolean, or an array of these</param>
-        public DMSFilterValue(T value)
+        public RawPropertyValue(T value)
         {
             Value = value;
         }
+    }
+
+    /// <summary>
+    /// A parametrized FDM filter value.
+    /// </summary>
+    public class ParameterizedPropertyValue : IDMSFilterValue
+    {
+        /// <summary>
+        /// Parameter
+        /// </summary>
+        public string Parameter { get; set; }
+    }
+
+    /// <summary>
+    /// A referenced FDM property value.
+    /// </summary>
+    public class ReferencedPropertyValue : IDMSFilterValue
+    {
+        /// <summary>
+        /// The referenced property.
+        /// </summary>
+        public IEnumerable<string> Property { get; set; }
     }
 
     /// <summary>
@@ -211,9 +258,9 @@ namespace CogniteSdk.Beta
     public class ContainsAllFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
         /// <summary>
         /// List of required values.
         /// </summary>
@@ -226,9 +273,9 @@ namespace CogniteSdk.Beta
     public class ContainsAnyFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
         /// <summary>
         /// List of values.
         /// </summary>
@@ -241,9 +288,9 @@ namespace CogniteSdk.Beta
     public class EqualsFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
         /// <summary>
         /// Value of property.
         /// </summary>
@@ -256,9 +303,9 @@ namespace CogniteSdk.Beta
     public class ExistsFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
     }
 
     /// <summary>
@@ -267,9 +314,9 @@ namespace CogniteSdk.Beta
     public class InFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
         /// <summary>
         /// List of values.
         /// </summary>
@@ -282,9 +329,9 @@ namespace CogniteSdk.Beta
     public class HasDataFilter : IDMSFilter
     {
         /// <summary>
-        /// List of models, each specified by spaceExternalId and modelExternalId, or just "edge" or "node".
+        /// List of models.
         /// </summary>
-        public IEnumerable<ModelIdentifier> Models { get; set; }
+        public IEnumerable<FDMIdentifier> Models { get; set; }
     }
 
     /// <summary>
@@ -300,13 +347,13 @@ namespace CogniteSdk.Beta
     public class PrefixFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
         /// <summary>
         /// Prefix
         /// </summary>
-        public string Value { get; set; }
+        public IDMSFilterValue Value { get; set; }
     }
 
     /// <summary>
@@ -316,9 +363,9 @@ namespace CogniteSdk.Beta
     public class RangeFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property.
         /// </summary>
-        public PropertyIdentifier Property { get; set; }
+        public IEnumerable<string> Property { get; set; }
 
         /// <summary>
         /// Value must be greater than this
@@ -351,13 +398,47 @@ namespace CogniteSdk.Beta
     public class NestedFilter : IDMSFilter
     {
         /// <summary>
-        /// List of strings defining the property containing the direct_relation by spaceExternalId, modelExternalId and property name.
+        /// List of strings defining the property containing the direct_relation.
         /// </summary>
-        public PropertyIdentifier Scope { get; set; }
+        public IEnumerable<string> Scope { get; set; }
 
         /// <summary>
         /// Filter on the referenced node.
         /// </summary>
         public IDMSFilter Filter { get; set; }
+    }
+
+    public class OverlapsFilter : IDMSFilter
+    {
+        /// <summary>
+        /// List of strings defining the property that marks the start of the range.
+        /// </summary>
+        public IEnumerable<string> StartProperty { get; set; }
+        /// <summary>
+        /// List of strings defining the property that marks the end of the range.
+        /// </summary>
+        public IEnumerable<string> EndProperty { get; set; }
+        /// <summary>
+        /// Value must be greater than this
+        /// </summary>
+        [JsonPropertyName("gt")]
+        public IDMSFilterValue GreaterThan { get; set; }
+
+        /// <summary>
+        /// Value must be greater than or equal to this
+        /// </summary>
+        [JsonPropertyName("gte")]
+        public IDMSFilterValue GreaterThanEqual { get; set; }
+        /// <summary>
+        /// Value must be less than this
+        /// </summary>
+        [JsonPropertyName("lt")]
+        public IDMSFilterValue LessThan { get; set; }
+
+        /// <summary>
+        /// Value must be less than or equal to this
+        /// </summary>
+        [JsonPropertyName("lte")]
+        public IDMSFilterValue LessThanEqual { get; set; }
     }
 }
