@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Create a flexible data models view.
+    /// Create or update a flexible data models view.
     /// </summary>
-    public class ViewCreate
+    public class ViewCreate : IViewCreateOrReference
     {
         /// <summary>
         /// External ID uniquely identifying this view.

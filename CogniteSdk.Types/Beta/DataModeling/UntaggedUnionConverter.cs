@@ -39,7 +39,7 @@ namespace CogniteSdk.Beta
                 }
                 catch {}
             }
-            throw new JsonException("Encountered data did not fit any variant");
+            return null;
         }
 
         /// <inheritdoc />

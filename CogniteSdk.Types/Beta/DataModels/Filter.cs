@@ -88,10 +88,10 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Converter for DMSFilterValue
     /// </summary>
-    public class DmsFilterValueConverter : JsonConverter<IDMSFilterValue>
+    public class DmsFilterValueConverter : JsonConverter<IDMSValue>
     {
         /// <inheritdoc />
-        public override IDMSFilterValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override IDMSValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.Number)
             {
@@ -107,7 +107,7 @@ namespace CogniteSdk.Beta
             }
             else if (reader.TokenType == JsonTokenType.StartArray)
             {
-                var res = JsonSerializer.Deserialize<IEnumerable<IDMSFilterValue>>(ref reader, options);
+                var res = JsonSerializer.Deserialize<IEnumerable<IDMSValue>>(ref reader, options);
                 var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct().ToList();
                 if (types.Count() > 1) throw new JsonException("Contents of DMSFilterValue as array must all be same type");
                 var type = types.First();
@@ -116,7 +116,7 @@ namespace CogniteSdk.Beta
                 var resultType = typeof(RawPropertyValue<>).MakeGenericType(arrayType);
                 var result = Activator.CreateInstance(resultType);
                 resultType.GetProperty("Value").SetValue(result, res);
-                return (IDMSFilterValue)result;
+                return (IDMSValue)result;
             }
             else if (reader.TokenType == JsonTokenType.StartObject)
             {
@@ -134,7 +134,7 @@ namespace CogniteSdk.Beta
         }
 
         /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, IDMSFilterValue value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, IDMSValue value, JsonSerializerOptions options)
         {
             if (value is IRawPropertyValue)
             {
@@ -156,14 +156,14 @@ namespace CogniteSdk.Beta
     }
 
     /// <summary>
-    /// Interface used for serializing the DMSFilterValue type.
+    /// Interface used for serializing the DMSValue types.
     /// </summary>
-    public interface IDMSFilterValue { }
+    public interface IDMSValue { }
 
     /// <summary>
     /// Non-generic base class of RawPropertyValue[T].
     /// </summary>
-    public interface IRawPropertyValue : IDMSFilterValue { }
+    public interface IRawPropertyValue : IDMSValue { }
 
     /// <summary>
     /// A value 
@@ -194,7 +194,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// A parametrized FDM filter value.
     /// </summary>
-    public class ParameterizedPropertyValue : IDMSFilterValue
+    public class ParameterizedPropertyValue : IDMSValue
     {
         /// <summary>
         /// Parameter
@@ -205,7 +205,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// A referenced FDM property value.
     /// </summary>
-    public class ReferencedPropertyValue : IDMSFilterValue
+    public class ReferencedPropertyValue : IDMSValue
     {
         /// <summary>
         /// The referenced property.
@@ -264,7 +264,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of required values.
         /// </summary>
-        public IEnumerable<IDMSFilterValue> Values { get; set; }
+        public IEnumerable<IDMSValue> Values { get; set; }
     }
 
     /// <summary>
@@ -279,7 +279,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of values.
         /// </summary>
-        public IEnumerable<IDMSFilterValue> Values { get; set; }
+        public IEnumerable<IDMSValue> Values { get; set; }
     }
 
     /// <summary>
@@ -294,7 +294,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Value of property.
         /// </summary>
-        public IDMSFilterValue Value { get; set; }
+        public IDMSValue Value { get; set; }
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of values.
         /// </summary>
-        public IEnumerable<IDMSFilterValue> Values { get; set; }
+        public IEnumerable<IDMSValue> Values { get; set; }
     }
 
     /// <summary>
@@ -353,7 +353,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Prefix
         /// </summary>
-        public IDMSFilterValue Value { get; set; }
+        public IDMSValue Value { get; set; }
     }
 
     /// <summary>
@@ -371,25 +371,25 @@ namespace CogniteSdk.Beta
         /// Value must be greater than this
         /// </summary>
         [JsonPropertyName("gt")]
-        public IDMSFilterValue GreaterThan { get; set; }
+        public IDMSValue GreaterThan { get; set; }
 
         /// <summary>
         /// Value must be greater than or equal to this
         /// </summary>
         [JsonPropertyName("gte")]
-        public IDMSFilterValue GreaterThanEqual { get; set; }
+        public IDMSValue GreaterThanEqual { get; set; }
 
         /// <summary>
         /// Value must be less than this
         /// </summary>
         [JsonPropertyName("lt")]
-        public IDMSFilterValue LessThan { get; set; }
+        public IDMSValue LessThan { get; set; }
 
         /// <summary>
         /// Value must be less than or equal to this
         /// </summary>
         [JsonPropertyName("lte")]
-        public IDMSFilterValue LessThanEqual { get; set; }
+        public IDMSValue LessThanEqual { get; set; }
     }
 
     /// <summary>
@@ -422,23 +422,23 @@ namespace CogniteSdk.Beta
         /// Value must be greater than this
         /// </summary>
         [JsonPropertyName("gt")]
-        public IDMSFilterValue GreaterThan { get; set; }
+        public IDMSValue GreaterThan { get; set; }
 
         /// <summary>
         /// Value must be greater than or equal to this
         /// </summary>
         [JsonPropertyName("gte")]
-        public IDMSFilterValue GreaterThanEqual { get; set; }
+        public IDMSValue GreaterThanEqual { get; set; }
         /// <summary>
         /// Value must be less than this
         /// </summary>
         [JsonPropertyName("lt")]
-        public IDMSFilterValue LessThan { get; set; }
+        public IDMSValue LessThan { get; set; }
 
         /// <summary>
         /// Value must be less than or equal to this
         /// </summary>
         [JsonPropertyName("lte")]
-        public IDMSFilterValue LessThanEqual { get; set; }
+        public IDMSValue LessThanEqual { get; set; }
     }
 }

@@ -20,7 +20,6 @@ namespace CogniteSdk.Beta
         /// Time when this space was created in CDF in milliseconds since Jan 1, 1970.
         /// </summary>
         public long CreatedTime { get; set; }
-
         /// <summary>
         /// The last time this space was updated in CDF, in milliseconds since Jan 1, 1970.
         /// </summary>

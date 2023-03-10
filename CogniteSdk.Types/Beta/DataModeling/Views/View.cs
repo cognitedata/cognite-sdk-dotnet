@@ -8,10 +8,10 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Enumeration of the possible uses for a flexible data models view.
+    /// Enumeration of the possible uses for a flexible data models type.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum ViewUse
+    public enum FdmUsedFor
     {
         /// <summary>
         /// View applies to nodes only
@@ -44,7 +44,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// A flexible data models view.
     /// </summary>
-    public class View
+    public class View : IViewDefinitionOrReference
     {
         /// <summary>
         /// External ID uniquely identifying this view.
@@ -101,7 +101,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Should this view apply to nodes, edges, or both.
         /// </summary>
-        public ViewUse UsedFor { get; set; }
+        public FdmUsedFor UsedFor { get; set; }
         /// <summary>
         /// List of properties and relations included in this view.
         /// </summary>
@@ -130,7 +130,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Optional default value for the property.
         /// </summary>
-        public IDMSFilterValue DefaultValue { get; set; }
+        public IDMSValue DefaultValue { get; set; }
         /// <summary>
         /// Description of the property.
         /// </summary>
@@ -156,7 +156,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Description of a view connection.
     /// </summary>
-    public class ConnectionDefinition : IViewProperty
+    public class ConnectionDefinition : IViewProperty, ICreateViewProperty
     {
         /// <summary>
         /// Description of the property.

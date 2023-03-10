@@ -39,7 +39,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Identifier for a flexible data models view.
     /// </summary>
-    public class ViewIdentifier : FDMIdentifier
+    public class ViewIdentifier : FDMIdentifier, IViewCreateOrReference, IViewDefinitionOrReference
     {
         /// <summary>
         /// Version of the view.
