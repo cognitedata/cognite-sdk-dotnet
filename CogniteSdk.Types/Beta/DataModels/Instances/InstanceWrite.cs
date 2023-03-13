@@ -126,4 +126,30 @@ namespace CogniteSdk.Beta.DataModels
             }
         }
     }
+
+    /// <summary>
+    /// Create a list of nodes or edges.
+    /// </summary>
+    public class InstanceWriteRequest : ItemsWithoutCursor<BaseInstanceWrite>
+    {
+        /// <summary>
+        /// Auto create missing start nodes for edges.
+        /// </summary>
+        public bool AutoCreateStartNodes { get; set; }
+        /// <summary>
+        /// Auto create missing end nodes for edges.
+        /// </summary>
+        public bool AutoCreateEndNodes { get; set; }
+        /// <summary>
+        /// If existingVersion is specified on any of the nodes/edges in the input, the default behavior is
+        /// that the entire ingestion fails. If skipOnVersionConflict is set to true, items with version conflicts
+        /// will be skipped instead.
+        /// </summary>
+        public bool SkipOnVersionConflict { get; set; }
+        /// <summary>
+        /// True to replace existing values on conflict, false to merge, only adding
+        /// properties that did not previously exist.
+        /// </summary>
+        public bool Replace { get; set; }
+    }
 }

@@ -25,6 +25,14 @@ namespace CogniteSdk.Beta.DataModels
     }
 
     /// <summary>
+    /// Result from a query operation.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class QueryResult<T> : ItemsWithoutCursor<Dictionary<string, BaseInstance<T>>>
+    {
+    }
+
+    /// <summary>
     /// Subscribe to changes for nodes and edges in a project, matching a supplied filter.
     /// </summary>
     public class SyncQuery : Query
@@ -39,7 +47,7 @@ namespace CogniteSdk.Beta.DataModels
     /// Result from a sync operation.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class SyncResult<T> : ItemsWithoutCursor<Dictionary<string, BaseInstance<T>>>
+    public class SyncResult<T> : QueryResult<T>
     {
         /// <summary>
         /// Returned cursors.

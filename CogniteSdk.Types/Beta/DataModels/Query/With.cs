@@ -130,7 +130,7 @@ namespace CogniteSdk.Beta.DataModels
         /// <summary>
         /// Constructor
         /// </summary>
-        protected QueryTableExpressionConverter() : base(new[]
+        public QueryTableExpressionConverter() : base(new[]
         {
             typeof(QueryNodeTableExpression), typeof(QueryEdgeTableExpression)
         })

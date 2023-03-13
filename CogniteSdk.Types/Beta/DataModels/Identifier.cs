@@ -106,4 +106,38 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         public string Space { get; set; }
     }
+
+    /// <summary>
+    /// General identifier for FDM resources.
+    /// </summary>
+    public class FDMExternalId
+    {
+        /// <summary>
+        /// Resource external ID
+        /// </summary>
+        public string ExternalId { get; set; }
+        /// <summary>
+        /// Resource space
+        /// </summary>
+        public string Space { get; set; }
+        /// <summary>
+        /// Resource version.
+        /// </summary>
+        public string Version { get; set; }
+    }
+
+    /// <summary>
+    /// Identifier for a container.
+    /// </summary>
+    public class ContainerId
+    {
+        /// <summary>
+        /// Resource external ID
+        /// </summary>
+        public string ExternalId { get; set; }
+        /// <summary>
+        /// Resource space
+        /// </summary>
+        public string Space { get; set; }
+    }
 }

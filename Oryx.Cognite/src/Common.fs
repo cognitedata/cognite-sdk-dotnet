@@ -8,6 +8,7 @@ open System.Text.Json
 
 open CogniteSdk
 open CogniteSdk.Beta
+open CogniteSdk.Beta.DataModels
 
 type ApiVersion =
     | V05
@@ -72,9 +73,21 @@ module Common =
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
         options.Converters.Add(FieldResolverConverter())
-        options.Converters.Add(ModelIdentifierConverter())
-        options.Converters.Add(PropertyIdentifierConverter())
-        options.Converters.Add(DirectRelationIdentifierConverter())
+        // DMS converters
+        options.Converters.Add(ViewDefinitionOrReferenceConverter())
+        options.Converters.Add(ViewCreateOrReferenceConverter())
         options.Converters.Add(DmsFilterConverter())
-        options.Converters.Add(DmsFilterValueConverter())
+        options.Converters.Add(AggregateConverter())
+        options.Converters.Add(QueryTableExpressionConverter())
+        options.Converters.Add(ViewPropertyConverter())
+        options.Converters.Add(ViewPropertyCreateConverter())
+        options.Converters.Add(ContainerConstraintConverter())
+        options.Converters.Add(ContainerIndexConverter())
+        options.Converters.Add(DmsValueConverter())
+        options.Converters.Add(SourceIdentifierConverter())
+        options.Converters.Add(InstanceConverterFactory())
+        options.Converters.Add(InstanceWriteConverter())
+        options.Converters.Add(AggregateResultTypeConverter())
+        options.Converters.Add(PropertyTypeConverter())
+        options.Converters.Add(QueryTableExpressionConverter())
         options

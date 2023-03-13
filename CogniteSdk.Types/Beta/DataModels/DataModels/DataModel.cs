@@ -35,7 +35,7 @@ namespace CogniteSdk.Beta.DataModels
         /// either flat view references, or full definitions if the
         /// InlineViews query parameter is set.
         /// </summary>
-        public IEnumerable<IViewCreateOrReference> Views { get; set; }
+        public IEnumerable<IViewDefinitionOrReference> Views { get; set; }
         /// <summary>
         /// Time when this data model was created in CDF in milliseconds since Jan 1, 1970.
         /// </summary>
