@@ -1,8 +1,6 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
-using System.ComponentModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -117,18 +115,14 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// JsonConverter for property type variants
     /// </summary>
-    public class PropertyTypeConverter : JsonConverter<BasePropertyType>
+    public class PropertyTypeConverter : IntTaggedUnionConverter<BasePropertyType, PropertyTypeVariant>
     {
         /// <inheritdoc />
-        public override BasePropertyType Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
+        protected override string TypePropertyName => "type";
 
-            var typeProp = document.RootElement.GetProperty("type").GetString();
-            if (!Enum.TryParse<PropertyTypeVariant>(typeProp, true, out var type))
-            {
-                return null;
-            }
+        /// <inheritdoc />
+        protected override BasePropertyType DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, PropertyTypeVariant type)
+        {
             switch (type)
             {
                 case PropertyTypeVariant.text:
@@ -138,12 +132,6 @@ namespace CogniteSdk.Beta
                 default:
                     return document.Deserialize<PrimitivePropertyType>(options);
             }
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, BasePropertyType value, JsonSerializerOptions options)
-        {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 }

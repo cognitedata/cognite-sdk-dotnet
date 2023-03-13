@@ -78,7 +78,14 @@ namespace CogniteSdk.Beta
         /// </summary>
         public bool NullsFirst { get; set; }
     }
-
+    /// <summary>
+    /// Type information
+    /// </summary>
+    public class TypeInformation : Dictionary<string, Dictionary<string, Dictionary<string, ContainerPropertyDefinition>>>
+    {
+        // We could maybe implement IDictionary<(string, string, string), ContainerPropertyDefinition>, or something here?
+        // This type is a bit clunky to work with.
+    }
     /// <summary>
     /// Response when filtering instances.
     /// </summary>
@@ -88,6 +95,6 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Optional type information.
         /// </summary>
-        public Dictionary<string, Dictionary<string, Dictionary<string, ContainerPropertyDefinition>>> Typing { get; set; }
+        public TypeInformation Typing { get; set; }
     }
 }

@@ -1,11 +1,10 @@
-﻿// Copyright 2022 Cognite AS
+﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Beta
@@ -20,25 +19,14 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Json converter for data model storage filters.
     /// </summary>
-    public class DmsFilterConverter : JsonConverter<IDMSFilter>
+    public class DmsFilterConverter : ExtTaggedUnionConverter<IDMSFilter>
     {
         /// <inheritdoc />
-        public override IDMSFilter Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        protected override string TypeSuffix => "Filter";
+
+        /// <inheritdoc />
+        protected override IDMSFilter DeserializeFromPropertyName(ref Utf8JsonReader reader, JsonSerializerOptions options, string propertyName)
         {
-            if (reader.TokenType != JsonTokenType.StartObject)
-            {
-                if (!reader.TrySkip()) throw new JsonException("Could not skip empty filter");
-                return null;
-            }
-            reader.Read();
-            if (reader.TokenType == JsonTokenType.EndObject) return null;
-            if (reader.TokenType != JsonTokenType.PropertyName)
-            {
-                if (!reader.TrySkip()) throw new JsonException("Could not skip empty filter");
-                return null;
-            }
-            var propertyName = reader.GetString();
-            reader.Read();
             IDMSFilter filter = null;
             switch (propertyName)
             {
@@ -56,13 +44,9 @@ namespace CogniteSdk.Beta
                 case "range": filter = JsonSerializer.Deserialize<RangeFilter>(ref reader, options); break;
                 case "nested": filter = JsonSerializer.Deserialize<NestedFilter>(ref reader, options); break;
             }
-            if (filter == null)
-            {
-                if (!reader.TrySkip()) throw new JsonException("Failed to skip unknown filter");
-            }
-            reader.Read();
             return filter;
         }
+
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, IDMSFilter value, JsonSerializerOptions options)
         {
@@ -72,15 +56,7 @@ namespace CogniteSdk.Beta
             }
             else
             {
-                writer.WriteStartObject();
-
-                var typeName = value.GetType().Name;
-                var propertyName = (char.ToLower(typeName[0]) + typeName.Substring(1)).Replace("Filter", "");
-                writer.WritePropertyName(propertyName);
-
-                JsonSerializer.Serialize(writer, value, value.GetType(), options);
-
-                writer.WriteEndObject();
+                base.Write(writer, value, options);
             }
         }
     }
@@ -331,7 +307,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// List of models.
         /// </summary>
-        public IEnumerable<FDMIdentifier> Models { get; set; }
+        public IEnumerable<SourceIdentifier> Models { get; set; }
     }
 
     /// <summary>
@@ -408,6 +384,9 @@ namespace CogniteSdk.Beta
         public IDMSFilter Filter { get; set; }
     }
 
+    /// <summary>
+    /// Filter on overlap between specified range and two properties.
+    /// </summary>
     public class OverlapsFilter : IDMSFilter
     {
         /// <summary>

@@ -92,7 +92,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Source of the instance.
         /// </summary>
-        public FDMIdentifier Source { get; set; }
+        public SourceIdentifier Source { get; set; }
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Base identifier for flexible data models types
     /// </summary>
-    public abstract class FDMIdentifier
+    public abstract class SourceIdentifier
     {
         /// <summary>
         /// Reference type
@@ -39,7 +39,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Identifier for a flexible data models view.
     /// </summary>
-    public class ViewIdentifier : FDMIdentifier, IViewCreateOrReference, IViewDefinitionOrReference
+    public class ViewIdentifier : SourceIdentifier, IViewCreateOrReference, IViewDefinitionOrReference
     {
         /// <summary>
         /// Version of the view.
@@ -50,15 +50,15 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Identifier for a container.
     /// </summary>
-    public class ContainerIdentifier : FDMIdentifier { }
+    public class ContainerIdentifier : SourceIdentifier { }
 
     /// <summary>
     /// JsonConverter for FDMIdentifier. Just deserializes as ViewIdentifier.
     /// </summary>
-    public class FDMIdentifierConverter : JsonConverter<FDMIdentifier>
+    public class SourceIdentifierConverter : JsonConverter<SourceIdentifier>
     {
         /// <inheritdoc />
-        public override FDMIdentifier Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override SourceIdentifier Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             using var document = JsonDocument.ParseValue(ref reader);
 
@@ -78,7 +78,7 @@ namespace CogniteSdk.Beta
         }
 
         /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, FDMIdentifier value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, SourceIdentifier value, JsonSerializerOptions options)
         {
             JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
@@ -87,7 +87,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Identifier for a direct relation
     /// </summary>
-    public abstract class DirectRelationIdentifier
+    public class DirectRelationIdentifier
     {
         /// <summary>
         /// Id of the space that the view or container belongs to
@@ -97,5 +97,24 @@ namespace CogniteSdk.Beta
         /// External ID of the view or container
         /// </summary>
         public string ExternalId { get; set; }
+    }
+
+    /// <summary>
+    /// Identifier for an instance, node or edge.
+    /// </summary>
+    public class InstanceIdentifier
+    {
+        /// <summary>
+        /// Type of instance
+        /// </summary>
+        public InstanceType InstanceType { get; set; }
+        /// <summary>
+        /// ExternalId of instance.
+        /// </summary>
+        public string ExternalId { get; set; }
+        /// <summary>
+        /// Space the instance belongs to.
+        /// </summary>
+        public string Space { get; set; }
     }
 }
