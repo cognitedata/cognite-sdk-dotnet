@@ -1,7 +1,6 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -11,7 +10,7 @@ namespace CogniteSdk.Beta
     /// Enumeration of the possible uses for a flexible data models type.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum FdmUsedFor
+    public enum UsedFor
     {
         /// <summary>
         /// View applies to nodes only
@@ -101,7 +100,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Should this view apply to nodes, edges, or both.
         /// </summary>
-        public FdmUsedFor UsedFor { get; set; }
+        public UsedFor UsedFor { get; set; }
         /// <summary>
         /// List of properties and relations included in this view.
         /// </summary>

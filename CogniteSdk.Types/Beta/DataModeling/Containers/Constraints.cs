@@ -1,7 +1,6 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Text.Json;
@@ -60,32 +59,21 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// JsonConverter for container constraint variants.
     /// </summary>
-    public class ContainerConstraintConverter : JsonConverter<BaseConstraint>
+    public class ContainerConstraintConverter : IntTaggedUnionConverter<BaseConstraint, ConstraintType>
     {
         /// <inheritdoc />
-        public override BaseConstraint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
+        protected override string TypePropertyName => "constraintType";
 
-            var typeProp = document.RootElement.GetProperty("type").GetString();
-            if (!Enum.TryParse<ConstraintType>(typeProp, true, out var type))
-            {
-                return null;
-            }
+        /// <inheritdoc />
+        protected override BaseConstraint DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, ConstraintType type)
+        {
             switch (type)
             {
                 case ConstraintType.uniqueness:
                     return document.Deserialize<UniquenessConstraint>(options);
-                case ConstraintType.requires:
+                default:
                     return document.Deserialize<RequiresConstraint>(options);
             }
-            return null;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, BaseConstraint value, JsonSerializerOptions options)
-        {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 }

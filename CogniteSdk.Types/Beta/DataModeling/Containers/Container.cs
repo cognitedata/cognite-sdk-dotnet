@@ -1,8 +1,7 @@
-﻿using System;
+﻿// Copyright 2023 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 
 namespace CogniteSdk.Beta
 {
@@ -30,7 +29,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Valid uses for the container.
         /// </summary>
-        public FdmUsedFor UsedFor { get; set; }
+        public UsedFor UsedFor { get; set; }
         /// <summary>
         /// Properties indexed by a local unique identifier.
         /// </summary>

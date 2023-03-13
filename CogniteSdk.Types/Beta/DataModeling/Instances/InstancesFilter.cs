@@ -1,9 +1,8 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Beta
 {
@@ -48,6 +47,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Direction to sort
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum SortDirection
     {
         /// <summary>
@@ -78,6 +78,7 @@ namespace CogniteSdk.Beta
         /// </summary>
         public bool NullsFirst { get; set; }
     }
+
     /// <summary>
     /// Type information
     /// </summary>
@@ -86,6 +87,7 @@ namespace CogniteSdk.Beta
         // We could maybe implement IDictionary<(string, string, string), ContainerPropertyDefinition>, or something here?
         // This type is a bit clunky to work with.
     }
+
     /// <summary>
     /// Response when filtering instances.
     /// </summary>

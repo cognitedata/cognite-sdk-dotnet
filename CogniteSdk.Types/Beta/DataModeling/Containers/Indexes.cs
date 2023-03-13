@@ -42,33 +42,21 @@ namespace CogniteSdk.Beta
         public IEnumerable<string> Properties { get; set; }
     }
 
+    // New index types are likely to be added. This maintains compatibility with added variants,
+    // just deserializing them to null.
+
     /// <summary>
     /// JsonConverter for container index variants
     /// </summary>
-    public class ContainerIndexConverter : JsonConverter<BaseIndex>
+    public class ContainerIndexConverter : IntTaggedUnionConverter<BaseIndex, IndexType>
     {
         /// <inheritdoc />
-        public override BaseIndex Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
-
-            var typeProp = document.RootElement.GetProperty("type").GetString();
-            if (!Enum.TryParse<IndexType>(typeProp, true, out var type))
-            {
-                return null;
-            }
-            switch (type)
-            {
-                case IndexType.btree:
-                    return document.Deserialize<BTreeIndex>(options);
-            }
-            return null;
-        }
+        protected override string TypePropertyName => "indexType";
 
         /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, BaseIndex value, JsonSerializerOptions options)
+        protected override BaseIndex DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, IndexType type)
         {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+            return document.Deserialize<BTreeIndex>(options);
         }
     }
 }

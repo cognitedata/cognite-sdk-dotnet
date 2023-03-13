@@ -29,7 +29,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Valid uses for the container.
         /// </summary>
-        public FdmUsedFor UsedFor { get; set; }
+        public UsedFor UsedFor { get; set; }
         /// <summary>
         /// Properties indexed by a local unique identifier.
         /// </summary>

@@ -1,7 +1,6 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -110,32 +109,21 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// JsonConverter for instance write variants
     /// </summary>
-    public class InstanceWriteConverter : JsonConverter<BaseInstanceWrite>
+    public class InstanceWriteConverter : IntTaggedUnionConverter<BaseInstanceWrite, InstanceType>
     {
         /// <inheritdoc />
-        public override BaseInstanceWrite Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
+        protected override string TypePropertyName => "instanceType";
 
-            var typeProp = document.RootElement.GetProperty("instanceType").GetString();
-            if (!Enum.TryParse<InstanceType>(typeProp, true, out var type))
-            {
-                return null;
-            }
+        /// <inheritdoc />
+        protected override BaseInstanceWrite DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, InstanceType type)
+        {
             switch (type)
             {
                 case InstanceType.node:
                     return document.Deserialize<NodeWrite>(options);
-                case InstanceType.edge:
+                default:
                     return document.Deserialize<EdgeWrite>(options);
             }
-            return null;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, BaseInstanceWrite value, JsonSerializerOptions options)
-        {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 }

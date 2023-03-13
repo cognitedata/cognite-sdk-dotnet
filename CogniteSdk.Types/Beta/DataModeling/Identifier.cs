@@ -55,32 +55,21 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// JsonConverter for FDMIdentifier. Just deserializes as ViewIdentifier.
     /// </summary>
-    public class SourceIdentifierConverter : JsonConverter<SourceIdentifier>
+    public class SourceIdentifierConverter : IntTaggedUnionConverter<SourceIdentifier, PropertySourceType>
     {
         /// <inheritdoc />
-        public override SourceIdentifier Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
+        protected override string TypePropertyName => "type";
 
-            var typeProp = document.RootElement.GetProperty("type").GetString();
-            if (!Enum.TryParse<PropertySourceType>(typeProp, true, out var type))
-            {
-                return null;
-            }
+        /// <inheritdoc />
+        protected override SourceIdentifier DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, PropertySourceType type)
+        {
             switch (type)
             {
                 case PropertySourceType.view:
                     return document.Deserialize<ViewIdentifier>(options);
-                case PropertySourceType.container:
+                default:
                     return document.Deserialize<ContainerIdentifier>(options);
             }
-            return null;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, SourceIdentifier value, JsonSerializerOptions options)
-        {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 

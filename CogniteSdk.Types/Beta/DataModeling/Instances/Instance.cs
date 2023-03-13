@@ -110,32 +110,21 @@ namespace CogniteSdk.Beta
     /// JsonConverter for instance read variants.
     /// </summary>
     /// <typeparam name="T">Inner type of properties</typeparam>
-    public class InstanceConverter<T> : JsonConverter<BaseInstance<T>> 
+    public class InstanceConverter<T> : IntTaggedUnionConverter<BaseInstance<T>, InstanceType> 
     {
         /// <inheritdoc />
-        public override BaseInstance<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            using var document = JsonDocument.ParseValue(ref reader);
+        protected override string TypePropertyName => "instanceType";
 
-            var typeProp = document.RootElement.GetProperty("instanceType").GetString();
-            if (!Enum.TryParse<InstanceType>(typeProp, true, out var type))
-            {
-                return null;
-            }
+        /// <inheritdoc />
+        protected override BaseInstance<T> DeserializeFromEnum(JsonDocument document, JsonSerializerOptions options, InstanceType type)
+        {
             switch (type)
             {
                 case InstanceType.node:
                     return document.Deserialize<Node<T>>(options);
-                case InstanceType.edge:
+                default:
                     return document.Deserialize<Edge<T>>(options);
             }
-            return null;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, BaseInstance<T> value, JsonSerializerOptions options)
-        {
-            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 }

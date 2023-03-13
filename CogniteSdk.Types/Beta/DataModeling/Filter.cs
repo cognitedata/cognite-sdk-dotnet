@@ -64,7 +64,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Converter for DMSFilterValue
     /// </summary>
-    public class DmsFilterValueConverter : JsonConverter<IDMSValue>
+    public class DmsValueConverter : JsonConverter<IDMSValue>
     {
         /// <inheritdoc />
         public override IDMSValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

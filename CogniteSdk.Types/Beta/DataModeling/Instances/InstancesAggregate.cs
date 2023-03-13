@@ -3,9 +3,13 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Beta
 {
+    /// <summary>
+    /// Query for aggregates across instance properties.
+    /// </summary>
     public class InstancesAggregate: CursorQueryBase
     {
         /// <summary>
@@ -115,6 +119,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Type of aggregate result
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum AggregateType
     {
         /// <summary>
