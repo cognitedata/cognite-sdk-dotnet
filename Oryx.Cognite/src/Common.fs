@@ -89,5 +89,4 @@ module Common =
         options.Converters.Add(InstanceWriteConverter())
         options.Converters.Add(AggregateResultTypeConverter())
         options.Converters.Add(PropertyTypeConverter())
-        options.Converters.Add(QueryTableExpressionConverter())
         options

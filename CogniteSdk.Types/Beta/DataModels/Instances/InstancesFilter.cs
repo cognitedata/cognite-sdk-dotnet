@@ -92,7 +92,7 @@ namespace CogniteSdk.Beta.DataModels
     /// Response when filtering instances.
     /// </summary>
     /// <typeparam name="T">Type of internal properties in retrieved instances</typeparam>
-    public class InstanceFilterResponse<T> : ItemsWithCursor<BaseInstance<T>>
+    public class InstancesFilterResponse<T> : ItemsWithCursor<BaseInstance<T>>
     {
         /// <summary>
         /// Optional type information.

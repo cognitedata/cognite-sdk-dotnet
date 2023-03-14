@@ -212,7 +212,7 @@ module DataModels =
         }
 
     /// Filter instances with pagination
-    let filterInstances<'T> (request: InstancesFilter) (source: HttpHandler<unit>) : HttpHandler<InstanceFilterResponse<'T>> =
+    let filterInstances<'T> (request: InstancesFilter) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
         source
         |> withLogMessage "models:instances:filter"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -226,7 +226,7 @@ module DataModels =
         |> postV10 request (instancesUrl +/ "byids")
 
     /// Search instances
-    let searchInstances<'T> (request: InstancesSearch) (source: HttpHandler<unit>) : HttpHandler<InstanceFilterResponse<'T>> =
+    let searchInstances<'T> (request: InstancesSearch) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
         source
         |> withLogMessage "models:instances:search"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead

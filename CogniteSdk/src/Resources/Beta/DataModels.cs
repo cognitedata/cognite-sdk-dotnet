@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-using CogniteSdk.Beta;
+using CogniteSdk.Beta.DataModels;
 
 using Oryx;
 using Oryx.Cognite.Beta;
@@ -29,36 +29,26 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Create a list of spaces
+        /// Update or insert a list of spaces
         /// </summary>
-        /// <param name="spaces">Spaces to create</param>
+        /// <param name="spaces">Spaces to create or update</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Created spaces</returns>
-        public async Task<IEnumerable<Space>> CreateSpaces(IEnumerable<Space> spaces, CancellationToken token = default)
+        /// <returns>Created/updated spaces</returns>
+        public async Task<IEnumerable<Space>> UpsertSpaces(IEnumerable<SpaceCreate> spaces, CancellationToken token = default)
         {
-            var req = DataModels.createSpaces(spaces, GetContext(token));
+            var req = DataModels.upsertSpaces(spaces, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Delete a list of spaces
+        /// List spaces with pagination
         /// </summary>
-        /// <param name="ids">ExternalIds of spaces to delete</param>
-        /// <param name="token">Optional cancellation token</param>
-        public async Task DeleteSpaces(IEnumerable<string> ids, CancellationToken token = default)
-        {
-            var req = DataModels.deleteSpaces(ids, GetContext(token));
-            await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// List all spaces
-        /// </summary>
+        /// <param name="query">Query parameters</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>All spaces in project</returns>
-        public async Task<IEnumerable<Space>> ListSpaces(CancellationToken token = default)
+        public async Task<ItemsWithCursor<Space>> ListSpaces(SpaceQuery query, CancellationToken token = default)
         {
-            var req = DataModels.listSpaces(GetContext(token));
+            var req = DataModels.listSpaces(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -75,194 +65,274 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Create a list of data models
+        /// Delete a list of spaces
         /// </summary>
-        /// <param name="models">Models to create</param>
-        /// <param name="space">Space to create models in</param>
+        /// <param name="ids">ExternalIds of spaces to delete</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Created models</returns>
-        public async Task<IEnumerable<Model>> ApplyModels(IEnumerable<ModelCreate> models, string space, CancellationToken token = default)
+        /// <returns>Deleted spaces</returns>
+        public async Task<IEnumerable<string>> DeleteSpaces(IEnumerable<string> ids, CancellationToken token = default)
         {
-            var req = DataModels.applyModels(models, space, GetContext(token));
+            var req = DataModels.deleteSpaces(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Delete a list of data models
+        /// Update or create a list of data models
         /// </summary>
-        /// <param name="ids">Models to delete</param>
-        /// <param name="space">Space to delete models in</param>
+        /// <param name="dataModels">Data models to create or update</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task DeleteModels(IEnumerable<string> ids, string space, CancellationToken token = default)
+        /// <returns>Created data models</returns>
+        public async Task<IEnumerable<DataModel>> UpsertDataModels(IEnumerable<DataModelCreate> dataModels, CancellationToken token = default)
         {
-            var req = DataModels.deleteModels(ids, space, GetContext(token));
-            await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// List all data models in a space
-        /// </summary>
-        /// <param name="space">Space to list models in</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <returns>All data models in space</returns>
-        public async Task<IEnumerable<Model>> ListModels(string space, CancellationToken token = default)
-        {
-            var req = DataModels.listModels(space, GetContext(token));
+            var req = DataModels.upsertDataModels(dataModels, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieve a list of data models from space
+        /// List data models with optional pagination.
         /// </summary>
-        /// <param name="ids">ExternalIds of spaces to retrieve</param>
-        /// <param name="space">Space to retrieve models from</param>
+        /// <param name="query">Data model query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Data models with cursor for pagination</returns>
+        public async Task<ItemsWithCursor<DataModel>> ListDataModels(DataModelQuery query, CancellationToken token = default)
+        {
+            var req = DataModels.listDataModels(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Filter data models with complex filters.
+        /// </summary>
+        /// <param name="filter">Data model filter</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Data models with cursor for pagination</returns>
+        public async Task<ItemsWithCursor<DataModel>> FilterDataModels(DataModelFilter filter, CancellationToken token = default)
+        {
+            var req = DataModels.filterDataModels(filter, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve data models by ids.
+        /// </summary>
+        /// <param name="ids">Data model ids to retrieve</param>
+        /// <param name="inlineViews">True to inline views in the retrieved data models</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Retrieved data models</returns>
-        public async Task<IEnumerable<Model>> RetrieveModels(IEnumerable<string> ids, string space, CancellationToken token = default)
+        public async Task<IEnumerable<DataModel>> RetrieveDataModels(IEnumerable<FDMExternalId> ids, bool inlineViews, CancellationToken token = default)
         {
-            var req = DataModels.retrieveModels(ids, space, GetContext(token));
+            var req = DataModels.retrieveDataModels(ids, inlineViews, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Ingest a list of nodes, this is an upsert.
+        /// Delete a list of data models.
         /// </summary>
-        /// <typeparam name="T">Type of node to ingest, must match model being ingested into</typeparam>
-        /// <param name="request">Nodes to ingest</param>
+        /// <param name="ids">Ids of data models to delete</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Created or updated nodes</returns>
-        public async Task<IEnumerable<T>> IngestNodes<T>(NodeIngestRequest<T> request, CancellationToken token = default) where T : BaseNode
+        /// <returns>Ids of deleted data models</returns>
+        public async Task<IEnumerable<FDMExternalId>> DeleteDataModels(IEnumerable<FDMExternalId> ids, CancellationToken token = default)
         {
-            var req = DataModels.ingestNodes(request, GetContext(token));
+            var req = DataModels.deleteDataModels(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Delete a list of nodes.
+        /// Create or update views
         /// </summary>
-        /// <param name="ids">Node externalIds to delete</param>
-        /// <param name="space">Space to delete nodes from</param>
+        /// <param name="views">Views to create or update</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task DeleteNodes(IEnumerable<string> ids, string space, CancellationToken token = default)
+        /// <returns>Created or updated views</returns>
+        public async Task<IEnumerable<View>> UpsertViews(IEnumerable<ViewCreate> views, CancellationToken token = default)
         {
-            var req = DataModels.deleteNodes(ids, space, GetContext(token));
-            await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// List nodes with given filter
-        /// </summary>
-        /// <typeparam name="T">Retrieved node type</typeparam>
-        /// <param name="query">Query describing what nodes to fetch, sort, etc.</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <returns>Retrieved nodes with cursor for pagination</returns>
-        public async Task<NodeListResponse<T>> FilterNodes<T>(NodeFilterQuery query, CancellationToken token = default) where T : BaseNode
-        {
-            var req = DataModels.filterNodes<T>(query, GetContext(token));
+            var req = DataModels.upsertViews(views, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Search nodes with given query
+        /// List views with pagination
         /// </summary>
-        /// <typeparam name="T">Retrieved node type</typeparam>
-        /// <param name="query">Search query</param>
+        /// <param name="query">View query</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Up to 1000 nodes</returns>
-        public async Task<NodeListResponse<T>> SearchNodes<T>(NodeSearchQuery query, CancellationToken token = default) where T : BaseNode
+        /// <returns>Views with cursor for pagination</returns>
+        public async Task<ItemsWithCursor<View>> ListViews(ViewQuery query, CancellationToken token = default)
         {
-            var req = DataModels.searchNodes<T>(query, GetContext(token));
+            var req = DataModels.listViews(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieve a list of nodes by externalId
+        /// Retrieve views by ids.
         /// </summary>
-        /// <typeparam name="T">Retrieved node type</typeparam>
-        /// <param name="query">Model identifier and list of node external ids</param>
+        /// <param name="ids">View ids to retrieve</param>
+        /// <param name="includeInheritedProperties">True to include properties from inherited views, default true.</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Retrieved list of nodes</returns>
-        public async Task<NodeListResponse<T>> RetrieveNodes<T>(RetrieveNodesRequest query, CancellationToken token = default) where T : BaseNode
+        /// <returns>Retrieved views</returns>
+        public async Task<IEnumerable<View>> RetrieveViews(IEnumerable<FDMExternalId> ids, bool includeInheritedProperties = true, CancellationToken token = default)
         {
-            var req = DataModels.retrieveNodes<T>(query, GetContext(token));
+            var req = DataModels.retrieveViews(ids, includeInheritedProperties, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Ingest a list of edges, this is an upsert.
+        /// Delete views by ids.
         /// </summary>
-        /// <typeparam name="T">Type of node to ingest, must match model being ingested into</typeparam>
-        /// <param name="request">Edges to ingest</param>
+        /// <param name="ids">Ids of views to delete</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Ingested edges</returns>
-        public async Task<IEnumerable<T>> IngestEdges<T>(EdgeIngestRequest<T> request, CancellationToken token = default) where T : BaseEdge
+        /// <returns>Ids of deleted views</returns>
+        public async Task<IEnumerable<FDMExternalId>> DeleteViews(IEnumerable<FDMExternalId> ids, CancellationToken token = default)
         {
-            var req = DataModels.ingestEdges<T>(request, GetContext(token));
+            var req = DataModels.deleteViews(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Delete a list of edges by edge externalId.
+        /// Create or update containers
         /// </summary>
-        /// <param name="ids">ExternalIds of edges to delete</param>
-        /// <param name="space">Space to delete edges in</param>
+        /// <param name="containers">Containers to create or update</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task DeleteEdges(IEnumerable<string> ids, string space, CancellationToken token = default)
+        /// <returns>Created or updated containers</returns>
+        public async Task<IEnumerable<Container>> UpsertContainers(IEnumerable<ContainerCreate> containers, CancellationToken token = default)
         {
-            var req = DataModels.deleteEdges(ids, space, GetContext(token));
-            await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// List edges with given filter
-        /// </summary>
-        /// <typeparam name="T">Retrieved edge type</typeparam>
-        /// <param name="query">Query describing what dges to fetch, sort, etc.</param>
-        /// <param name="token">Optional cancellation token</param>
-        /// <returns>Retrieved edges with cursor for pagination</returns>
-        public async Task<EdgeListResponse<T>> FilterEdges<T>(NodeFilterQuery query, CancellationToken token = default) where T : BaseEdge
-        {
-            var req = DataModels.filterEdges<T>(query, GetContext(token));
+            var req = DataModels.upsertContainers(containers, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Search edges with given query
+        /// List containers with pagination.
         /// </summary>
-        /// <typeparam name="T">Retrieved edge type</typeparam>
-        /// <param name="query">Search query</param>
+        /// <param name="query">Containers query</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Up to 1000 edges</returns>
-        public async Task<EdgeListResponse<T>> SearchEdges<T>(NodeSearchQuery query, CancellationToken token = default) where T : BaseEdge
+        /// <returns>Containers with cursor for pagination</returns>
+        public async Task<ItemsWithCursor<Container>> ListContainers(ContainersQuery query, CancellationToken token = default)
         {
-            var req = DataModels.searchEdges<T>(query, GetContext(token));
+            var req = DataModels.listContainers(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieve a list of edges by externalId
+        /// Retrieve containers by ids.
         /// </summary>
-        /// <typeparam name="T">Retrieved edge type</typeparam>
-        /// <param name="query">Model identifier and list of edge external ids</param>
+        /// <param name="ids">Container ids to retrieve</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Retrieved list of edges</returns>
-        public async Task<EdgeListResponse<T>> RetrieveEdges<T>(RetrieveNodesRequest query, CancellationToken token = default) where T : BaseEdge
+        /// <returns>Retrieved containers</returns>
+        public async Task<IEnumerable<Container>> RetrieveContainers(IEnumerable<ContainerId> ids, CancellationToken token = default)
         {
-            var req = DataModels.retrieveEdges<T>(query, GetContext(token));
+            var req = DataModels.retrieveContainers(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Perform a graph query. See API docs to create a suitable result type
-        /// for your query.
+        /// Delete containers by ids
         /// </summary>
-        /// <typeparam name="T">Result type</typeparam>
-        /// <param name="query">Query to execute</param>
+        /// <param name="ids">Ids of containers to delete</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>Graph query result</returns>
-        public async Task<T> GraphQuery<T>(GraphQuery query, CancellationToken token = default)
+        /// <returns>Ids of deleted containers</returns>
+        public async Task<IEnumerable<ContainerId>> DeleteContainers(IEnumerable<ContainerId> ids, CancellationToken token = default)
         {
-            var req = DataModels.graphQuery<T>(query, GetContext(token));
+            var req = DataModels.deleteContainers(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Create or update instances
+        /// </summary>
+        /// <param name="request">Instances to create or update</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Created or updated instances</returns>
+        public async Task<IEnumerable<SlimInstance>> UpsertInstances(InstanceWriteRequest request, CancellationToken token = default)
+        {
+            var req = DataModels.upsertInstances(request, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query instances with advanced filtering.
+        /// </summary>
+        /// <typeparam name="T">Type of instance data to retrieve</typeparam>
+        /// <param name="filter">Instances filter</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved instances</returns>
+        public async Task<InstancesFilterResponse<T>> FilterInstances<T>(InstancesFilter filter, CancellationToken token = default)
+        {
+            var req = DataModels.filterInstances<T>(filter, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve instances by ids
+        /// </summary>
+        /// <typeparam name="T">Type of instance data to retrieve</typeparam>
+        /// <param name="query">Instances query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved instances</returns>
+        public async Task<InstancesRetrieveResponse<T>> RetrieveInstances<T>(InstancesRetrieve query, CancellationToken token = default)
+        {
+            var req = DataModels.retrieveInstances<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Search instances with free text search.
+        /// </summary>
+        /// <typeparam name="T">Type of instance data to retrieve</typeparam>
+        /// <param name="query">Instances search query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved instances</returns>
+        public async Task<InstancesFilterResponse<T>> SearchInstances<T>(InstancesSearch query, CancellationToken token = default)
+        {
+            var req = DataModels.searchInstances<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Aggregate across instances.
+        /// </summary>
+        /// <param name="query">Instance aggregate query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Instance aggregates</returns>
+        public async Task<InstancesAggregateResponse> AggregateInstances(InstancesAggregate query, CancellationToken token = default)
+        {
+            var req = DataModels.aggregateInstances(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete instances by ids.
+        /// </summary>
+        /// <param name="ids">Instance ids to delete</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Ids of deleted instances</returns>
+        public async Task<IEnumerable<InstanceIdentifier>> DeleteInstances(IEnumerable<InstanceIdentifier> ids, CancellationToken token = default)
+        {
+            var req = DataModels.deleteInstances(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Query fields from instances
+        /// </summary>
+        /// <typeparam name="T">Type of result data</typeparam>
+        /// <param name="query">Instances query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Result of query</returns>
+        public async Task<QueryResult<T>> QueryInstances<T>(Query query, CancellationToken token = default)
+        {
+            var req = DataModels.queryInstances<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetch changes to query results. This will always return a set of cursors which can be used to
+        /// obtain the next set of changes.
+        /// </summary>
+        /// <typeparam name="T">Type of result data</typeparam>
+        /// <param name="query">Sync query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Result of query</returns>
+        public async Task<SyncResult<T>> SyncInstances<T>(SyncQuery query, CancellationToken token = default)
+        {
+            var req = DataModels.syncInstances<T>(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }
