@@ -17,7 +17,7 @@ namespace CogniteSdk.Beta.DataModels
         /// <summary>
         /// Maximum number of results to return.
         /// </summary>
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
         /// <summary>
         /// Sources to select from.
         /// </summary>

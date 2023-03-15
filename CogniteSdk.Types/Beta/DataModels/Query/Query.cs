@@ -28,8 +28,12 @@ namespace CogniteSdk.Beta.DataModels
     /// Result from a query operation.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class QueryResult<T> : ItemsWithoutCursor<Dictionary<string, BaseInstance<T>>>
+    public class QueryResult<T>
     {
+        /// <summary>
+        /// Returned items
+        /// </summary>
+        public Dictionary<string, IEnumerable<BaseInstance<T>>> Items { get; set; }
     }
 
     /// <summary>

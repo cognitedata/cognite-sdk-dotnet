@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -78,6 +79,14 @@ namespace CogniteSdk.Beta.DataModels
     }
 
     /// <summary>
+    /// Non-generic instance data.
+    /// This is a map from space, view/container id, and property to value.
+    /// </summary>
+    public class StandardInstanceData : Dictionary<string, Dictionary<string, Dictionary<string, IDMSValue>>>
+    {
+    }
+
+    /// <summary>
     /// JsonConverterFactory for instance read variants.
     /// </summary>
     public class InstanceConverterFactory : JsonConverterFactory
@@ -86,14 +95,7 @@ namespace CogniteSdk.Beta.DataModels
         public override bool CanConvert(Type typeToConvert)
         {
             if (!typeToConvert.IsGenericType) return false;
-            if (typeToConvert.GetGenericTypeDefinition() != typeof(Edge<>)
-                && typeToConvert.GetGenericTypeDefinition() != typeof(Node<>)
-                && typeToConvert.GetGenericTypeDefinition() != typeof(BaseInstance<>))
-            {
-                return false;
-            }
-
-            return true;
+            return typeToConvert.GetGenericTypeDefinition() == typeof(BaseInstance<>);
         }
 
         /// <inheritdoc />
@@ -101,8 +103,7 @@ namespace CogniteSdk.Beta.DataModels
         {
             var innerType = typeToConvert.GetGenericArguments()[0];
             return (JsonConverter)Activator.CreateInstance(
-                typeof(InstanceConverter<>).MakeGenericType(innerType),
-                BindingFlags.Instance | BindingFlags.Public);
+                typeof(InstanceConverter<>).MakeGenericType(innerType));
         }
     }
 

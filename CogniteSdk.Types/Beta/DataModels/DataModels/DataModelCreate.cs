@@ -34,6 +34,8 @@ namespace CogniteSdk.Beta.DataModels
         /// List of views included in this data model,
         /// you can use a reference to an existing view, specify a new view,
         /// or update an existing view.
+        /// Use <see cref="ViewIdentifier"/> for existing views, or
+        /// <see cref="ViewCreate"/> for creating a new view.
         /// </summary>
         public IEnumerable<IViewCreateOrReference> Views { get; set; }
     }
@@ -53,7 +55,7 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         public ViewCreateOrReferenceConverter() : base(new[]
         {
-            typeof(ViewIdentifier), typeof(ViewCreate)
+            typeof(ViewCreate), typeof(ViewIdentifier)
         })
         {
         }

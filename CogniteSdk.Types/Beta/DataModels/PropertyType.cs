@@ -62,7 +62,63 @@ namespace CogniteSdk.Beta.DataModels
         /// <summary>
         /// Property type
         /// </summary>
-        public PropertySourceType Type { get; set; }
+        public PropertyTypeVariant Type { get; set; }
+
+        /// <summary>
+        /// Get a text property type
+        /// </summary>
+        /// <param name="list">True if this is a text[]</param>
+        /// <param name="collation">Optional text collation</param>
+        /// <returns></returns>
+        public static TextPropertyType Text(bool list = false, string collation = null)
+        {
+            return new TextPropertyType
+            {
+                Type = PropertyTypeVariant.text,
+                List = list,
+                Collation = collation
+            };
+        }
+
+        /// <summary>
+        /// Get a primitive property type
+        /// </summary>
+        /// <param name="type">Property type</param>
+        /// <param name="list">True if this is an array, not valid for direct relations</param>
+        /// <returns></returns>
+        public static BasePropertyType Create(PropertyTypeVariant type, bool list = false)
+        {
+            if (type == PropertyTypeVariant.text)
+            {
+                return Text(list);
+            }
+            else if (type == PropertyTypeVariant.direct)
+            {
+                return Direct();
+            }
+            else
+            {
+                return new PrimitivePropertyType
+                {
+                    Type = type,
+                    List = list,
+                };
+            }
+        }
+
+        /// <summary>
+        /// Get a direct relation property type
+        /// </summary>
+        /// <param name="container">Optional required type for the node this direct relation points to.</param>
+        /// <returns></returns>
+        public static DirectRelationPropertyType Direct(ContainerIdentifier container = null)
+        {
+            return new DirectRelationPropertyType
+            {
+                Container = container,
+                Type = PropertyTypeVariant.direct
+            };
+        }
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -53,7 +54,7 @@ namespace CogniteSdk.Beta.DataModels
         /// List of source properties to write. The properties are from the
         /// views/containers that make up this instance.
         /// </summary>
-        public IEnumerable<InstanceData> Sources { get; }
+        public IEnumerable<InstanceData> Sources { get; set; }
     }
 
     /// <summary>
@@ -61,6 +62,13 @@ namespace CogniteSdk.Beta.DataModels
     /// </summary>
     public class NodeWrite : BaseInstanceWrite
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public NodeWrite()
+        {
+            InstanceType = InstanceType.node;
+        }
     }
 
     /// <summary>
@@ -68,6 +76,13 @@ namespace CogniteSdk.Beta.DataModels
     /// </summary>
     public class EdgeWrite : BaseInstanceWrite
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public EdgeWrite()
+        {
+            InstanceType = InstanceType.edge;
+        }
         /// <summary>
         /// Edge type as direct relation to another node.
         /// </summary>
@@ -85,6 +100,9 @@ namespace CogniteSdk.Beta.DataModels
 
     /// <summary>
     /// Base class for user-defined property value groups.
+    /// Use <see cref="InstanceData{T}"/> to set values, you can use
+    /// your own DTOs, dynamic, or <see cref="StandardInstanceWriteData"/> as contents,
+    /// for example.
     /// </summary>
     public abstract class InstanceData
     {
@@ -107,6 +125,11 @@ namespace CogniteSdk.Beta.DataModels
     }
 
     /// <summary>
+    /// Simple payload for an instance.
+    /// </summary>
+    public class StandardInstanceWriteData : Dictionary<string, IDMSValue> { }
+
+    /// <summary>
     /// JsonConverter for instance write variants
     /// </summary>
     public class InstanceWriteConverter : IntTaggedUnionConverter<BaseInstanceWrite, InstanceType>
@@ -124,6 +147,24 @@ namespace CogniteSdk.Beta.DataModels
                 default:
                     return document.Deserialize<EdgeWrite>(options);
             }
+        }
+    }
+
+    /// <summary>
+    /// JsonConverter for instance data.
+    /// </summary>
+    public class InstanceDataConverter : JsonConverter<InstanceData>
+    {
+        /// <inheritdoc />
+        public override InstanceData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return JsonSerializer.Deserialize<InstanceData<StandardInstanceWriteData>>(ref reader, options);
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, InstanceData value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
         }
     }
 

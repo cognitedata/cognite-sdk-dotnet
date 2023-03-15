@@ -34,6 +34,8 @@ namespace CogniteSdk.Beta.DataModels
         /// List of views included in this data model,
         /// either flat view references, or full definitions if the
         /// InlineViews query parameter is set.
+        /// Use <see cref="View"/> for full, and <see cref="ViewIdentifier"/>
+        /// for references.
         /// </summary>
         public IEnumerable<IViewDefinitionOrReference> Views { get; set; }
         /// <summary>
@@ -62,7 +64,7 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         public ViewDefinitionOrReferenceConverter() : base(new[]
         {
-            typeof(ViewIdentifier), typeof(View)
+            typeof(View), typeof(ViewIdentifier)
         })
         {
         }
