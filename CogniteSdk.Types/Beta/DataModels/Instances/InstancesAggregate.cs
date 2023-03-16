@@ -10,7 +10,7 @@ namespace CogniteSdk.Beta.DataModels
     /// <summary>
     /// Query for aggregates across instance properties.
     /// </summary>
-    public class InstancesAggregate: CursorQueryBase
+    public class InstancesAggregate : CursorQueryBase
     {
         /// <summary>
         /// Optional query string.

@@ -187,7 +187,7 @@ namespace Test.CSharp.Integration
                 Assert.Single(retrieved);
                 var retModel = retrieved.First();
                 Assert.Equal(2, retModel.Views.Count());
-                Assert.True(retModel.Views.Any(view => (view as View).ExternalId == "TestView"));
+                Assert.Contains(retModel.Views, view => (view as View).ExternalId == "TestView");
 
                 // Update a data model
                 model.Description = "Test description";
@@ -605,7 +605,6 @@ namespace Test.CSharp.Integration
             {
                 var queryResult = await tester.Write.Beta.DataModels.QueryInstances<StandardInstanceData>(q);
 
-                Assert.True(queryResult.Items.Any(), JsonSerializer.Serialize(q, Oryx.Cognite.Common.jsonOptions));
                 Assert.Equal("res1", queryResult.Items.First().Key);
                 Assert.Single(queryResult.Items["res1"]);
                 var node = queryResult.Items["res1"].First();
@@ -616,7 +615,7 @@ namespace Test.CSharp.Integration
             {
                 await tester.Write.Beta.DataModels.DeleteInstances(ids);
             }
-            
+
         }
     }
 }

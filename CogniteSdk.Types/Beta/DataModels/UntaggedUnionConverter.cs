@@ -37,7 +37,7 @@ namespace CogniteSdk.Beta.DataModels
                 {
                     return (T)document.Deserialize(type, options);
                 }
-                catch {}
+                catch { }
             }
             return null;
         }

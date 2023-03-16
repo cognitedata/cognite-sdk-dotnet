@@ -111,7 +111,7 @@ namespace CogniteSdk.Beta.DataModels
     /// JsonConverter for instance read variants.
     /// </summary>
     /// <typeparam name="T">Inner type of properties</typeparam>
-    public class InstanceConverter<T> : IntTaggedUnionConverter<BaseInstance<T>, InstanceType> 
+    public class InstanceConverter<T> : IntTaggedUnionConverter<BaseInstance<T>, InstanceType>
     {
         /// <inheritdoc />
         protected override string TypePropertyName => "instanceType";

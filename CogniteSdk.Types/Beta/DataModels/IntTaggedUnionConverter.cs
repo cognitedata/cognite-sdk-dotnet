@@ -25,8 +25,8 @@ namespace CogniteSdk.Beta.DataModels
     /// <typeparam name="TResult">Base class for converted types</typeparam>
     /// <typeparam name="TEnum">Discriminator enum type</typeparam>
     public abstract class IntTaggedUnionConverter<TResult, TEnum> : JsonConverter<TResult>
-        where TResult: class
-        where TEnum: struct, Enum
+        where TResult : class
+        where TEnum : struct, Enum
     {
         /// <summary>
         /// Internal type property name.
