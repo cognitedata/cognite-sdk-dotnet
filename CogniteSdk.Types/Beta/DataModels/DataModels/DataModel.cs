@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Beta.DataModels
 {
     /// <summary>
-    /// Definition of a data model.
+    /// Base properties of data model shared between create and retrieve types
     /// </summary>
-    public class DataModel
+    public class BaseDataModel
     {
         /// <summary>
         /// Id of the space that the data model belongs to.
@@ -30,14 +30,13 @@ namespace CogniteSdk.Beta.DataModels
         /// Data model version.
         /// </summary>
         public string Version { get; set; }
-        /// <summary>
-        /// List of views included in this data model,
-        /// either flat view references, or full definitions if the
-        /// InlineViews query parameter is set.
-        /// Use <see cref="View"/> for full, and <see cref="ViewIdentifier"/>
-        /// for references.
-        /// </summary>
-        public IEnumerable<IViewDefinitionOrReference> Views { get; set; }
+    }
+
+    /// <summary>
+    /// Definition of a data model.
+    /// </summary>
+    public class DataModel : BaseDataModel
+    {
         /// <summary>
         /// Time when this data model was created in CDF in milliseconds since Jan 1, 1970.
         /// </summary>
@@ -47,6 +46,14 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         /// <value></value>
         public long LastUpdatedTime { get; set; }
+        /// <summary>
+        /// List of views included in this data model,
+        /// either flat view references, or full definitions if the
+        /// InlineViews query parameter is set.
+        /// Use <see cref="View"/> for full, and <see cref="ViewIdentifier"/>
+        /// for references.
+        /// </summary>
+        public IEnumerable<IViewDefinitionOrReference> Views { get; set; }
     }
 
     /// <summary>

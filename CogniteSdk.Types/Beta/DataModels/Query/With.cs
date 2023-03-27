@@ -83,6 +83,10 @@ namespace CogniteSdk.Beta.DataModels
         /// Maximum number of edges to return.
         /// </summary>
         public int? Limit { get; set; }
+        /// <summary>
+        /// Required query.
+        /// </summary>
+        public QueryEdges Edges { get; set; }
     }
 
     /// <summary>

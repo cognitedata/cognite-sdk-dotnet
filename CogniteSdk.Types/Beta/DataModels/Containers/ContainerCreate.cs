@@ -34,5 +34,13 @@ namespace CogniteSdk.Beta.DataModels
         /// Properties indexed by a local unique identifier.
         /// </summary>
         public Dictionary<string, ContainerPropertyDefinition> Properties { get; set; }
+        /// <summary>
+        /// Set of indexes to apply to the container.
+        /// </summary>
+        public Dictionary<string, BaseIndex> Indexes { get; set; }
+        /// <summary>
+        /// Set of constraints to apply to the container.
+        /// </summary>
+        public Dictionary<string, BaseConstraint> Constraints { get; set; }
     }
 }

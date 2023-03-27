@@ -18,6 +18,10 @@ namespace CogniteSdk.Beta.DataModels
         /// Include properties inherited from views this view implements. Default is true.
         /// </summary>
         public bool IncludeInheritedProperties { get; set; } = true;
+        /// <summary>
+        /// If all versions of the view should be returned. Defaults to false which retruns the latest version.
+        /// </summary>
+        public bool AllVersions { get; set; }
 
         /// <inheritdoc />
         public override List<(string, string)> ToQueryParams()
@@ -30,6 +34,10 @@ namespace CogniteSdk.Beta.DataModels
             if (!IncludeInheritedProperties)
             {
                 q.Add(("includeInheritedProperties", "false"));
+            }
+            if (AllVersions)
+            {
+                q.Add(("allVersions", "true"));
             }
 
             return q;

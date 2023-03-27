@@ -30,7 +30,7 @@ namespace CogniteSdk.Beta.DataModels
             {
                 var res = JsonSerializer.Deserialize<IEnumerable<IDMSValue>>(ref reader, options);
                 var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct().ToList();
-                if (types.Count() > 1) throw new JsonException("Contents of DMSFilterValue as array must all be same type");
+                if (types.Count() > 1) throw new JsonException("Contents of DMS Value as array must all be same type");
                 var type = types.First();
 
                 var arrayType = type.MakeArrayType();
