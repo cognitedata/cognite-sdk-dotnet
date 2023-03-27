@@ -3,213 +3,266 @@
 
 namespace Oryx.Cognite.Beta
 
+open System.Net.Http
+
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Beta
 
 open CogniteSdk
-open CogniteSdk.Beta
+open CogniteSdk.Beta.DataModels
 
 [<RequireQualifiedAccess>]
 module DataModels =
     [<Literal>]
-    let Url = "/datamodelstorage"
+    let Url = "/models"
 
     let spacesUrl = Url +/ "spaces"
-    let modelsUrl = Url +/ "models"
-    let nodesUrl = Url +/ "nodes"
-    let edgesUrl = Url +/ "edges"
+    let modelsUrl = Url +/ "datamodels"
+    let viewsUrl = Url +/ "views"
+    let containersUrl = Url +/ "containers"
+    let instancesUrl = Url +/ "instances"
 
     /// Create a list of spaces
-    let createSpaces (items: Space seq) (source: HttpHandler<unit>) : HttpHandler<Space seq> =
+    let upsertSpaces (items: SpaceCreate seq) (source: HttpHandler<unit>) : HttpHandler<Space seq> =
         source
-        |> withLogMessage "dms:spaces:create"
-        |> withAlphaHeader
+        |> withLogMessage "models:spaces:create"
         |> HttpHandler.create items spacesUrl
 
-    /// Delete a list of spaces
-    let deleteSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let query =
-            ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> CogniteExternalId(id))))
-
+    /// List spaces with pagination
+    let listSpaces (query: SpaceQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<Space>> =
         source
-        |> withLogMessage "dms:spaces:delete"
-        |> withAlphaHeader
-        |> HttpHandler.delete query spacesUrl
+        |> withLogMessage "models:spaces:list"
+        |> HttpHandler.getWithQuery query spacesUrl
 
-    /// List all spaces
-    let listSpaces (source: HttpHandler<unit>) : HttpHandler<Space seq> =
-        let query = EmptyResponse()
-
-        source
-        |> withLogMessage "dms:spaces:list"
-        |> withAlphaHeader
-        |> HttpHandler.list query spacesUrl
-
-    /// Retrieve spaces with given ids
+    /// Retrieve spaces by id
     let retrieveSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<Space seq> =
-        source
-        |> withLogMessage "dms:spaces:retrieve"
-        |> withAlphaHeader
-        |> HttpHandler.retrieve (items |> Seq.map (fun id -> Identity.Create(id))) spacesUrl
-
-    /// Apply a list of data models in the given space
-    let applyModels (items: ModelCreate seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
-        let request =
-            ItemsWithSpaceExternalId<ModelCreate>(Items = items, SpaceExternalId = space)
-
         http {
-            let! res =
-                source
-                |> withLogMessage "dms:models:apply"
-                |> withAlphaHeader
-                |> postV10<ItemsWithSpaceExternalId<ModelCreate>, ItemsWithoutCursor<Model>> request modelsUrl
+            let url = spacesUrl +/ "byids"
+            let request = ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
 
-            return res.Items
+            let! ret =
+                source
+                |> withLogMessage "models:spaces:retrieve"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
         }
 
-    /// Delete a list of data models in the given space
-    let deleteModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let query =
-            ItemsWithSpaceExternalId(
-                Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
-                SpaceExternalId = space
-            )
-
-        source
-        |> withLogMessage "dms:models:delete"
-        |> withAlphaHeader
-        |> HttpHandler.delete query modelsUrl
-
-    /// List all models in the given space
-    let listModels (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
-        let request = ListModelsQuery(SpaceExternalId = space)
-
+    /// Delete a list of spaces
+    let deleteSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<string seq> =
         http {
-            let! res =
-                source
-                |> withLogMessage "dms:models:list"
-                |> withAlphaHeader
-                |> HttpHandler.list<ListModelsQuery, ItemsWithoutCursor<Model>> request modelsUrl
+            let url = spacesUrl +/ "delete"
+            let request = ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
 
-            return res.Items
+            let! ret =
+                source
+                |> withLogMessage "models:spaces:delete"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<SpaceId>> request url
+            return ret.Items |> Seq.map (fun id -> id.Space)
         }
 
-    /// Retrieve models by externalId in the given space
-    let retrieveModels (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<Model seq> =
-        let query =
-            ItemsWithSpaceExternalId(
-                Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
-                SpaceExternalId = space
-            )
+    /// Create or update data models
+    let upsertDataModels (items: DataModelCreate seq) (source: HttpHandler<unit>) : HttpHandler<DataModel seq> =
+        source
+        |> withLogMessage "models:datamodels:create"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.create items modelsUrl
 
+    /// List data models
+    let listDataModels (query: DataModelQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<DataModel>> =
+        source
+        |> withLogMessage "models:datamodels:list"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.getWithQuery query modelsUrl
+
+    /// Filter data models
+    let filterDataModels (filter: DataModelFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<DataModel>> =
+        source
+        |> withLogMessage "models:datamodels:filter"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 filter (modelsUrl +/ "list")
+
+    /// Retrieve data models by id
+    let retrieveDataModels (items: FDMExternalId seq) (inlineViews: bool) (source: HttpHandler<unit>) : HttpHandler<DataModel seq> =
         http {
-            let! res =
-                source
-                |> withLogMessage "dms:models:retrieve"
-                |> withAlphaHeader
-                |> postV10<ItemsWithSpaceExternalId<CogniteExternalId>, ItemsWithoutCursor<Model>>
-                    query
-                    (modelsUrl +/ "byids")
+            let url = modelsUrl +/ "byids"
+            let query = DataModelInlineViewsQuery(InlineViews = inlineViews)
+            let request = ItemsWithoutCursor(Items = items)
 
-            return res.Items
+            let! ret =
+                source
+                |> withLogMessage "models:datamodels:retrieve"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> withQuery (query.ToQueryParams())
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
         }
 
-    /// Ingest a list of nodes
-    let ingestNodes (request: NodeIngestRequest<'T>) (source: HttpHandler<unit>) : HttpHandler<'T seq> =
+    /// Delete data models by id
+    let deleteDataModels (items: FDMExternalId seq) (source: HttpHandler<unit>) : HttpHandler<FDMExternalId seq> =
         http {
-            let! res =
-                source
-                |> withLogMessage "dms:nodes:create"
-                |> withAlphaHeader
-                |> postV10<NodeIngestRequest<'T>, ItemsWithoutCursor<'T>> request nodesUrl
+            let url = modelsUrl +/ "delete"
+            let request = ItemsWithoutCursor(Items = items)
 
-            return res.Items
+            let! ret =
+                source
+                |> withLogMessage "models:datamodels:delete"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
         }
 
-    /// Delete a list of nodes
-    let deleteNodes (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let query =
-            ItemsWithSpaceExternalId(
-                Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
-                SpaceExternalId = space
-            )
-
+    /// Upsert a list of views
+    let upsertViews (items: ViewCreate seq) (source: HttpHandler<unit>) : HttpHandler<View seq> =
         source
-        |> withLogMessage "dms:nodes:delete"
-        |> withAlphaHeader
-        |> HttpHandler.delete query nodesUrl
+        |> withLogMessage "models:views:create"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.create items viewsUrl
 
-    /// List nodes with a filter
-    let filterNodes (query: NodeFilterQuery) (source: HttpHandler<unit>) : HttpHandler<NodeListResponse<'T>> =
+    /// List views with pagination
+    let listViews (query: ViewQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<View>> =
         source
-        |> withLogMessage "dms:nodes:list"
-        |> withAlphaHeader
-        |> HttpHandler.list query nodesUrl
+        |> withLogMessage "models:views:list"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.getWithQuery query viewsUrl
 
-    /// Search nodes, retrieves up to 1000
-    let searchNodes (query: NodeSearchQuery) (source: HttpHandler<unit>) : HttpHandler<NodeListResponse<'T>> =
-        source
-        |> withLogMessage "dms:nodes:search"
-        |> withAlphaHeader
-        |> postV10 query (nodesUrl +/ "search")
-
-    /// Retrieve nodes by externalId
-    let retrieveNodes (query: RetrieveNodesRequest) (source: HttpHandler<unit>) : HttpHandler<NodeListResponse<'T>> =
-        source
-        |> withLogMessage "dms:nodes:retrieve"
-        |> withAlphaHeader
-        |> postV10 query (nodesUrl +/ "byids")
-
-    /// Ingest a list of edges
-    let ingestEdges (request: EdgeIngestRequest<'T>) (source: HttpHandler<unit>) : HttpHandler<'T seq> =
+    /// Retrieve views by id
+    let retrieveViews (items: FDMExternalId seq) (includeInheritedProperties: bool) (source: HttpHandler<unit>) : HttpHandler<View seq> =
         http {
-            let! res =
-                source
-                |> withLogMessage "dms:edges:create"
-                |> withAlphaHeader
-                |> postV10<EdgeIngestRequest<'T>, ItemsWithoutCursor<'T>> request edgesUrl
+            let url = viewsUrl +/ "byids"
+            let query = ViewIncludePropertiesQuery(IncludeInheritedProperties = includeInheritedProperties)
+            let request = ItemsWithoutCursor(Items = items)
 
-            return res.Items
+            let! ret =
+                source
+                |> withLogMessage "models:views:retrieve"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> withQuery (query.ToQueryParams())
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
         }
 
-    /// Delete a list of edges
-    let deleteEdges (items: string seq) (space: string) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let query =
-            ItemsWithSpaceExternalId(
-                Items = (items |> Seq.map (fun id -> CogniteExternalId(id))),
-                SpaceExternalId = space
-            )
+    /// Delete views by id
+    let deleteViews (items: FDMExternalId seq) (source: HttpHandler<unit>) : HttpHandler<FDMExternalId seq> =
+        http {
+            let url = viewsUrl +/ "delete"
+            let request = ItemsWithoutCursor(Items = items)
 
-        source
-        |> withLogMessage "dms:edges:delete"
-        |> withAlphaHeader
-        |> HttpHandler.delete query edgesUrl
+            let! ret =
+                source
+                |> withLogMessage "models:views:delete"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
+        }
 
-    /// List edges with a filter
-    let filterEdges (query: NodeFilterQuery) (source: HttpHandler<unit>) : HttpHandler<EdgeListResponse<'T>> =
+    /// Create or update containers
+    let upsertContainers (items: ContainerCreate seq) (source: HttpHandler<unit>) : HttpHandler<Container seq> =
         source
-        |> withLogMessage "dms:edges:list"
-        |> withAlphaHeader
-        |> HttpHandler.list query edgesUrl
+        |> withLogMessage "models:containers:create"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.create items containersUrl
 
-    /// Search edges, retrieves up to 1000
-    let searchEdges (query: NodeSearchQuery) (source: HttpHandler<unit>) : HttpHandler<EdgeListResponse<'T>> =
+    /// List containers with pagination
+    let listContainers (query: ContainersQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<Container>> =
         source
-        |> withLogMessage "dms:edges:search"
-        |> withAlphaHeader
-        |> postV10 query (edgesUrl +/ "search")
+        |> withLogMessage "models:containers:list"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> HttpHandler.getWithQuery query containersUrl
 
-    /// Retrieve edges by externalId
-    let retrieveEdges (query: RetrieveNodesRequest) (source: HttpHandler<unit>) : HttpHandler<EdgeListResponse<'T>> =
-        source
-        |> withLogMessage "dms:edges:retrieve"
-        |> withAlphaHeader
-        |> postV10 query (edgesUrl +/ "byids")
+    /// Retrieve containers by id
+    let retrieveContainers (items: ContainerId seq) (source: HttpHandler<unit>) : HttpHandler<Container seq> =
+        http {
+            let url = containersUrl +/ "byids"
+            let request = ItemsWithoutCursor(Items = items)
 
-    /// Execute a graph query.
-    let graphQuery (query: GraphQuery) (source: HttpHandler<unit>) : HttpHandler<'T> =
+            let! ret =
+                source
+                |> withLogMessage "models:containers:retrieve"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
+        }
+
+    /// Delete containers by id
+    let deleteContainers (items: ContainerId seq) (source: HttpHandler<unit>) : HttpHandler<ContainerId seq> =
+        http {
+            let url = containersUrl +/ "delete"
+            let request = ItemsWithoutCursor(Items = items)
+
+            let! ret =
+                source
+                |> withLogMessage "models:containers:delete"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
+        }
+
+    /// Create or update a list of instances
+    let upsertInstances (request: InstanceWriteRequest) (source: HttpHandler<unit>) : HttpHandler<SlimInstance seq> =
+        http {
+            let! ret =
+                source
+                |> withLogMessage "models:instances:create"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request instancesUrl
+            return ret.Items
+        }
+
+    /// Filter instances with pagination
+    let filterInstances<'T> (request: InstancesFilter) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
         source
-        |> withLogMessage "dms:query"
-        |> withAlphaHeader
-        |> postV10 query (Url +/ "graphquery")
+        |> withLogMessage "models:instances:filter"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "list")
+    
+    /// Retrieve instances by id
+    let retrieveInstances<'T> (request: InstancesRetrieve) (source: HttpHandler<unit>) : HttpHandler<InstancesRetrieveResponse<'T>> =
+        source
+        |> withLogMessage "models:instances:retrieve"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "byids")
+
+    /// Search instances
+    let searchInstances<'T> (request: InstancesSearch) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
+        source
+        |> withLogMessage "models:instances:search"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "search")
+
+    /// Aggregate instances
+    let aggregateInstances (request: InstancesAggregate) (source: HttpHandler<unit>) : HttpHandler<InstancesAggregateResponse> =
+        source
+        |> withLogMessage "models:instances:aggregate"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "aggregate")
+
+    /// Delete instances by id
+    let deleteInstances (items: InstanceIdentifier seq) (source: HttpHandler<unit>) : HttpHandler<InstanceIdentifier seq> =
+        http {
+            let url = instancesUrl +/ "delete"
+            let request = ItemsWithoutCursor(Items = items)
+
+            let! ret =
+                source
+                |> withLogMessage "models:instances:delete"
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> postV10<_, ItemsWithoutCursor<_>> request url
+            return ret.Items
+        }
+
+    /// Query instances
+    let queryInstances<'T> (request: Query) (source: HttpHandler<unit>) : HttpHandler<QueryResult<'T>> =
+        source
+        |> withLogMessage "models:instances:query"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "query")
+
+    /// Sync instances
+    let syncInstances<'T> (request: SyncQuery) (source: HttpHandler<unit>) : HttpHandler<SyncResult<'T>> =
+        source
+        |> withLogMessage "models:instances:query"
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "sync")
