@@ -50,7 +50,7 @@ namespace CogniteSdk.Beta.DataModels
         /// <summary>
         /// Included properties and expected edges, indexed by a unique space-local identifier.
         /// </summary>
-        public Dictionary<string, ViewPropertyCreate> Properties { get; set; }
+        public Dictionary<string, ICreateViewProperty> Properties { get; set; }
     }
 
     /// <summary>
