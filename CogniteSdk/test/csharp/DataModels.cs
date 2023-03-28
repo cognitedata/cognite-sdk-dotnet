@@ -72,7 +72,7 @@ namespace Test.CSharp.Integration
                 Name = "Test",
                 Space = TestSpace,
                 Filter = new MatchAllFilter(),
-                Properties = new Dictionary<string, ViewPropertyCreate>
+                Properties = new Dictionary<string, ICreateViewProperty>
                 {
                     { "prop", new ViewPropertyCreate
                     {
@@ -170,7 +170,7 @@ namespace Test.CSharp.Integration
                         },
                         Space = tester.TestSpace,
                         Version = "1",
-                        Properties = new Dictionary<string, ViewPropertyCreate>()
+                        Properties = new Dictionary<string, ICreateViewProperty>()
                     }
                 }
             };
@@ -221,7 +221,7 @@ namespace Test.CSharp.Integration
                 Space = tester.TestSpace,
                 Name = "Test 2",
                 Version = "1",
-                Properties = new Dictionary<string, ViewPropertyCreate>
+                Properties = new Dictionary<string, ICreateViewProperty>
                 {
                     { "prop", new ViewPropertyCreate
                     {
