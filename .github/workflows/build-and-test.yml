@@ -28,29 +28,6 @@ jobs:
 
       - name: Install dependencies
         run: dotnet restore
-        
-      - name: Download code signing certificate
-        run: echo -n "${{ secrets.CODE_SIGNING_CERTIFICATE }}" | base64 -w 0 --decode > ./cognite_code_signing.pfx
-      - name: Extract public key
-        run: echo -n "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -p cognite_code_signing.pfx pub_key.snk
-      - name: Build for publish
-        run: dotnet build --configuration Release --no-restore -p:SignAssembly=True -p:AssemblyOriginatorKeyFile="$(realpath pub_key.snk)" -p:DelaySign=True -p:PackageVersion=1.0.0 -p:FileVersion=1.0.0 -p:InformationalVersion=1.0.0
-      - name: Sign CogniteSdk
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk/src/bin/Release/netstandard2.0/CogniteSdk.dll ./cognite_code_signing.pfx
-      - name: Sign CogniteSdk.Types
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk.Types/bin/Release/netstandard2.0/CogniteSdk.Types.dll ./cognite_code_signing.pfx
-      - name: Sign Oryx.Cognite
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R Oryx.Cognite/src/bin/Release/netstandard2.0/Oryx.Cognite.dll ./cognite_code_signing.pfx
-      - name: Sign CogniteSdk.Fsharp
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk.FSharp/src/bin/Release/netstandard2.0/CogniteSdk.FSharp.dll ./cognite_code_signing.pfx
-
-      # Package without rebuilding the binaries. TargetsForTfmSpecificContentInPackage is a workaround for a bug related to --no-build with fsharp projects.
-      # See https://github.com/dotnet/fsharp/issues/12320
-      - name: Dotnet Pack
-        run: dotnet pack -c release -p:PackageVersion=1.0.0 -p:FileVersion=1.0.0 -p:InformationalVersion=1.0.0 --no-build --output nuget-packages -p:TargetsForTfmSpecificContentInPackage=
-      # Sign the nuget package itself
-      - name: Sign nuget packages
-        run: dotnet nuget sign nuget-packages/*.nupkg --certificate-path ./cognite_code_signing.pfx --certificate-password ${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }} --timestamper http://timestamp.digicert.com
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
