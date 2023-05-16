@@ -26,7 +26,7 @@ namespace Test.CSharp.Integration
         {
         }
 
-        public override async Task InitializeAsync()
+        /* public override async Task InitializeAsync()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             Random random = new Random();
@@ -108,7 +108,7 @@ namespace Test.CSharp.Integration
             if (TestContainer != null) await Write.Beta.DataModels.DeleteContainers(new[] { TestContainer.ContainerId() });
             if (TestView != null) await Write.Beta.DataModels.DeleteViews(new[] { TestView.FDMExternalId() });
             if (TestSpace != null) await Write.Beta.DataModels.DeleteSpaces(new[] { TestSpace });
-        }
+        } */
     }
     public class DataModelsTest : IClassFixture<DataModelsFixture>
     {
@@ -507,6 +507,23 @@ namespace Test.CSharp.Integration
         }
 
         [Fact]
+        public void TestNestedFilterSerializer()
+        {
+            var filter = new NestedFilter
+            {
+                Filter = new EqualsFilter
+                {
+                    Property = new[] { "space", "Container", "Property" },
+                    Value = new RawPropertyValue<string>("value")
+                },
+                Scope = new[] { "space", "Container", "RefProperty" }
+            };
+
+            Assert.Equal(@"{""nested"":{""scope"":[""space"",""Container"",""RefProperty""],""filter"":{""equals"":{""property"":[""space"",""Container"",""Property""],""value"":""value""}}}}",
+                JsonSerializer.Serialize<IDMSFilter>(filter, Oryx.Cognite.Common.jsonOptions));
+        }
+
+        [Fact]
         public async Task TestRunQuery()
         {
             var req = new InstanceWriteRequest
@@ -616,6 +633,67 @@ namespace Test.CSharp.Integration
                 await tester.Write.Beta.DataModels.DeleteInstances(ids);
             }
 
+        }
+
+        [Fact]
+        public async Task TestViewNestedQuery()
+        {
+            var extid = "TestView_Nested";
+            var view = new ViewCreate
+            {
+                ExternalId = extid,
+                Name = "Test",
+                Space = tester.TestSpace,
+                Filter = new NestedFilter
+                {
+                    Scope = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "refProp" },
+                    Filter = new EqualsFilter
+                    {
+                        Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "prop" },
+                        Value = new RawPropertyValue<string>("test")
+                    }
+                },
+                Properties = new Dictionary<string, ICreateViewProperty>
+                {
+                    { "prop", new ViewPropertyCreate
+                    {
+                        Container = tester.TestContainer,
+                        ContainerPropertyIdentifier = "prop",
+                        Name = "Property"
+                    } },
+                    { "refProp", new ViewPropertyCreate
+                    {
+                        Container = tester.TestContainer,
+                        ContainerPropertyIdentifier = "refProp",
+                        Name = "Property Reference"
+                    } },
+                    { "intProp", new ViewPropertyCreate
+                    {
+                        Container = tester.TestContainer,
+                        ContainerPropertyIdentifier = "intProp",
+                        Name = "Property Integer"
+                    } }
+                },
+                Version = "1",
+            };
+
+            var created = await tester.Write.Beta.DataModels.UpsertViews(new[] { view });
+            Assert.Single(created);
+
+            var id = new FDMExternalId(extid, tester.TestSpace, "1");
+
+            try
+            {
+                // Retrieve a vuew
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveViews(new[] { id });
+                Assert.Single(retrieved);
+            }
+            finally
+            {
+                // Delete the view
+                var deleted = await tester.Write.Beta.DataModels.DeleteViews(new[] { id });
+                Assert.Single(deleted);
+            }
         }
     }
 }
