@@ -5,28 +5,31 @@ group Sdk
     source https://www.nuget.org/api/v2
     framework: netstandard2.0
 
-    nuget FSharp.Core ~> 6
+    nuget FSharp.Core >= 6 lowest_matching: true
     nuget Oryx ~> 5
+    nuget FsToolkit.ErrorHandling ~> 4
 
 group Oryx.Cognite
     source https://www.nuget.org/api/v2
     storage: none
     framework: netstandard2.0
 
-    nuget FSharp.Core ~> 6
-    nuget System.Text.Json ~> 6
+    nuget FSharp.Core >= 6 lowest_matching: true
+    nuget System.Text.Json >= 6 lowest_matching: true
     nuget CogniteSdk.Protobuf
     nuget Oryx ~> 5
     nuget Oryx.Protobuf ~> 5
     nuget Oryx.SystemTextJson ~> 5
+    nuget FsToolkit.ErrorHandling ~> 4
 
 group CogniteSdk.FSharp
     source https://www.nuget.org/api/v2
     storage: none
     framework: netstandard2.0
 
-    nuget FSharp.Core ~> 6
+    nuget FSharp.Core >= 6 lowest_matching: true
     nuget Oryx ~> 5
+    nuget FsToolkit.ErrorHandling ~> 4
 
 group Types
     source https://www.nuget.org/api/v2
@@ -38,7 +41,7 @@ group Test
     source https://www.nuget.org/api/v2
     storage: none
 
-    nuget FSharp.Core ~> 6
+    nuget FSharp.Core >= 6 lowest_matching: true
     nuget coverlet.msbuild
     nuget Unquote ~> 6
     nuget xunit ~> 2
@@ -49,6 +52,7 @@ group Test
     nuget Oryx ~> 5
     nuget Oryx.Protobuf ~> 5
     nuget Oryx.SystemTextJson ~> 5
+    nuget FsToolkit.ErrorHandling ~> 4
 
 group Playground
     source https://www.nuget.org/api/v2
