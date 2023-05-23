@@ -35,7 +35,7 @@ namespace CogniteSdk.Beta.DataModels
                     return new RawPropertyValue<object[]> { Value = new object[0] };
                 }
                 // Get the inner type of the value
-                var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct().ToList();
+                var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct();
                 if (types.Count() > 1) throw new JsonException("Contents of DMS Value as array must all be same type");
                 var type = types.First();
 
