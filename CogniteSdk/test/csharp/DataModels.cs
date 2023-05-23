@@ -532,7 +532,7 @@ namespace Test.CSharp.Integration
             {
                 var res = JsonSerializer.Deserialize<IDMSValue>("[]", Oryx.Cognite.Common.jsonOptions);
                 var resArr = Assert.IsType<RawPropertyValue<object[]>>(res);
-                Assert.Equal(0, resArr.Value.Length);
+                Assert.Empty(resArr.Value);
             }
         }
 
