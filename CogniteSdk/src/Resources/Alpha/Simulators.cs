@@ -45,7 +45,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">Simulation run callback query</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>All simulation runs in project</returns>
+        /// <returns>The updated simulation run</returns>
         public async Task<IItemsWithoutCursor<SimulationRun>> SimulationRunCallback(SimulationRunCallbackItem query, CancellationToken token = default)
         {
             var req = Simulators.simulationRunCallback(query, GetContext(token));
