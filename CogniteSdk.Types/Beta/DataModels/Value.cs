@@ -29,14 +29,30 @@ namespace CogniteSdk.Beta.DataModels
             else if (reader.TokenType == JsonTokenType.StartArray)
             {
                 var res = JsonSerializer.Deserialize<IEnumerable<IDMSValue>>(ref reader, options);
+                // If the array is empty, we cannot determine the type.
+                if (!res.Any())
+                {
+                    return new RawPropertyValue<object[]> { Value = new object[0] };
+                }
+                // Get the inner type of the value
                 var types = res.Select(x => x.GetType().GenericTypeArguments[0]).Distinct().ToList();
                 if (types.Count() > 1) throw new JsonException("Contents of DMS Value as array must all be same type");
                 var type = types.First();
 
+                // Create a RawPropertyValue<arrayType[]>
                 var arrayType = type.MakeArrayType();
                 var resultType = typeof(RawPropertyValue<>).MakeGenericType(arrayType);
                 var result = Activator.CreateInstance(resultType);
-                resultType.GetProperty("Value").SetValue(result, res);
+
+                // Create an arrayType[]
+                var resultArray = Array.CreateInstance(type, res.Count());
+                // Convert the IDMSValue[] array into an object[] array using reflection
+                var valueProp = res.First().GetType().GetProperty("Value");
+                var valueArray = res.Select(r => valueProp.GetValue(r)).ToArray();
+
+                Array.Copy(valueArray, resultArray, valueArray.Length);
+
+                resultType.GetProperty("Value").SetValue(result, resultArray);
                 return (IDMSValue)result;
             }
             else if (reader.TokenType == JsonTokenType.StartObject)

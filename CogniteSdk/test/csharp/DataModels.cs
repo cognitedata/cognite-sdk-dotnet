@@ -507,6 +507,36 @@ namespace Test.CSharp.Integration
         }
 
         [Fact]
+        public void TestDeserializeArrayValue()
+        {
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[1, 2, 3]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<double[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>(@"[""test"", ""test2"", ""test3""]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<string[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[true, false, true]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<bool[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[[1], [2], [3]]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<double[][]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<object[]>>(res);
+                Assert.Equal(0, resArr.Value.Length);
+            }
+        }
+
+        [Fact]
         public async Task TestRunQuery()
         {
             var req = new InstanceWriteRequest
