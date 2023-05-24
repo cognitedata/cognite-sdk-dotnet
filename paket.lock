@@ -1576,7 +1576,7 @@ NUGET
       System.Buffers (>= 4.5.1)
       System.Memory (>= 4.5.5)
       System.Runtime.CompilerServices.Unsafe (>= 6.0)
-    System.Text.Json (6.0.7)
+    System.Text.Json (6.0)
       Microsoft.Bcl.AsyncInterfaces (>= 6.0)
       System.Buffers (>= 4.5.1)
       System.Memory (>= 4.5.4)
