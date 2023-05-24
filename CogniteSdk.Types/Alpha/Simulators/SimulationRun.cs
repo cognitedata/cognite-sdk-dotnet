@@ -37,5 +37,15 @@ namespace CogniteSdk.Alpha
         /// The simulation run status message
         /// </summary>
         public string StatusMessage { get; set; }
+
+        /// <summary>
+        /// Time when this simulation run was created.
+        /// </summary>
+        public long CreatedTime { get; set; }
+
+        /// <summary>
+        /// Time when this simulation run was last updated.
+        /// </summary>
+        public long LastUpdatedTime { get; set; }
     }
 }
