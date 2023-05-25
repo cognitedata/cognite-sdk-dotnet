@@ -46,6 +46,7 @@ let ``List simulation runs is Ok`` () =
 
         test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
+        test <@ res.Items |> Seq.forall (fun item -> item.CreatedTime > 0 && item.LastUpdatedTime > 0) @>
 
         // Assert
         test <@ len > 0 @>
