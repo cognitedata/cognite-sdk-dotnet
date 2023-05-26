@@ -52,6 +52,18 @@ namespace CogniteSdk.Beta.DataModels
         /// Direct node relation
         /// </summary>
         direct,
+        /// <summary>
+        /// A CDF timeseries
+        /// </summary>
+        timeseries,
+        /// <summary>
+        /// A CDF file
+        /// </summary>
+        file,
+        /// <summary>
+        /// A CDF sequence
+        /// </summary>
+        sequence
     }
 
     /// <summary>
@@ -119,6 +131,48 @@ namespace CogniteSdk.Beta.DataModels
                 Type = PropertyTypeVariant.direct
             };
         }
+
+        /// <summary>
+        /// Create a property type representing a reference to CDF timeseries.
+        /// </summary>
+        /// <param name="list">True if this is an array</param>
+        /// <returns></returns>
+        public static CDFExternalIdReference Timeseries(bool list = false)
+        {
+            return new CDFExternalIdReference
+            {
+                Type = PropertyTypeVariant.timeseries,
+                List = list
+            };
+        }
+
+        /// <summary>
+        /// Create a property type representing a reference to CDF files.
+        /// </summary>
+        /// <param name="list">True if this is an array</param>
+        /// <returns></returns>
+        public static CDFExternalIdReference File(bool list = false)
+        {
+            return new CDFExternalIdReference
+            {
+                Type = PropertyTypeVariant.file,
+                List = list
+            };
+        }
+
+        /// <summary>
+        /// Create a property type representing a reference to CDF sequences.
+        /// </summary>
+        /// <param name="list">True if this is an array</param>
+        /// <returns></returns>
+        public static CDFExternalIdReference Sequence(bool list = false)
+        {
+            return new CDFExternalIdReference
+            {
+                Type = PropertyTypeVariant.sequence,
+                List = list
+            };
+        }
     }
 
     /// <summary>
@@ -169,6 +223,17 @@ namespace CogniteSdk.Beta.DataModels
     }
 
     /// <summary>
+    /// Property type for references to CDF resources.
+    /// </summary>
+    public class CDFExternalIdReference : BasePropertyType
+    {
+        /// <summary>
+        /// Whether this property is a list.
+        /// </summary>
+        public bool List { get; set; }
+    }
+
+    /// <summary>
     /// JsonConverter for property type variants
     /// </summary>
     public class PropertyTypeConverter : IntTaggedUnionConverter<BasePropertyType, PropertyTypeVariant>
@@ -185,6 +250,10 @@ namespace CogniteSdk.Beta.DataModels
                     return document.Deserialize<TextPropertyType>(options);
                 case PropertyTypeVariant.direct:
                     return document.Deserialize<DirectRelationPropertyType>(options);
+                case PropertyTypeVariant.timeseries:
+                case PropertyTypeVariant.file:
+                case PropertyTypeVariant.sequence:
+                    return document.Deserialize<CDFExternalIdReference>(options);
                 default:
                     return document.Deserialize<PrimitivePropertyType>(options);
             }

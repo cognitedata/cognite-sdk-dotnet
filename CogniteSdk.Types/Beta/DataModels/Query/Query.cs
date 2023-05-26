@@ -22,6 +22,11 @@ namespace CogniteSdk.Beta.DataModels
         /// Parameter values for the query.
         /// </summary>
         public Dictionary<string, IDMSValue> Parameters { get; set; }
+        /// <summary>
+        /// Cursors returned from the previous query request. These cursors match the result set expression specified in the
+        /// "with" clause for the query.
+        /// </summary>
+        public Dictionary<string, string> Cursors { get; set; }
     }
 
     /// <summary>
@@ -34,6 +39,10 @@ namespace CogniteSdk.Beta.DataModels
         /// Returned items
         /// </summary>
         public Dictionary<string, IEnumerable<BaseInstance<T>>> Items { get; set; }
+        /// <summary>
+        /// Returned cursors.
+        /// </summary>
+        public Dictionary<string, string> NextCursor { get; set; }
     }
 
     /// <summary>
@@ -41,10 +50,6 @@ namespace CogniteSdk.Beta.DataModels
     /// </summary>
     public class SyncQuery : Query
     {
-        /// <summary>
-        /// Cursors returned from previous sync request.
-        /// </summary>
-        public Dictionary<string, string> Cursors { get; set; }
     }
 
     /// <summary>
@@ -53,9 +58,5 @@ namespace CogniteSdk.Beta.DataModels
     /// <typeparam name="T"></typeparam>
     public class SyncResult<T> : QueryResult<T>
     {
-        /// <summary>
-        /// Returned cursors.
-        /// </summary>
-        public Dictionary<string, string> NextCursor { get; set; }
     }
 }
