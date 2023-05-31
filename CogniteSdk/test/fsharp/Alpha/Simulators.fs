@@ -30,6 +30,36 @@ type FactIf(envVar: string, skipReason: string) =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
+let ``Create simulation runs is Ok`` () =
+    task {
+        // Arrange
+        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+        let itemToCreate =
+            SimulationRunCreate(
+                SimulatorName = "DWSIM",
+                ModelName = "ShowerMixerIntegrationTest",
+                RoutineName = "ShowerMixerCalculation"
+            )
+
+        // Act
+        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([itemToCreate])
+
+        // Assert
+        let len = Seq.length res
+        test <@ len = 1 @>
+        let itemRes = res |> Seq.head
+
+        test <@ itemRes.SimulatorName = itemToCreate.SimulatorName @>
+        test <@ itemRes.ModelName = itemToCreate.ModelName @>
+        test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
+        test <@ itemRes.Status = SimulationRunStatus.ready @>
+        test <@ now - itemRes.CreatedTime < 10000  @>
+        test <@ now - itemRes.LastUpdatedTime < 10000  @>
+
+    }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulators")>]
 let ``List simulation runs is Ok`` () =
     task {
 
@@ -40,7 +70,7 @@ let ``List simulation runs is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulationRuns(query)
+        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -68,7 +98,7 @@ let ``Callback simulation runs is Ok`` () =
                     )
             )
 
-        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRuns(listQuery)
+        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
         test <@ Seq.length listRes.Items > 0 @>
 
@@ -80,7 +110,7 @@ let ``Callback simulation runs is Ok`` () =
             SimulationRunCallbackItem(Id = simulationRun.Id, Status = SimulationRunStatus.success, StatusMessage = ts)
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.SimulationRunCallback query
+        let! res = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync query
         let simulationRunCallbackRes = res.Items |> Seq.head
 
         // Assert
