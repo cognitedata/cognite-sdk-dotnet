@@ -34,6 +34,7 @@ let ``Create simulation runs is Ok`` () =
     task {
         // Arrange
         let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+
         let itemToCreate =
             SimulationRunCreate(
                 SimulatorName = "DWSIM",
@@ -42,7 +43,7 @@ let ``Create simulation runs is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([itemToCreate])
+        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
 
         // Assert
         let len = Seq.length res
@@ -53,8 +54,8 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.ModelName = itemToCreate.ModelName @>
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
-        test <@ now - itemRes.CreatedTime < 10000  @>
-        test <@ now - itemRes.LastUpdatedTime < 10000  @>
+        test <@ now - itemRes.CreatedTime < 10000 @>
+        test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
     }
 
@@ -76,7 +77,12 @@ let ``List simulation runs is Ok`` () =
 
         test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
-        test <@ res.Items |> Seq.forall (fun item -> item.CreatedTime > 0 && item.LastUpdatedTime > 0) @>
+
+        test
+            <@
+                res.Items
+                |> Seq.forall (fun item -> item.CreatedTime > 0 && item.LastUpdatedTime > 0)
+            @>
 
         // Assert
         test <@ len > 0 @>
