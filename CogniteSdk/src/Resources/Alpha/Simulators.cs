@@ -33,7 +33,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="items">Simulation run items to create</param>
         /// <param name="token">Optional cancellation token</param>
-        /// <returns>All simulation runs in project</returns>
+        /// <returns>A list of created simulation runs</returns>
         public async Task<IEnumerable<SimulationRun>> CreateSimulationRunsAsync(IEnumerable<SimulationRunCreate> items, CancellationToken token = default)
         {
             var req = Simulators.createSimulationRuns(items, GetContext(token));
