@@ -18,6 +18,16 @@ module Simulators =
 
     let runsUrl = Url +/ "runs"
     let runCallbackUrl = Url +/ "run/callback"
+    let createRunsUrl = Url +/ "run"
+
+    let createSimulationRuns
+        (items: SimulationRunCreate seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulationRun seq> =
+        source
+        |> withLogMessage "simulators:createSimulationRuns"
+        |> withAlphaHeader
+        |> HttpHandler.create items createRunsUrl
 
 
     /// List all runs

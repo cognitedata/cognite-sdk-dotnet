@@ -29,12 +29,24 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Create simulation runs
+        /// </summary>
+        /// <param name="items">Simulation run items to create</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>A list of created simulation runs</returns>
+        public async Task<IEnumerable<SimulationRun>> CreateSimulationRunsAsync(IEnumerable<SimulationRunCreate> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulationRuns(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// List all simulation runs
         /// </summary>
         /// <param name="query">Simulation run filter query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>All simulation runs in project</returns>
-        public async Task<IItemsWithoutCursor<SimulationRun>> ListSimulationRuns(SimulationRunQuery query, CancellationToken token = default)
+        public async Task<IItemsWithoutCursor<SimulationRun>> ListSimulationRunsAsync(SimulationRunQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulationRuns(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -46,7 +58,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="query">Simulation run callback query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The updated simulation run</returns>
-        public async Task<IItemsWithoutCursor<SimulationRun>> SimulationRunCallback(SimulationRunCallbackItem query, CancellationToken token = default)
+        public async Task<IItemsWithoutCursor<SimulationRun>> SimulationRunCallbackAsync(SimulationRunCallbackItem query, CancellationToken token = default)
         {
             var req = Simulators.simulationRunCallback(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
