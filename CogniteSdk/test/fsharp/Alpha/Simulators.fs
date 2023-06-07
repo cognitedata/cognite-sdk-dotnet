@@ -102,7 +102,8 @@ let ``Callback simulation runs is Ok`` () =
                     SimulationRunFilter(
                         SimulatorName = "DWSIM",
                         ModelName = "ShowerMixerIntegrationTest",
-                        RoutineName = "ShowerMixerCalculation"
+                        RoutineName = "ShowerMixerCalculation",
+                        Status = SimulationRunStatus.ready
                     )
             )
 
