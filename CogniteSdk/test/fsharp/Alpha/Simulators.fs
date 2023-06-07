@@ -54,7 +54,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.ModelName = itemToCreate.ModelName @>
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
-        test <@ not itemRes.EventId.HasValue @>
+        test <@ itemRes.EventId = Nullable() @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
@@ -78,7 +78,7 @@ let ``List simulation runs is Ok`` () =
 
         test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
-        test <@ res.Items |> Seq.forall (fun item -> not item.EventId.HasValue) @>
+        test <@ res.Items |> Seq.forall (fun item -> item.EventId = Nullable() ) @>
 
         test
             <@
