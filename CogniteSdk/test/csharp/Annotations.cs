@@ -28,7 +28,7 @@ namespace Test.CSharp.Integration
             // Act
             try
             {
-                await WriteClient.Playground.Annotations.DeleteAsync(query);
+                await WriteClient.Annotations.DeleteAsync(query);
             }
             catch (ResponseException)
             {
@@ -72,14 +72,14 @@ namespace Test.CSharp.Integration
                 Data = boundingVolume
             };
             var annotation = (
-                await WriteClient.Playground.Annotations.SuggestAsync(new List<AnnotationSuggest> { suggestAnnotationQuery })
+                await WriteClient.Annotations.SuggestAsync(new List<AnnotationSuggest> { suggestAnnotationQuery })
 
             ).FirstOrDefault();
 
             Assert.True(annotation.Status == "suggested", $"Expected the `suggested` Status but got {annotation.Status}");
 
             // Delete the created annotation and threedmodel
-            await WriteClient.Playground.Annotations.DeleteAsync(items: new AnnotationDelete()
+            await WriteClient.Annotations.DeleteAsync(items: new AnnotationDelete()
             { Items = new List<AnnotationId>() { new AnnotationId { Id = annotation.Id } } });
             await WriteClient.ThreeDModels.DeleteAsync(ids: new Identity[] { new Identity(threeDModel.Id) });
 
