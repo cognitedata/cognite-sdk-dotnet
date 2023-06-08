@@ -507,7 +507,7 @@ module HttpHandler =
 
             let! ret =
                 source
-                |> post<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' url
+                |> postV10<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' url
 
             return ret.Items
         }
