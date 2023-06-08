@@ -32,11 +32,6 @@ namespace CogniteSdk.Resources
         public Playground.FunctionScheduleResource FunctionSchedules { get; set; }
 
         /// <summary>
-        /// Client Annotations extension methods
-        /// </summary>
-        public Playground.AnnotationsResource Annotations { get; set; }
-
-        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -46,7 +41,6 @@ namespace CogniteSdk.Resources
             Functions = new Playground.FunctionResource(authHandler, ctx);
             FunctionCalls = new Playground.FunctionCallResource(authHandler, ctx);
             FunctionSchedules = new Playground.FunctionScheduleResource(authHandler, ctx);
-            Annotations = new Playground.AnnotationsResource(authHandler, ctx);
         }
     }
 }

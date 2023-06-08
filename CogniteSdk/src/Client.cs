@@ -132,11 +132,16 @@ namespace CogniteSdk
         public AlphaResource Alpha { get; }
 
         /// <summary>
-        /// Client for making requests to the API.
+        /// Client Annotations extension methods
         /// </summary>
-        /// <param name="authHandler">The authentication handler.</param>
-        /// <param name="ctx">The HTTP context to use for this session.</param>
-        private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx)
+        public AnnotationsResource Annotations { get; set; }
+
+        /// <summary>
+    /// Client for making requests to the API.
+    /// </summary>
+    /// <param name="authHandler">The authentication handler.</param>
+    /// <param name="ctx">The HTTP context to use for this session.</param>
+    private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx)
         {
             // Setup resources.
             Assets = new AssetsResource(authHandler, ctx);
@@ -157,9 +162,10 @@ namespace CogniteSdk
             Labels = new LabelsResource(authHandler, ctx);
             Groups = new GroupsResource(authHandler, ctx);
             Transformations = new TransformationsResource(authHandler, ctx);
+            Annotations = new AnnotationsResource(authHandler, ctx);
 
-            // Playground features (experimental)
-            Playground = new PlaygroundResource(authHandler, ctx);
+      // Playground features (experimental)
+      Playground = new PlaygroundResource(authHandler, ctx);
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
             // Alpha features (experimental)

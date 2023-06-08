@@ -11,7 +11,7 @@ using Oryx;
 using Oryx.Cognite.Playground;
 using Oryx.Pipeline;
 
-namespace CogniteSdk.Resources.Playground
+namespace CogniteSdk.Resources
 {
     /// <summary>
     /// For internal use. Contains all annotations methods.
@@ -84,7 +84,7 @@ namespace CogniteSdk.Resources.Playground
                 throw new ArgumentNullException(nameof(query));
             }
             var req = Annotations.list<Annotation>(query, GetContext(token));
-            return (ItemsWithCursor<Annotation>)await RunAsync(req).ConfigureAwait(false);
+            return await RunAsync(req).ConfigureAwait(false);
         }
         /// <summary>
         /// Asynchronously update one or more annotations. Supports partial updates, meaning that fields omitted from the
@@ -101,7 +101,7 @@ namespace CogniteSdk.Resources.Playground
             }
 
             var req = Annotations.update<Annotation>(query, GetContext(token));
-            var ret = await RunAsync<IEnumerable<Annotation>>(req).ConfigureAwait(false);
+            var ret = await RunAsync(req).ConfigureAwait(false);
             return ret;
         }
     }
