@@ -1,13 +1,12 @@
 // Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Oryx.Cognite.Playground
+namespace Oryx.Cognite
 
 open System.Collections.Generic
 
 open Oryx
 open Oryx.Cognite
-open Oryx.Cognite.Playground
 
 open CogniteSdk
 

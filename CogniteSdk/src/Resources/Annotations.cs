@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.FSharp.Core;
 
 using Oryx;
-using Oryx.Cognite.Playground;
+using Oryx.Cognite;
 using Oryx.Pipeline;
 
 namespace CogniteSdk.Resources

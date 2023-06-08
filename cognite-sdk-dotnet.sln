@@ -9,7 +9,7 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Oryx.Cognite", "Oryx.Cognit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.Test", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.Test.FSharp", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playground", "playground", "{794719BD-C548-42F8-BD47-10240779604A}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CogniteSdk.FSharp", "Cognit
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.FSharp", "CogniteSdk.FSharp\src\CogniteSdk.FSharp.fsproj", "{1F440E85-0B02-409E-9731-54D873200E46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{B42088FD-0284-46D8-8C34-EE348DC02850}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{B42088FD-0284-46D8-8C34-EE348DC02850}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

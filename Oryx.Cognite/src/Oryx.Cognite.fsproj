@@ -28,10 +28,10 @@
     <Compile Include="ExtPipes.fs" />
     <Compile Include="Labels.fs" />
     <Compile Include="Groups.fs" />
+    <Compile Include="Annotations.fs" />
     <Compile Include="Transformations.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
-    <Compile Include="Playground/Annotations.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
     <Compile Include="Beta/DataModels.fs" />
