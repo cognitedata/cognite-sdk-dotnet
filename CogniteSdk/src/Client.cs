@@ -137,11 +137,11 @@ namespace CogniteSdk
         public AlphaResource Alpha { get; }
 
         /// <summary>
-    /// Client for making requests to the API.
-    /// </summary>
-    /// <param name="authHandler">The authentication handler.</param>
-    /// <param name="ctx">The HTTP context to use for this session.</param>
-    private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx)
+        /// Client for making requests to the API.
+        /// </summary>
+        /// <param name="authHandler">The authentication handler.</param>
+        /// <param name="ctx">The HTTP context to use for this session.</param>
+        private Client(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx)
         {
             // Setup resources.
             Assets = new AssetsResource(authHandler, ctx);
