@@ -1,27 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Types", "CogniteSdk.Types\CogniteSdk.Types.csproj", "{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk.Types", "CogniteSdk.Types\CogniteSdk.Types.csproj", "{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Oryx.Cognite", "Oryx.Cognite\src\Oryx.Cognite.fsproj", "{F5CEF2C3-2E62-4147-ADDB-108AB9AE27ED}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Oryx.Cognite", "Oryx.Cognite\src\Oryx.Cognite.fsproj", "{F5CEF2C3-2E62-4147-ADDB-108AB9AE27ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CogniteSdk", "CogniteSdk\src\CogniteSdk.csproj", "{41482B89-4CC9-4DB8-91D1-ABE7E3B7C5A4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk.Test.FSharp", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{45676171-B050-4E3F-9601-9390E7DA9AAE}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.Test.FSharp", "CogniteSdk\test\fsharp\CogniteSdk.Test.fsproj", "{A94F7DFA-2202-4705-AADB-FBBF739BED61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "playground", "playground", "{794719BD-C548-42F8-BD47-10240779604A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FSharpApp", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpApp", "playground\csharp\App.csproj", "{334BA0EF-EDCB-4085-81F4-3EDD43069D46}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "App", "playground\fsharp\App.fsproj", "{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CogniteSdk.FSharp", "CogniteSdk.FSharp", "{B2E2DB93-62A4-4F13-AAFB-D666D5ACA0E6}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "CogniteSdk.FSharp", "CogniteSdk.FSharp\src\CogniteSdk.FSharp.fsproj", "{1F440E85-0B02-409E-9731-54D873200E46}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "CogniteSdk.FSharp", "CogniteSdk.FSharp\src\CogniteSdk.FSharp.fsproj", "{1F440E85-0B02-409E-9731-54D873200E46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CogniteSdk.Test.CSharp", "CogniteSdk\test\csharp\CogniteSdk.Test.csproj", "{B42088FD-0284-46D8-8C34-EE348DC02850}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,9 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{C956C2F8-DA9D-482C-9EE1-BCD8549FE726}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -84,18 +79,6 @@ Global
 		{A94F7DFA-2202-4705-AADB-FBBF739BED61}.Release|x64.Build.0 = Release|Any CPU
 		{A94F7DFA-2202-4705-AADB-FBBF739BED61}.Release|x86.ActiveCfg = Release|Any CPU
 		{A94F7DFA-2202-4705-AADB-FBBF739BED61}.Release|x86.Build.0 = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|x64.Build.0 = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Debug|x86.Build.0 = Debug|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|x64.ActiveCfg = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|x64.Build.0 = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|x86.ActiveCfg = Release|Any CPU
-		{45676171-B050-4E3F-9601-9390E7DA9AAE}.Release|x86.Build.0 = Release|Any CPU
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -108,18 +91,6 @@ Global
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Release|x64.Build.0 = Release|Any CPU
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Release|x86.ActiveCfg = Release|Any CPU
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE}.Release|x86.Build.0 = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|x64.Build.0 = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Debug|x86.Build.0 = Debug|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|Any CPU.Build.0 = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x64.ActiveCfg = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x64.Build.0 = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x86.ActiveCfg = Release|Any CPU
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46}.Release|x86.Build.0 = Release|Any CPU
 		{1F440E85-0B02-409E-9731-54D873200E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1F440E85-0B02-409E-9731-54D873200E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F440E85-0B02-409E-9731-54D873200E46}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -132,10 +103,24 @@ Global
 		{1F440E85-0B02-409E-9731-54D873200E46}.Release|x64.Build.0 = Release|Any CPU
 		{1F440E85-0B02-409E-9731-54D873200E46}.Release|x86.ActiveCfg = Release|Any CPU
 		{1F440E85-0B02-409E-9731-54D873200E46}.Release|x86.Build.0 = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|x64.Build.0 = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Debug|x86.Build.0 = Debug|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|x64.ActiveCfg = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|x64.Build.0 = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|x86.ActiveCfg = Release|Any CPU
+		{B42088FD-0284-46D8-8C34-EE348DC02850}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{430F4C09-1FB5-4674-987B-AAFAC8AA25DE} = {794719BD-C548-42F8-BD47-10240779604A}
-		{334BA0EF-EDCB-4085-81F4-3EDD43069D46} = {794719BD-C548-42F8-BD47-10240779604A}
 		{1F440E85-0B02-409E-9731-54D873200E46} = {B2E2DB93-62A4-4F13-AAFB-D666D5ACA0E6}
 	EndGlobalSection
 EndGlobal

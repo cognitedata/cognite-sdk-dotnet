@@ -495,3 +495,19 @@ module HttpHandler =
         |> withError decodeError
         |> json jsonOptions
         |> log
+
+    let suggest<'TContent, 'TResult>
+        (content: IEnumerable<'TContent>)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IEnumerable<'TResult>> =
+        http {
+            let url = url +/ "suggest"
+            let content' = ItemsWithoutCursor(Items = content)
+
+            let! ret =
+                source
+                |> postV10<ItemsWithoutCursor<'TContent>, ItemsWithoutCursor<'TResult>> content' url
+
+            return ret.Items
+        }
