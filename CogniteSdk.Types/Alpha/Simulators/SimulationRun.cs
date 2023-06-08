@@ -39,6 +39,11 @@ namespace CogniteSdk.Alpha
         public string StatusMessage { get; set; }
 
         /// <summary>
+        /// Simulation event id
+        /// </summary>
+        public long? EventId { get; set; }
+
+        /// <summary>
         /// Time when this simulation run was created.
         /// </summary>
         public long CreatedTime { get; set; }

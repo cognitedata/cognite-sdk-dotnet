@@ -54,6 +54,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.ModelName = itemToCreate.ModelName @>
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
+        test <@ itemRes.EventId = Nullable() @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
@@ -77,6 +78,7 @@ let ``List simulation runs is Ok`` () =
 
         test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
+        test <@ res.Items |> Seq.forall (fun item -> item.EventId = Nullable() ) @>
 
         test
             <@
@@ -100,7 +102,8 @@ let ``Callback simulation runs is Ok`` () =
                     SimulationRunFilter(
                         SimulatorName = "DWSIM",
                         ModelName = "ShowerMixerIntegrationTest",
-                        RoutineName = "ShowerMixerCalculation"
+                        RoutineName = "ShowerMixerCalculation",
+                        Status = SimulationRunStatus.ready
                     )
             )
 
@@ -124,4 +127,5 @@ let ``Callback simulation runs is Ok`` () =
 
         test <@ simulationRunCallbackRes.Status = SimulationRunStatus.success @>
         test <@ simulationRunCallbackRes.StatusMessage = ts @>
+        test <@ simulationRunCallbackRes.EventId.HasValue @>
     }
