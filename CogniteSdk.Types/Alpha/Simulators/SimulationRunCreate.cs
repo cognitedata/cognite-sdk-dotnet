@@ -22,5 +22,10 @@ namespace CogniteSdk.Alpha
         /// The model name
         /// </summary>
         public string ModelName { get; set; }
+
+        /// <summary>
+        /// Run type
+        /// </summary>
+        public SimulationRunType RunType { get; set; }
     }
 }
