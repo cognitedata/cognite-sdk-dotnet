@@ -30,6 +30,26 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
+    /// Type of a simulation run
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum SimulationRunType
+    {
+        /// <summary>
+        /// external
+        /// </summary>
+        external,
+        /// <summary>
+        /// manual
+        /// </summary>
+        manual,
+        /// <summary>
+        /// scheduled
+        /// </summary>
+        scheduled,
+    }
+
+    /// <summary>
     /// The Simulation run query class.
     /// </summary>
     public class SimulationRunQuery

@@ -34,6 +34,11 @@ namespace CogniteSdk.Alpha
         public SimulationRunStatus Status { get; set; }
 
         /// <summary>
+        /// The simulation run type
+        /// </summary>
+        public SimulationRunType RunType { get; set; }
+
+        /// <summary>
         /// The simulation run status message
         /// </summary>
         public string StatusMessage { get; set; }
