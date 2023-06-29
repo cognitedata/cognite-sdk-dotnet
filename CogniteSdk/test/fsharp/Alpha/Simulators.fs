@@ -39,7 +39,8 @@ let ``Create simulation runs is Ok`` () =
             SimulationRunCreate(
                 SimulatorName = "DWSIM",
                 ModelName = "ShowerMixerIntegrationTest",
-                RoutineName = "ShowerMixerCalculation"
+                RoutineName = "ShowerMixerCalculation",
+                RunType = SimulationRunType.external
             )
 
         // Act
@@ -54,7 +55,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.ModelName = itemToCreate.ModelName @>
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
-        test <@ itemRes.EventId = Nullable() @>
+        test <@ itemRes.RunType = SimulationRunType.external @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
@@ -127,5 +128,4 @@ let ``Callback simulation runs is Ok`` () =
 
         test <@ simulationRunCallbackRes.Status = SimulationRunStatus.success @>
         test <@ simulationRunCallbackRes.StatusMessage = ts @>
-        test <@ simulationRunCallbackRes.EventId.HasValue @>
     }
