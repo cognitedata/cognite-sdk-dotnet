@@ -61,7 +61,7 @@ namespace CogniteSdk.Beta.DataModels
                 // Since we really have no good way to distinguish between them, we just store it as JsonElement.
                 // It is an edge case either way.
                 var res = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
-                return new RawPropertyValue<JsonElement>();
+                return new RawPropertyValue<JsonElement>(res);
             }
             else
             {
