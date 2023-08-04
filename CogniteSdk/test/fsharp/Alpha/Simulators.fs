@@ -40,7 +40,9 @@ let ``Create simulation runs is Ok`` () =
                 SimulatorName = "DWSIM",
                 ModelName = "ShowerMixerIntegrationTest",
                 RoutineName = "ShowerMixerCalculation",
-                RunType = SimulationRunType.external
+                RunType = SimulationRunType.external,
+                ValidationEndTime = now,
+                Queue = true
             )
 
         // Act
@@ -56,6 +58,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
         test <@ itemRes.RunType = SimulationRunType.external @>
+        test <@ itemRes.ValidationEndTime = Nullable (now) @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
