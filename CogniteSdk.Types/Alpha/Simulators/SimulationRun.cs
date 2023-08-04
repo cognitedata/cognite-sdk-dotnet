@@ -49,6 +49,11 @@ namespace CogniteSdk.Alpha
         public long? EventId { get; set; }
 
         /// <summary>
+        /// Timestamp that overwrites the validation end
+        /// </summary>
+        public long? ValidationEndTime { get; set; }
+
+        /// <summary>
         /// Time when this simulation run was created.
         /// </summary>
         public long CreatedTime { get; set; }

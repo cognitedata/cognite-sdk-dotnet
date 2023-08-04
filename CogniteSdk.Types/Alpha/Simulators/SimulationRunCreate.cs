@@ -24,6 +24,16 @@ namespace CogniteSdk.Alpha
         public string ModelName { get; set; }
 
         /// <summary>
+        /// Timestamp that overwrites the validation end
+        /// </summary>
+        public long? ValidationEndTime { get; set; }
+
+        /// <summary>
+        /// Queue the simulation run when connector is down
+        /// </summary>
+        public bool Queue { get; set; }
+
+        /// <summary>
         /// Run type
         /// </summary>
         public SimulationRunType RunType { get; set; }
