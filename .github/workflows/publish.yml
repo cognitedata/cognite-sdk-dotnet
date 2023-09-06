@@ -6,7 +6,7 @@ on:
 name: Publish Release
 jobs:
   build:
-    name: Create Release
+    name: Build Release Package
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -24,28 +24,49 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
 
-      - name: Download code signing certificate
-        run: echo -n "${{ secrets.CODE_SIGNING_CERTIFICATE }}" | base64 -w 0 --decode > ./cognite_code_signing.pfx
-      - name: Extract public key
-        run: echo -n "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -p cognite_code_signing.pfx pub_key.snk
       - name: Build for publish
-        run: dotnet build --configuration Release --no-restore -p:SignAssembly=True -p:AssemblyOriginatorKeyFile="$(realpath pub_key.snk)" -p:DelaySign=True -p:PackageVersion=${GITHUB_REF##*/v} -p:FileVersion=${GITHUB_REF##*/v} -p:InformationalVersion=${GITHUB_REF##*/v}
-      - name: Sign CogniteSdk
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk/src/bin/Release/netstandard2.0/CogniteSdk.dll ./cognite_code_signing.pfx
-      - name: Sign CogniteSdk.Types
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk.Types/bin/Release/netstandard2.0/CogniteSdk.Types.dll ./cognite_code_signing.pfx
-      - name: Sign Oryx.Cognite
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R Oryx.Cognite/src/bin/Release/netstandard2.0/Oryx.Cognite.dll ./cognite_code_signing.pfx
-      - name: Sign CogniteSdk.Fsharp
-        run: echo "${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}" | sn -R CogniteSdk.FSharp/src/bin/Release/netstandard2.0/CogniteSdk.FSharp.dll ./cognite_code_signing.pfx
+        run: dotnet build --configuration Release --no-restore -p:PackageVersion=${GITHUB_REF##*/v} -p:FileVersion=${GITHUB_REF##*/v} -p:InformationalVersion=${GITHUB_REF##*/v}
 
       # Package without rebuilding the binaries. TargetsForTfmSpecificContentInPackage is a workaround for a bug related to --no-build with fsharp projects.
       # See https://github.com/dotnet/fsharp/issues/12320
       - name: Dotnet Pack
         run: dotnet pack -c release -p:PackageVersion=${GITHUB_REF##*/v} -p:FileVersion=${GITHUB_REF##*/v} -p:InformationalVersion=${GITHUB_REF##*/v} --no-build --output nuget-packages -p:TargetsForTfmSpecificContentInPackage=
       # Sign the nuget package itself
+
+      - name: Upload nuget packages
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-packages
+          path: nuget-packages/
+          retention-days: 1
+
+  publish:
+    name: Create Release
+    runs-on: windows-latest
+    environment: CD
+    needs:
+     - build
+    steps:
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.200
+      - name: Download nuget packages
+        uses: actions/download-artifact@v3
+        with:
+          name: nuget-packages
+          path: nuget-packages/
+
       - name: Sign nuget packages
-        run: dotnet nuget sign nuget-packages/*.nupkg --certificate-path ./cognite_code_signing.pfx --certificate-password ${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }} --timestamper http://timestamp.digicert.com
+        env:
+          CERTIFICATE_HOST: ${{ secrets.CODE_SIGNING_CERT_HOST }}
+          CERTIFICATE_HOST_API_KEY: ${{ secrets.CODE_SIGNING_CERT_HOST_API_KEY }}
+          CERTIFICATE_SHA1_HASH: ${{ secrets.CODE_SIGNING_CERT_SHA1_HASH }}
+          CLIENT_CERTIFICATE: ${{ secrets.CODE_SIGNING_CLIENT_CERT }}
+          CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CODE_SIGNING_CLIENT_CERT_PASSWORD }}
+        uses: cognitedata/code-sign-action/@v2
+        with:
+          path-to-binary: 'nuget-packages/'
 
       - name: Push nuget packages
         run: dotnet nuget push nuget-packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
