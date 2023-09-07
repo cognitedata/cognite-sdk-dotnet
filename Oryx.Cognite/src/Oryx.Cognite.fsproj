@@ -33,6 +33,7 @@
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
+    <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
     <Compile Include="Beta/DataModels.fs" />
     <Compile Include="Alpha/Handler.fs" />
