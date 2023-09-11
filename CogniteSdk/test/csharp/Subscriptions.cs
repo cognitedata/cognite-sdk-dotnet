@@ -86,7 +86,7 @@ namespace Test.CSharp.Integration
                 TimeSeriesIds = new UpdateEnumerable<string>(
                     new[] { tester.TimeSeriesIds.ElementAt(1) },
                     new[] { tester.TimeSeriesIds.First() }),
-                Description =new UpdateNullable<string>("Desc 2"),
+                Description = new UpdateNullable<string>("Desc 2"),
                 Name = new UpdateNullable<string>("Test-sub-2"),
             };
 
