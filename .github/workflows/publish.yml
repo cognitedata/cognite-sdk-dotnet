@@ -92,7 +92,7 @@ jobs:
           path-to-binary: 'nuget-packages/'
 
       - name: Push nuget packages
-        run: dotnet nuget push nuget-packages/*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
         continue-on-error: false
 
       - name: Create Release
