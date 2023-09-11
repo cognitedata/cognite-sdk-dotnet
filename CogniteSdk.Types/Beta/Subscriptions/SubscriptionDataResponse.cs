@@ -8,7 +8,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// The ID of a single timeseries that has been updated.
     /// </summary>
-    public class TimeSeriesId
+    public class WrappedTimeSeriesId
     {
         /// <summary>
         /// Server generated timeseries ID.
@@ -49,7 +49,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// ID of modified timeseries.
         /// </summary>
-        public TimeSeriesId TimeSeries { get; set; }
+        public WrappedTimeSeriesId TimeSeries { get; set; }
         /// <summary>
         /// List of datapoints inserted into the timeseries,
         /// possibly overwriting existing data.
@@ -69,11 +69,11 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Timeseries added to the subscription (for this partition).
         /// </summary>
-        public IEnumerable<TimeSeriesId> Added { get; set; }
+        public IEnumerable<WrappedTimeSeriesId> Added { get; set; }
         /// <summary>
         /// Timeseries removed from the subscription (for this partition).
         /// </summary>
-        public IEnumerable<TimeSeriesId> Removed { get; set; }
+        public IEnumerable<WrappedTimeSeriesId> Removed { get; set; }
     }
 
     /// <summary>

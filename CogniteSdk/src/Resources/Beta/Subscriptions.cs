@@ -72,7 +72,7 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="query">Query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>A list of timeseries IDs and a cursor for pagination if there are more results</returns>
-        public async Task<ItemsWithCursor<TimeSeriesId>> ListMembersAsync(ListSubscriptionMembers query, CancellationToken token = default)
+        public async Task<ItemsWithCursor<WrappedTimeSeriesId>> ListMembersAsync(ListSubscriptionMembers query, CancellationToken token = default)
         {
             var req = Subscriptions.listMembers(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);

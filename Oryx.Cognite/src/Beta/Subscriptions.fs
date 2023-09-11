@@ -50,7 +50,7 @@ module Subscriptions =
     let listMembers
         (query: ListSubscriptionMembers)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithCursor<TimeSeriesId>> =
+        : HttpHandler<ItemsWithCursor<WrappedTimeSeriesId>> =
         source
         |> withLogMessage "timeseries:subscriptions:listmembers"
         |> withBetaHeader
