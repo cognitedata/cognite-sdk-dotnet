@@ -28,12 +28,15 @@ module Subscriptions =
     let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         http {
             let items = items |> Seq.map (fun f -> CogniteExternalId(f))
-            let request = ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
 
-            return! source
-                   |> withLogMessage "timeseries:subscriptions:delete"
-                   |> withBetaHeader
-                   |> HttpHandler.delete request Url
+            let request =
+                ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
+
+            return!
+                source
+                |> withLogMessage "timeseries:subscriptions:delete"
+                |> withBetaHeader
+                |> HttpHandler.delete request Url
         }
 
     /// Retrieve the next batch of data from a datapoint subscription
@@ -44,7 +47,10 @@ module Subscriptions =
         |> HttpHandler.postV10 query (Url +/ "data/list")
 
     /// List timeseries in a datapoint subscription with pagination
-    let listMembers (query: ListSubscriptionMembers) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TimeSeriesId>> =
+    let listMembers
+        (query: ListSubscriptionMembers)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<TimeSeriesId>> =
         source
         |> withLogMessage "timeseries:subscriptions:listmembers"
         |> withBetaHeader
@@ -58,21 +64,31 @@ module Subscriptions =
         |> HttpHandler.getWithQuery query Url
 
     /// Retrieve subscriptions by externalId, optionally ignoring unknown IDs
-    let retrieve (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<Subscription seq> =
+    let retrieve
+        (items: string seq)
+        (ignoreUnknownIds: bool)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Subscription seq> =
         http {
             let items = items |> Seq.map (fun f -> CogniteExternalId(f))
-            let request = ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
+
+            let request =
+                ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
 
             let! ret =
                 source
                 |> withLogMessage "timeseries:subscriptions:retrieve"
                 |> withBetaHeader
                 |> HttpHandler.postV10<_, ItemsWithoutCursor<_>> request (Url +/ "byids")
+
             return ret.Items
         }
 
     /// Update a list of subscriptions
-    let update (query: IEnumerable<UpdateItem<SubscriptionUpdate>>) (source: HttpHandler<unit>) : HttpHandler<Subscription seq> =
+    let update
+        (query: IEnumerable<UpdateItem<SubscriptionUpdate>>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Subscription seq> =
         source
         |> withLogMessage "timeseries:subscriptions:update"
         |> withBetaHeader
