@@ -25,8 +25,9 @@ module Subscriptions =
         |> HttpHandler.create items Url
 
     /// Delete list of datapoint subscriptions by externalId, optionally ignoring unknown IDs
-    let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<unit> =
+    let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         http {
+            let items = items |> Seq.map (fun f -> CogniteExternalId(f))
             let request = ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
 
             return! source
@@ -54,18 +55,19 @@ module Subscriptions =
         source
         |> withLogMessage "timeseries:subscriptions:list"
         |> withBetaHeader
-        |> HttpHandler.list query Url
+        |> HttpHandler.getWithQuery query Url
 
     /// Retrieve subscriptions by externalId, optionally ignoring unknown IDs
     let retrieve (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<Subscription seq> =
         http {
+            let items = items |> Seq.map (fun f -> CogniteExternalId(f))
             let request = ItemsWithIgnoreUnknownIds(Items = items, IgnoreUnknownIds = ignoreUnknownIds)
 
             let! ret =
                 source
                 |> withLogMessage "timeseries:subscriptions:retrieve"
                 |> withBetaHeader
-                |> HttpHandler.postV10<_, ItemsWithoutCursor<_>> request Url
+                |> HttpHandler.postV10<_, ItemsWithoutCursor<_>> request (Url +/ "byids")
             return ret.Items
         }
 

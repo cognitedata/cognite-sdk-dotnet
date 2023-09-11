@@ -15,7 +15,7 @@ namespace CogniteSdk.Beta
         /// 
         /// Not applicable to filter based subscriptions.
         /// </summary>
-        public UpdateCollection<string, string> TimeSeriesIds { get; set; }
+        public UpdateEnumerable<string> TimeSeriesIds { get; set; }
         /// <summary>
         /// Update subscription name.
         /// </summary>

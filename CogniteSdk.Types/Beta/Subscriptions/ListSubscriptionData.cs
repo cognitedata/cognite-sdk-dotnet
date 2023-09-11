@@ -41,7 +41,7 @@ namespace CogniteSdk.Beta
         /// return up to limit results. To check whether you have reached the end,
         /// do not rely on the count. Instead, check the hasNext field.
         /// </summary>
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
         /// <summary>
         /// If partitions.cursor is not set, the default behavior is to start from the beginning
         /// of the stream. InitializeCursors can be used to override this behavior.

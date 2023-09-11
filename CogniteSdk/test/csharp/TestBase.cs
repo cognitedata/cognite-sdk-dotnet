@@ -16,6 +16,8 @@ namespace Test.CSharp.Integration
         protected static Client WriteClient;
         protected static Event TestEvent;
 
+        public string Prefix { get; }
+
         public TestFixture()
         {
             ReadClient = CreateOAuth2Client(
@@ -26,6 +28,10 @@ namespace Test.CSharp.Integration
                 Environment.GetEnvironmentVariable("TEST_TOKEN_WRITE"),
                 Environment.GetEnvironmentVariable("TEST_PROJECT_WRITE") ?? "fusiondotnet-tests",
                 Environment.GetEnvironmentVariable("TEST_HOST_WRITE") ?? "https://greenfield.cognitedata.com");
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            Random random = new Random();
+            Prefix = "sdkTest" + new string(Enumerable.Repeat(chars, 5)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
 

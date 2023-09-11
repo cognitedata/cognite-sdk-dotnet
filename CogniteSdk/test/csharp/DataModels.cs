@@ -20,7 +20,6 @@ namespace Test.CSharp.Integration
         public string TestSpace { get; private set; }
         public ContainerIdentifier TestContainer { get; private set; }
         public ViewIdentifier TestView { get; private set; }
-        public string Prefix { get; private set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -28,11 +27,6 @@ namespace Test.CSharp.Integration
 
         public override async Task InitializeAsync()
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            Random random = new Random();
-            Prefix = "sdkTest" + new string(Enumerable.Repeat(chars, 5)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
-
             TestSpace = $"{Prefix}Space";
 
             var testSpace = new SpaceCreate { Space = TestSpace };

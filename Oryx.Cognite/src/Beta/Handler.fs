@@ -17,7 +17,7 @@ open CogniteSdk
 [<AutoOpen>]
 module Handler =
     let withBetaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
-        source |> withHeader ("version", "beta")
+        source |> withHeader ("cdf-version", "beta")
 
     let withBetaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
         source |> withBetaHeader<'TSource> |> withVersion V10
