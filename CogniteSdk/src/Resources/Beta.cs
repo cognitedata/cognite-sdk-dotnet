@@ -27,6 +27,11 @@ namespace CogniteSdk.Resources
         public DataModelsResource DataModels { get; }
 
         /// <summary>
+        /// Timeseries subscriptions
+        /// </summary>
+        public SubscriptionsResource Subscriptions { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -35,6 +40,7 @@ namespace CogniteSdk.Resources
         {
             Templates = new TemplatesResource(authHandler, ctx);
             DataModels = new DataModelsResource(authHandler, ctx);
+            Subscriptions = new SubscriptionsResource(authHandler, ctx);
         }
     }
 }

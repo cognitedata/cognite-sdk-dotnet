@@ -39,13 +39,16 @@ module DataModels =
     let retrieveSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<Space seq> =
         http {
             let url = spacesUrl +/ "byids"
-            let request = ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
+
+            let request =
+                ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
 
             let! ret =
                 source
                 |> withLogMessage "models:spaces:retrieve"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -53,13 +56,16 @@ module DataModels =
     let deleteSpaces (items: string seq) (source: HttpHandler<unit>) : HttpHandler<string seq> =
         http {
             let url = spacesUrl +/ "delete"
-            let request = ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
+
+            let request =
+                ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> SpaceId(Space = id))))
 
             let! ret =
                 source
                 |> withLogMessage "models:spaces:delete"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<SpaceId>> request url
+
             return ret.Items |> Seq.map (fun id -> id.Space)
         }
 
@@ -78,14 +84,21 @@ module DataModels =
         |> HttpHandler.getWithQuery query modelsUrl
 
     /// Filter data models
-    let filterDataModels (filter: DataModelFilter) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<DataModel>> =
+    let filterDataModels
+        (filter: DataModelFilter)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<DataModel>> =
         source
         |> withLogMessage "models:datamodels:filter"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
         |> postV10 filter (modelsUrl +/ "list")
 
     /// Retrieve data models by id
-    let retrieveDataModels (items: FDMExternalId seq) (inlineViews: bool) (source: HttpHandler<unit>) : HttpHandler<DataModel seq> =
+    let retrieveDataModels
+        (items: FDMExternalId seq)
+        (inlineViews: bool)
+        (source: HttpHandler<unit>)
+        : HttpHandler<DataModel seq> =
         http {
             let url = modelsUrl +/ "byids"
             let query = DataModelInlineViewsQuery(InlineViews = inlineViews)
@@ -97,6 +110,7 @@ module DataModels =
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> withQuery (query.ToQueryParams())
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -111,6 +125,7 @@ module DataModels =
                 |> withLogMessage "models:datamodels:delete"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -129,10 +144,17 @@ module DataModels =
         |> HttpHandler.getWithQuery query viewsUrl
 
     /// Retrieve views by id
-    let retrieveViews (items: FDMExternalId seq) (includeInheritedProperties: bool) (source: HttpHandler<unit>) : HttpHandler<View seq> =
+    let retrieveViews
+        (items: FDMExternalId seq)
+        (includeInheritedProperties: bool)
+        (source: HttpHandler<unit>)
+        : HttpHandler<View seq> =
         http {
             let url = viewsUrl +/ "byids"
-            let query = ViewIncludePropertiesQuery(IncludeInheritedProperties = includeInheritedProperties)
+
+            let query =
+                ViewIncludePropertiesQuery(IncludeInheritedProperties = includeInheritedProperties)
+
             let request = ItemsWithoutCursor(Items = items)
 
             let! ret =
@@ -141,6 +163,7 @@ module DataModels =
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> withQuery (query.ToQueryParams())
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -155,6 +178,7 @@ module DataModels =
                 |> withLogMessage "models:views:delete"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -183,6 +207,7 @@ module DataModels =
                 |> withLogMessage "models:containers:retrieve"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -197,6 +222,7 @@ module DataModels =
                 |> withLogMessage "models:containers:delete"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
@@ -208,39 +234,55 @@ module DataModels =
                 |> withLogMessage "models:instances:create"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request instancesUrl
+
             return ret.Items
         }
 
     /// Filter instances with pagination
-    let filterInstances<'T> (request: InstancesFilter) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
+    let filterInstances<'T>
+        (request: InstancesFilter)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstancesFilterResponse<'T>> =
         source
         |> withLogMessage "models:instances:filter"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
         |> postV10 request (instancesUrl +/ "list")
-    
+
     /// Retrieve instances by id
-    let retrieveInstances<'T> (request: InstancesRetrieve) (source: HttpHandler<unit>) : HttpHandler<InstancesRetrieveResponse<'T>> =
+    let retrieveInstances<'T>
+        (request: InstancesRetrieve)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstancesRetrieveResponse<'T>> =
         source
         |> withLogMessage "models:instances:retrieve"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
         |> postV10 request (instancesUrl +/ "byids")
 
     /// Search instances
-    let searchInstances<'T> (request: InstancesSearch) (source: HttpHandler<unit>) : HttpHandler<InstancesFilterResponse<'T>> =
+    let searchInstances<'T>
+        (request: InstancesSearch)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstancesFilterResponse<'T>> =
         source
         |> withLogMessage "models:instances:search"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
         |> postV10 request (instancesUrl +/ "search")
 
     /// Aggregate instances
-    let aggregateInstances (request: InstancesAggregate) (source: HttpHandler<unit>) : HttpHandler<InstancesAggregateResponse> =
+    let aggregateInstances
+        (request: InstancesAggregate)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstancesAggregateResponse> =
         source
         |> withLogMessage "models:instances:aggregate"
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
         |> postV10 request (instancesUrl +/ "aggregate")
 
     /// Delete instances by id
-    let deleteInstances (items: InstanceIdentifier seq) (source: HttpHandler<unit>) : HttpHandler<InstanceIdentifier seq> =
+    let deleteInstances
+        (items: InstanceIdentifier seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstanceIdentifier seq> =
         http {
             let url = instancesUrl +/ "delete"
             let request = ItemsWithoutCursor(Items = items)
@@ -250,6 +292,7 @@ module DataModels =
                 |> withLogMessage "models:instances:delete"
                 |> withCompletion HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, ItemsWithoutCursor<_>> request url
+
             return ret.Items
         }
 
