@@ -226,8 +226,12 @@ module HttpHandler =
 
     let inline getById<'TResult> (id: int64) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         source |> getV10<'TResult> (url +/ sprintf "%d" id)
-        
-    let inline getByExternalId<'TResult> (externalId: string) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
+
+    let inline getByExternalId<'TResult>
+        (externalId: string)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
         source |> getV10<'TResult> (url +/ externalId)
 
     let getWithQueryOptions<'TResult>
