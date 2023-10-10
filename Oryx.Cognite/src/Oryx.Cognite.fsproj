@@ -31,6 +31,7 @@
     <Compile Include="Groups.fs" />
     <Compile Include="Annotations.fs" />
     <Compile Include="Transformations.fs" />
+    <Compile Include="Units.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
