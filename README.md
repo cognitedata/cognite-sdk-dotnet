@@ -116,6 +116,8 @@ var query = new Assets.AssetQuery
 var result = await client.Assets.ListAsync(query);
 ```
 
+> **_NOTE:_** The example above does not handle token refresh. If you need to refresh tokens, you need to implement this yourself or use a library like [Cognite Extractor Utils](https://github.com/cognitedata/dotnet-extractor-utils) that handles this for you.
+
 ## Examples
 
 There are examples for both C# and F# in the Playground folder.
