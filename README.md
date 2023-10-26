@@ -10,9 +10,7 @@
 
 CogniteSdk for .NET is a cross platform asynchronous SDK for accessing the [Cognite Data Fusion](https://docs.cognite.com/) [API (v1)](https://docs.cognite.com/api/v1/) using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) that works for all .NET implementations i.e both [.NET Core](https://en.wikipedia.org/wiki/.NET_Core) and [.NET Framework](https://en.wikipedia.org/wiki/.NET_Framework).
 
-**Unofficial**: please note that this is an unofficial and community
-driven SDK. Feel free to open issues, or provide PRs if you want to
-improve the library.
+**Unofficial**: please note that this is an unofficial and community driven SDK. Feel free to open issues, or provide PRs if you want to improve the library.
 
 The SDK may be used from both C# and F#.
 
@@ -21,24 +19,35 @@ The SDK may be used from both C# and F#.
 - **F# SDK**: The F# API is written using plain asynchronous functions returning `Task` built on top of the [Oryx](https://github.com/cognitedata/oryx) HTTP handler library.
 
 ## Supported Resources
+- Assets
+- TimeSeries & DataPoints
+- Events
+- Files
+- Raw
+- Sequences
+- Relationships
+- Annotations
+- 3D Models
+- 3D Files
+- 3D Asset Mapping
+- Data sets
+- Extractor Pipelines
+- Transformations
+- Labels
+- Token
+- Groups
 
-- [Assets](https://docs.cognite.com/api/v1/#tag/Assets)
-- [TimeSeries & DataPoints](https://docs.cognite.com/api/v1/#tag/Time-series)
-- [Events](https://docs.cognite.com/api/v1/#tag/Events)
-- [Files](https://docs.cognite.com/api/v1/#tag/Files)
-- [Login](https://docs.cognite.com/api/v1/#tag/Login) (partial)
-- [Raw](https://docs.cognite.com/api/v1/#tag/Raw)
-- [Sequences](https://docs.cognite.com/api/v1/#tag/Sequences)
-- [Relationships](https://docs.cognite.com/api/v1/#tag/Relationships)
-- [3D Models](https://docs.cognite.com/api/v1/#tag/3D-Models)
-- [3D Files](https://docs.cognite.com/api/v1/#tag/3D-Files)
-- [3D Asset Mapping](https://docs.cognite.com/api/v1/#tag/3D-Asset-Mapping)
-- [Data sets](https://docs.cognite.com/api/v1/#tag/Data-sets)
+### Beta Resources
+- Data Models
+- Subscriptions
+- Templates
+
+### Alpha Resources
+- Simulators
 
 ## Documentation
-* SDK Documentation. TBW.
-* [API Documentation](https://doc.cognitedata.com/)
-* [API Guide](https://doc.cognitedata.com/guides/api-guide.html)
+* [Cognite API Documentation](https://api-docs.cognite.com/)
+* [Cognite Developer Guide](https://developer.cognite.com/dev/)
 
 ## Installation
 
@@ -58,41 +67,46 @@ Or [directly in Visual Studio](https://docs.microsoft.com/en-us/nuget/quickstart
 
 ## Quickstart
 
-The SDK supports authentication through api-keys. The best way to use the SDK is by setting authentication values to environment values:
+Requests to Cognite Data Fusion are authenticated as submitted by a client using OAuth2 tokens. There are several authentication flows available, check the [Cognite Documentation](https://docs.cognite.com/cdf/access/concepts/authentication_flows_oidc/#:~:text=In%20the%20client%20credentials%20grant,get%20a%20time%2Dlimited%20token.) for more details.
 
-Using Windows Commands:
-```cmd
-setx PROJECT=myprojet
-setx API_KEY=mysecretkey
-```
-
-Using Shell:
-```sh
-export PROJECT=myprojet
-export API_KEY=mysecretkey
-```
+The SDK does not include any logic to fetch tokens from an Identity Provider. Instead, the SDK expects a valid token to be provided by the user. The SDK will then use this token to authenticate requests to CDF.
 
 All SDK methods are called with a `Client` object. A valid client requires:
-- `API Key` - key used for authentication with CDF.
 - `Project Name` - the name of your CDF project e.g `publicdata`.
 - `App ID` - an identifier for your application. It is a free text string. Example: `asset-hierarchy-extractor`
+- `Base URL` - the base URL for the CDF API. Example: `https://api.cognitedata.com`
+- `Bearer Token` - valid OAuth2 token for the CDF project.
 - `HTTP Client` - The [HttpClient](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netcore-3.1) that will be used for the remote connection. Having this separate from the SDK have many benefits like using e.g [Polly](https://github.com/App-vNext/Polly) for policy handling.
 
+Here's a simple example of how to instantiate a client. For this example we're using [Microsoft Authentication Library](https://www.nuget.org/packages/Microsoft.Identity.Client/) to fetch a token from Azure AD using client credentials flow, but any other method for fetching a token will work as well.
 ```c#
 using CogniteSdk;
+using Microsoft.Identity.Client;
 
-var apiKey = Environment.GetEnvironmentVariable("API_KEY");
-var project = Environment.GetEnvironmentVariable("PROJECT");
+var tenantId = Environment.GetEnvironmentVariable("TENANT_ID");
+var clientId = Environment.GetEnvironmentVariable("CLIENT_ID");
+var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
+var cluster = Environment.GetEnvironmentVariable("CDF_CLUSTER");
+var project = Environment.GetEnvironmentVariable("CDF_PROJECT");
 
-using var httpClient = new HttpClient(handler);
-var builder = new Client.Builder();
-var client =
-    builder
-        .SetAppId("playground")
-        .SetHttpClient(httpClient)
-        .SetApiKey(apiKey)
-        .SetProject(project)
-        .Build();
+var scopes = new List<string>{ $"https://{cluster}.cognitedata.com/.default" };
+
+var app = ConfidentialClientApplicationBuilder
+    .Create(clientId)
+    .WithAuthority(AzureCloudInstance.AzurePublic, tenantId)
+    .WithClientSecret(clientSecret)
+    .Build();
+
+var result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+var accessToken = result.AccessToken;
+
+var httpClient = new HttpClient();
+var client = Client.Builder.Create(httpClient)
+    .SetAppId("dotnet-sdk-client")
+    .AddHeader("Authorization", $"Bearer {accessToken}")
+    .SetProject(project)
+    .SetBaseUrl(new Uri($"https://{cluster}.cognitedata.com"))
+    .Build();
 
 // your logic using the client
 var query = new Assets.AssetQuery
@@ -104,11 +118,11 @@ var result = await client.Assets.ListAsync(query);
 
 ## Examples
 
-There are examples for both C# and F# in the Playground folder. To play with the example code, you need to set the CDF project and API key as environment variables.
+There are examples for both C# and F# in the Playground folder.
 
 ## Developing
 
-### Dotnet Tools 
+### Dotnet Tools
 
 A dotnet tools manifest is used to version tools used by this repo.  Install these tools with:
 
@@ -142,7 +156,7 @@ sh ./test.sh
 ```
 For this script AAD env variables need to be defined: `TEST_TENANT_ID_WRITE`, `TEST_CLIENT_ID_WRITE`, `TEST_CLIENT_SECRET_WRITE`.
 
-You also need read credentials for publicdata project `TEST_TENANT_ID_READ`, `TEST_CLIENT_ID_READ`, `TEST_CLIENT_SECRET_READ`.
+You also need read credentials for `publicdata` project `TEST_TENANT_ID_READ`, `TEST_CLIENT_ID_READ`, `TEST_CLIENT_SECRET_READ`.
 
 # Code of Conduct
 
