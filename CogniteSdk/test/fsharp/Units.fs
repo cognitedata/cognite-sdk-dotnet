@@ -52,9 +52,9 @@ let ``Retrieve units by external ids is Ok`` () =
     task {
         // Arrange
         let unitExternalIds =
-            [ Identity("temperature:deg_c")
-              Identity("temperature:deg_f")
-              Identity("temperature:k") ]
+            [ "temperature:deg_c"
+              "temperature:deg_f"
+              "temperature:k" ]
 
         // Act
         let! res = readClient.Units.RetrieveUnitsAsync unitExternalIds

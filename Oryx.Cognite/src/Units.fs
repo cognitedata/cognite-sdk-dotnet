@@ -18,25 +18,34 @@ module Units =
 
     /// List all units
     let listUnits (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<UnitItem>> =
-        source |> withLogMessage "units:listUnits" |> HttpHandler.getV10 Url
+        source |> withLogMessage "units:listUnits" |> getV10 Url
 
     /// List all unit systems
     let listUnitSystems (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<UnitSystem>> =
         source
         |> withLogMessage "units:listUnitSystems"
-        |> HttpHandler.getV10 SystemsUrl
+        |> getV10 SystemsUrl
 
     /// Retrieve a single unit by external Id
     let getUnit (unitExternalId: string) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<UnitItem>> =
         source |> withLogMessage "units:getUnit" |> getByExternalId unitExternalId Url
 
     /// Retrieves multiple units by external ID
-    /// TODO: Move away from Identity as the Unit Catalog only have externalIds
     let retrieveUnits
-        (externalIds: Identity seq)
+        (items: string seq)
         (ignoreUnknownIds: Nullable<bool>)
         (source: HttpHandler<unit>)
         : HttpHandler<UnitItem seq> =
-        source
-        |> withLogMessage "units:retrieve"
-        |> retrieveIgnoreUnknownIds externalIds (Option.ofNullable ignoreUnknownIds) Url
+            http {
+                let url = Url +/ "byids"
+                
+                let request =
+                    ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> Identity(id))))
+                    
+                let! ret =
+                    source
+                    |> withLogMessage "units:retrieve"
+                    |> postV10<_, ItemsWithoutCursor<_>> request url
+                
+                return ret.Items
+            }
