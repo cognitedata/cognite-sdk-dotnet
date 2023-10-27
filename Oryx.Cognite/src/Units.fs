@@ -40,12 +40,15 @@ module Units =
                 let url = Url +/ "byids"
                 
                 let request =
-                    ItemsWithoutCursor(Items = (items |> Seq.map (fun id -> Identity(id))))
+                    ItemsWithIgnoreUnknownIds(
+                        Items = (items |> Seq.map (fun id -> Identity(id))),
+                        IgnoreUnknownIds = ignoreUnknownIds.GetValueOrDefault()
+                    )
                     
                 let! ret =
                     source
                     |> withLogMessage "units:retrieve"
-                    |> postV10<_, ItemsWithoutCursor<_>> request url
+                    |> postV10<_, ItemsWithIgnoreUnknownIds<_>> request url
                 
                 return ret.Items
             }
