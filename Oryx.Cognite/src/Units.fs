@@ -22,9 +22,7 @@ module Units =
 
     /// List all unit systems
     let listUnitSystems (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<UnitSystem>> =
-        source
-        |> withLogMessage "units:listUnitSystems"
-        |> getV10 SystemsUrl
+        source |> withLogMessage "units:listUnitSystems" |> getV10 SystemsUrl
 
     /// Retrieve a single unit by external Id
     let getUnit (unitExternalId: string) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<UnitItem>> =
@@ -36,19 +34,19 @@ module Units =
         (ignoreUnknownIds: Nullable<bool>)
         (source: HttpHandler<unit>)
         : HttpHandler<UnitItem seq> =
-            http {
-                let url = Url +/ "byids"
-                
-                let request =
-                    ItemsWithIgnoreUnknownIds(
-                        Items = (items |> Seq.map (fun id -> Identity(id))),
-                        IgnoreUnknownIds = ignoreUnknownIds.GetValueOrDefault()
-                    )
-                    
-                let! ret =
-                    source
-                    |> withLogMessage "units:retrieve"
-                    |> postV10<_, ItemsWithIgnoreUnknownIds<_>> request url
-                
-                return ret.Items
-            }
+        http {
+            let url = Url +/ "byids"
+
+            let request =
+                ItemsWithIgnoreUnknownIds(
+                    Items = (items |> Seq.map (fun id -> Identity(id))),
+                    IgnoreUnknownIds = ignoreUnknownIds.GetValueOrDefault()
+                )
+
+            let! ret =
+                source
+                |> withLogMessage "units:retrieve"
+                |> postV10<_, ItemsWithIgnoreUnknownIds<_>> request url
+
+            return ret.Items
+        }
