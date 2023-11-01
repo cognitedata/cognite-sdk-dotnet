@@ -4,4 +4,3 @@ group Oryx.Cognite
     Oryx
     Oryx.SystemTextJson
     Oryx.Protobuf
-    CogniteSdk.Protobuf

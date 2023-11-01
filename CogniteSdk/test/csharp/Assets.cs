@@ -309,7 +309,7 @@ namespace Test.CSharp.Integration
             };
 
             // Act
-            _ = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { initialAsset }).ConfigureAwait(false);
+            _ = await WriteClient.Assets.CreateAsync(new List<AssetCreate>() { initialAsset });
             await WriteClient.Assets.UpdateAsync(update);
 
             var getRes = await WriteClient.Assets.RetrieveAsync(new List<string>() { externalIdString });
