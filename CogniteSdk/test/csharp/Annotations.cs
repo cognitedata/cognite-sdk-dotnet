@@ -163,7 +163,7 @@ namespace Test.CSharp.Integration
                 }
             };
             var updatedAnnotation = (await WriteClient.Annotations.UpdateAsync(updateAnnotationQuery)
-                .ConfigureAwait(false)).FirstOrDefault();
+).FirstOrDefault();
             Assert.True(updatedAnnotation.Id == annotation.Id, "The updated annotation id doesn't match with the created one.");
             Assert.True(updatedAnnotation.Status == "rejected", "The status of the annotation is not updated.");
             Assert.True(updatedAnnotation.Data.Region.First().Cylinder is null, "The data of the annotation is not updated.");
