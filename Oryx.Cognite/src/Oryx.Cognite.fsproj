@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="../../CogniteSdk.Protobuf/CogniteSdk.Protobuf.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
