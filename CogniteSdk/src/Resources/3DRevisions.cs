@@ -183,5 +183,29 @@ namespace CogniteSdk.Resources
             var req = ThreeDRevisions.updateThumbnail(modelId, revisionId, fileId, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Retrieve a list of available outputs for a processed 3D model.
+        /// An output can be a format that can be consumed by a viewer (e.g. Reveal)
+        /// or import in external tools. Each of the outputs will have an associated
+        /// version which is used to identify the version of output format
+        /// (not the revision of the processed output).
+        /// 
+        /// Note that the structure of the outputs will vary and is not covered here.
+        /// </summary>
+        /// <param name="modelId">Model to get the revision outputs from</param>
+        /// <param name="revisionId">Revision to get outputs from</param>
+        /// <param name="format">Format identifier, e.g. 'ept-pointcloud' (point cloud).
+        /// Well known formats are: 'ept-pointcloud' (point cloud data) or 'reveal-directory'
+        /// (output supported by Reveal). 'all-outputs' can be used to retrieve all
+        /// outputs for a 3D revision. Note that some of the outputs are internal,
+        /// where the format and availability might change without warning.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>List of revision outputs</returns>
+        public async Task<IEnumerable<ThreeDRevisionOutput>> ListRevisionOutputsAsync(long modelId, long revisionId, string format, CancellationToken token = default)
+        {
+            var req = ThreeDRevisions.listAvailableOutputs(modelId, revisionId, format, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
     }
 }
