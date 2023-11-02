@@ -135,7 +135,7 @@ namespace CogniteSdk
         /// Client alpha extension methods
         /// </summary>
         public AlphaResource Alpha { get; }
-        
+
         /// <summary>
         /// Client units extension methods.
         /// </summary>

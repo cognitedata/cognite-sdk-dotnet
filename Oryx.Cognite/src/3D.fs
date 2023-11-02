@@ -3,10 +3,12 @@
 
 namespace Oryx.Cognite
 
+open System
+open System.Collections.Generic
+
 open Oryx
 open Oryx.Cognite
 
-open System.Collections.Generic
 open CogniteSdk
 
 /// Various 3D HTTP handlers.
@@ -178,6 +180,38 @@ module ThreeDRevisions =
             Url +/ sprintf "%d" modelId +/ "revisions" +/ sprintf "%d" revisionId +/ "logs"
 
         source |> withLogMessage "3DRevisionLogs:list" |> getWithQuery query url
+
+    /// <summary>
+    /// Retrieves list of 3DRevisionOutputs matching format.
+    /// </summary>
+    /// <param name="modelId">The model to get revision outputs from.</param>
+    /// <param name="revisionId">The revision to get outputs from.</param>
+    /// <param name="format">Format identifier, e.g. 'ept-pointcloud' (point cloud).</param>
+    /// <returns>List of named and versioned revision outputs</returns>
+    let listAvailableOutputs
+        (modelId: int64)
+        (revisionId: int64)
+        (format: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ThreeDRevisionOutput seq> =
+        http {
+            let url =
+                Url
+                +/ sprintf "%d" modelId
+                +/ "revisions"
+                +/ sprintf "%d" revisionId
+                +/ "outputs"
+
+            let query = ThreeDOutputListQuery(Format = format)
+
+            let! res =
+                source
+                |> withLogMessage "threed:revisions:outputs:list"
+                |> getWithQuery<ItemsWithoutCursor<_>> query url
+
+            return res.Items
+        }
+
 
 module ThreeDNodes =
     let Url = "/3d/models"
