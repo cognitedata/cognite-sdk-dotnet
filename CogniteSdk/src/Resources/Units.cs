@@ -24,7 +24,7 @@ namespace CogniteSdk.Resources
         internal UnitsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
-        
+
         /// <summary>
         /// Retrieve a list of all units in the unit catalog.
         /// </summary>
@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Units.listUnits(GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Retrieves a unit given it's external id.
         /// </summary>
@@ -47,7 +47,7 @@ namespace CogniteSdk.Resources
             var req = Oryx.Cognite.Units.getUnit(unitExternalId, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
-        
+
         /// <summary>
         /// Retrieves multiple units by external id.
         /// </summary>
