@@ -52,6 +52,6 @@ namespace CogniteSdk
         /// Reference to 3D file containing output.
         /// 3D file can either be a single file or folder.
         /// </summary>
-        public int BlobId { get; set; }
+        public long BlobId { get; set; }
     }
 }
