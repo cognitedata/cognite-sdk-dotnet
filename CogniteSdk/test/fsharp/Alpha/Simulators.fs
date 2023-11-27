@@ -29,7 +29,7 @@ type FactIf(envVar: string, skipReason: string) =
         if envFlag then null else skipReason
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulators")>] // mark with something, specify with dotnet test to only run this
 let ``Create simulation runs is Ok`` () =
     task {
         // Arrange

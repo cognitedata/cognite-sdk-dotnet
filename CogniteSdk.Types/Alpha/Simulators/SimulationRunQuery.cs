@@ -88,4 +88,41 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public SimulationRunStatus? Status { get; set; }
     }
+
+    public class SimulationFilterIntegrationsQuery
+    {
+        //
+        public SimulationFilterIntegrationsFilter Filter { get; set; }
+
+        public override string ToString() => Stringable.ToString<SimulationFilterIntegrationsQuery>(this);
+    }
+
+
+    public class SimulationFilterIntegrationsFilter
+    {
+        public string[] simulatorExternalIds { get; set; }
+    }
+
+    /// <summary>
+    /// The Simulation run query class.
+    /// </summary>
+    public class FilterSimulatorsQuery
+    {
+        /// <summary>
+        /// Filter on assets with strict matching.
+        /// </summary>
+        public FilterSimulators Filter { get; set; }
+
+    }
+
+    /// <summary>
+    /// The simulation run filter class.
+    /// </summary>
+    public class FilterSimulators
+    {
+        /// <summary>
+        /// TODO:
+        /// </summary>
+        public bool Enabled { get; set; }
+    }
 }

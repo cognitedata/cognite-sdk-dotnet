@@ -80,7 +80,49 @@ namespace CogniteSdk.Resources.Alpha
 
             var ids = internalIds.Select(Identity.Create);
             var req = Simulators.retrieveSimulationRuns<SimulationRun>(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
 
+        public async Task<IItemsWithoutCursor<SimulatorIntegrations>> FilterSimulatorIntegrationsAsync(SimulationFilterIntegrationsQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.filterSimulatorIntegrations(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<SimulatorIntegrations>> SimulatorIntegrationUpdateAsync(IEnumerable<UpdateItem<SimulatorIntegrationUpdate>> items, CancellationToken token = default)
+        {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            var req = Simulators.simulatorIntegrationUpdate(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<SimulatorIntegrations>> CreateSimulatorIntegrations(IEnumerable<CreateSimulatorIntegrations> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulatorIntegrations(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+        
+        public async Task<IItemsWithoutCursor<SimulatorsRun>> FilterSimulators(FilterSimulatorsQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.filterSimulators(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<SimulatorsRun>> CreateSimulators(IEnumerable<CreateSimulators> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulators(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        public async Task<EmptyResponse> DeleteSimulators(DeleteSimulators items, CancellationToken token = default)
+        {
+            var req = Simulators.deleteSimulators(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        public async Task<IEnumerable<SimulatorsRun>> UpdateSimulators(IEnumerable<UpdateSimulators> items, CancellationToken token = default)
+        {
+            var req = Simulators.updateSimulators(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }
