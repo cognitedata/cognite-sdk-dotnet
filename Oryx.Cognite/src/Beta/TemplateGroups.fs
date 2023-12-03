@@ -20,10 +20,7 @@ module TemplateGroups =
     let versionsUrl externalId = Url +/ externalId +/ "versions"
 
     let baseVersionedUrl externalId version =
-        Url
-        +/ externalId
-        +/ "versions"
-        +/ (version |> string)
+        Url +/ externalId +/ "versions" +/ (version |> string)
 
     let instancesUrl externalId version =
         baseVersionedUrl externalId version +/ "instances"
@@ -34,9 +31,7 @@ module TemplateGroups =
 
     /// Create a list of template groups.
     let create (items: TemplateGroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateGroup seq> =
-        source
-        |> withLogMessage "templategroups:create"
-        |> create items Url
+        source |> withLogMessage "templategroups:create" |> create items Url
 
     /// Upsert a list of template groups.
     let upsert (items: TemplateGroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<TemplateGroup seq> =
@@ -59,9 +54,7 @@ module TemplateGroups =
 
     /// Filter template groups.
     let filter (query: TemplateGroupQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<TemplateGroup>> =
-        source
-        |> withLogMessage "templategroups:filter"
-        |> list query Url
+        source |> withLogMessage "templategroups:filter" |> list query Url
 
     /// Delete a list of template groups.
     let delete (items: string seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
@@ -71,9 +64,7 @@ module TemplateGroups =
                 IgnoreUnknownIds = ignoreUnknownIds
             )
 
-        source
-        |> withLogMessage "templategroups:delete"
-        |> HttpHandler.delete query Url
+        source |> withLogMessage "templategroups:delete" |> HttpHandler.delete query Url
 
     /// Upsert a version. If the "version" number is left out, this will create a new template version.
     let upsertVersion

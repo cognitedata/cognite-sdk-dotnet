@@ -43,9 +43,7 @@ module Raw =
         (items: IEnumerable<RawDatabase>)
         (source: HttpHandler<unit>)
         : HttpHandler<IEnumerable<RawDatabase>> =
-        source
-        |> withLogMessage "Raw:createDatabases"
-        |> create items Url
+        source |> withLogMessage "Raw:createDatabases" |> create items Url
 
     /// <summary>
     /// Delete multiple databases in the same project.
@@ -53,9 +51,7 @@ module Raw =
     /// <param name="query">The list of databases to delete.</param>
     /// <returns>Empty result.</returns>
     let deleteDatabases (query: RawDatabaseDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source
-        |> withLogMessage "Raw:deleteDatabases"
-        |> delete query Url
+        source |> withLogMessage "Raw:deleteDatabases" |> delete query Url
 
     /// <summary>
     /// List tables in database.
@@ -91,9 +87,7 @@ module Raw =
         let query = RawTableCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables"
 
-        source
-        |> withLogMessage "Raw:createTables"
-        |> createWithQuery items query url
+        source |> withLogMessage "Raw:createTables" |> createWithQuery items query url
 
     /// <summary>
     /// Delete multiple tables in the same database.
@@ -108,9 +102,7 @@ module Raw =
         : HttpHandler<EmptyResponse> =
         let url = Url +/ database +/ "tables/delete"
 
-        source
-        |> withLogMessage "Raw:deleteTables"
-        |> post items url
+        source |> withLogMessage "Raw:deleteTables" |> post items url
 
     /// <summary>
     /// Retrieve a list of cursors for parallel read.
@@ -126,9 +118,7 @@ module Raw =
         : HttpHandler<string seq> =
         let url = Url +/ database +/ "tables" +/ table +/ "cursors"
 
-        source
-        |> withLogMessage "Raw:retrieveCursors"
-        |> getWithQuery query url
+        source |> withLogMessage "Raw:retrieveCursors" |> getWithQuery query url
 
     /// <summary>
     /// Retrieve rows from a table.
@@ -180,17 +170,9 @@ module Raw =
     /// <param name="key">Key of row to get.</param>
     /// <returns>The retrieved row.</returns>
     let getRow (database: string) (table: string) (key: string) (source: HttpHandler<unit>) : HttpHandler<RawRow<'T>> =
-        let url =
-            Url
-            +/ database
-            +/ "tables"
-            +/ table
-            +/ "rows"
-            +/ key
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
 
-        source
-        |> withLogMessage "Raw:getRow"
-        |> getV10 url
+        source |> withLogMessage "Raw:getRow" |> getV10 url
 
     /// <summary>
     /// Get a single row from table, with specified json serializer options.
@@ -207,17 +189,9 @@ module Raw =
         (options: JsonSerializerOptions)
         (source: HttpHandler<unit>)
         : HttpHandler<RawRow<'T>> =
-        let url =
-            Url
-            +/ database
-            +/ "tables"
-            +/ table
-            +/ "rows"
-            +/ key
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ key
 
-        source
-        |> withLogMessage "Raw:getRow"
-        |> getV10Options url options
+        source |> withLogMessage "Raw:getRow" |> getV10Options url options
 
     /// <summary>
     /// Create rows in a table.
@@ -237,9 +211,7 @@ module Raw =
         let query = RawRowCreateQuery(EnsureParent = ensureParent)
         let url = Url +/ database +/ "tables" +/ table +/ "rows"
 
-        source
-        |> withLogMessage "Raw:createRows"
-        |> createWithQueryEmpty rows query url
+        source |> withLogMessage "Raw:createRows" |> createWithQueryEmpty rows query url
 
     /// <summary>
     /// Create rows in a table, with specified json serializer options.
@@ -280,14 +252,6 @@ module Raw =
         : HttpHandler<EmptyResponse> =
         let query = ItemsWithoutCursor<RawRowDelete>(Items = rows)
 
-        let url =
-            Url
-            +/ database
-            +/ "tables"
-            +/ table
-            +/ "rows"
-            +/ "delete"
+        let url = Url +/ database +/ "tables" +/ table +/ "rows" +/ "delete"
 
-        source
-        |> withLogMessage "Raw:deleteRows"
-        |> postV10 query url
+        source |> withLogMessage "Raw:deleteRows" |> postV10 query url

@@ -32,54 +32,38 @@ type FileFilter =
 
         x.Name |> Option.iter (fun x -> filter.Name <- x)
 
-        x.DirectoryPrefix
-        |> Option.iter (fun x -> filter.DirectoryPrefix <- x)
+        x.DirectoryPrefix |> Option.iter (fun x -> filter.DirectoryPrefix <- x)
 
-        x.ExternalIdPrefix
-        |> Option.iter (fun x -> filter.ExternalIdPrefix <- x)
+        x.ExternalIdPrefix |> Option.iter (fun x -> filter.ExternalIdPrefix <- x)
 
-        x.MimeType
-        |> Option.iter (fun x -> filter.MimeType <- x)
+        x.MimeType |> Option.iter (fun x -> filter.MimeType <- x)
 
-        x.Source
-        |> Option.iter (fun x -> filter.Source <- x)
+        x.Source |> Option.iter (fun x -> filter.Source <- x)
 
-        x.Uploaded
-        |> Option.iter (fun x -> filter.Uploaded <- x)
+        x.Uploaded |> Option.iter (fun x -> filter.Uploaded <- x)
 
         if not (List.isEmpty x.AssetIds) then
             filter.AssetIds <- x.AssetIds |> Array.ofList
 
         if not (List.isEmpty x.RootAssetIds) then
-            filter.RootAssetIds <-
-                x.RootAssetIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.RootAssetIds <- x.RootAssetIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
         if not (List.isEmpty x.AssetExternalIds) then
             filter.AssetExternalIds <- x.AssetExternalIds |> Array.ofList
 
         if not (List.isEmpty x.AssetSubtreeIds) then
-            filter.AssetSubtreeIds <-
-                x.AssetSubtreeIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.AssetSubtreeIds <- x.AssetSubtreeIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
         if not (List.isEmpty x.DataSetIds) then
-            filter.DataSetIds <-
-                x.DataSetIds
-                |> List.map (fun x -> x.ToIdentifier())
-                |> Array.ofList
+            filter.DataSetIds <- x.DataSetIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
 
 
-        x.CreatedTime
-        |> Option.iter (fun x -> filter.CreatedTime <- x.ToTimeRange())
+        x.CreatedTime |> Option.iter (fun x -> filter.CreatedTime <- x.ToTimeRange())
 
         x.LastUpdatedTime
         |> Option.iter (fun x -> filter.LastUpdatedTime <- x.ToTimeRange())
 
-        x.UploadedTime
-        |> Option.iter (fun x -> filter.UploadedTime <- x.ToTimeRange())
+        x.UploadedTime |> Option.iter (fun x -> filter.UploadedTime <- x.ToTimeRange())
 
         x.SourceCreatedTime
         |> Option.iter (fun x -> filter.SourceCreatedTime <- x.ToTimeRange())
@@ -87,8 +71,7 @@ type FileFilter =
         x.SourceModifiedTime
         |> Option.iter (fun x -> filter.SourceModifiedTime <- x.ToTimeRange())
 
-        x.Labels
-        |> Option.iter (fun x -> filter.Labels <- x.ToLabelFilter())
+        x.Labels |> Option.iter (fun x -> filter.Labels <- x.ToLabelFilter())
 
         if not (Map.isEmpty x.MetaData) then
             filter.Metadata <- x.MetaData |> Dictionary
@@ -103,44 +86,24 @@ type FileFilter =
         | Some other ->
             { Name = x.Name |> Option.orElse other.Name
               MimeType = x.MimeType |> Option.orElse other.MimeType
-              DirectoryPrefix =
-                x.DirectoryPrefix
-                |> Option.orElse other.DirectoryPrefix
+              DirectoryPrefix = x.DirectoryPrefix |> Option.orElse other.DirectoryPrefix
               AssetIds = set (x.AssetIds @ other.AssetIds) |> List.ofSeq
-              RootAssetIds =
-                set (x.RootAssetIds @ other.RootAssetIds)
-                |> List.ofSeq
-              AssetExternalIds =
-                set (x.AssetExternalIds @ other.AssetExternalIds)
-                |> List.ofSeq
-              AssetSubtreeIds =
-                set (x.AssetSubtreeIds @ other.AssetSubtreeIds)
-                |> List.ofSeq
-              DataSetIds =
-                set (x.DataSetIds @ other.DataSetIds)
-                |> List.ofSeq
-              MetaData =
-                Map.toList x.MetaData @ Map.toList other.MetaData
-                |> Map.ofList
+              RootAssetIds = set (x.RootAssetIds @ other.RootAssetIds) |> List.ofSeq
+              AssetExternalIds = set (x.AssetExternalIds @ other.AssetExternalIds) |> List.ofSeq
+              AssetSubtreeIds = set (x.AssetSubtreeIds @ other.AssetSubtreeIds) |> List.ofSeq
+              DataSetIds = set (x.DataSetIds @ other.DataSetIds) |> List.ofSeq
+              MetaData = Map.toList x.MetaData @ Map.toList other.MetaData |> Map.ofList
               Source = x.Source |> Option.orElse other.Source
               CreatedTime = x.CreatedTime |> Option.orElse other.CreatedTime
-              LastUpdatedTime =
-                x.LastUpdatedTime
-                |> Option.orElse other.LastUpdatedTime
+              LastUpdatedTime = x.LastUpdatedTime |> Option.orElse other.LastUpdatedTime
 
-              SourceCreatedTime =
-                  x.SourceCreatedTime
-                  |> Option.orElse other.SourceCreatedTime
-              SourceModifiedTime =
-                x.SourceModifiedTime
-                |> Option.orElse other.SourceModifiedTime
+              SourceCreatedTime = x.SourceCreatedTime |> Option.orElse other.SourceCreatedTime
+              SourceModifiedTime = x.SourceModifiedTime |> Option.orElse other.SourceModifiedTime
 
               UploadedTime = x.UploadedTime |> Option.orElse other.UploadedTime
 
               Uploaded = x.Uploaded |> Option.orElse other.Uploaded
-              ExternalIdPrefix =
-                x.ExternalIdPrefix
-                |> Option.orElse other.ExternalIdPrefix
+              ExternalIdPrefix = x.ExternalIdPrefix |> Option.orElse other.ExternalIdPrefix
               Labels = x.Labels |> Option.orElse other.Labels }
 
     static member Empty: FileFilter =
@@ -183,8 +146,7 @@ type FileQuery =
         // x.Partition
         // |> Option.iter (fun x -> query.Partition <- x)
 
-        x.Cursor
-        |> Option.iter (fun x -> query.Cursor <- x)
+        x.Cursor |> Option.iter (fun x -> query.Cursor <- x)
 
         query
 
@@ -202,11 +164,9 @@ type FileSearch =
     member x.ToFileSearch() =
         let search = CogniteSdk.FileSearch()
 
-        x.Filter
-        |> Option.iter (fun x -> search.Filter <- x.ToFileFilter())
+        x.Filter |> Option.iter (fun x -> search.Filter <- x.ToFileFilter())
 
-        x.Limit
-        |> Option.iter (fun x -> search.Limit <- Nullable(x))
+        x.Limit |> Option.iter (fun x -> search.Limit <- Nullable(x))
 
         search.Search <- x.Search.ToSearch()
 

@@ -8,6 +8,7 @@
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)/strong_name.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common.fs" />
@@ -28,17 +29,22 @@
     <Compile Include="ExtPipes.fs" />
     <Compile Include="Labels.fs" />
     <Compile Include="Groups.fs" />
+    <Compile Include="Annotations.fs" />
     <Compile Include="Transformations.fs" />
+    <Compile Include="Units.fs" />
     <Compile Include="Playground/Handler.fs" />
     <Compile Include="Playground/Functions.fs" />
-    <Compile Include="Playground/Annotations.fs" />
     <Compile Include="Beta/Handler.fs" />
+    <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
     <Compile Include="Beta/DataModels.fs" />
+    <Compile Include="Alpha/Handler.fs" />
+    <Compile Include="Alpha/Simulators.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
+    <ProjectReference Include="../../CogniteSdk.Protobuf/CogniteSdk.Protobuf.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

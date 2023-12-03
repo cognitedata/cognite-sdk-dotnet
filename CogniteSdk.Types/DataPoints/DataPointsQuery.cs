@@ -71,6 +71,12 @@ namespace CogniteSdk
         /// </summary>
         public string ExternalId { get; set; }
 
+        /// <summary>
+        /// To retrieve next page, insert the `nextCursor` from a previous response.
+        /// Be sure to match with the corresponding time series. Not compatible with `includeOutsidePoints`.
+        /// </summary>
+        public string Cursor { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<DataPointsQueryItem>(this);
     }

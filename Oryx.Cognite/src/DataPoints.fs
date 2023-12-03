@@ -33,9 +33,7 @@ module DataPoints =
 
     /// Create one or more new times eries. Returns a list of created time series.
     let create (items: DataPointInsertionRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source
-        |> withLogMessage "DataPoints:create"
-        |> createProtobuf items Url
+        source |> withLogMessage "DataPoints:create" |> createProtobuf items Url
 
     let createWithGzip
         (items: DataPointInsertionRequest)
@@ -48,9 +46,7 @@ module DataPoints =
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: DataPointsDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source
-        |> withLogMessage "DataPoints:delete"
-        |> delete items Url
+        source |> withLogMessage "DataPoints:delete" |> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
     let latest

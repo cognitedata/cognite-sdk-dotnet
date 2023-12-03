@@ -1,16 +1,13 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk;
+using CogniteSdk.Beta.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
-using CogniteSdk;
-using CogniteSdk.Beta;
-
 using Xunit;
 
 namespace Test.CSharp.Integration
@@ -21,9 +18,8 @@ namespace Test.CSharp.Integration
         public Client Write => WriteClient;
 
         public string TestSpace { get; private set; }
-        public string TestModel { get; private set; }
-        public string TestEdgeModel { get; private set; }
-        public string Prefix { get; private set; }
+        public ContainerIdentifier TestContainer { get; private set; }
+        public ViewIdentifier TestView { get; private set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -31,79 +27,81 @@ namespace Test.CSharp.Integration
 
         public override async Task InitializeAsync()
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            Random random = new Random();
-            Prefix = "sdkTest" + new string(Enumerable.Repeat(chars, 5)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
+            TestSpace = $"{Prefix}Space";
 
-            var extid = "TestSpace";
+            var testSpace = new SpaceCreate { Space = TestSpace };
 
-            var testSpace = new Space { ExternalId = extid };
+            await Write.Beta.DataModels.UpsertSpaces(new[] { testSpace });
 
-            await Write.Beta.DataModels.CreateSpaces(new[] { testSpace });
-
-            var testModel = new ModelCreate
+            var testContainer = new ContainerCreate
             {
-                AllowEdge = false,
-                AllowNode = true,
-                ExternalId = "TestModel",
-                Properties = new Dictionary<string, ModelProperty>
+                ExternalId = "TestContainer",
+                Space = TestSpace,
+                Name = "Test",
+                UsedFor = UsedFor.all,
+                Properties = new Dictionary<string, ContainerPropertyDefinition>
                 {
-                    { "prop", new ModelProperty
+                    { "prop", new ContainerPropertyDefinition
                     {
-                        Type = "text",
-                        Nullable = true
-                    } },
-                    { "refProp", new ModelProperty
-                    {
-                        Type = "direct_relation",
+                        Type = BasePropertyType.Text(),
                         Nullable = true,
-                        TargetModel = ModelIdentifier.Node
                     } },
-                    { "intProp", new ModelProperty
+                    { "refProp", new ContainerPropertyDefinition
                     {
-                        Type = "int64",
-                        Nullable = false
+                        Type = BasePropertyType.Direct(),
+                        Nullable = true,
+                    } },
+                    { "intProp", new ContainerPropertyDefinition
+                    {
+                        Type = BasePropertyType.Create(PropertyTypeVariant.int64),
+                        Nullable = true,
                     } }
                 }
             };
+            var testContainerIdt = new ContainerIdentifier(TestSpace, "TestContainer");
 
-            var testEdgeModel = new ModelCreate
+            var testView = new ViewCreate
             {
-                AllowEdge = true,
-                AllowNode = false,
-                ExternalId = "TestEdgeModel",
-                Properties = new Dictionary<string, ModelProperty>
+                ExternalId = "TestView",
+                Name = "Test",
+                Space = TestSpace,
+                Filter = new MatchAllFilter(),
+                Properties = new Dictionary<string, ICreateViewProperty>
                 {
-                    { "prop", new ModelProperty
+                    { "prop", new ViewPropertyCreate
                     {
-                        Type = "text",
-                        Nullable = true
+                        Container = testContainerIdt,
+                        ContainerPropertyIdentifier = "prop",
+                        Name = "Property"
                     } },
-                    { "refProp", new ModelProperty
+                    { "refProp", new ViewPropertyCreate
                     {
-                        Type = "direct_relation",
-                        Nullable = true,
-                        TargetModel = ModelIdentifier.Node
+                        Container = testContainerIdt,
+                        ContainerPropertyIdentifier = "refProp",
+                        Name = "Property Reference"
                     } },
-                    { "intProp", new ModelProperty
+                    { "intProp", new ViewPropertyCreate
                     {
-                        Type = "int64",
-                        Nullable = false
+                        Container = testContainerIdt,
+                        ContainerPropertyIdentifier = "intProp",
+                        Name = "Property Integer"
                     } }
-                }
+                },
+                Version = "1"
             };
 
-            await Write.Beta.DataModels.ApplyModels(new[] { testModel, testEdgeModel }, extid);
+            await Write.Beta.DataModels.UpsertContainers(new[] { testContainer });
+            await Write.Beta.DataModels.UpsertViews(new[] { testView });
 
-            TestSpace = extid;
-            TestModel = "TestModel";
-            TestEdgeModel = "TestEdgeModel";
+            TestContainer = testContainerIdt;
+            TestView = new ViewIdentifier(TestSpace, "TestView", "1");
         }
 
-        public override Task DisposeAsync()
+        public override async Task DisposeAsync()
         {
-            return Task.CompletedTask;
+            if (TestContainer != null) await Write.Beta.DataModels.DeleteContainers(new[] { TestContainer.ContainerId() });
+            if (TestView != null) await Write.Beta.DataModels.DeleteViews(new[] { TestView.FDMExternalId() });
+            if (TestSpace != null) await Write.Beta.DataModels.DeleteSpaces(new[] { TestSpace });
         }
     }
     public class DataModelsTest : IClassFixture<DataModelsFixture>
@@ -114,196 +112,360 @@ namespace Test.CSharp.Integration
             this.tester = tester;
         }
 
-        /* Currently cannot delete spaces
         [Fact]
-        public async Task TestCreateRetrieveDeleteSpaces()
+        public async Task TestCreateUpdateRetrieveDeleteSpaces()
         {
-            var extid = Guid.NewGuid().ToString();
-            var space = new Space { ExternalId = extid };
+            var extid = $"{tester.Prefix}TestCreateRetrieveSpace";
+            var space = new SpaceCreate { Space = extid };
 
-            var created = await tester.Write.Beta.DataModels.CreateSpaces(new[] { space });
+            // Create a space
+            var created = await tester.Write.Beta.DataModels.UpsertSpaces(new[] { space });
             Assert.Single(created);
 
-            var retrieved = await tester.Write.Beta.DataModels.RetrieveSpaces(new[] { extid });
-            Assert.Single(retrieved);
-            Assert.Equal(extid, retrieved.First().ExternalId);
-
-            var listed = await tester.Write.Beta.DataModels.ListSpaces();
-            Assert.True(listed.Count() >= 2);
-
-            await tester.Write.Beta.DataModels.DeleteSpaces(new[] { extid });
-        }
-        */
-
-        /* Also cannot delete models yet...
-         * [Fact]
-        public async Task TestCreateRetrieveDeleteModels()
-        {
-            var extid = tester.Prefix + "model1";
-
-            var model = new ModelCreate
+            try
             {
-                AllowEdge = false,
-                AllowNode = true,
+                // Update space name
+                space.Name = "Test Space Updated";
+                var updated = await tester.Write.Beta.DataModels.UpsertSpaces(new[] { space });
+                Assert.Single(updated);
+                Assert.Equal("Test Space Updated", updated.First().Name);
+
+                // Retrieve space by id
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveSpaces(new[] { extid });
+                Assert.Single(retrieved);
+            }
+            finally
+            {
+                // Delete space
+                var deleted = await tester.Write.Beta.DataModels.DeleteSpaces(new[] { extid });
+                Assert.Single(deleted);
+            }
+        }
+
+        [Fact]
+        public async Task TestCreateUpdateRetrieveDeleteModel()
+        {
+            var extid = "TestCreateRetrieveModel";
+            var model = new DataModelCreate
+            {
+                Space = tester.TestSpace,
                 ExternalId = extid,
-                Properties = new Dictionary<string, ModelProperty>
+                Version = "1",
+                Views = new[]
                 {
-                    { "prop1", new ModelProperty
+                    (IViewCreateOrReference)tester.TestView,
+                    new ViewCreate
                     {
-                        Type = "text",
-                        Nullable = true
-                    } },
-                    { "refProp", new ModelProperty
+                        ExternalId = "TestCreateInModel",
+                        Filter = new MatchAllFilter(),
+                        Implements = new[]
+                        {
+                            tester.TestView
+                        },
+                        Space = tester.TestSpace,
+                        Version = "1",
+                        Properties = new Dictionary<string, ICreateViewProperty>()
+                    }
+                }
+            };
+            var id = new FDMExternalId(extid, tester.TestSpace, "1");
+
+            // Create a data model
+            var created = await tester.Write.Beta.DataModels.UpsertDataModels(new[] { model });
+            Assert.Single(created);
+
+            try
+            {
+                // Retrieve a data model
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveDataModels(new[] { id }, true);
+                Assert.Single(retrieved);
+                var retModel = retrieved.First();
+                Assert.Equal(2, retModel.Views.Count());
+                Assert.Contains(retModel.Views, view => (view as View).ExternalId == "TestView");
+
+                // Update a data model
+                model.Description = "Test description";
+                var updated = await tester.Write.Beta.DataModels.UpsertDataModels(new[] { model });
+                Assert.Single(updated);
+                Assert.Equal("Test description", updated.First().Description);
+            }
+            finally
+            {
+                // Delete the data model
+                var deleted = await tester.Write.Beta.DataModels.DeleteDataModels(new[]
+                {
+                    id
+                });
+                // Delete the implicitly created view
+                await tester.Write.Beta.DataModels.DeleteViews(new[]
+                {
+                    new FDMExternalId("TestCreateInModel", tester.TestSpace, "1")
+                });
+                Assert.Single(deleted);
+            }
+        }
+
+        [Fact]
+        public async Task TestCreateUpdateRetrieveDeleteView()
+        {
+            var extid = "TestCreateRetrieveView";
+            var view = new ViewCreate
+            {
+                ExternalId = extid,
+                Space = tester.TestSpace,
+                Name = "Test 2",
+                Version = "1",
+                Properties = new Dictionary<string, ICreateViewProperty>
+                {
+                    { "prop", new ViewPropertyCreate
                     {
-                        Type = "direct_relation",
-                        Nullable = true,
-                        TargetModel = ModelIdentifier.Node
+                        Container = tester.TestContainer,
+                        Name = "Property",
+                        ContainerPropertyIdentifier = "prop"
                     } }
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.ApplyModels(new[] { model }, tester.TestSpace);
-            Assert.True(created.Any());
+            var created = await tester.Write.Beta.DataModels.UpsertViews(new[] { view });
+            Assert.Single(created);
 
-            // Does not work?
-            // var retrieved = await tester.Write.Beta.DataModels.RetrieveModels(new[] { extid }, tester.TestSpace);
-            // Assert.True(retrieved.Any());
+            var id = new FDMExternalId(extid, tester.TestSpace, "1");
 
-            var listed = await tester.Write.Beta.DataModels.ListModels(tester.TestSpace);
-            Assert.True(listed.Count() >= 1);
+            try
+            {
+                // Retrieve a vuew
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveViews(new[] { id });
+                Assert.Single(retrieved);
 
-            await tester.Write.Beta.DataModels.DeleteModels(new[] { extid }, tester.TestSpace);
-        } */
+                // Update a view
+                view.Description = "Test description";
+                var updated = await tester.Write.Beta.DataModels.UpsertViews(new[] { view });
+                Assert.Single(updated);
+                Assert.Equal("Test description", updated.First().Description);
+            }
+            finally
+            {
+                // Delete the view
+                var deleted = await tester.Write.Beta.DataModels.DeleteViews(new[] { id });
+                Assert.Single(deleted);
+            }
+        }
 
-        private class TestNodeType : BaseNode
+        [Fact]
+        public async Task TestCreateUpdateRetrieveDeleteContainer()
         {
-            public string Prop { get; set; }
-            public DirectRelationIdentifier RefProp { get; set; }
-            public long IntProp { get; set; }
+            var extid = "TestCreateRetrieveContainer";
+            var container = new ContainerCreate
+            {
+                ExternalId = extid,
+                Space = tester.TestSpace,
+                Name = "Test 2",
+                UsedFor = UsedFor.node,
+                Properties = new Dictionary<string, ContainerPropertyDefinition>
+                {
+                    { "prop", new ContainerPropertyDefinition
+                    {
+                        Nullable = true,
+                        Type = BasePropertyType.Text(true),
+                        Name = "prop"
+                    } }
+                }
+            };
+
+            var created = await tester.Write.Beta.DataModels.UpsertContainers(new[] { container });
+            Assert.Single(created);
+
+            var id = new ContainerId(extid, tester.TestSpace);
+
+            try
+            {
+                // Retrieve a container
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveContainers(new[] { id });
+                Assert.Single(retrieved);
+
+                // Update a container
+                container.Description = "Test description";
+                var updated = await tester.Write.Beta.DataModels.UpsertContainers(new[] { container });
+                Assert.Single(updated);
+                Assert.Equal("Test description", updated.First().Description);
+            }
+            finally
+            {
+                // Delete the container
+                var deleted = await tester.Write.Beta.DataModels.DeleteContainers(new[] { id });
+                Assert.Single(deleted);
+            }
         }
 
         [Fact]
         public async Task TestCreateRetrieveDeleteNodes()
         {
-            var model = new ModelIdentifier(tester.TestSpace, tester.TestModel);
-            var id = $"{tester.Prefix}node1";
-            var node = new TestNodeType
+            var req = new InstanceWriteRequest
             {
-                ExternalId = id,
-                IntProp = 123,
-                Prop = "Some property",
-            };
-
-            var created = await tester.Write.Beta.DataModels.IngestNodes(new NodeIngestRequest<TestNodeType>
-            {
-                Items = new[] { node },
-                Model = model,
-                SpaceExternalId = tester.TestSpace
-            });
-            Assert.Single(created);
-
-            var retrieved = await tester.Write.Beta.DataModels.RetrieveNodes<TestNodeType>(new RetrieveNodesRequest
-            {
-                Items = new[] { new CogniteExternalId(id) },
-                Model = model,
-                SpaceExternalId = tester.TestSpace
-            });
-            Assert.Single(retrieved.Items);
-            Assert.Equal("Some property", retrieved.Items.First().Prop);
-
-            var filtered = await tester.Write.Beta.DataModels.FilterNodes<TestNodeType>(new NodeFilterQuery
-            {
-                Model = model,
-                SpaceExternalId = tester.TestSpace,
-                Filter = new OrFilter
+                Items = new[]
                 {
-                    Or = new[]
+                    new NodeWrite
                     {
-                        new EqualsFilter
+                        ExternalId = "node1",
+                        Space = tester.TestSpace,
+                        Sources = new[]
                         {
-                            Property = new PropertyIdentifier(model, "externalId"),
-                            Value = new DMSFilterValue<string>(id)
-                        },
-                        new EqualsFilter
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value") },
+                                    { "intProp", new RawPropertyValue<long>(123) }
+                                },
+                                Source = tester.TestContainer
+                            }
+                        }
+                    },
+                    new NodeWrite
+                    {
+                        ExternalId = "node2",
+                        Space = tester.TestSpace,
+                        Sources = new[]
                         {
-                            Property = new PropertyIdentifier(model, "prop"),
-                            Value = new DMSFilterValue<string>("Some other value")
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value") },
+                                    { "refProp", new DirectRelationIdentifier(tester.TestSpace, "node1") }
+                                },
+                                Source = tester.TestContainer
+                            }
                         }
                     }
                 }
-            });
-            Assert.Single(filtered.Items);
+            };
 
-            await tester.Write.Beta.DataModels.DeleteNodes(new[] { id }, tester.TestSpace);
-        }
+            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            Assert.Equal(2, created.Count());
 
-        private class TestEdgeType : BaseEdge
-        {
-            public string Prop { get; set; }
-            public DirectRelationIdentifier RefProp { get; set; }
-            public long IntProp { get; set; }
+            var ids = new[] {
+                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node1"),
+                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node2")
+            };
+
+            try
+            {
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
+                {
+                    Sources = new[]
+                    {
+                        new InstanceSource
+                        {
+                            Source = tester.TestView
+                        }
+                    },
+                    Items = ids,
+                    IncludeTyping = true
+                });
+                Assert.Equal(2, retrieved.Items.Count());
+                Assert.NotNull(retrieved.Typing);
+                var item = retrieved.Items.First(n => n.ExternalId == "node1");
+                Assert.Equal("Test value", (item.Properties[tester.TestSpace][tester.TestView.ExternalId + "/1"]["prop"] as RawPropertyValue<string>).Value);
+            }
+            finally
+            {
+                var deleted = await tester.Write.Beta.DataModels.DeleteInstances(ids);
+                Assert.Equal(2, deleted.Count());
+            }
         }
 
         [Fact]
         public async Task TestCreateRetrieveDeleteEdges()
         {
-            var model = new ModelIdentifier(tester.TestSpace, tester.TestEdgeModel);
-            var id = $"{tester.Prefix}edge1";
-            var edge = new TestEdgeType
+            var req = new InstanceWriteRequest
             {
-                ExternalId = id,
-                StartNode = new DirectRelationIdentifier(tester.TestSpace, "Source"),
-                EndNode = new DirectRelationIdentifier(tester.TestSpace, "Target"),
-                IntProp = 123,
-                Prop = "Prop",
-                Type = new DirectRelationIdentifier(tester.TestSpace, "Type")
-            };
-
-            var created = await tester.Write.Beta.DataModels.IngestEdges(new EdgeIngestRequest<TestEdgeType>
-            {
-                Items = new[] { edge },
                 AutoCreateEndNodes = true,
                 AutoCreateStartNodes = true,
-                SpaceExternalId = tester.TestSpace,
-                Model = model
-            });
-
-            var retrieved = await tester.Write.Beta.DataModels.RetrieveEdges<TestEdgeType>(new RetrieveNodesRequest
-            {
-                Items = new[] { new CogniteExternalId(id) },
-                Model = model,
-                SpaceExternalId = tester.TestSpace
-            });
-            Assert.Single(retrieved.Items);
-            Assert.Equal("Prop", retrieved.Items.First().Prop);
-            var filter = new AndFilter
-            {
-                And = new[]
+                Items = new[]
                 {
-                    new EqualsFilter
+                    new EdgeWrite
                     {
-                        Property = new PropertyIdentifier(model, "prop"),
-                        Value = new DMSFilterValue<string>("Prop")
+                        ExternalId = "edge1",
+                        Space = tester.TestSpace,
+                        Sources = new[]
+                        {
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value") },
+                                    { "intProp", new RawPropertyValue<long>(123) }
+                                },
+                                Source = tester.TestContainer
+                            }
+                        },
+                        StartNode = new DirectRelationIdentifier(tester.TestSpace, "node3"),
+                        EndNode = new DirectRelationIdentifier(tester.TestSpace, "node4"),
+                        Type = new DirectRelationIdentifier(tester.TestSpace, "node5")
                     },
-                    new EqualsFilter
+                    new EdgeWrite
                     {
-                        Property = new PropertyIdentifier(ModelIdentifier.Edge, "externalId"),
-                        Value = new DMSFilterValue<string>(id)
+                        ExternalId = "edge2",
+                        Space = tester.TestSpace,
+                        Sources = new[]
+                        {
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value") },
+                                    { "refProp", new DirectRelationIdentifier(tester.TestSpace, "node4") }
+                                },
+                                Source = tester.TestContainer
+                            }
+                        },
+                        StartNode = new DirectRelationIdentifier(tester.TestSpace, "node3"),
+                        EndNode = new DirectRelationIdentifier(tester.TestSpace, "node4"),
+                        Type = new DirectRelationIdentifier(tester.TestSpace, "node5")
                     }
                 }
             };
-            var request = new NodeFilterQuery
-            {
-                Filter = filter,
-                SpaceExternalId = tester.TestSpace,
-                Model = model,
+
+            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            Assert.Equal(2, created.Count());
+
+            var ids = new[] {
+                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge1"),
+                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge2")
             };
 
-            var filtered = await tester.Write.Beta.DataModels.FilterEdges<TestEdgeType>(request);
-            Assert.Single(filtered.Items);
-
-
-            await tester.Write.Beta.DataModels.DeleteEdges(new[] { id }, tester.TestSpace);
+            try
+            {
+                var retrieved = await tester.Write.Beta.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
+                {
+                    Sources = new[]
+                    {
+                        new InstanceSource
+                        {
+                            Source = tester.TestView
+                        }
+                    },
+                    Items = ids,
+                    IncludeTyping = true
+                });
+                Assert.Equal(2, retrieved.Items.Count());
+                Assert.NotNull(retrieved.Typing);
+                var item = retrieved.Items.First(n => n.ExternalId == "edge1");
+                Assert.Equal("Test value", (item.Properties[tester.TestSpace][tester.TestView.ExternalId + "/1"]["prop"] as RawPropertyValue<string>).Value);
+            }
+            finally
+            {
+                var deleted = await tester.Write.Beta.DataModels.DeleteInstances(ids);
+                Assert.Equal(2, deleted.Count());
+                var deletedNodes = await tester.Write.Beta.DataModels.DeleteInstances(new[]
+                {
+                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node3"),
+                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node4"),
+                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node5"),
+                });
+                Assert.Equal(3, deletedNodes.Count());
+            }
         }
 
         [Fact]
@@ -315,73 +477,169 @@ namespace Test.CSharp.Integration
                 {
                     new EqualsFilter
                     {
-                        Property = new PropertyIdentifier(new ModelIdentifier("space", "model"), "prop"),
-                        Value = new DMSFilterValue<double>(123.123)
+                        Property = new [] { "space", "view", "prop" },
+                        Value = new RawPropertyValue<string>("value")
                     },
                     new NotFilter
                     {
                         Not = new PrefixFilter
                         {
-                            Property = new PropertyIdentifier(ModelIdentifier.Edge, "externalId"),
-                            Value = "prefix"
+                            Property = new [] { "edge", "externalId" },
+                            Value = new RawPropertyValue<string>("prefix")
                         }
                     }
                 }
             };
 
-            Assert.Equal(@"{""and"":[{""equals"":{""property"":[""space"",""model"",""prop""],""value"":123.123}},{""not"":{""prefix"":{""property"":[""edge"",""externalId""],""value"":""prefix""}}}]}",
+            Assert.Equal(@"{""and"":[{""equals"":{""property"":[""space"",""view"",""prop""],""value"":""value""}},{""not"":{""prefix"":{""property"":[""edge"",""externalId""],""value"":""prefix""}}}]}",
                 JsonSerializer.Serialize(filter, Oryx.Cognite.Common.jsonOptions));
             var reversed = JsonSerializer.Deserialize<IDMSFilter>(JsonSerializer.Serialize(filter, Oryx.Cognite.Common.jsonOptions), Oryx.Cognite.Common.jsonOptions);
             var andFilter = Assert.IsType<AndFilter>(reversed);
             Assert.Equal(2, andFilter.And.Count());
             var eqFilter = Assert.IsType<EqualsFilter>(andFilter.And.First());
-            Assert.Equal(123.123, (eqFilter.Value as DMSFilterValue<double>).Value);
+            Assert.Equal("value", (eqFilter.Value as RawPropertyValue<string>).Value);
+        }
+
+        [Fact]
+        public void TestDeserializeArrayValue()
+        {
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[1, 2, 3]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<double[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>(@"[""test"", ""test2"", ""test3""]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<string[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[true, false, true]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<bool[]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[[1], [2], [3]]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<double[][]>>(res);
+                Assert.Equal(3, resArr.Value.Length);
+            }
+            {
+                var res = JsonSerializer.Deserialize<IDMSValue>("[]", Oryx.Cognite.Common.jsonOptions);
+                var resArr = Assert.IsType<RawPropertyValue<object[]>>(res);
+                Assert.Empty(resArr.Value);
+            }
         }
 
         [Fact]
         public async Task TestRunQuery()
         {
-            var model = new ModelIdentifier(tester.TestSpace, tester.TestModel);
-            var id = $"{tester.Prefix}node2";
-            var node = new TestNodeType
+            var req = new InstanceWriteRequest
             {
-                ExternalId = id,
-                IntProp = 123,
-                Prop = "Some property 2",
+                Items = new[]
+                {
+                    new NodeWrite
+                    {
+                        ExternalId = "node6",
+                        Space = tester.TestSpace,
+                        Sources = new[]
+                        {
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value 2") },
+                                    { "intProp", new RawPropertyValue<long>(321) }
+                                },
+                                Source = tester.TestContainer
+                            }
+                        }
+                    },
+                    new NodeWrite
+                    {
+                        ExternalId = "node7",
+                        Space = tester.TestSpace,
+                        Sources = new[]
+                        {
+                            new InstanceData<StandardInstanceWriteData>
+                            {
+                                Properties = new StandardInstanceWriteData
+                                {
+                                    { "prop", new RawPropertyValue<string>("Test value 3") },
+                                    { "refProp", new DirectRelationIdentifier(tester.TestSpace, "node6") }
+                                },
+                                Source = tester.TestContainer
+                            }
+                        }
+                    }
+                }
             };
 
-            var created = await tester.Write.Beta.DataModels.IngestNodes(new NodeIngestRequest<TestNodeType>
-            {
-                Items = new[] { node },
-                Model = model,
-                SpaceExternalId = tester.TestSpace
-            });
+            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            Assert.Equal(2, created.Count());
 
-            // Return types here are extremely unpleasant, which is why this method is generic.
-            // Usually you would probably create DTOs to handle this result in a better way.
-            var queryResult = await tester.Write.Beta.DataModels.GraphQuery<Dictionary<string, IEnumerable<Dictionary<string, Dictionary<string, string>>>>>(new GraphQuery
+            var ids = new[] {
+                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node6"),
+                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node7")
+            };
+
+            var q = new Query
             {
-                // This is a bit painful. A better API for building this query might be nice, perhaps something fluent.
-                Select = new Dictionary<string, SelectModelProperties>
+                Select = new Dictionary<string, SelectExpression>
                 {
-                    { "res1", new SelectModelProperties {
-                        Models = new Dictionary<string, ModelQueryProperties> {
-                            { "prop1", new ModelQueryProperties { Model = model, Properties = new[] { "prop" } } }
+                    { "res1", new SelectExpression
+                    {
+                        Sources = new[]
+                        {
+                            new SelectSource
+                            {
+                                Source = tester.TestView,
+                                Properties = new[] { "prop" }
+                            }
                         }
                     } }
                 },
-                With = new Dictionary<string, QueryExpression>
+                With = new Dictionary<string, IQueryTableExpression>
                 {
-                    { "res1", new QueryExpression { Nodes = new NodeQueryExpression {
-                        Filter = new EqualsFilter {
-                            Property = new PropertyIdentifier(ModelIdentifier.Node, "externalId"),
-                            Value = new DMSFilterValue<string>(id)
+                    { "res1", new QueryNodeTableExpression
+                    {
+                        Nodes = new QueryNodes
+                        {
+                            Filter = new AndFilter
+                            {
+                                And = new[]
+                                {
+                                    new EqualsFilter
+                                    {
+                                        Property = new[] { tester.TestSpace, tester.TestView.ExternalId + "/1", "intProp" },
+                                        Value = new RawPropertyValue<long>(321)
+                                    },
+                                    new EqualsFilter
+                                    {
+                                        Property = new[] { "node", "space" },
+                                        Value = new RawPropertyValue<string>(tester.TestSpace)
+                                    }
+                                }
+                            }
                         }
-                    } } }
+                    } }
                 }
-            });
+            };
 
-            Assert.Equal("Some property 2", queryResult["res1"].First()["prop1"]["prop"]);
+            try
+            {
+                var queryResult = await tester.Write.Beta.DataModels.QueryInstances<StandardInstanceData>(q);
+
+                Assert.Equal("res1", queryResult.Items.First().Key);
+                Assert.Single(queryResult.Items["res1"]);
+                var node = queryResult.Items["res1"].First();
+                Assert.Equal("node6", node.ExternalId);
+                Assert.Equal("Test value 2", (node.Properties[tester.TestSpace][tester.TestView.ExternalId + "/1"]["prop"] as RawPropertyValue<string>).Value);
+            }
+            finally
+            {
+                await tester.Write.Beta.DataModels.DeleteInstances(ids);
+            }
+
         }
     }
 }

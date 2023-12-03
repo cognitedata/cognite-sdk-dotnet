@@ -2,6 +2,7 @@ module Tests.Integration.Timeseries
 
 open System
 open System.Collections.Generic
+open System.Threading.Tasks
 
 open FSharp.Control.TaskBuilder
 open Swensen.Unquote
@@ -55,7 +56,7 @@ let ``Get timeseries by missing id is Error`` () = task {
     let id = 0L
 
     // Act
-    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.GetAsync id :> _)
+    Assert.ThrowsAsync<ArgumentException>(Func<Task>(fun () -> readClient.TimeSeries.GetAsync id :> _))
     |> ignore
 }
 
@@ -86,7 +87,7 @@ let ``Get timeseries by missing ids is Error`` () = task {
     let id = Identity 0L
 
     // Act
-    Assert.ThrowsAsync<ArgumentException>(fun () -> readClient.TimeSeries.RetrieveAsync [ id ] :> _)
+    Assert.ThrowsAsync<ArgumentException>(Func<Task>(fun () -> readClient.TimeSeries.RetrieveAsync [ id ] :> _))
     |> ignore
 }
 

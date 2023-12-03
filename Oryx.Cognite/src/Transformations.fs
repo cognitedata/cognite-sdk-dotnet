@@ -46,30 +46,22 @@ module Transformations =
 
     /// Delete a list of transformations, optionally ignoring unknown ids.
     let delete (items: TransformationDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source
-        |> withLogMessage "Transformations:delete"
-        |> delete items Url
+        source |> withLogMessage "Transformations:delete" |> delete items Url
 
     /// List transformations with ability to not include job details.
     let list (query: TransformationQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithCursor<Transformation>> =
-        source
-        |> withLogMessage "Transformations:list"
-        |> getWithQuery query Url
+        source |> withLogMessage "Transformations:list" |> getWithQuery query Url
 
     /// Create a list of transformations.
     let create (items: TransformationCreate seq) (source: HttpHandler<unit>) : HttpHandler<Transformation seq> =
-        source
-        |> withLogMessage "Transformations:create"
-        |> create items Url
+        source |> withLogMessage "Transformations:create" |> create items Url
 
     /// Update a list of transformations.
     let update
         (items: UpdateItem<TransformationUpdate> seq)
         (source: HttpHandler<unit>)
         : HttpHandler<Transformation seq> =
-        source
-        |> withLogMessage "Transformations:update"
-        |> update items Url
+        source |> withLogMessage "Transformations:update" |> update items Url
 
     /// Create a job for the specified transformation.
     let run (item: Identity) (source: HttpHandler<unit>) : HttpHandler<TransformationJob> =

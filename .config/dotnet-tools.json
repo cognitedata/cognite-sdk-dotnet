@@ -3,21 +3,20 @@
   "isRoot": true,
   "tools": {
     "paket": {
-      "version": "6.2.1",
+      "version": "7.2.1",
       "commands": [
         "paket"
       ]
-    },
-    "fantomas-tool": {
-      "version": "4.6.0",
-      "commands": [
-        "fantomas"
-      ]
-    },
-    "dotnet-format": {
+    },"dotnet-format": {
       "version": "5.1.250801",
       "commands": [
         "dotnet-format"
+      ]
+    },
+    "fantomas": {
+      "version": "6.2.3",
+      "commands": [
+        "fantomas"
       ]
     }
   }

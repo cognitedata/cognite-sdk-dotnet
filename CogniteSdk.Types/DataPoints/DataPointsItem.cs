@@ -39,6 +39,12 @@ namespace CogniteSdk
         public string Unit { get; set; }
 
         /// <summary>
+        /// The cursor to get the next page of results (if available). `nextCursor` will be omitted
+        /// when the next data point is after the end of the interval. Increase start/end to fetch more data.
+        /// </summary>
+        public string NextCursor { get; set; }
+
+        /// <summary>
         /// The list of data points.
         /// </summary>
         [JsonPropertyName("datapoints")]

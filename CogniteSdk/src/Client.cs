@@ -92,6 +92,11 @@ namespace CogniteSdk
         public ThreeDAssetMappingsResource ThreeDAssetMappings { get; set; }
 
         /// <summary>
+        /// Client Annotations extension methods
+        /// </summary>
+        public AnnotationsResource Annotations { get; set; }
+
+        /// <summary>
         /// Client Token extension methods
         /// </summary>
         public TokenResource Token { get; set; }
@@ -127,6 +132,16 @@ namespace CogniteSdk
         public BetaResource Beta { get; }
 
         /// <summary>
+        /// Client alpha extension methods
+        /// </summary>
+        public AlphaResource Alpha { get; }
+
+        /// <summary>
+        /// Client units extension methods.
+        /// </summary>
+        public UnitsResource Units { get; }
+
+        /// <summary>
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -152,11 +167,15 @@ namespace CogniteSdk
             Labels = new LabelsResource(authHandler, ctx);
             Groups = new GroupsResource(authHandler, ctx);
             Transformations = new TransformationsResource(authHandler, ctx);
+            Annotations = new AnnotationsResource(authHandler, ctx);
+            Units = new UnitsResource(authHandler, ctx);
 
             // Playground features (experimental)
             Playground = new PlaygroundResource(authHandler, ctx);
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
+            // Alpha features (experimental)
+            Alpha = new AlphaResource(authHandler, ctx);
         }
 
         /// <summary>

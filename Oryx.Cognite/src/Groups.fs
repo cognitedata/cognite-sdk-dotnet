@@ -16,16 +16,10 @@ module Groups =
     let Url = "/groups"
 
     let list (query: GroupQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Group>> =
-        source
-        |> withLogMessage "Groups:list"
-        |> getWithQuery query Url
+        source |> withLogMessage "Groups:list" |> getWithQuery query Url
 
     let create (items: GroupCreate seq) (source: HttpHandler<unit>) : HttpHandler<Group seq> =
-        source
-        |> withLogMessage "Groups:create"
-        |> create items Url
+        source |> withLogMessage "Groups:create" |> create items Url
 
     let delete (items: GroupDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source
-        |> withLogMessage "Groups:delete"
-        |> delete items Url
+        source |> withLogMessage "Groups:delete" |> delete items Url

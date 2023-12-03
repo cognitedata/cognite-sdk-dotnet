@@ -17,20 +17,16 @@ open CogniteSdk
 [<AutoOpen>]
 module Handler =
     let withBetaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
-        source |> withHeader ("version", "beta")
+        source |> withHeader ("cdf-version", "beta")
 
     let withBetaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
-        source
-        |> withBetaHeader<'TSource>
-        |> withVersion V10
+        source |> withBetaHeader<'TSource> |> withVersion V10
 
     let withAlphaHeader<'T> (source: HttpHandler<'T>) : HttpHandler<'T> =
         source |> withHeader ("cdf-version", "alpha")
 
     let withAlphaVersion<'TSource> (source: HttpHandler<'TSource>) : HttpHandler<'TSource> =
-        source
-        |> withAlphaHeader<'TSource>
-        |> withVersion V10
+        source |> withAlphaHeader<'TSource> |> withVersion V10
 
     let get (url: string) (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withBetaVersion |> get url
 
@@ -43,18 +39,14 @@ module Handler =
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithCursor<'TResult>> =
-        source
-        |> withBetaVersion
-        |> getWithQuery query url
+        source |> withBetaVersion |> getWithQuery query url
 
     let post<'TContent, 'TResult>
         (content: 'TContent)
         (url: string)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        source
-        |> withBetaVersion
-        |> post<'TContent, 'TResult> content url
+        source |> withBetaVersion |> post<'TContent, 'TResult> content url
 
     let postWithQuery<'TContent, 'TResult>
         (content: 'TContent)

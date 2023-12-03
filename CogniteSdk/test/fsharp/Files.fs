@@ -2,6 +2,7 @@ module Tests.Integration.Files
 
 open System
 open System.Collections.Generic
+open System.Threading.Tasks
 
 open Xunit
 open Swensen.Unquote
@@ -49,7 +50,7 @@ let ``Get file by missing id is Error`` () = task {
     let fileId = 0L
 
     // Act
-    Assert.ThrowsAsync<ResponseException>(fun () -> readClient.Files.GetAsync fileId :> _)
+    Assert.ThrowsAsync<ResponseException>(Func<Task>(fun () -> readClient.Files.GetAsync fileId :> _))
     |> ignore
 }
 [<Trait("resource", "files")>]

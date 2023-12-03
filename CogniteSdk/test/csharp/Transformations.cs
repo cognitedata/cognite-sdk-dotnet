@@ -15,7 +15,6 @@ namespace Test.CSharp.Integration
         public Client Read => ReadClient;
         public Client Write => WriteClient;
         public long DataSetId { get; private set; }
-        public string Prefix { get; private set; }
 
         protected override void Dispose(bool disposing)
         {
@@ -23,8 +22,6 @@ namespace Test.CSharp.Integration
 
         public override async Task InitializeAsync()
         {
-            Prefix = Guid.NewGuid().ToString();
-
             var t1 = new TransformationCreate
             {
                 ConflictMode = TransformationConflictMode.upsert,
