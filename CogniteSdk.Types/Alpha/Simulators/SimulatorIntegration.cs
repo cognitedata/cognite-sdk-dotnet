@@ -4,20 +4,23 @@
 namespace CogniteSdk.Alpha
 {
     /// <summary>
-    /// Simulation run
+    /// Filter Simulator Integrations
     /// </summary>
-    public class CreateSimulatorIntegrations
+    public class SimulatorIntegration
     {
-        public long ExternalId { get; set; }
-        public long SimulatorExternalId { get; set; }
+        public long Id { get; set; }
+        public string ExternalId { get; set; }
+        public string SimulatorExternalId { get; set; }
         public long Heartbeat { get; set; }
         public long DataSetId { get; set; }
         public string ConnectorVersion { get; set; }
         public string SimulatorVersion { get; set; }
         public bool RunApiEnabled { get; set; }
         public string LicenseStatus { get; set; }
-        public long? LicenseLastCheckedTime { get; set; }
+        public long LicenseLastCheckedTime { get; set; }
         public string ConnectorStatus { get; set; }
-        public long? ConnectorStatusUpdatedTime { get; set; }
+        public long ConnectorStatusUpdatedTime { get; set; }
+        public long CreatedTime { get; set; }
+        public long LastUpdatedTime { get; set; }
     }
 }
