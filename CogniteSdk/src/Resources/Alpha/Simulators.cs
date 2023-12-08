@@ -84,7 +84,7 @@ namespace CogniteSdk.Resources.Alpha
         }
 
 
-        public async Task<IItemsWithoutCursor<SimulatorIntegration>> ListSimulatorIntegrationsAsync(SimulatorIntegrationsQuery query, CancellationToken token = default)
+        public async Task<IItemsWithoutCursor<SimulatorIntegration>> ListSimulatorIntegrationsAsync(SimulatorIntegrationQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorIntegrations(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
