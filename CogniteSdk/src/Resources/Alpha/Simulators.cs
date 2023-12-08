@@ -13,6 +13,7 @@ using Oryx.Cognite.Alpha;
 using Oryx.Pipeline;
 
 using Microsoft.FSharp.Core;
+using System.Linq;
 
 namespace CogniteSdk.Resources.Alpha
 {
@@ -61,6 +62,25 @@ namespace CogniteSdk.Resources.Alpha
         public async Task<IItemsWithoutCursor<SimulationRun>> SimulationRunCallbackAsync(SimulationRunCallbackItem query, CancellationToken token = default)
         {
             var req = Simulators.simulationRunCallback(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves information about multiple simulation runs in the same project. A maximum of 1000
+        /// </summary>
+        /// <param name="internalIds">The simulation run internal ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulation runs</returns>
+        public async Task<IEnumerable<SimulationRun>> RetrieveSimulationRunsAsync(IEnumerable<long> internalIds, CancellationToken token = default)
+        {
+            if (internalIds is null)
+            {
+                throw new ArgumentNullException(nameof(internalIds));
+            }
+
+            var ids = internalIds.Select(Identity.Create);
+            var req = Simulators.retrieveSimulationRuns<SimulationRun>(ids, GetContext(token));
+
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

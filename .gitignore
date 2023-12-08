@@ -13,3 +13,4 @@ launchSettings.json
 .metals
 
 .fake
+.envrc

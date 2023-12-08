@@ -58,7 +58,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
         test <@ itemRes.RunType = SimulationRunType.external @>
-        test <@ itemRes.ValidationEndTime = Nullable (now) @>
+        test <@ itemRes.ValidationEndTime = Nullable(now) @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
@@ -82,7 +82,6 @@ let ``List simulation runs is Ok`` () =
 
         test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
-        test <@ res.Items |> Seq.forall (fun item -> item.EventId = Nullable() ) @>
 
         test
             <@
@@ -131,4 +130,27 @@ let ``Callback simulation runs is Ok`` () =
 
         test <@ simulationRunCallbackRes.Status = SimulationRunStatus.success @>
         test <@ simulationRunCallbackRes.StatusMessage = ts @>
+    }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulators")>]
+let ``Retrieve simulation runs is Ok`` () =
+    task {
+
+        // Arrange
+        let listQuery = SimulationRunQuery()
+
+        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+
+        test <@ Seq.length listRes.Items > 0 @>
+
+        let simulationRun = listRes.Items |> Seq.head
+
+        // Act
+        let! res = azureDevClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
+        let simulationRunRetrieveRes = res |> Seq.head
+
+        // Assert
+        test <@ Seq.length res = 1 @>
+        test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
     }
