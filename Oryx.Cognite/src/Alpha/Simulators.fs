@@ -55,6 +55,6 @@ module Simulators =
 
     let retrieveSimulationRuns (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulationRun seq> =
         source
-        |> withLogMessage "simulators:retrieve"
+        |> withLogMessage "simulators:retrieveSimulationRuns"
         |> withAlphaHeader
         |> retrieve ids runsUrl
