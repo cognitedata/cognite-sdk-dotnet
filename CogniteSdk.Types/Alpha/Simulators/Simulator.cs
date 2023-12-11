@@ -1,6 +1,7 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Alpha
@@ -21,6 +22,8 @@ namespace CogniteSdk.Alpha
         public bool Enabled { get; set; }
         public IEnumerable<SimulatorStepField> StepFields { get; set; }
         public SimulatorUnits Units { get; set; }
+        public long CreatedTime { get; set; }
+        public long LastUpdatedTime { get; set; }
     }
 
      public class SimulatorUnits
@@ -36,7 +39,7 @@ namespace CogniteSdk.Alpha
     public class SimulatorUnitsMap 
     {
         public string Label { get; set; }
-        public UnitsMapItem Units { get; set; }
+        public IEnumerable<UnitsMapItem> Units { get; set; }
     }
     public class UnitsMapItem
     {

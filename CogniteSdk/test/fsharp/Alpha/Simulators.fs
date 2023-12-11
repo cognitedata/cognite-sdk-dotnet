@@ -9,6 +9,7 @@ open Swensen.Unquote
 
 open Common
 
+open CogniteSdk
 open CogniteSdk.Alpha
 
 let azureDevClient =
@@ -29,7 +30,7 @@ type FactIf(envVar: string, skipReason: string) =
         if envFlag then null else skipReason
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>] // mark with something, specify with dotnet test to only run this
+[<Trait("resource", "simulationRuns")>]
 let ``Create simulation runs is Ok`` () =
     task {
         // Arrange
@@ -65,7 +66,7 @@ let ``Create simulation runs is Ok`` () =
     }
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``List simulation runs is Ok`` () =
     task {
 
@@ -94,7 +95,7 @@ let ``List simulation runs is Ok`` () =
     }
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Callback simulation runs is Ok`` () =
     task {
 
@@ -132,8 +133,9 @@ let ``Callback simulation runs is Ok`` () =
         test <@ simulationRunCallbackRes.StatusMessage = ts @>
     }
 
+
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Retrieve simulation runs is Ok`` () =
     task {
 
@@ -153,4 +155,61 @@ let ``Retrieve simulation runs is Ok`` () =
         // Assert
         test <@ Seq.length res = 1 @>
         test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
+    }
+
+let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+let simulatorExternalId = $"test_sim_{now}"
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulators")>]
+let ``Create and delete simulators is Ok`` () =
+    task {
+
+        // Arrange
+        let itemToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes =  [| "json" |],
+                Enabled = true
+            )
+
+        // Act
+        let! res = azureDevClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+
+        // Assert
+        let len = Seq.length res
+        test <@ len = 1 @>
+        let itemRes = res |> Seq.head
+
+        test <@ itemRes.Name = itemToCreate.Name @>
+        test <@ itemRes.Enabled = itemToCreate.Enabled.Value @>
+        test <@ itemRes.FileExtensionTypes = itemToCreate.FileExtensionTypes @>
+        test <@ itemRes.CreatedTime >= now @>
+        test <@ itemRes.LastUpdatedTime >= now @>
+
+        let! _ = azureDevClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
+        ()
+    }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulators")>]
+let ``List simulators is Ok`` () =
+    task {
+
+        // Arrange
+        let query = SimulatorQuery(
+            Filter = SimulatorFilter(Enabled = true)
+        )
+
+        // Act
+        let! res = azureDevClient.Alpha.Simulators.ListAsync(query)
+
+        let len = Seq.length res.Items
+
+        // Assert
+        test <@ len > 0 @>
+
+        test <@ res.Items |> Seq.forall (fun item -> item.Enabled = true) @>
+        test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }

@@ -102,7 +102,7 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
         
-        public async Task<IItemsWithoutCursor<Simulator>> ListAsync(SimulatorsQuery query, CancellationToken token = default)
+        public async Task<IItemsWithoutCursor<Simulator>> ListAsync(SimulatorQuery query, CancellationToken token = default)
         {
             var req = Simulators.list(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -114,9 +114,17 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
 
-        public async Task<EmptyResponse> DeleteAsync(SimulatorDelete items, CancellationToken token = default)
+        public async Task<EmptyResponse> DeleteAsync(IEnumerable<Identity> items, CancellationToken token = default)
         {
-            var req = Simulators.delete(items, GetContext(token));
+
+            if (items is null)
+            {
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            var query = new SimulatorDelete { Items = items };
+
+            var req = Simulators.delete(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

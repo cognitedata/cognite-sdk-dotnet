@@ -92,25 +92,23 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.create items integrationsUrl
 
-    let list (query: SimulatorsQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
+    let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
         |> withLogMessage "simulators:list"
         |> withAlphaHeader
         |> HttpHandler.list query Url
-
+    
     let create (items: SimulatorCreate seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         source
         |> withLogMessage "simulators:create"
         |> withAlphaHeader
         |> HttpHandler.create items Url
 
-    let delete (items: SimulatorDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> = // TODO:Update this to return unit
-        let deleteUrl = Url +/ "delete"
-
+    let delete (items: SimulatorDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "simulators:deleteSimulators"
         |> withAlphaHeader
-        |> HttpHandler.delete items deleteUrl
+        |> HttpHandler.delete items Url
 
     let update (items: SimulatorUpdateItem seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         let updateUrl = Url +/ "update"

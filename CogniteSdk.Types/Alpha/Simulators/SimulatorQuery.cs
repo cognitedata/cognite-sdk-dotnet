@@ -6,7 +6,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulation run query class.
     /// </summary>
-    public class SimulatorsQuery
+    public class SimulatorQuery
     {
         /// <summary>
         /// Filter on simulators with strict matching.
