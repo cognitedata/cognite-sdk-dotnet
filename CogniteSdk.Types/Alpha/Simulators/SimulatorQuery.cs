@@ -1,7 +1,5 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-using System.Text.Json.Serialization;
-using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {

@@ -1,9 +1,7 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
-using System.Dynamic;
 
 namespace CogniteSdk.Alpha
 {
@@ -18,16 +16,16 @@ namespace CogniteSdk.Alpha
         }
     }
 
-    public class SimulatorUpdate // All optional and all sets
-    { // Unsure about this one TODO:
+    public class SimulatorUpdate
+    {
         public Update<string> Name { get; set; }
         public Update<IEnumerable<string>> FileExtensionTypes { get; set; }
-        public Update<bool> IsBoundaryConditionsEnabled { get; set; } //double check this one
-        // public Update<IEnumerable<SimulatorBoundaryCondition>> BoundaryConditions { get; set; }
+        public Update<bool> IsBoundaryConditionsEnabled { get; set; }
+        public Update<IEnumerable<SimulatorBoundaryCondition>> BoundaryConditions { get; set; }
         public Update<bool> IsCalculationsEnabled { get; set; }
-        // public Update<IEnumerable<SimulatorModelType>> ModelTypes { get; set; }
+        public Update<IEnumerable<SimulatorModelType>> ModelTypes { get; set; }
         public Update<bool> Enabled { get; set; }
-        // public Update<IEnumerable<SimulatorStep>> StepFields { get; set; } // Double check that you didnt write anything twice
+        public Update<IEnumerable<SimulatorStepField>> StepFields { get; set; }
         public Update<SimulatorUnits> Units { get; set; }
     }
 }
