@@ -14,11 +14,10 @@ module Simulators =
     open CogniteSdk
 
     [<Literal>]
-    let Url = "/simulators"
+    let runUrl = "/simulators/run"
 
-    let runsUrl = Url +/ "runs"
-    let runCallbackUrl = Url +/ "run/callback"
-    let createRunsUrl = Url +/ "run"
+    let runsUrl = runUrl + "s"
+    let runCallbackUrl = runUrl +/ "callback"
 
     let createSimulationRuns
         (items: SimulationRunCreate seq)
@@ -27,7 +26,7 @@ module Simulators =
         source
         |> withLogMessage "simulators:createSimulationRuns"
         |> withAlphaHeader
-        |> HttpHandler.create items createRunsUrl
+        |> HttpHandler.create items runUrl
 
 
     /// List all runs
@@ -53,3 +52,9 @@ module Simulators =
         |> postV10<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
             request
             runCallbackUrl
+
+    let retrieveSimulationRuns (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulationRun seq> =
+        source
+        |> withLogMessage "simulators:retrieveSimulationRuns"
+        |> withAlphaHeader
+        |> retrieve ids runsUrl
