@@ -18,7 +18,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// File extension types supported by the simulator.
         /// </summary>
-        public string[] FileExtensionTypes { get; set; }
+        public IEnumerable<string> FileExtensionTypes { get; set; }
         /// <summary>
         /// The name of the simulator. e.g. PROSPER, OLGA, etc.
         /// </summary>
