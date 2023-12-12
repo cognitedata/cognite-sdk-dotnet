@@ -160,7 +160,7 @@ let ``Retrieve simulation runs is Ok`` () =
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
@@ -175,7 +175,7 @@ let ``Create and delete simulators is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+        let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
 
         // Assert
         let len = Seq.length res
@@ -188,7 +188,7 @@ let ``Create and delete simulators is Ok`` () =
         test <@ itemRes.CreatedTime >= now @>
         test <@ itemRes.LastUpdatedTime >= now @>
 
-        let! _ = azureDevClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
+        let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
         ()
     }
 
