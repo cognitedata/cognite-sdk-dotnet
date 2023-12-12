@@ -97,7 +97,7 @@ module Simulators =
         |> withLogMessage "simulators:list"
         |> withAlphaHeader
         |> HttpHandler.list query Url
-    
+
     let create (items: SimulatorCreate seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         source
         |> withLogMessage "simulators:create"

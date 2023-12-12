@@ -170,7 +170,7 @@ let ``Create and delete simulators is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes =  [| "json" |],
+                FileExtensionTypes = [| "json" |],
                 Enabled = true
             )
 
@@ -198,9 +198,7 @@ let ``List simulators is Ok`` () =
     task {
 
         // Arrange
-        let query = SimulatorQuery(
-            Filter = SimulatorFilter(Enabled = true)
-        )
+        let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
 
         // Act
         let! res = azureDevClient.Alpha.Simulators.ListAsync(query)
@@ -226,7 +224,7 @@ let ``Create and update simulator integration is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes =  [| "json" |],
+                FileExtensionTypes = [| "json" |],
                 Enabled = true
             )
 
@@ -240,25 +238,30 @@ let ``Create and update simulator integration is Ok`` () =
                 RunApiEnabled = true
             )
 
-        try 
+        try
             // Act
             let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
-            let! integrationCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+
+            let! integrationCreateRes =
+                azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+
             let integrationCreated = integrationCreateRes |> Seq.head
 
             let integrationToUpdate =
                 new SimulatorIntegrationUpdateItem(
                     id = integrationCreated.Id,
-                    Update = SimulatorIntegrationUpdate(
-                        ConnectorStatus = Update<string>("test"),
-                        SimulatorVersion = Update<string>("2.3.4"),
-                        LicenseStatus = Update<string>("Good"),
-                        LicenseLastCheckedTime = Update<int64>(now),
-                        ConnectorStatusUpdatedTime = Update<int64>(now)
-                    )
+                    Update =
+                        SimulatorIntegrationUpdate(
+                            ConnectorStatus = Update<string>("test"),
+                            SimulatorVersion = Update<string>("2.3.4"),
+                            LicenseStatus = Update<string>("Good"),
+                            LicenseLastCheckedTime = Update<int64>(now),
+                            ConnectorStatusUpdatedTime = Update<int64>(now)
+                        )
                 )
 
-            let! integrationUpdateRes = azureDevClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
+            let! integrationUpdateRes =
+                azureDevClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
 
             let integrationUpdated = integrationUpdateRes |> Seq.head
 
@@ -278,5 +281,6 @@ let ``Create and update simulator integration is Ok`` () =
             test <@ integrationUpdated.ConnectorStatusUpdatedTime = now @>
             test <@ integrationUpdated.LicenseLastCheckedTime = now @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ]) |> ignore
+            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            |> ignore
     }
