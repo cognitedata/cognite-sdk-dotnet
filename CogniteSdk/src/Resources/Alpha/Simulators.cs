@@ -89,7 +89,7 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<SimulatorIntegration>> UpdateSimulatorIntegrationAsync(IEnumerable<UpdateItem<SimulatorIntegrationUpdateItem>> items, CancellationToken token = default)
+        public async Task<IEnumerable<SimulatorIntegration>> UpdateSimulatorIntegrationAsync(IEnumerable<UpdateItem<SimulatorIntegrationUpdate>> items, CancellationToken token = default)
         {
             if (items is null) throw new ArgumentNullException(nameof(items));
             var req = Simulators.updateSimulatorIntegrations(items, GetContext(token));

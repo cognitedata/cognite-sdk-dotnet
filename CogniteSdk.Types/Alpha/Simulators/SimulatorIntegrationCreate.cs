@@ -5,8 +5,8 @@ namespace CogniteSdk.Alpha
 {
     public class SimulatorIntegrationCreate
     {
-        public long ExternalId { get; set; }
-        public long SimulatorExternalId { get; set; }
+        public string ExternalId { get; set; }
+        public string SimulatorExternalId { get; set; }
         public long Heartbeat { get; set; }
         public long DataSetId { get; set; }
         public string ConnectorVersion { get; set; }

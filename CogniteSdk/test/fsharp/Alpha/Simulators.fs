@@ -213,3 +213,70 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Enabled = true) @>
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulators")>]
+let ``Create and update simulator integration is Ok`` () =
+    task {
+        // Arrange
+        let simulatorExternalId = $"test_sim_{now}"
+        let integrationExternalId = $"test_integration_{now}"
+
+        let simulatorToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes =  [| "json" |],
+                Enabled = true
+            )
+
+        let integrationToCreate =
+            SimulatorIntegrationCreate(
+                ExternalId = integrationExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                DataSetId = 123,
+                SimulatorVersion = "N/A",
+                ConnectorVersion = "1.2.3",
+                RunApiEnabled = true
+            )
+
+        try 
+            // Act
+            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! integrationCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+            let integrationCreated = integrationCreateRes |> Seq.head
+
+            let integrationToUpdate =
+                new SimulatorIntegrationUpdateItem(
+                    id = integrationCreated.Id,
+                    Update = SimulatorIntegrationUpdate(
+                        ConnectorStatus = Update<string>("test"),
+                        SimulatorVersion = Update<string>("2.3.4"),
+                        LicenseStatus = Update<string>("Good"),
+                        LicenseLastCheckedTime = Update<int64>(now),
+                        ConnectorStatusUpdatedTime = Update<int64>(now)
+                    )
+                )
+
+            let! integrationUpdateRes = azureDevClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
+
+            let integrationUpdated = integrationUpdateRes |> Seq.head
+
+            // Assert
+            let integration = integrationCreateRes |> Seq.head
+
+            test <@ integration.ExternalId = integrationToCreate.ExternalId @>
+            test <@ integration.ConnectorVersion = integrationToCreate.ConnectorVersion @>
+            test <@ integration.SimulatorExternalId = integrationToCreate.SimulatorExternalId @>
+            test <@ integration.CreatedTime >= now @>
+            test <@ integration.LastUpdatedTime >= now @>
+            test <@ integration.LicenseLastCheckedTime = Nullable() @>
+            test <@ integration.ConnectorStatusUpdatedTime = Nullable() @>
+
+            test <@ integrationUpdated.ConnectorStatus = "test" @>
+            test <@ integrationUpdated.SimulatorVersion = "2.3.4" @>
+            test <@ integrationUpdated.ConnectorStatusUpdatedTime = now @>
+            test <@ integrationUpdated.LicenseLastCheckedTime = now @>
+        finally
+            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ]) |> ignore
+    }

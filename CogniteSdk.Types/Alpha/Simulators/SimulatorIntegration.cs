@@ -17,9 +17,9 @@ namespace CogniteSdk.Alpha
         public string SimulatorVersion { get; set; }
         public bool RunApiEnabled { get; set; }
         public string LicenseStatus { get; set; }
-        public long LicenseLastCheckedTime { get; set; }
+        public long? LicenseLastCheckedTime { get; set; }
         public string ConnectorStatus { get; set; }
-        public long ConnectorStatusUpdatedTime { get; set; }
+        public long? ConnectorStatusUpdatedTime { get; set; }
         public long CreatedTime { get; set; }
         public long LastUpdatedTime { get; set; }
     }

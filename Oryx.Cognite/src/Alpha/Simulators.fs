@@ -75,7 +75,7 @@ module Simulators =
         |> HttpHandler.list query listUrl
 
     let updateSimulatorIntegrations
-        (items: UpdateItem<SimulatorIntegrationUpdateItem> seq)
+        (items: UpdateItem<SimulatorIntegrationUpdate> seq)
         (source: HttpHandler<unit>)
         : HttpHandler<SimulatorIntegration seq> =
         source
