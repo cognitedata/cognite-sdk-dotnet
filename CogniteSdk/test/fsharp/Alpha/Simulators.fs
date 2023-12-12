@@ -239,10 +239,10 @@ let ``Create and update simulator integration is Ok`` () =
 
         try
             // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
             let! integrationCreateRes =
-                azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+                writeClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
 
             let integrationCreated = integrationCreateRes |> Seq.head
 
@@ -260,7 +260,7 @@ let ``Create and update simulator integration is Ok`` () =
                 )
 
             let! integrationUpdateRes =
-                azureDevClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
+                writeClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
 
             let integrationUpdated = integrationUpdateRes |> Seq.head
 
@@ -280,6 +280,6 @@ let ``Create and update simulator integration is Ok`` () =
             test <@ integrationUpdated.ConnectorStatusUpdatedTime = Nullable now @>
             test <@ integrationUpdated.LicenseLastCheckedTime = Nullable now @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
