@@ -4,7 +4,7 @@
 namespace CogniteSdk.Alpha
 {
     /// <summary>
-    /// 
+    /// The simulator delete query class.
     /// </summary>
     public class SimulatorDelete : ItemsWithoutCursor<Identity>
     {

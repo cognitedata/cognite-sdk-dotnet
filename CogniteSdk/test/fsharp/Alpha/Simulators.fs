@@ -278,8 +278,8 @@ let ``Create and update simulator integration is Ok`` () =
 
             test <@ integrationUpdated.ConnectorStatus = "test" @>
             test <@ integrationUpdated.SimulatorVersion = "2.3.4" @>
-            test <@ integrationUpdated.ConnectorStatusUpdatedTime = now @>
-            test <@ integrationUpdated.LicenseLastCheckedTime = now @>
+            test <@ integrationUpdated.ConnectorStatusUpdatedTime = Nullable now @>
+            test <@ integrationUpdated.LicenseLastCheckedTime = Nullable now @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
