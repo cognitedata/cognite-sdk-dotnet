@@ -201,7 +201,7 @@ let ``List simulators is Ok`` () =
         let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListAsync(query)
 
         let len = Seq.length res.Items
 
