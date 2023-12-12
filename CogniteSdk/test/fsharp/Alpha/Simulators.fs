@@ -192,6 +192,7 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
@@ -211,6 +212,7 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
