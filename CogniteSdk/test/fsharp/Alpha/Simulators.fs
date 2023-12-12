@@ -212,7 +212,6 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
