@@ -192,7 +192,6 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
