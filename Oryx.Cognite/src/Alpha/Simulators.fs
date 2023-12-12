@@ -64,7 +64,7 @@ module Simulators =
         |> retrieve ids runsUrl
 
     let listSimulatorIntegrations
-        (query: SimulatorIntegrationQuery) // TODO: check if in namespace
+        (query: SimulatorIntegrationQuery)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithoutCursor<SimulatorIntegration>> =
         let listUrl = integrationsUrl +/ "list"
@@ -79,7 +79,7 @@ module Simulators =
         (source: HttpHandler<unit>)
         : HttpHandler<SimulatorIntegration seq> =
         source
-        |> withLogMessage "simulators:simulatorIntegrationUpdate"
+        |> withLogMessage "simulators:updateSimulatorIntegrations"
         |> withAlphaHeader
         |> HttpHandler.update items integrationsUrl
 
@@ -106,7 +106,7 @@ module Simulators =
 
     let delete (items: SimulatorDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         source
-        |> withLogMessage "simulators:deleteSimulators"
+        |> withLogMessage "simulators:delete"
         |> withAlphaHeader
         |> HttpHandler.delete items Url
 
@@ -114,6 +114,6 @@ module Simulators =
         let updateUrl = Url +/ "update"
 
         source
-        |> withLogMessage "simulators:updateSimulators"
+        |> withLogMessage "simulators:update"
         |> withAlphaHeader
         |> HttpHandler.create items updateUrl
