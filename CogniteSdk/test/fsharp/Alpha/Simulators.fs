@@ -9,6 +9,7 @@ open Swensen.Unquote
 
 open Common
 
+open CogniteSdk
 open CogniteSdk.Alpha
 
 let azureDevClient =
@@ -29,7 +30,7 @@ type FactIf(envVar: string, skipReason: string) =
         if envFlag then null else skipReason
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Create simulation runs is Ok`` () =
     task {
         // Arrange
@@ -65,7 +66,7 @@ let ``Create simulation runs is Ok`` () =
     }
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``List simulation runs is Ok`` () =
     task {
 
@@ -94,7 +95,7 @@ let ``List simulation runs is Ok`` () =
     }
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Callback simulation runs is Ok`` () =
     task {
 
@@ -132,8 +133,9 @@ let ``Callback simulation runs is Ok`` () =
         test <@ simulationRunCallbackRes.StatusMessage = ts @>
     }
 
+
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Retrieve simulation runs is Ok`` () =
     task {
 
@@ -153,4 +155,133 @@ let ``Retrieve simulation runs is Ok`` () =
         // Assert
         test <@ Seq.length res = 1 @>
         test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
+    }
+
+let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+let simulatorExternalId = $"test_sim_{now}"
+
+[<Fact>]
+[<Trait("resource", "simulators")>]
+let ``Create and delete simulators is Ok`` () =
+    task {
+
+        let fileExtensionTypes = seq { "json" }
+        // Arrange
+        let itemToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes = fileExtensionTypes,
+                Enabled = true
+            )
+
+        // Act
+        let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+        let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
+
+        // Assert
+        let len = Seq.length res
+        test <@ len = 1 @>
+        let itemRes = res |> Seq.head
+
+        test <@ itemRes.Name = itemToCreate.Name @>
+        test <@ itemRes.Enabled = itemToCreate.Enabled.Value @>
+        test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
+        test <@ itemRes.CreatedTime >= now @>
+        test <@ itemRes.LastUpdatedTime >= now @>
+
+        ()
+    }
+
+[<Fact>]
+[<Trait("resource", "simulators")>]
+let ``List simulators is Ok`` () =
+    task {
+
+        // Arrange
+        let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
+
+        // Act
+        let! res = writeClient.Alpha.Simulators.ListAsync(query)
+
+        let len = Seq.length res.Items
+
+        // Assert
+        test <@ len > 0 @>
+
+        test <@ res.Items |> Seq.forall (fun item -> item.Enabled = true) @>
+        test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
+    }
+
+[<Fact>]
+[<Trait("resource", "simulators")>]
+let ``Create and update simulator integration is Ok`` () =
+    task {
+        // Arrange
+        let simulatorExternalId = $"test_sim_2_{now}"
+        let integrationExternalId = $"test_integration_{now}"
+
+        let simulatorToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes = [ "json" ],
+                Enabled = true
+            )
+
+        let integrationToCreate =
+            SimulatorIntegrationCreate(
+                ExternalId = integrationExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                DataSetId = 123,
+                SimulatorVersion = "N/A",
+                ConnectorVersion = "1.2.3",
+                RunApiEnabled = true
+            )
+
+        try
+            // Act
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+
+            let! integrationCreateRes =
+                writeClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+
+            let integrationCreated = integrationCreateRes |> Seq.head
+
+            let integrationToUpdate =
+                new SimulatorIntegrationUpdateItem(
+                    id = integrationCreated.Id,
+                    Update =
+                        SimulatorIntegrationUpdate(
+                            ConnectorStatus = Update<string>("test"),
+                            SimulatorVersion = Update<string>("2.3.4"),
+                            LicenseStatus = Update<string>("Good"),
+                            LicenseLastCheckedTime = Update<int64>(now),
+                            ConnectorStatusUpdatedTime = Update<int64>(now)
+                        )
+                )
+
+            let! integrationUpdateRes =
+                writeClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
+
+            let integrationUpdated = integrationUpdateRes |> Seq.head
+
+            // Assert
+            let integration = integrationCreateRes |> Seq.head
+
+            test <@ integration.ExternalId = integrationToCreate.ExternalId @>
+            test <@ integration.ConnectorVersion = integrationToCreate.ConnectorVersion @>
+            test <@ integration.SimulatorExternalId = integrationToCreate.SimulatorExternalId @>
+            test <@ integration.CreatedTime >= now @>
+            test <@ integration.LastUpdatedTime >= now @>
+            test <@ integration.LicenseLastCheckedTime = Nullable() @>
+            test <@ integration.ConnectorStatusUpdatedTime = Nullable() @>
+
+            test <@ integrationUpdated.ConnectorStatus = "test" @>
+            test <@ integrationUpdated.SimulatorVersion = "2.3.4" @>
+            test <@ integrationUpdated.ConnectorStatusUpdatedTime = Nullable now @>
+            test <@ integrationUpdated.LicenseLastCheckedTime = Nullable now @>
+        finally
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            |> ignore
     }
