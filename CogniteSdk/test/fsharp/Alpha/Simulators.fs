@@ -165,17 +165,19 @@ let simulatorExternalId = $"test_sim_{now}"
 let ``Create and delete simulators is Ok`` () =
     task {
 
+        let fileExtensionTypes = seq { "json" }
         // Arrange
         let itemToCreate =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [| "json" |],
+                FileExtensionTypes = fileExtensionTypes,
                 Enabled = true
             )
 
         // Act
         let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+        let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
 
         // Assert
         let len = Seq.length res
@@ -184,11 +186,10 @@ let ``Create and delete simulators is Ok`` () =
 
         test <@ itemRes.Name = itemToCreate.Name @>
         test <@ itemRes.Enabled = itemToCreate.Enabled.Value @>
-        test <@ itemRes.FileExtensionTypes = itemToCreate.FileExtensionTypes @>
+        test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
         test <@ itemRes.CreatedTime >= now @>
         test <@ itemRes.LastUpdatedTime >= now @>
 
-        let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
         ()
     }
 
@@ -217,14 +218,14 @@ let ``List simulators is Ok`` () =
 let ``Create and update simulator integration is Ok`` () =
     task {
         // Arrange
-        let simulatorExternalId = $"test_sim_{now}"
+        let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
         let simulatorToCreate =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [| "json" |],
+                FileExtensionTypes = [ "json" ],
                 Enabled = true
             )
 
