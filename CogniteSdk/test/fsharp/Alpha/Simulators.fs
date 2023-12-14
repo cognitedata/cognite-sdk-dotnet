@@ -285,3 +285,20 @@ let ``Create and update simulator integration is Ok`` () =
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
+
+[<Fact>]
+[<Trait("resource", "simulators")>]
+let ``List simulator integrations is Ok`` () =
+    task {
+            
+            // Arrange
+            let query = SimulatorIntegrationQuery()
+    
+            // Act
+            let! res = writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
+    
+            let len = Seq.length res.Items
+    
+            // Assert
+            test <@ len >= 0 @>
+    }

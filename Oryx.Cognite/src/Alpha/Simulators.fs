@@ -67,12 +67,10 @@ module Simulators =
         (query: SimulatorIntegrationQuery)
         (source: HttpHandler<unit>)
         : HttpHandler<ItemsWithoutCursor<SimulatorIntegration>> =
-        let listUrl = integrationsUrl +/ "list"
-
         source
         |> withLogMessage "simulators:listSimulatorIntegrations"
         |> withAlphaHeader
-        |> HttpHandler.list query listUrl
+        |> HttpHandler.list query integrationsUrl
 
     let updateSimulatorIntegrations
         (items: UpdateItem<SimulatorIntegrationUpdate> seq)
