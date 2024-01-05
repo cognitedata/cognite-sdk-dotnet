@@ -100,7 +100,7 @@ NUGET
       FSharp.Core (>= 7.0)
       Google.Protobuf (>= 3.23.1 < 4.0)
       Oryx (>= 5.3.2)
-    Oryx.SystemTextJson (5.3.3)
+    Oryx.SystemTextJson (5.4.3)
       FSharp.Core (>= 7.0)
       Oryx (>= 5.3.2)
       System.Text.Json (>= 6.0)
@@ -1048,7 +1048,7 @@ NUGET
       FSharp.Core (>= 7.0) - restriction: >= netstandard2.0
       Google.Protobuf (>= 3.23.1 < 4.0) - restriction: >= netstandard2.0
       Oryx (>= 5.3.2) - restriction: >= netstandard2.0
-    Oryx.SystemTextJson (5.3.3)
+    Oryx.SystemTextJson (5.4.3)
       FSharp.Core (>= 7.0) - restriction: >= netstandard2.0
       Oryx (>= 5.3.2) - restriction: >= netstandard2.0
       System.Text.Json (>= 6.0) - restriction: >= netstandard2.0
