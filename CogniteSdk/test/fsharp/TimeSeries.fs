@@ -489,7 +489,7 @@ let ``Synthetic Query with Error is Ok`` () = task {
 [<Fact>]
 let ``Interact with timeseries using the new unit capabilities is Ok`` () = task {
     // Arrange
-    let externalIdString = Guid.NewGuid().ToString();
+    let externalIdString = Guid.NewGuid().ToString()
     let unitExternalId = "temperature:deg_c"
     let unitQuantity = "Temperature"
     let dto =
