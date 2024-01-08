@@ -77,6 +77,17 @@ namespace CogniteSdk
         /// </summary>
         public string Cursor { get; set; }
 
+        /// <summary>
+        /// The unit externalId of the data points returned. If the time series does not have a unitExternalId that
+        /// can be converted to the targetUnit, an error will be returned. Cannot be used with targetUnitSystem.
+        /// </summary>
+        public string TargetUnit { get; set; }
+
+        /// <summary>
+        /// The unit system of the data points returned. Cannot be used with targetUnit.
+        /// </summary>
+        public string TargetUnitSystem { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<DataPointsQueryItem>(this);
     }
