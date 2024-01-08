@@ -502,12 +502,12 @@ let ``Interact with timeseries using the new unit capabilities is Ok`` () = task
         )
     let query1 =
         TimeSeriesSearch(
-            Filter = TimeSeriesFilter(UnitExternalId = Some unitExternalId),
+            Filter = TimeSeriesFilter(UnitExternalId = unitExternalId),
             Limit = Nullable 10
         )
     let query2 =
         TimeSeriesSearch(
-            Filter = TimeSeriesFilter(UnitQuantity = Some unitQuantity),
+            Filter = TimeSeriesFilter(UnitQuantity = unitQuantity),
             Limit = Nullable 10
         )
     let updateDto =
