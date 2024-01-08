@@ -303,7 +303,7 @@ let ``Delete datapoints is Ok`` () = task {
 [<Fact>]
 let ``Interact with datapoints using the new unit capabilities is Ok`` () = task {
     // Arrange
-    let externalIdString = Guid.NewGuid().ToString();
+    let externalIdString = Guid.NewGuid().ToString()
     let unitExternalId = "temperature:deg_c"
     let dto =
         TimeSeriesCreate(
