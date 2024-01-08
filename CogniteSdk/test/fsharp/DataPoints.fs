@@ -379,7 +379,7 @@ let ``Interact with datapoints using the new unit capabilities is Ok`` () = task
                                      |> Seq.map (fun dp -> dp.Value)
 
     // Assert
-    test <@ valuesWithoutConversion = values @> // No conversion
-    test <@ valuesWithTargetUnit = valuesFahrenheit @> // Conversion from Celsius to Fahrenheit
-    test <@ valuesWithTargetUnitSystem = valuesKelvin @> // Conversion from Celsius to Kelvin
+    test <@ Seq.compareWith compare valuesWithoutConversion values = 0 @> // No conversion
+    test <@ Seq.compareWith compare valuesWithTargetUnit valuesFahrenheit = 0 @> // Conversion from Celsius to Fahrenheit
+    test <@ Seq.compareWith compare valuesWithTargetUnitSystem valuesKelvin = 0 @> // Conversion from Celsius to Kelvin
 }
