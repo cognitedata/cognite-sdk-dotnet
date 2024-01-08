@@ -317,8 +317,8 @@ let ``Interact with datapoints using the new unit capabilities is Ok`` () = task
     let startTimestamp = 1704672000000L;
     let timestamps = [ startTimestamp; startTimestamp + 3600000L ; startTimestamp + 7200000L ]
     let values = [ 30.5; 29.4; 13.2 ]
-    let valuesFahrenheit = values |> List.map (fun v -> v * 1.8 + 32.0)
-    let valuesKelvin = values |> List.map (fun v -> v + 273.15)
+    let valuesFahrenheit = [ 86.9; 84.92; 55.76 ]
+    let valuesKelvin = [ 303.65; 302.55; 286.35 ]
 
     let dataPoints = NumericDatapoints()
     dataPoints.Datapoints.AddRange(
