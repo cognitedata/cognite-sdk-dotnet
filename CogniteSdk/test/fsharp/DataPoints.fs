@@ -330,7 +330,7 @@ let ``Interact with datapoints using the new unit capabilities is Ok`` () = task
     dataPointsRequest.Items.Add [
         DataPointInsertionItem(ExternalId = externalIdString, NumericDatapoints = dataPoints)
     ]
-    
+
     let query1 =
         DataPointsQuery(
             Start = startTimestamp.ToString(),
@@ -356,30 +356,47 @@ let ``Interact with datapoints using the new unit capabilities is Ok`` () = task
     // Act
     let! _ = writeClient.TimeSeries.CreateAsync [ dto ]
     do! Task.Delay 1000 // Wait for 1 second
-    
+
     let! _ = writeClient.DataPoints.CreateAsync dataPointsRequest
     do! Task.Delay 1000 // Wait for 1 second
-    
+
     let! resWithoutConversion = writeClient.DataPoints.ListAsync query1
     let! resWithTargetUnit = writeClient.DataPoints.ListAsync query2
     let! resWithTargetUnitSystem = writeClient.DataPoints.ListAsync query3
     let! _ = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
-    
+
+    let unitWithoutConversion = resWithoutConversion.Items
+                                        |> Seq.head
+                                        |> fun dps -> dps.UnitExternalId
     let valuesWithoutConversion = resWithoutConversion.Items
                                   |> Seq.head
                                   |> fun dps -> dps.NumericDatapoints.Datapoints
                                   |> Seq.map (fun dp -> dp.Value)
+
+    let unitWithTargetUnit = resWithTargetUnit.Items
+                              |> Seq.head
+                              |> fun dps -> dps.UnitExternalId
     let valuesWithTargetUnit = resWithTargetUnit.Items
                                |> Seq.head
                                |> fun dps -> dps.NumericDatapoints.Datapoints
                                |> Seq.map (fun dp -> dp.Value)
+
+    let unitWithTargetUnitSystem = resWithTargetUnitSystem.Items
+                                     |> Seq.head
+                                     |> fun dps -> dps.UnitExternalId
     let valuesWithTargetUnitSystem = resWithTargetUnitSystem.Items
                                      |> Seq.head
                                      |> fun dps -> dps.NumericDatapoints.Datapoints
                                      |> Seq.map (fun dp -> dp.Value)
 
     // Assert
-    test <@ Seq.compareWith compare valuesWithoutConversion values = 0 @> // No conversion
-    test <@ Seq.compareWith compare valuesWithTargetUnit valuesFahrenheit = 0 @> // Conversion from Celsius to Fahrenheit
-    test <@ Seq.compareWith compare valuesWithTargetUnitSystem valuesKelvin = 0 @> // Conversion from Celsius to Kelvin
+    // No conversion
+    test <@ unitWithoutConversion = unitExternalId @>
+    test <@ Seq.compareWith compare valuesWithoutConversion values = 0 @>
+    // Conversion from Celsius to Fahrenheit
+    test <@ unitWithTargetUnit = "temperature:deg_f" @>
+    test <@ Seq.compareWith compare valuesWithTargetUnit valuesFahrenheit = 0 @>
+    // Conversion from Celsius to Kelvin
+    test <@ unitWithTargetUnitSystem = "temperature:k" @>
+    test <@ Seq.compareWith compare valuesWithTargetUnitSystem valuesKelvin = 0 @>
 }
