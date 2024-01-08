@@ -65,10 +65,11 @@ type DataPointAggregatesQueryItem =
         x.Id |> Option.iter (fun internalId -> query.Id <- internalId)
 
         x.ExternalId |> Option.iter (fun externalId -> query.ExternalId <- externalId)
-        
+
         x.TargetUnit |> Option.iter (fun targetUnit -> query.TargetUnit <- targetUnit)
-        
-        x.TargetUnitSystem |> Option.iter (fun targetUnitSystem -> query.TargetUnitSystem <- targetUnitSystem)
+
+        x.TargetUnitSystem
+        |> Option.iter (fun targetUnitSystem -> query.TargetUnitSystem <- targetUnitSystem)
 
         x.Start |> Option.iter (fun start -> query.Start <- start)
 

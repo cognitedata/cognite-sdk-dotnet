@@ -32,9 +32,9 @@ type TimeSeriesFilter =
         x.ExternalIdPrefix |> Option.iter (fun x -> filter.ExternalIdPrefix <- x)
 
         x.Unit |> Option.iter (fun x -> filter.Unit <- x)
-        
+
         x.UnitExternalId |> Option.iter (fun x -> filter.UnitExternalId <- x)
-        
+
         x.UnitQuantity |> Option.iter (fun x -> filter.UnitQuantity <- x)
 
         x.IsStep |> Option.iter (fun x -> filter.IsStep <- x)
@@ -81,7 +81,7 @@ type TimeSeriesFilter =
               MetaData = Map.toList x.MetaData @ Map.toList other.MetaData |> Map.ofList
               Unit = x.Unit |> Option.orElse other.Unit
               UnitExternalId = x.UnitExternalId |> Option.orElse other.UnitExternalId
-              UnitQuantity = x.UnitQuantity |> Option.orElse other.UnitQuantity 
+              UnitQuantity = x.UnitQuantity |> Option.orElse other.UnitQuantity
               CreatedTime = x.CreatedTime |> Option.orElse other.CreatedTime
               LastUpdatedTime = x.LastUpdatedTime |> Option.orElse other.LastUpdatedTime
               IsStep = x.IsStep |> Option.orElse other.IsStep
