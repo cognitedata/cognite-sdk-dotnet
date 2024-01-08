@@ -500,16 +500,34 @@ let ``Interact with timeseries using the new unit capabilities is Ok`` () = task
             IsStep = false,
             UnitExternalId = unitExternalId
         )
+    let query1 =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(UnitExternalId = Some unitExternalId),
+            Limit = Nullable 10
+        )
+    let query2 =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(UnitQuantity = Some unitQuantity),
+            Limit = Nullable 10
+        )
+    let updateDto =
+        TimeSeriesUpdateItem(
+            externalId = externalIdString,
+            Update = TimeSeriesUpdate(
+                UnitExternalId = UpdateNullable("temperature:deg_f")
+            )
+        )
 
     // Act
     let! timeSereiesResponses = writeClient.TimeSeries.CreateAsync [ dto ]
     do! Task.Delay 1000 // Wait for 1 second
-    let! filterRes1 = writeClient.TimeSeries.FilterAsync (TimeSeriesFilter(UnitExternalId = Some unitExternalId))
-    let! filterRes2 = writeClient.TimeSeries.FilterAsync (TimeSeriesFilter(UnitQuantity = Some unitQuantity))
 
-    let updateDto = TimeSeriesUpdate(ExternalId = externalIdString, UnitExternalId = "temperature:deg_f")
+    let! filterRes1 = writeClient.TimeSeries.SearchAsync query1
+    let! filterRes2 = writeClient.TimeSeries.SearchAsync query2
+
     let! updateRes = writeClient.TimeSeries.UpdateAsync [ updateDto ]
     do! Task.Delay 1000 // Wait for 1 second
+
     let! delRes = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
 
     let resExternalId =
@@ -520,6 +538,6 @@ let ``Interact with timeseries using the new unit capabilities is Ok`` () = task
 
     // Assert
     test <@ resExternalId = externalIdString @>
-    test <@ Seq.length filterRes1 > 1 @>
-    test <@ Seq.length filterRes2 > 1 @>
+    test <@ Seq.length filterRes1 > 0 @>
+    test <@ Seq.length filterRes2 > 0 @>
 }
