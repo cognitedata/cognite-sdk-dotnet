@@ -50,6 +50,8 @@ open DataPointAggregateType
 type DataPointAggregatesQueryItem =
     { Id: int64 option
       ExternalId: string option
+      TargetUnit: string option
+      TargetUnitSystem: string option
       Start: string option
       End: string option
       Limit: int option
@@ -63,6 +65,11 @@ type DataPointAggregatesQueryItem =
         x.Id |> Option.iter (fun internalId -> query.Id <- internalId)
 
         x.ExternalId |> Option.iter (fun externalId -> query.ExternalId <- externalId)
+
+        x.TargetUnit |> Option.iter (fun targetUnit -> query.TargetUnit <- targetUnit)
+
+        x.TargetUnitSystem
+        |> Option.iter (fun targetUnitSystem -> query.TargetUnitSystem <- targetUnitSystem)
 
         x.Start |> Option.iter (fun start -> query.Start <- start)
 
@@ -86,6 +93,8 @@ type DataPointAggregatesQueryItem =
     static member Empty =
         { Id = None
           ExternalId = None
+          TargetUnit = None
+          TargetUnitSystem = None
           Start = None
           End = None
           Limit = None

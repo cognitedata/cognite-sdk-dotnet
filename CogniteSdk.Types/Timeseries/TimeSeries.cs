@@ -38,9 +38,14 @@ namespace CogniteSdk
         public bool IsString { get; set; }
 
         /// <summary>
-        /// The physical unit of the time series.
+        /// The physical unit of the time series (free-text field).
         /// </summary>
         public string Unit { get; set; }
+        
+        /// <summary>
+        /// The physical unit of the time series (reference to unit catalog). Only available for numeric time series.
+        /// </summary>
+        public string UnitExternalId { get; set; }
 
         /// <summary>
         /// AssetId for the asset this time series is linked to.

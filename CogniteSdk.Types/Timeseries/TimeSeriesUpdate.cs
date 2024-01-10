@@ -32,9 +32,14 @@ namespace CogniteSdk
         public UpdateDictionary<string> Metadata { get; set; }
 
         /// <summary>
-        /// The change that will be applied to the key.
+        /// Set a new value for the Unit, or remove the value.
         /// </summary>
         public UpdateNullable<string> Unit { get; set; }
+        
+        /// <summary>
+        /// Set a new value for the UnitExternalId, or remove the value.
+        /// </summary>
+        public UpdateNullable<string> UnitExternalId { get; set; }
 
         /// <summary>
         /// Change the ID of the object.
