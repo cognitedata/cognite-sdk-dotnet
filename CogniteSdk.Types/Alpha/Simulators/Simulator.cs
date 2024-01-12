@@ -96,7 +96,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Represents the mapping of units used by the simulator.
     /// </summary>
-    public class SimulatorUnitsMap 
+    public class SimulatorUnitsMap
     {
         /// <summary>
         /// The label of the units map.
@@ -160,11 +160,11 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorStepFieldOption> Options { get; set; }
     }
-    
+
     /// <summary>
     /// Represents an option for a step field in the simulator.
     /// </summary>
-    public class SimulatorStepFieldOption 
+    public class SimulatorStepFieldOption
     {
         /// <summary>
         /// The label of the step field option.
@@ -178,7 +178,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Represents a model type in the simulator.
     /// </summary>
-    public class SimulatorModelType 
+    public class SimulatorModelType
     {
         /// <summary>
         /// The name of the model type.
@@ -192,18 +192,18 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Represents a boundary condition in the simulator.
     /// </summary>
-    public class SimulatorBoundaryCondition 
+    public class SimulatorBoundaryCondition
     {
         /// <summary>
         /// The name of the boundary condition.
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// The address of the boundary condition.
         /// </summary>
         public string Address { get; set; }
-        
+
         /// <summary>
         /// The key of the boundary condition.
         /// </summary>

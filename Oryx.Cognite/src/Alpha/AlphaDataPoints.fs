@@ -35,7 +35,10 @@ module AlphaDataPoints =
 
     /// Create one or more new timeseries. Returns a list of created time series.
     let create (items: DataPointInsertionRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source |> withLogMessage "DataPoints:create" |> withAlphaHeader |> createProtobuf items Url
+        source
+        |> withLogMessage "DataPoints:create"
+        |> withAlphaHeader
+        |> createProtobuf items Url
 
     let createWithGzip
         (items: DataPointInsertionRequest)
@@ -49,7 +52,10 @@ module AlphaDataPoints =
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: DataPointsDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source |> withLogMessage "DataPoints:delete" |> withAlphaHeader |> delete items Url
+        source
+        |> withLogMessage "DataPoints:delete"
+        |> withAlphaHeader
+        |> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
     let latest

@@ -38,7 +38,7 @@ namespace CogniteSdk
         /// different unit.
         /// </summary>
         public string Unit { get; set; }
-        
+
         /// <summary>
         /// The physical unit of the time series (reference to unit catalog). Replaced with target unit if data
         /// points were converted.

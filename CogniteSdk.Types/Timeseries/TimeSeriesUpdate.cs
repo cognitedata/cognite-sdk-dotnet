@@ -35,7 +35,7 @@ namespace CogniteSdk
         /// Set a new value for the Unit, or remove the value.
         /// </summary>
         public UpdateNullable<string> Unit { get; set; }
-        
+
         /// <summary>
         /// Set a new value for the UnitExternalId, or remove the value.
         /// </summary>
