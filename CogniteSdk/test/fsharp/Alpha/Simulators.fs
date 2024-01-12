@@ -289,7 +289,7 @@ let ``Create and update simulator integration is Ok`` () =
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
-    task {  
+    task {
         // Arrange
         let query = SimulatorIntegrationQuery()
 
@@ -333,14 +333,19 @@ let ``Create and list simulator models is Ok`` () =
             let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
             let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-            let! modelsListRes = azureDevClient.Alpha.Simulators.ListSimulatorModelsAsync(
-                new SimulatorModelQuery(
-                    Filter = SimulatorModelFilter(SimulatorExternalIds = [simulatorExternalId])
+
+            let! modelsListRes =
+                azureDevClient.Alpha.Simulators.ListSimulatorModelsAsync(
+                    new SimulatorModelQuery(
+                        Filter = SimulatorModelFilter(SimulatorExternalIds = [ simulatorExternalId ])
+                    )
                 )
-            )
 
             let modelCreated = modelCreateRes |> Seq.head
-            let foundCreatedModel = modelsListRes.Items |> Seq.find (fun item -> item.ExternalId = modelExternalId)
+
+            let foundCreatedModel =
+                modelsListRes.Items |> Seq.find (fun item -> item.ExternalId = modelExternalId)
+
             let modelPatch =
                 new SimulatorModelUpdateItem(
                     id = modelCreated.Id,
@@ -361,7 +366,7 @@ let ``Create and list simulator models is Ok`` () =
             test <@ modelCreated.Name = modelToCreate.Name @>
             test <@ modelCreated.Description = modelToCreate.Description @>
             test <@ modelCreated.DataSetId = modelToCreate.DataSetId @>
-            
+
             test <@ foundCreatedModel.ExternalId = modelToCreate.ExternalId @>
             test <@ foundCreatedModel.SimulatorExternalId = modelToCreate.SimulatorExternalId @>
             test <@ foundCreatedModel.Name = modelToCreate.Name @>
@@ -392,9 +397,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             )
 
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync(
-            [ new Identity("test-dataset") ]
-        )
+        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let fileToCreate =
@@ -431,31 +434,37 @@ let ``Create and list simulator model revisions is Ok`` () =
             let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
             let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-            
-            let! modelRevisionRes = 
+
+            let! modelRevisionRes =
                 azureDevClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
-            let! modelRevisionListRes = 
+
+            let! modelRevisionListRes =
                 azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
-                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [modelExternalId])
+                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [ modelExternalId ])
                     )
                 )
-            let modelRevisionFound = modelRevisionListRes.Items |> Seq.find (fun item -> item.ExternalId = modelRevisionToCreate.ExternalId)
+
+            let modelRevisionFound =
+                modelRevisionListRes.Items
+                |> Seq.find (fun item -> item.ExternalId = modelRevisionToCreate.ExternalId)
 
             let modelRevisionCreated = modelRevisionRes |> Seq.head
+
             let modelRevisionPatch =
                 new SimulatorModelRevisionUpdateItem(
                     id = modelRevisionCreated.Id,
-                    Update = SimulatorModelRevisionUpdate(
-                        BoundaryConditionsStatus = Update(SimulatorModelRevisionStatus.success),
-                        Status = Update(SimulatorModelRevisionStatus.failure),
-                        StatusMessage = Update<string>("test")
-                    )
+                    Update =
+                        SimulatorModelRevisionUpdate(
+                            BoundaryConditionsStatus = Update(SimulatorModelRevisionStatus.success),
+                            Status = Update(SimulatorModelRevisionStatus.failure),
+                            StatusMessage = Update<string>("test")
+                        )
                 )
-            let! modelRevisionUpdateRes = 
-                azureDevClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync(
-                    [ modelRevisionPatch ]
-                )
+
+            let! modelRevisionUpdateRes =
+                azureDevClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
+
             let modelRevisionUpdated = modelRevisionUpdateRes |> Seq.head
 
             // Assert
@@ -474,10 +483,12 @@ let ``Create and list simulator model revisions is Ok`` () =
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.success @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
-            
-            
+
+
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
-            azureDevClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ]) |> ignore
+
+            azureDevClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
+            |> ignore
     }
