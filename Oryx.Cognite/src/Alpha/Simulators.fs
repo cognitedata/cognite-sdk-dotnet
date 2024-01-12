@@ -21,6 +21,8 @@ module Simulators =
     let runUrl = Url +/ "run"
     let runsUrl = runUrl + "s"
     let integrationsUrl = Url +/ "integrations"
+    let modelsUrl = Url +/ "models"
+    let modelRevisionsUrl = modelsUrl +/ "revisions"
 
     let createSimulationRuns
         (items: SimulationRunCreate seq)
@@ -90,6 +92,48 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.create items integrationsUrl
 
+    let createSimulatorModels (items: SimulatorModelCreate seq) (source: HttpHandler<unit>) : HttpHandler<SimulatorModel seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorModel"
+        |> withAlphaHeader
+        |> HttpHandler.create items modelsUrl
+    
+    let listSimulatorModels (query: SimulatorModelQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<SimulatorModel>> =
+        source
+        |> withLogMessage "simulators:listSimulatorModels"
+        |> withAlphaHeader
+        |> HttpHandler.list query modelsUrl
+
+    let updateSimulatorModels (items: UpdateItem<SimulatorModelUpdate> seq) (source: HttpHandler<unit>) : HttpHandler<SimulatorModel seq> =
+        source
+        |> withLogMessage "simulators:updateSimulatorModels"
+        |> withAlphaHeader
+        |> HttpHandler.update items modelsUrl
+
+    let deleteSimulatorModels (items: SimulatorModelDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+        source
+        |> withLogMessage "simulators:deleteSimulatorModels"
+        |> withAlphaHeader
+        |> HttpHandler.delete items modelsUrl
+
+    let createSimulatorModelRevisions (items: SimulatorModelRevisionCreate seq) (source: HttpHandler<unit>) : HttpHandler<SimulatorModelRevision seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorModelRevision"
+        |> withAlphaHeader
+        |> HttpHandler.create items modelRevisionsUrl
+
+    let listSimulatorModelRevisions (query: SimulatorModelRevisionQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<SimulatorModelRevision>> =
+        source
+        |> withLogMessage "simulators:listSimulatorModelRevisions"
+        |> withAlphaHeader
+        |> HttpHandler.list query modelRevisionsUrl
+
+    let updateSimulatorModelRevisions (items: UpdateItem<SimulatorModelRevisionUpdate> seq) (source: HttpHandler<unit>) : HttpHandler<SimulatorModelRevision seq> =
+        source
+        |> withLogMessage "simulators:updateSimulatorModelRevisions"
+        |> withAlphaHeader
+        |> HttpHandler.update items modelRevisionsUrl
+
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
         |> withLogMessage "simulators:list"
@@ -108,10 +152,8 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.delete items Url
 
-    let update (items: SimulatorUpdateItem seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
-        let updateUrl = Url +/ "update"
-
+    let update (items: UpdateItem<SimulatorUpdate> seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         source
         |> withLogMessage "simulators:update"
         |> withAlphaHeader
-        |> HttpHandler.create items updateUrl
+        |> HttpHandler.update items Url
