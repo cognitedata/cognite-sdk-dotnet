@@ -41,6 +41,7 @@
     <Compile Include="Beta/DataModels.fs" />
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/Simulators.fs" />
+    <Compile Include="Alpha/AlphaDataPoints.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
