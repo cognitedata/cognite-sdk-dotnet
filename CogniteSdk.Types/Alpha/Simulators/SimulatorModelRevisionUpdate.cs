@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -31,6 +32,9 @@ namespace CogniteSdk.Alpha
         /// Update the status of the boundary conditions of the simulation model revision.
         /// </summary>
         public Update<SimulatorModelRevisionStatus> BoundaryConditionsStatus { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionUpdate>(this);
     }
 
     /// <inheritdoc/>
@@ -43,5 +47,8 @@ namespace CogniteSdk.Alpha
         public SimulatorModelRevisionUpdateItem(long id) : base(id)
         {
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionUpdateItem>(this);
     }
 }

@@ -160,7 +160,6 @@ let ``Retrieve simulation runs is Ok`` () =
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
@@ -176,8 +175,8 @@ let ``Create and delete simulators is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
-        let! _ = azureDevClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
+        let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+        let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
 
         // Assert
         let len = Seq.length res
@@ -193,7 +192,6 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
@@ -202,7 +200,7 @@ let ``List simulators is Ok`` () =
         let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListAsync(query)
 
         let len = Seq.length res.Items
 
@@ -213,7 +211,6 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
@@ -241,10 +238,10 @@ let ``Create and update simulator integration is Ok`` () =
 
         try
             // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
             let! integrationCreateRes =
-                azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+                writeClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
 
             let integrationCreated = integrationCreateRes |> Seq.head
 
@@ -262,7 +259,7 @@ let ``Create and update simulator integration is Ok`` () =
                 )
 
             let! integrationUpdateRes =
-                azureDevClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
+                writeClient.Alpha.Simulators.UpdateSimulatorIntegrationAsync([ integrationToUpdate ])
 
             let integrationUpdated = integrationUpdateRes |> Seq.head
 
@@ -282,11 +279,10 @@ let ``Create and update simulator integration is Ok`` () =
             test <@ integrationUpdated.ConnectorStatusUpdatedTime = Nullable now @>
             test <@ integrationUpdated.LicenseLastCheckedTime = Nullable now @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
@@ -294,7 +290,7 @@ let ``List simulator integrations is Ok`` () =
         let query = SimulatorIntegrationQuery()
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -441,7 +437,8 @@ let ``Create and list simulator model revisions is Ok`` () =
             let! modelRevisionListRes =
                 azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
-                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [ modelExternalId ])
+                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [ modelExternalId ]),
+                        Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
                     )
                 )
 

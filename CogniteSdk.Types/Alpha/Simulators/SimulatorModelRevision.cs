@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -124,5 +125,8 @@ namespace CogniteSdk.Alpha
         /// The number of milliseconds since epoch.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevision>(this);
     }
 }

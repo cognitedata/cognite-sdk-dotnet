@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -34,5 +35,8 @@ namespace CogniteSdk.Alpha
         /// Boundary conditions of the simulation model with target timeseries where the values are saved.
         /// </summary>
         public IEnumerable<SimulatorModelBoundaryCondition> BoundaryConditions { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionCreate>(this);
     }
 }

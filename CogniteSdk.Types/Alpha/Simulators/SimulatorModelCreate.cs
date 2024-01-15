@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -49,5 +50,8 @@ namespace CogniteSdk.Alpha
         /// Unit system of the simulation model.
         /// </summary>
         public string UnitSystem { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelCreate>(this);
     }
 }

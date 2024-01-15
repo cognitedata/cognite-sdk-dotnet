@@ -3,9 +3,47 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
+    /// <summary>
+    /// Status of a simulation run
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public enum SimulatorSortOrder
+    {
+        /// <summary>
+        /// Ascending sort order.
+        /// </summary>
+        asc,
+
+        /// <summary>
+        /// Descending sort order.
+        /// </summary>
+        desc,
+    }
+
+    /// <summary>
+    /// Sort order item.
+    /// </summary>
+    public class SimulatorSortItem
+    {
+        /// <summary>
+        /// Sort by property. Only 'createdTime' is supported.
+        /// </summary>
+        public string Property { get; set; }
+
+        /// <summary>
+        /// Sort order. Ascending ("asc") or descending ("desc").
+        /// </summary>
+        public SimulatorSortOrder Order { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorSortItem>(this);
+    }
+
     /// <summary>
     /// The Simulator model revision class.
     /// </summary>
@@ -16,6 +54,13 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public SimulatorModelRevisionFilter Filter { get; set; }
 
+        /// <summary>
+        /// Sort order.
+        /// </summary>
+        public IEnumerable<SimulatorSortItem> Sort { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionQuery>(this);
     }
 
     /// <summary>
@@ -27,5 +72,8 @@ namespace CogniteSdk.Alpha
         /// Filter on model external ids.
         /// </summary>
         public IEnumerable<string> ModelExternalIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionFilter>(this);
     }
 }

@@ -1,8 +1,8 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -16,6 +16,8 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public SimulatorModelFilter Filter { get; set; }
 
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelQuery>(this);
     }
 
     /// <summary>
@@ -27,5 +29,8 @@ namespace CogniteSdk.Alpha
         /// Filter on simulator external ids.
         /// </summary>
         public IEnumerable<string> SimulatorExternalIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelFilter>(this);
     }
 }
