@@ -1,5 +1,6 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
@@ -58,6 +59,11 @@ namespace CogniteSdk.Alpha
         /// Filter on assets with strict matching.
         /// </summary>
         public SimulationRunFilter Filter { get; set; }
+
+        /// <summary>
+        /// Sort order.
+        /// </summary>
+        public IEnumerable<SimulatorSortItem> Sort { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunQuery>(this);
