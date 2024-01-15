@@ -160,6 +160,7 @@ let ``Retrieve simulation runs is Ok`` () =
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
@@ -192,6 +193,7 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
@@ -211,6 +213,7 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
@@ -283,6 +286,7 @@ let ``Create and update simulator integration is Ok`` () =
             |> ignore
     }
 
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
