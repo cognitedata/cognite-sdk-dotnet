@@ -66,7 +66,7 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asynchronously retrieves information about multiple simulation runs in the same project. A maximum of 1000
+        /// Asynchronously retrieves information about multiple simulation runs. A maximum of 1000
         /// </summary>
         /// <param name="internalIds">The simulation run internal ids to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
@@ -84,7 +84,7 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asynchronously retrieves information about multiple simulator integrations in the same project. A maximum of 1000
+        /// Asynchronously retrieves information about multiple simulator integrations. A maximum of 1000
         /// </summary>
         /// <param name="query">The simulator integration query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
@@ -95,7 +95,7 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asynchronously updates multiple simulator integrations in the same project. Only one at a time is supported as of now.
+        /// Asynchronously updates multiple simulator integrations. Only one at a time is supported as of now.
         /// </summary>
         /// <param name="items">The simulator integration items to update.</param>
         /// <param name="token">Optional cancellation token</param>
@@ -107,13 +107,91 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asynchronously creates multiple simulator integrations in the same project. Only one at a time is supported as of now.
+        /// Asynchronously creates multiple simulator integrations. Only one at a time is supported as of now.
         /// </summary>
         /// <param name="items">The simulator integration items to create.</param>
         /// <param name="token">Optional cancellation token</param>
         public async Task<IEnumerable<SimulatorIntegration>> CreateSimulatorIntegrationAsync(IEnumerable<SimulatorIntegrationCreate> items, CancellationToken token = default)
         {
             var req = Simulators.createSimulatorIntegrations(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a simulation model. Only one at a time is supported as of now.
+        /// </summary>
+        /// <param name="items">The simulator model items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorModel>> CreateSimulatorModelsAsync(IEnumerable<SimulatorModelCreate> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulatorModels(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously lists information about multiple simulation models. A maximum of 1000
+        /// </summary>
+        /// <param name="query">The simulator model query to filter.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorModel>> ListSimulatorModelsAsync(SimulatorModelQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.listSimulatorModels(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously updates simulation models. Only one at a time is supported as of now.
+        /// </summary>
+        /// <param name="items">The simulator model items to update.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorModel>> UpdateSimulatorModelsAsync(IEnumerable<UpdateItem<SimulatorModelUpdate>> items, CancellationToken token = default)
+        {
+            var req = Simulators.updateSimulatorModels(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously deletes simulation models. Only one at a time is supported as of now.
+        /// </summary>
+        /// <param name="items">The simulator model items to delete.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<EmptyResponse> DeleteSimulatorModelsAsync(IEnumerable<Identity> items, CancellationToken token = default)
+        {
+            var query = new SimulatorModelDelete { Items = items };
+            var req = Simulators.deleteSimulatorModels(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a simulator model revision. Only one at a time is supported as of now.
+        /// </summary>
+        /// <param name="items">The simulator model revision items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorModelRevision>> CreateSimulatorModelRevisionsAsync(IEnumerable<SimulatorModelRevisionCreate> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulatorModelRevisions(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously lists information about multiple simulator model revisions. A maximum of 1000
+        /// </summary>
+        /// <param name="query">The simulator model revision query to filter.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorModelRevision>> ListSimulatorModelRevisionsAsync(SimulatorModelRevisionQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.listSimulatorModelRevisions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously updates simulator model revisions. Only one at a time is supported as of now.
+        /// </summary>
+        /// <param name="items">The simulator model revision items to update.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorModelRevision>> UpdateSimulatorModelRevisionsAsync(IEnumerable<UpdateItem<SimulatorModelRevisionUpdate>> items, CancellationToken token = default)
+        {
+            var req = Simulators.updateSimulatorModelRevisions(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
