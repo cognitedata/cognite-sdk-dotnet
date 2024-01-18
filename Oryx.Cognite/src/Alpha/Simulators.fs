@@ -23,6 +23,7 @@ module Simulators =
     let integrationsUrl = Url +/ "integrations"
     let modelsUrl = Url +/ "models"
     let modelRevisionsUrl = modelsUrl +/ "revisions"
+    let routinesUrl = Url +/ "routines"
 
     let createSimulationRuns
         (items: SimulationRunCreate seq)
@@ -151,6 +152,15 @@ module Simulators =
         |> withLogMessage "simulators:updateSimulatorModelRevisions"
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
+
+    let createSimulatorRoutines<'T when 'T :> ISimulatorRoutineCreate>
+        (items: SimulatorRoutineCreate<'T> seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorRoutine seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorRoutines"
+        |> withAlphaHeader
+        |> HttpHandler.create items routinesUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source

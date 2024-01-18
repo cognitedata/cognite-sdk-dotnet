@@ -196,6 +196,56 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously creates a simulation routine.
+        /// </summary>
+        /// <param name="items">The simulator routine items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesAsync(IEnumerable<SimulatorRoutineCreateCommandItem> items, CancellationToken token = default)
+        {
+            var convertedItems = items.Select(ConvertToSimulatorRoutineCreate);
+            var req = Simulators.createSimulatorRoutines(convertedItems, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        private SimulatorRoutineCreate<ISimulatorRoutineCreate> ConvertToSimulatorRoutineCreate(SimulatorRoutineCreateCommandItem item)
+        {
+            var createCommandItem = new SimulatorRoutineCreateCommandItem
+            {
+                ExternalId = item.ExternalId,
+                ModelExternalId = item.ModelExternalId,
+                SimulatorIntegrationExternalId = item.SimulatorIntegrationExternalId,
+                Name = item.Name
+            };
+
+            return new SimulatorRoutineCreate<ISimulatorRoutineCreate>(createCommandItem);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a simulation routine of predefined type.
+        /// </summary>
+        /// <param name="items">The simulator routine items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesPredefinedAsync(IEnumerable<SimulatorRoutineCreateCommandPredefined> items, CancellationToken token = default) 
+        {
+            var convertedItems = items.Select(ConvertToSimulatorRoutineCreatePredefined);
+            var req = Simulators.createSimulatorRoutines(convertedItems, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        private SimulatorRoutineCreate<ISimulatorRoutineCreate> ConvertToSimulatorRoutineCreatePredefined(SimulatorRoutineCreateCommandPredefined item)
+        {
+            var createCommandItem = new SimulatorRoutineCreateCommandPredefined
+            {
+                ExternalId = item.ExternalId,
+                ModelExternalId = item.ModelExternalId,
+                SimulatorIntegrationExternalId = item.SimulatorIntegrationExternalId,
+                CalculationType = item.CalculationType
+            };
+
+            return new SimulatorRoutineCreate<ISimulatorRoutineCreate>(createCommandItem);
+        }
+
+        /// <summary>
         /// Asyncronously lists all simulators in the project.
         /// </summary>
         /// <param name="query">The simulator query to retrieve.</param>

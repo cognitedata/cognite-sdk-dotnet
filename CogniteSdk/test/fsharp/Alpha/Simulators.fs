@@ -493,3 +493,33 @@ let ``Create and list simulator model revisions is Ok`` () =
             azureDevClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
             |> ignore
     }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS" , skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulatorRoutines")>]
+let ``Create simulator routines is Ok`` () =
+    task {
+        // Arrange
+        let routineExternalId = $"test_routine_3_{now}"
+        let modelExternalId = $"test_model_{now}"
+
+        let routineToCreate =
+            SimulatorRoutineCreateCommandItem(
+                ExternalId = routineExternalId,
+                ModelExternalId = modelExternalId,
+                SimulatorIntegrationExternalId = "test_connector",
+                Name = "Test"
+            )
+        
+        try
+            // Act
+            let! res = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+            // Assert
+            let len = Seq.length res
+            test <@ len = 1 @>
+            // let itemRes = res |> Seq.head
+        finally
+            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            |> ignore
+    }
+
+
