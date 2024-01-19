@@ -156,34 +156,24 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
 
-    // let createSimulatorRoutines<'T when 'T :> ISimulatorRoutineCreate>
-    //     (items: SimulatorRoutineCreate<'T> seq)
-    //     (source: HttpHandler<unit>)
-    //     : HttpHandler<SimulatorRoutine seq> =
-    //     source
-    //     |> withLogMessage "simulators:createSimulatorRoutines"
-    //     |> withAlphaHeader
-    //     |> HttpHandler.create (items |> Seq.map (fun item -> item.Value)) routinesUrl
 
-    let createSimulatorRoutines<'T when 'T :> ISimulatorRoutineCreate>
-        (items: SimulatorRoutineCreate<'T> seq)
+    let createSimulatorRoutines
+        (items: SimulatorRoutineCreateCommandItem seq)
         (source: HttpHandler<unit>)
         : HttpHandler<SimulatorRoutine seq> =
-            source
-            |> withLogMessage "simulators:createSimulatorRoutines"
-            |> withAlphaHeader
-            |> HttpHandler.create
-                (items
-                |> Seq.map (fun item ->
-                    Console.WriteLine(item.Value |> json jsonOptions)
-                    item.Value
-                )
-                |> Seq.toArray // Convert the sequence to an array
-                |> fun itemsArray ->
-                    Console.WriteLine(itemsArray.Length)
-                    itemsArray
-                )
-                routinesUrl
+        source
+        |> withLogMessage "simulators:createSimulatorRoutines"
+        |> withAlphaHeader
+        |> HttpHandler.create items routinesUrl
+
+    let createSimulatorRoutinesPredefined
+        (items: SimulatorRoutineCreateCommandPredefined seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorRoutine seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorRoutinesPredefined"
+        |> withAlphaHeader
+        |> HttpHandler.create items routinesUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source

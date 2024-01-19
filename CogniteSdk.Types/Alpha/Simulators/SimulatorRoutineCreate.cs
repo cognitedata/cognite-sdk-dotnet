@@ -9,16 +9,10 @@ using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
-
-    /// <summary>
-    /// Represents a command to create a simulator routine.
-    /// </summary>
-    public interface ISimulatorRoutineCreate { }
-
     /// <summary>
     /// A Simulator routine to create
     /// </summary>
-    public class SimulatorRoutineCreateCommandItem : ISimulatorRoutineCreate {
+    public class SimulatorRoutineCreateCommandItem  {
         // <summary>
         /// External id provided by client. Must be unique within the project.
         /// </summary>
@@ -39,13 +33,15 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string Name { get; set; }
 
+        public override string ToString() => Stringable.ToString(this);
+
     }
 
     /// <summary>
     /// A Simulator routine to create of type predefined
     /// </summary>
     
-    public class SimulatorRoutineCreateCommandPredefined : ISimulatorRoutineCreate {
+    public class SimulatorRoutineCreateCommandPredefined  {
         /// <summary>
         /// External id provided by client. Must be unique within the project.
         /// </summary>
@@ -68,20 +64,9 @@ namespace CogniteSdk.Alpha
         
         public string CalculationType { get; set; }
 
+        public override string ToString() => Stringable.ToString(this);
+
+
     }
 
-
-    /// <summary>
-    /// Represents a command to create a simulator routine.
-    /// </summary>
-    /// <typeparam name="T">The type of the simulator routine create command.</typeparam>
-    public class SimulatorRoutineCreate<T> where T : ISimulatorRoutineCreate
-    {
-        public T Value { get; set; }
-
-        public SimulatorRoutineCreate(T value)
-        {
-            Value = value;
-        }
-    }
 }

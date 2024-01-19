@@ -501,21 +501,74 @@ let ``Create simulator routines is Ok`` () =
         // Arrange
         let routineExternalId = $"test_routine_3_{now}"
         let modelExternalId = $"test_model_{now}"
+        let simulatorExternalId = $"test_sim_2_{now}"
+        let integrationExternalId = $"test_integration_{now}"
 
-        let routineToCreate =
-            SimulatorRoutineCreateCommandItem(
-                ExternalId = routineExternalId,
-                ModelExternalId = modelExternalId,
-                SimulatorIntegrationExternalId = "test_connector",
-                Name = "Test"
+        let simulatorToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes = [ "json" ],
+                Enabled = true
+            )
+
+        let integrationToCreate =
+            SimulatorIntegrationCreate(
+                ExternalId = integrationExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                DataSetId = 123,
+                SimulatorVersion = "N/A",
+                ConnectorVersion = "1.2.3",
+                RunApiEnabled = true
             )
         
+        let modelToCreate =
+            SimulatorModelCreate(
+                ExternalId = modelExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                Name = "test_model",
+                Description = "test_model_description",
+                Labels = [ new CogniteExternalId("test_label") ],
+                DataSetId = 123
+            )
+
         try
+            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+
+            let! integrationCreateRes =
+                azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+
+            let integrationCreated = integrationCreateRes |> Seq.head
+
+            let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            
+            let modelCreated = modelCreateRes |> Seq.head
+
+            let routineToCreate =
+                SimulatorRoutineCreateCommandItem(
+                    ExternalId = routineExternalId,
+                    ModelExternalId = modelCreated.ExternalId,
+                    SimulatorIntegrationExternalId = integrationCreated.ExternalId,
+                    Name = "Test"
+                )
+            
+            let routineToCreatePredefined =
+                SimulatorRoutineCreateCommandPredefined(
+                    ExternalId = routineExternalId+"_predefined",
+                    ModelExternalId = modelCreated.ExternalId,
+                    SimulatorIntegrationExternalId = integrationCreated.ExternalId,
+                    CalculationType = "IPR/VLP"
+                )
+
             // Act
-            let! res = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+            let! resRoutine = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+            let! resRoutinePredefined = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
+
             // Assert
-            let len = Seq.length res
-            test <@ len = 1 @>
+            let lenRoutine = Seq.length resRoutine
+            let lenPredefinedRoutine = Seq.length resRoutinePredefined
+            test <@ lenRoutine = 1 @>
+            test <@ lenPredefinedRoutine = 1 @>
             // let itemRes = res |> Seq.head
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
