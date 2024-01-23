@@ -229,7 +229,7 @@ let ``Create and update simulator integration is Ok`` () =
                 Enabled = true
             )
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let integrationToCreate =
