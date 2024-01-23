@@ -24,7 +24,7 @@ namespace CogniteSdk.Alpha
         public string ModelName { get; set; }
 
         /// <summary>
-        /// Routine external id, only used in RoutineName, SimulatorName, ModelName is not set
+        /// Routine external id, only used if RoutineName, SimulatorName, ModelName is not set
         /// </summary>
         public string RoutineExternalId { get; set; }
 
