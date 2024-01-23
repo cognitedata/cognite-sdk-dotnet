@@ -9,19 +9,24 @@ namespace CogniteSdk.Alpha
     public class SimulationRunCreate
     {
         /// <summary>
-        /// The simulator name
+        /// The simulator name, only used if RoutineExternalId is not set
         /// </summary>
         public string SimulatorName { get; set; }
 
         /// <summary>
-        /// The routine name
+        /// The routine name, only used if RoutineExternalId is not set
         /// </summary>
         public string RoutineName { get; set; }
 
         /// <summary>
-        /// The model name
+        /// The model name, only used if RoutineExternalId is not set
         /// </summary>
         public string ModelName { get; set; }
+
+        /// <summary>
+        /// Routine external id, only used in RoutineName, SimulatorName, ModelName is not set
+        /// </summary>
+        public string RoutineExternalId { get; set; }
 
         /// <summary>
         /// Timestamp that overwrites the validation end
