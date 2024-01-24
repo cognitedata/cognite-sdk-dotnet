@@ -448,11 +448,12 @@ let ``Create and list simulator model revisions is Ok`` () =
             let! modelRevisionListRes =
                 azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
-                        Filter = SimulatorModelRevisionFilter(
-                            ModelExternalIds = [ modelExternalId ],
-                            CreatedTime = TimeRange(Min = now - 10000L, Max = now + 10000L),
-                            LastUpdatedTime = TimeRange(Min = 0L)
-                        ),
+                        Filter =
+                            SimulatorModelRevisionFilter(
+                                ModelExternalIds = [ modelExternalId ],
+                                CreatedTime = TimeRange(Min = now - 10000L, Max = now + 10000L),
+                                LastUpdatedTime = TimeRange(Min = 0L)
+                            ),
                         Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
                     )
                 )
@@ -506,7 +507,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             |> ignore
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS" , skipReason = "Immature Simulator APIs")>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulatorRoutines")>]
 let ``Create simulator routines is Ok`` () =
     task {
@@ -537,7 +538,7 @@ let ``Create simulator routines is Ok`` () =
                 ConnectorVersion = "1.2.3",
                 RunApiEnabled = true
             )
-        
+
         let modelToCreate =
             SimulatorModelCreate(
                 ExternalId = modelExternalId,
@@ -557,7 +558,7 @@ let ``Create simulator routines is Ok`` () =
             let integrationCreated = integrationCreateRes |> Seq.head
 
             let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-            
+
             let modelCreated = modelCreateRes |> Seq.head
 
             let routineToCreate =
@@ -567,7 +568,7 @@ let ``Create simulator routines is Ok`` () =
                     SimulatorIntegrationExternalId = integrationCreated.ExternalId,
                     Name = "Test"
                 )
-            
+
             let routineToCreatePredefined =
                 SimulatorRoutineCreateCommandPredefined(
                     ExternalId = routineExternalIdPredefined,
@@ -578,14 +579,23 @@ let ``Create simulator routines is Ok`` () =
 
             // Act
             let! resRoutine = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
-            let! resRoutinePredefined = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
-            let! resList = azureDevClient.Alpha.Simulators.ListSimulatorRoutinesAsync(new SimulatorRoutineQuery(
-                Filter = SimulatorRoutineFilter(
-                    ModelExternalIds = [ modelCreated.ExternalId ]
+
+            let! resRoutinePredefined =
+                azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
+
+            let! resList =
+                azureDevClient.Alpha.Simulators.ListSimulatorRoutinesAsync(
+                    new SimulatorRoutineQuery(
+                        Filter = SimulatorRoutineFilter(ModelExternalIds = [ modelCreated.ExternalId ])
+                    )
                 )
-            ))
-            let resListRoutine = resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalId)
-            let resListRoutinePredefined = resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
+
+            let resListRoutine =
+                resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalId)
+
+            let resListRoutinePredefined =
+                resList.Items
+                |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
             // Assert
             let lenRoutine = Seq.length resRoutine
@@ -603,7 +613,7 @@ let ``Create simulator routines is Ok`` () =
     }
 
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS" , skipReason = "Immature Simulator APIs")>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulatorRoutineRevisions")>]
 let ``Create simulator predefined routine revisions is Ok`` () =
     task {
@@ -634,7 +644,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                 ConnectorVersion = "1.2.3",
                 RunApiEnabled = true
             )
-        
+
         let modelToCreate =
             SimulatorModelCreate(
                 ExternalId = modelExternalId,
@@ -654,9 +664,9 @@ let ``Create simulator predefined routine revisions is Ok`` () =
             let integrationCreated = integrationCreateRes |> Seq.head
 
             let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-            
+
             let modelCreated = modelCreateRes |> Seq.head
-            
+
             let routineToCreatePredefined =
                 SimulatorRoutineCreateCommandPredefined(
                     ExternalId = routineExternalId,
@@ -667,61 +677,58 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             let chokeCurve =
                 JsonSerializer.SerializeToElement(
-                    {| unit = "m2" ; setting = [99.8]; opening = [ 10.1; 0.1 ]; |}
+                    {| unit = "m2"
+                       setting = [ 99.8 ]
+                       opening = [ 10.1; 0.1 ] |}
                 )
 
 
-            let revisionToCreate  =
+            let revisionToCreate =
                 SimulatorRoutineRevisionCreate(
                     ExternalId = routineRevisionExternalId,
                     RoutineExternalId = routineExternalId,
-                    Configuration = SimulatorRoutineRevisionConfiguration(
-                        Schedule = SimulatorRoutineRevisionSchedule(
-                            Enabled = true,
-                            StartTime = 100,
-                            Repeat = "15m"
-                        ),
-                        LogicalCheck = SimulatorRoutineRevisionLogicalCheck(
-                            Enabled = true,
-                            TimeseriesExternalId = "test",
-                            Value = 10.9,
-                            Operator = "gt",
-                            Aggregate = "average"
-                        ),
-                        SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(
-                            Enabled = true,
-                            TimeseriesExternalId = "test",
-                            Aggregate = "average",
-                            MinSectionSize = 1,
-                            VarThreshold = 0.1,
-                            SlopeThreshold = 0.1
-                        ),
-                        DataSampling = SimulatorRoutineRevisionDataSampling(
-                            ValidationWindow = 1,
-                            SamplingWindow = 1,
-                            Granularity = 1,
-                            ValidationEndOffset = "1m"
-                        ),
-                        InputTimeseries = [],
-                        OutputTimeseries = [],
-                        OutputSequences = [
-                            SimulatorRoutineRevisionOutputSequence(
-                                Name = "test",
-                                ReferenceId = "test"
-                            )
-                        ],
-                        
-                        ExtraOptions =
-                            Dictionary(dict [
-                                "chokeCurve", chokeCurve
-                            ])
-                    )
+                    Configuration =
+                        SimulatorRoutineRevisionConfiguration(
+                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, StartTime = 100, Repeat = "15m"),
+                            LogicalCheck =
+                                SimulatorRoutineRevisionLogicalCheck(
+                                    Enabled = true,
+                                    TimeseriesExternalId = "test",
+                                    Value = 10.9,
+                                    Operator = "gt",
+                                    Aggregate = "average"
+                                ),
+                            SteadyStateDetection =
+                                SimulatorRoutineRevisionSteadyStateDetection(
+                                    Enabled = true,
+                                    TimeseriesExternalId = "test",
+                                    Aggregate = "average",
+                                    MinSectionSize = 1,
+                                    VarThreshold = 0.1,
+                                    SlopeThreshold = 0.1
+                                ),
+                            DataSampling =
+                                SimulatorRoutineRevisionDataSampling(
+                                    ValidationWindow = 1,
+                                    SamplingWindow = 1,
+                                    Granularity = 1,
+                                    ValidationEndOffset = "1m"
+                                ),
+                            InputTimeseries = [],
+                            OutputTimeseries = [],
+                            OutputSequences =
+                                [ SimulatorRoutineRevisionOutputSequence(Name = "test", ReferenceId = "test") ],
+
+                            ExtraOptions = Dictionary(dict [ "chokeCurve", chokeCurve ])
+                        )
                 )
 
             // Act
-            let! resRoutinePredefined = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
+            let! resRoutinePredefined =
+                azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
 
-            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+            let! resRevision =
+                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
             // Assert
             let lenPredefinedRoutine = Seq.length resRoutinePredefined
@@ -741,7 +748,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
     }
 
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS" , skipReason = "Immature Simulator APIs")>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulatorRoutineRevisions")>]
 let ``Create simulator routine revisions is Ok`` () =
     task {
@@ -772,7 +779,7 @@ let ``Create simulator routine revisions is Ok`` () =
                 ConnectorVersion = "1.2.3",
                 RunApiEnabled = true
             )
-        
+
         let modelToCreate =
             SimulatorModelCreate(
                 ExternalId = modelExternalId,
@@ -792,7 +799,7 @@ let ``Create simulator routine revisions is Ok`` () =
             let integrationCreated = integrationCreateRes |> Seq.head
 
             let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-            
+
             let modelCreated = modelCreateRes |> Seq.head
 
             let routineToCreate =
@@ -807,73 +814,70 @@ let ``Create simulator routine revisions is Ok`` () =
                 SimulatorRoutineRevisionStage(
                     Order = 1,
                     Description = "test",
-                    Steps = [
-                        SimulatorRoutineRevisionScriptStep(
-                            Order = 1,
-                            StepType = "Set",
-                            Description = "test",
-                            Arguments =
-                                new Dictionary<string, string>(
-                                    dict [
-                                        "argumentType", "inputTimeSeries";
-                                        "referenceId", "test";
-                                        "objectName", "test";
-                                        "objectProperty", "test2"
-                                    ]
-                                )
-                        )
-                        SimulatorRoutineRevisionScriptStep(
-                            Order = 2,
-                            StepType = "Get",
-                            Description = "test",
-                            Arguments =
-                                new Dictionary<string, string>(
-                                    dict [
-                                        "argumentType", "outputTimeSeries";
-                                        "referenceId", "test";
-                                        "objectName", "test";
-                                        "objectProperty", "test2"
-                                    ]
-                                )
-                        )
-                    ]
+                    Steps =
+                        [ SimulatorRoutineRevisionScriptStep(
+                              Order = 1,
+                              StepType = "Set",
+                              Description = "test",
+                              Arguments =
+                                  new Dictionary<string, string>(
+                                      dict
+                                          [ "argumentType", "inputTimeSeries"
+                                            "referenceId", "test"
+                                            "objectName", "test"
+                                            "objectProperty", "test2" ]
+                                  )
+                          )
+                          SimulatorRoutineRevisionScriptStep(
+                              Order = 2,
+                              StepType = "Get",
+                              Description = "test",
+                              Arguments =
+                                  new Dictionary<string, string>(
+                                      dict
+                                          [ "argumentType", "outputTimeSeries"
+                                            "referenceId", "test"
+                                            "objectName", "test"
+                                            "objectProperty", "test2" ]
+                                  )
+                          ) ]
                 )
 
-            let revisionToCreate  =
+            let revisionToCreate =
                 SimulatorRoutineRevisionCreate(
                     ExternalId = routineRevisionExternalId,
                     RoutineExternalId = routineExternalId,
-                    Script = [scriptStage],
-                    Configuration = SimulatorRoutineRevisionConfiguration(
-                        Schedule = SimulatorRoutineRevisionSchedule(
-                            Enabled = false
-                        ),
-                        LogicalCheck = SimulatorRoutineRevisionLogicalCheck(
-                            Enabled = false
-                        ),
-                        SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(
-                            Enabled = false
-                        ),
-                        DataSampling = SimulatorRoutineRevisionDataSampling(
-                            ValidationWindow = 1,
-                            SamplingWindow = 1,
-                            Granularity = 1,
-                            ValidationEndOffset = "1m"
-                        ),
-                        InputTimeseries = [],
-                        OutputTimeseries = [],
-                        InputConstants = []
-                    )
+                    Script = [ scriptStage ],
+                    Configuration =
+                        SimulatorRoutineRevisionConfiguration(
+                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
+                            LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
+                            SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
+                            DataSampling =
+                                SimulatorRoutineRevisionDataSampling(
+                                    ValidationWindow = 1,
+                                    SamplingWindow = 1,
+                                    Granularity = 1,
+                                    ValidationEndOffset = "1m"
+                                ),
+                            InputTimeseries = [],
+                            OutputTimeseries = [],
+                            InputConstants = []
+                        )
                 )
 
             // Act
             let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
-            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+            let! resRevision =
+                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
-            let! resListRevisions = azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(new SimulatorRoutineRevisionQuery())
+            let! resListRevisions =
+                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(new SimulatorRoutineRevisionQuery())
 
-            let revisionFound = resListRevisions.Items |> Seq.find (fun item -> item.ExternalId = routineRevisionExternalId)
+            let revisionFound =
+                resListRevisions.Items
+                |> Seq.find (fun item -> item.ExternalId = routineRevisionExternalId)
 
             // Assert
             test <@ resRevision |> Seq.length = 1 @>
@@ -881,7 +885,7 @@ let ``Create simulator routine revisions is Ok`` () =
             test <@ revisionFound.ExternalId = routineRevisionExternalId @>
             test <@ revisionFound.RoutineExternalId = routineExternalId @>
             test <@ revisionFound.Configuration.ToString() = revisionToCreate.Configuration.ToString() @>
-            
+
             let scriptStageRes = Seq.head revisionFound.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
         finally
