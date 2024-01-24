@@ -39,6 +39,33 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
+    /// Extra options for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.
+    /// </summary>
+    public class SimulatorRoutineRevisionExtraOptions {
+        // gaugeDepth, rootFindingSettings, chokeCurve, estimateBHP, 
+
+        /// <summary>
+        /// Gauge depth for the predefined calculations.
+        /// </summary>
+        public Dictionary<string, string> GaugeDepth { get; set; }
+
+        /// <summary>
+        /// Root finding settings for the predefined calculations.
+        /// </summary>
+        public Dictionary<string, string> RootFindingSettings { get; set; }
+
+        /// <summary>
+        /// Choke curve for the predefined calculations.
+        /// </summary>
+        public Dictionary<string, string> ChokeCurve { get; set; }
+
+        /// <summary>
+        /// Estimate BHP for the predefined calculations.
+        /// </summary>
+        public Dictionary<string, string> EstimateBHP { get; set; }
+    }
+
+    /// <summary>
     /// Configuration settings for the simulator routine revision.
     /// </summary>
     public class SimulatorRoutineRevisionConfiguration
@@ -79,6 +106,11 @@ namespace CogniteSdk.Alpha
         public IEnumerable<SimulatorRoutineRevisionOutputSequence> OutputSequences { get; set; }
 
         /// <summary>
+        /// Extra paramethers for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.
+        /// </summary>
+        public SimulatorRoutineRevisionExtraOptions Options { get; set; }
+
+        /// <summary>
         /// List of input constants configurations.
         /// </summary>
         public IEnumerable<InputConstants> InputConstants { get; set; }
@@ -93,6 +125,16 @@ namespace CogniteSdk.Alpha
         /// Indicates whether the schedule is enabled.
         /// </summary>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Start time for the schedule.
+        /// </summary>
+        public long? StartTime { get; set; }
+
+        /// <summary>
+        /// Repeat interval for the schedule.
+        /// </summary>
+        public string Repeat { get; set; }
     }
 
     /// <summary>
@@ -130,6 +172,26 @@ namespace CogniteSdk.Alpha
         /// Indicates whether logical check is enabled.
         /// </summary>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Timeseries to use for logical check.
+        /// </summary>
+        public string TimeseriesExternalId { get; set; }
+
+        /// <summary>
+        /// Aggregate function to use for logical check.
+        /// </summary>
+        public string Aggregate { get; set; }
+
+        /// <summary>
+        /// Logical check comparison operator.
+        /// </summary>
+        public string Operator { get; set; }
+
+        /// <summary>
+        /// Logical check value.
+        /// </summary>
+        public string Value { get; set; }
     }
 
     /// <summary>
@@ -141,6 +203,31 @@ namespace CogniteSdk.Alpha
         /// Indicates whether steady state detection is enabled.
         /// </summary>
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Timeseries to use for steady state detection.
+        /// </summary>
+        public string TimeseriesExternalId { get; set; }
+
+        /// <summary>
+        /// Aggregate function to use for steady state detection.
+        /// </summary>
+        public string Aggregate { get; set; }
+
+        /// <summary>
+        /// Min section size for steady state detection.
+        /// </summary>
+        public int? MinSectionSize { get; set; }
+
+        /// <summary>
+        /// Var threshold for steady state detection.
+        /// </summary>
+        public double? VarThreshold { get; set; }
+
+        /// <summary>
+        /// Slope threshold for steady state detection.
+        /// </summary>
+        public double? SlopeThreshold { get; set; }
     }
 
     /// <summary>

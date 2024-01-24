@@ -511,6 +511,7 @@ let ``Create simulator routines is Ok`` () =
     task {
         // Arrange
         let routineExternalId = $"test_routine_3_{now}"
+        let routineExternalIdPredefined = $"{routineExternalId}_predefined"
         let modelExternalId = $"test_model_{now}"
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
@@ -568,7 +569,7 @@ let ``Create simulator routines is Ok`` () =
             
             let routineToCreatePredefined =
                 SimulatorRoutineCreateCommandPredefined(
-                    ExternalId = routineExternalId+"_predefined",
+                    ExternalId = routineExternalIdPredefined,
                     ModelExternalId = modelCreated.ExternalId,
                     SimulatorIntegrationExternalId = integrationCreated.ExternalId,
                     CalculationType = "IPR/VLP"
@@ -577,6 +578,13 @@ let ``Create simulator routines is Ok`` () =
             // Act
             let! resRoutine = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
             let! resRoutinePredefined = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
+            let! resList = azureDevClient.Alpha.Simulators.ListSimulatorRoutinesAsync(new SimulatorRoutineQuery(
+                Filter = SimulatorRoutineFilter(
+                    ModelExternalIds = [ modelCreated.ExternalId ]
+                )
+            ))
+            let resListRoutine = resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalId)
+            let resListRoutinePredefined = resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
             // Assert
             let lenRoutine = Seq.length resRoutine
@@ -584,6 +592,10 @@ let ``Create simulator routines is Ok`` () =
             test <@ lenRoutine = 1 @>
             test <@ lenPredefinedRoutine = 1 @>
             // let itemRes = res |> Seq.head
+
+            test <@ resListRoutine.Name = routineToCreate.Name @>
+            test <@ resListRoutinePredefined.CalculationType = routineToCreatePredefined.CalculationType @>
+            test <@ resListRoutinePredefined.Name = "Rate by Nodal Analysis" @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore

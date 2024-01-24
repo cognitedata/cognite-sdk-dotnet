@@ -6,14 +6,14 @@ using System.Collections.Generic;
 namespace CogniteSdk.Alpha
 {
     /// <summary>
-    /// The Simulation Routine Revision query class.
+    /// The Simulation Routine query class.
     /// </summary>
-    public class SimulatorRoutineRevisionQuery
+    public class SimulatorRoutineQuery
     {
         /// <summary>
         /// Filter on simulators with strict matching.
         /// </summary>
-        public SimulatorRoutineRevisionFilter Filter { get; set; }
+        public SimulatorRoutineFilter Filter { get; set; }
 
         /// <summary>
         /// Limit the number of results.
@@ -29,14 +29,18 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// The simulation routine revision filter class.
+    /// The simulation routine filter class.
     /// </summary>
-    public class SimulatorRoutineRevisionFilter
+    public class SimulatorRoutineFilter
     {
         /// <summary>
-        /// List of routineExternalIds strings
+        /// List of model ExternalIds to match.
         /// </summary>
-        public IEnumerable<string> RoutineExternalIds { get; set; }
+        public IEnumerable<string> ModelExternalIds { get; set; }
 
+        /// <summary>
+        /// List of simulator integration ExternalIds to match.
+        /// </summary>
+        public IEnumerable<string> SimulatorIntegrationExternalIds { get; set; }
     }
 }

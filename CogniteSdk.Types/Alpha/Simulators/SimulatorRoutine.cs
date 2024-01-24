@@ -52,6 +52,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string Description { get; set; }
 
+        /// <summary>
+        /// Calculation type. Only used for predefined routines.
+        /// </summary>
+        public string CalculationType { get; set; }
 
         /// <summary>
         /// The data set id of the routine.

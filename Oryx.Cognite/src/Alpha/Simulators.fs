@@ -3,16 +3,11 @@
 
 namespace Oryx.Cognite.Alpha
 
-open System.Collections.Generic
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Alpha
 
 open CogniteSdk.Alpha
-
-open System
-open Oryx.SystemTextJson
-open Oryx.SystemTextJson.ResponseReader
 
 [<RequireQualifiedAccess>]
 module Simulators =
@@ -158,6 +153,14 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
 
+    let listSimulatorRoutines
+        (query: SimulatorRoutineQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorRoutine>> =
+        source
+        |> withLogMessage "simulators:listSimulatorRoutines"
+        |> withAlphaHeader
+        |> HttpHandler.list query routinesUrl
 
     let createSimulatorRoutines
         (items: SimulatorRoutineCreateCommandItem seq)

@@ -196,6 +196,17 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously list simulator routines.
+        /// </summary>
+        /// <param name="query">The simulator routine query to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.listSimulatorRoutines(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously creates a simulation routine.
         /// </summary>
         /// <param name="items">The simulator routine items to create.</param>
@@ -231,7 +242,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <summary>
         /// List simulator routine revisions.
         /// </summary>
-        /// <param name="query">The simulator routine revisions query to retreive.</param>
+        /// <param name="query">The simulator routine revisions query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
         public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default) 
         {

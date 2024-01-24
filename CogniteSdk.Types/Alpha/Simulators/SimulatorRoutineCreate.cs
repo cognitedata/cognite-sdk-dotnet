@@ -64,9 +64,8 @@ namespace CogniteSdk.Alpha
         
         public string CalculationType { get; set; }
 
+        /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
-
-
     }
 
 }
