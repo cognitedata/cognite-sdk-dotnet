@@ -598,11 +598,8 @@ let ``Create simulator routines is Ok`` () =
                 |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
             // Assert
-            let lenRoutine = Seq.length resRoutine
-            let lenPredefinedRoutine = Seq.length resRoutinePredefined
-            test <@ lenRoutine = 1 @>
-            test <@ lenPredefinedRoutine = 1 @>
-            // let itemRes = res |> Seq.head
+            test <@ Seq.length resRoutine = 1 @>
+            test <@ Seq.length resRoutinePredefined = 1 @>
 
             test <@ resListRoutine.Name = routineToCreate.Name @>
             test <@ resListRoutinePredefined.CalculationType = routineToCreatePredefined.CalculationType @>
@@ -736,7 +733,6 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             // Assert
             test <@ resRevision |> Seq.length = 1 @>
-
             let revision = resRevision |> Seq.head
 
             test <@ revision.ExternalId = routineRevisionExternalId @>
