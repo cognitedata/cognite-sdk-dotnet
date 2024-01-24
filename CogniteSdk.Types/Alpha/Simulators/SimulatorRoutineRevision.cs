@@ -7,7 +7,7 @@ namespace CogniteSdk.Alpha
 {
 
     /// <summary>
-    /// A Simulator routine .
+    /// A Simulator routine revision.
     /// </summary>
     public class SimulatorRoutineRevision
     {
@@ -29,17 +29,17 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of script configurations.
         /// </summary>
-        public List<SimulatorRoutineRevisionScript> Script { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionStage> Script { get; set; }
 
         /// <summary>
         /// Configuration settings for the simulator routine revision.
         /// </summary>
         public SimulatorRoutineRevisionConfiguration Configuration { get; set; }
 
-        // <summary>
+        /// <summary>
         /// The data set id of the routine revision.
         /// </summary>        
-        public int DataSetId { get; set; }
+        public long DataSetId { get; set; }
 
         /// <summary>
         /// The external id of the simulator.
@@ -49,13 +49,14 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// The id of the user who created the revision.
         /// </summary>
-        public string createdByUserId { get; set; }
+        public string CreatedByUserId { get; set; }
 
         /// <summary>
         /// The time when the revision was created.
         /// </summary>
-        public long createdTime { get; set; }
+        public long CreatedTime { get; set; }
 
+        /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
 
     }

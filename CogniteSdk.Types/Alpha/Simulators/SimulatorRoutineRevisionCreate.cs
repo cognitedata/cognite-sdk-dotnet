@@ -26,13 +26,14 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of script configurations.
         /// </summary>
-        public List<SimulatorRoutineRevisionScript> Script { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionStage> Script { get; set; }
 
         /// <summary>
         /// Configuration settings for the simulator routine revision.
         /// </summary>
         public SimulatorRoutineRevisionConfiguration Configuration { get; set; }
 
+        /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
 
     }
@@ -55,27 +56,32 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Logical check configuration.
         /// </summary>
-        public LogicalCheck LogicalCheck { get; set; }
+        public SimulatorRoutineRevisionLogicalCheck LogicalCheck { get; set; }
 
         /// <summary>
         /// Steady state detection configuration.
         /// </summary>
-        public SteadyStateDetection SteadyStateDetection { get; set; }
+        public SimulatorRoutineRevisionSteadyStateDetection SteadyStateDetection { get; set; }
 
         /// <summary>
         /// List of input timeseries configurations.
         /// </summary>
-        public List<InputTimeseries> InputTimeseries { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionInputTimeseries> InputTimeseries { get; set; }
 
         /// <summary>
         /// List of output timeseries configurations.
         /// </summary>
-        public List<OutputTimeseries> OutputTimeseries { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionOutputTimeseries> OutputTimeseries { get; set; }
+
+        /// <summary>
+        /// List of output sequences configurations. Used only for the predefined calculations.
+        /// </summary>
+        public IEnumerable<SimulatorRoutineRevisionOutputSequence> OutputSequences { get; set; }
 
         /// <summary>
         /// List of input constants configurations.
         /// </summary>
-        public List<InputConstants> InputConstants { get; set; }
+        public IEnumerable<InputConstants> InputConstants { get; set; }
     }
 
     /// <summary>
@@ -118,7 +124,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Logical check configuration.
     /// </summary>
-    public class LogicalCheck
+    public class SimulatorRoutineRevisionLogicalCheck
     {
         /// <summary>
         /// Indicates whether logical check is enabled.
@@ -129,7 +135,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Steady state detection configuration.
     /// </summary>
-    public class SteadyStateDetection
+    public class SimulatorRoutineRevisionSteadyStateDetection
     {
         /// <summary>
         /// Indicates whether steady state detection is enabled.
@@ -140,7 +146,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Input timeseries configuration.
     /// </summary>
-    public class InputTimeseries
+    public class SimulatorRoutineRevisionInputTimeseries
     {
         /// <summary>
         /// Name of the input timeseries.
@@ -181,7 +187,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Output timeseries configuration.
     /// </summary>
-    public class OutputTimeseries
+    public class SimulatorRoutineRevisionOutputTimeseries
     {
         /// <summary>
         /// Name of the output timeseries.
@@ -207,6 +213,22 @@ namespace CogniteSdk.Alpha
         /// External id to save the output timeseries.
         /// </summary>
         public string SaveTimeseriesExternalId { get; set; }
+    }
+
+    /// <summary>
+    /// Output sequences configuration.
+    /// </summary>
+    public class SimulatorRoutineRevisionOutputSequence
+    {
+        /// <summary>
+        /// Name of the output sequence.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Reference id of the output sequence.
+        /// </summary>
+        public string ReferenceId { get; set; }
     }
 
     /// <summary>
@@ -248,7 +270,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Script configuration.
     /// </summary>
-    public class SimulatorRoutineRevisionScript
+    public class SimulatorRoutineRevisionStage
     {
         /// <summary>
         /// Order of the script.
@@ -263,7 +285,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of steps in the script.
         /// </summary>
-        public List<SimulatorRoutineRevisionScriptStep> Steps { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionScriptStep> Steps { get; set; }
     }
 
     /// <summary>
