@@ -107,6 +107,11 @@ namespace CogniteSdk.Alpha
         public string StatusMessage { get; set; }
 
         /// <summary>
+        /// Version number, unique per simulation model.
+        /// </summary>
+        public int VersionNumber { get; set; }
+
+        /// <summary>
         /// Boundary conditions of the simulation model with target timeseries where the values are saved.
         /// </summary>
         public IEnumerable<SimulatorModelBoundaryCondition> BoundaryConditions { get; set; }
