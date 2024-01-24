@@ -58,7 +58,5 @@ namespace CogniteSdk.Alpha
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
-
     }
-
 }
