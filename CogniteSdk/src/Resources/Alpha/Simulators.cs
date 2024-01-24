@@ -218,6 +218,28 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously creates a set of simulation routine revisions .
+        /// </summary>
+        /// <param name="items">The simulator routine revision items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutineRevision>> CreateSimulatorRoutineRevisions(IEnumerable<SimulatorRoutineRevisionCreate> items, CancellationToken token = default) 
+        {
+            var req = Simulators.createSimulatorRoutineRevisions(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// List simulator routine revisions.
+        /// </summary>
+        /// <param name="query">The simulator routine revisions query to retreive.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevision(SimulatorRoutineRevisionQuery query, CancellationToken token = default) 
+        {
+            var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously lists all simulators in the project.
         /// </summary>
         /// <param name="query">The simulator query to retrieve.</param>

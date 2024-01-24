@@ -9,7 +9,7 @@ namespace CogniteSdk.Alpha
 {
 
     /// <summary>
-    /// A Simulator routine .
+    /// A Simulator routine revision to create.
     /// </summary>
     public class SimulatorRoutineRevisionCreate
     {
@@ -31,7 +31,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Configuration settings for the simulator routine revision.
         /// </summary>
-        public SimulatorRoutineConfiguration Configuration { get; set; }
+        public SimulatorRoutineRevisionConfiguration Configuration { get; set; }
 
         public override string ToString() => Stringable.ToString(this);
 
@@ -40,17 +40,17 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Configuration settings for the simulator routine revision.
     /// </summary>
-    public class SimulatorRoutineConfiguration
+    public class SimulatorRoutineRevisionConfiguration
     {
         /// <summary>
         /// Schedule configuration.
         /// </summary>
-        public Schedule Schedule { get; set; }
+        public SimulatorRoutineRevisionSchedule Schedule { get; set; }
 
         /// <summary>
         /// Data sampling configuration.
         /// </summary>
-        public DataSampling DataSampling { get; set; }
+        public SimulatorRoutineRevisionDataSampling DataSampling { get; set; }
 
         /// <summary>
         /// Logical check configuration.
@@ -81,7 +81,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Schedule configuration.
     /// </summary>
-    public class Schedule
+    public class SimulatorRoutineRevisionSchedule
     {
         /// <summary>
         /// Indicates whether the schedule is enabled.
@@ -92,7 +92,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Data sampling configuration.
     /// </summary>
-    public class DataSampling
+    public class SimulatorRoutineRevisionDataSampling
     {
         /// <summary>
         /// Validation window for data sampling.

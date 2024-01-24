@@ -34,7 +34,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Configuration settings for the simulator routine revision.
         /// </summary>
-        public SimulatorRoutineConfiguration Configuration { get; set; }
+        public SimulatorRoutineRevisionConfiguration Configuration { get; set; }
 
         // <summary>
         /// The data set id of the routine revision.
