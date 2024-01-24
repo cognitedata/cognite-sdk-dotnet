@@ -70,11 +70,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public long LastUpdatedTime { get; set; }
 
-
-
-
-
-        
     }
 
 }
