@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
@@ -36,33 +37,6 @@ namespace CogniteSdk.Alpha
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
 
-    }
-
-    /// <summary>
-    /// Extra options for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.
-    /// </summary>
-    public class SimulatorRoutineRevisionExtraOptions {
-        // gaugeDepth, rootFindingSettings, chokeCurve, estimateBHP, 
-
-        /// <summary>
-        /// Gauge depth for the predefined calculations.
-        /// </summary>
-        public Dictionary<string, string> GaugeDepth { get; set; }
-
-        /// <summary>
-        /// Root finding settings for the predefined calculations.
-        /// </summary>
-        public Dictionary<string, string> RootFindingSettings { get; set; }
-
-        /// <summary>
-        /// Choke curve for the predefined calculations.
-        /// </summary>
-        public Dictionary<string, string> ChokeCurve { get; set; }
-
-        /// <summary>
-        /// Estimate BHP for the predefined calculations.
-        /// </summary>
-        public Dictionary<string, string> EstimateBHP { get; set; }
     }
 
     /// <summary>
@@ -108,12 +82,15 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Extra paramethers for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.
         /// </summary>
-        public SimulatorRoutineRevisionExtraOptions Options { get; set; }
+        public Dictionary<string, JsonElement> ExtraOptions { get; set; }
 
         /// <summary>
         /// List of input constants configurations.
         /// </summary>
         public IEnumerable<InputConstants> InputConstants { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -135,6 +112,9 @@ namespace CogniteSdk.Alpha
         /// Repeat interval for the schedule.
         /// </summary>
         public string Repeat { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -161,6 +141,9 @@ namespace CogniteSdk.Alpha
         /// Validation end offset for data sampling.
         /// </summary>
         public string ValidationEndOffset { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -191,7 +174,10 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Logical check value.
         /// </summary>
-        public string Value { get; set; }
+        public double? Value { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -228,6 +214,9 @@ namespace CogniteSdk.Alpha
         /// Slope threshold for steady state detection.
         /// </summary>
         public double? SlopeThreshold { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -269,6 +258,9 @@ namespace CogniteSdk.Alpha
         /// External id to save the input timeseries.
         /// </summary>
         public string SaveTimeseriesExternalId { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -300,6 +292,9 @@ namespace CogniteSdk.Alpha
         /// External id to save the output timeseries.
         /// </summary>
         public string SaveTimeseriesExternalId { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -316,6 +311,9 @@ namespace CogniteSdk.Alpha
         /// Reference id of the output sequence.
         /// </summary>
         public string ReferenceId { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -352,6 +350,9 @@ namespace CogniteSdk.Alpha
         /// Reference id of the input constant.
         /// </summary>
         public string ReferenceId { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -373,6 +374,9 @@ namespace CogniteSdk.Alpha
         /// List of steps in the script.
         /// </summary>
         public IEnumerable<SimulatorRoutineRevisionScriptStep> Steps { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -398,34 +402,9 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Arguments for the step.
         /// </summary>
-        public SimulatorRoutineRevisionArguments Arguments { get; set; }
+        public Dictionary<String, String> Arguments { get; set; }
+
+        /// <inheritdoc />      
+        public override string ToString() => Stringable.ToString(this);
     }
-
-    /// <summary>
-    /// Arguments for a step.
-    /// </summary>
-    public class SimulatorRoutineRevisionArguments
-    {
-        /// <summary>
-        /// E.g argument type can be "outputTimeSeries".
-        /// </summary>
-        public string ArgumentType { get; set; }
-
-        /// <summary>
-        /// Simulator object name
-        /// </summary>
-        public string ObjectName { get; set; }
-
-        /// <summary>
-        /// Simulator object property
-        /// </summary>
-        public string ObjectProperty { get; set; }
-
-        /// <summary>
-        /// Reference id
-        /// </summary>
-        public string ReferenceId { get; set; }
-    }
-
-
 }
