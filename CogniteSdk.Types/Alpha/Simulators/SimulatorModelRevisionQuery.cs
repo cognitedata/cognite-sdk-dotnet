@@ -73,6 +73,18 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<string> ModelExternalIds { get; set; }
 
+        /// <summary>
+        /// Filter by created time.
+        /// </summary>
+        /// <value>Range between two timestamps.</value>
+        public TimeRange CreatedTime { get; set; }
+
+        /// <summary>
+        /// Filter by last updated time.
+        /// </summary>
+        /// <value>Range between two timestamps.</value>
+        public TimeRange LastUpdatedTime { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorModelRevisionFilter>(this);
     }

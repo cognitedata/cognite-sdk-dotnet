@@ -229,11 +229,14 @@ let ``Create and update simulator integration is Ok`` () =
                 Enabled = true
             )
 
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let dataSet = dataSetRes |> Seq.head
+
         let integrationToCreate =
             SimulatorIntegrationCreate(
                 ExternalId = integrationExternalId,
                 SimulatorExternalId = simulatorExternalId,
-                DataSetId = 123,
+                DataSetId = dataSet.Id,
                 SimulatorVersion = "N/A",
                 ConnectorVersion = "1.2.3",
                 RunApiEnabled = true
@@ -310,6 +313,9 @@ let ``Create and list simulator models is Ok`` () =
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
+        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let dataSet = dataSetRes |> Seq.head
+
         let simulatorToCreate =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
@@ -325,7 +331,7 @@ let ``Create and list simulator models is Ok`` () =
                 Name = "test_model",
                 Description = "test_model_description",
                 Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = 123
+                DataSetId = dataSet.Id
             )
 
         try
@@ -441,7 +447,11 @@ let ``Create and list simulator model revisions is Ok`` () =
             let! modelRevisionListRes =
                 azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
-                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [ modelExternalId ]),
+                        Filter = SimulatorModelRevisionFilter(
+                            ModelExternalIds = [ modelExternalId ],
+                            CreatedTime = TimeRange(Min = now - 10000L, Max = now + 10000L),
+                            LastUpdatedTime = TimeRange(Min = 0L)
+                        ),
                         Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
                     )
                 )
@@ -476,6 +486,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             test <@ modelRevisionCreated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.unknown @>
             test <@ modelRevisionCreated.DataSetId = dataSet.Id @>
             test <@ modelRevisionCreated.FileId = fileCreated.Id @>
+            test <@ modelRevisionCreated.VersionNumber = 1 @>
             test <@ modelRevisionCreated.SimulatorExternalId = simulatorExternalId @>
             test <@ isNull modelRevisionCreated.StatusMessage @>
 
