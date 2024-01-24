@@ -28,10 +28,7 @@ module Simulators =
     let modelsUrl = Url +/ "models"
     let modelRevisionsUrl = modelsUrl +/ "revisions"
     let routinesUrl = Url +/ "routines"
-
     let routineRevisionsUrl = routinesUrl +/ "revisions"
-
-    let routineRevisionsListUrl = routineRevisionsUrl +/ "list"
 
     let createSimulationRuns
         (items: SimulationRunCreate seq)
@@ -196,7 +193,7 @@ module Simulators =
         source
         |> withLogMessage "simulators:listSimulatorRoutineRevisions"
         |> withAlphaHeader
-        |> HttpHandler.list query routineRevisionsListUrl
+        |> HttpHandler.list query routineRevisionsUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
