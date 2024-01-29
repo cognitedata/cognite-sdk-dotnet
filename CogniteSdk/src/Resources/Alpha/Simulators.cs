@@ -196,6 +196,61 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously list simulator routines.
+        /// </summary>
+        /// <param name="query">The simulator routine query to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
+        {
+            var req = Simulators.listSimulatorRoutines(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a simulation routine.
+        /// </summary>
+        /// <param name="items">The simulator routine items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesAsync(IEnumerable<SimulatorRoutineCreateCommandItem> items, CancellationToken token = default)
+        {
+            var req = Simulators.createSimulatorRoutines(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a simulation routine of predefined type.
+        /// </summary>
+        /// <param name="items">The simulator routine items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesPredefinedAsync(IEnumerable<SimulatorRoutineCreateCommandPredefined> items, CancellationToken token = default) 
+        {
+            var req = Simulators.createSimulatorRoutinesPredefined(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously creates a set of simulation routine revisions .
+        /// </summary>
+        /// <param name="items">The simulator routine revision items to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IEnumerable<SimulatorRoutineRevision>> CreateSimulatorRoutineRevisionsAsync(IEnumerable<SimulatorRoutineRevisionCreate> items, CancellationToken token = default) 
+        {
+            var req = Simulators.createSimulatorRoutineRevisions(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// List simulator routine revisions.
+        /// </summary>
+        /// <param name="query">The simulator routine revisions query to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default) 
+        {
+            var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously lists all simulators in the project.
         /// </summary>
         /// <param name="query">The simulator query to retrieve.</param>

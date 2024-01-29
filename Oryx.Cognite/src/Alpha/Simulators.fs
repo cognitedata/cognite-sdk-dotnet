@@ -3,7 +3,6 @@
 
 namespace Oryx.Cognite.Alpha
 
-open System.Collections.Generic
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Alpha
@@ -23,6 +22,8 @@ module Simulators =
     let integrationsUrl = Url +/ "integrations"
     let modelsUrl = Url +/ "models"
     let modelRevisionsUrl = modelsUrl +/ "revisions"
+    let routinesUrl = Url +/ "routines"
+    let routineRevisionsUrl = routinesUrl +/ "revisions"
 
     let createSimulationRuns
         (items: SimulationRunCreate seq)
@@ -151,6 +152,51 @@ module Simulators =
         |> withLogMessage "simulators:updateSimulatorModelRevisions"
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
+
+    let listSimulatorRoutines
+        (query: SimulatorRoutineQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorRoutine>> =
+        source
+        |> withLogMessage "simulators:listSimulatorRoutines"
+        |> withAlphaHeader
+        |> HttpHandler.list query routinesUrl
+
+    let createSimulatorRoutines
+        (items: SimulatorRoutineCreateCommandItem seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorRoutine seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorRoutines"
+        |> withAlphaHeader
+        |> HttpHandler.create items routinesUrl
+
+    let createSimulatorRoutinesPredefined
+        (items: SimulatorRoutineCreateCommandPredefined seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorRoutine seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorRoutinesPredefined"
+        |> withAlphaHeader
+        |> HttpHandler.create items routinesUrl
+
+    let createSimulatorRoutineRevisions
+        (items: SimulatorRoutineRevisionCreate seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorRoutineRevision seq> =
+        source
+        |> withLogMessage "simulators:createSimulatorRoutineRevision"
+        |> withAlphaHeader
+        |> HttpHandler.create items routineRevisionsUrl
+
+    let listSimulatorRoutineRevisions
+        (query: SimulatorRoutineRevisionQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorRoutineRevision>> =
+        source
+        |> withLogMessage "simulators:listSimulatorRoutineRevisions"
+        |> withAlphaHeader
+        |> HttpHandler.list query routineRevisionsUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
