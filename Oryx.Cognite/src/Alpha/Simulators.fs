@@ -144,6 +144,15 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.list query modelRevisionsUrl
 
+    let retrieveSimulatorModelRevisions
+        (ids: Identity seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#SimulatorModelRevision seq> =
+        source
+        |> withLogMessage "simulators:retrieveSimulatorModelRevisions"
+        |> withAlphaHeader
+        |> retrieve ids modelRevisionsUrl
+
     let updateSimulatorModelRevisions
         (items: UpdateItem<SimulatorModelRevisionUpdate> seq)
         (source: HttpHandler<unit>)
@@ -197,6 +206,15 @@ module Simulators =
         |> withLogMessage "simulators:listSimulatorRoutineRevisions"
         |> withAlphaHeader
         |> HttpHandler.list query routineRevisionsUrl
+
+    let retrieveSimulatorRoutineRevisions
+        (ids: Identity seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#SimulatorRoutineRevision seq> =
+        source
+        |> withLogMessage "simulators:retrieveSimulatorRoutineRevisions"
+        |> withAlphaHeader
+        |> retrieve ids routineRevisionsUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source

@@ -97,6 +97,31 @@ let ``List simulation runs is Ok`` () =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
+let ``List simulation runs with external id filters is Ok`` () =
+    task {
+
+        // Arrange
+        let query =
+            SimulationRunQuery(
+                Filter =
+                    SimulationRunFilter(
+                        SimulatorExternalIds = [ "do_not_exist" ],
+                        ModelRevisionExternalIds = [ "do_not_exist" ],
+                        RoutineRevisionExternalIds = [ "do_not_exist" ]
+                    )
+            )
+
+        // Act
+        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+
+        let len = Seq.length res.Items
+
+        // Assert
+        test <@ len = 0 @>
+    }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulationRuns")>]
 let ``Callback simulation runs is Ok`` () =
     task {
 
@@ -458,6 +483,13 @@ let ``Create and list simulator model revisions is Ok`` () =
                     )
                 )
 
+            let! modelRevisionRetrieveRes =
+                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
+                    [ new Identity(modelRevisionToCreate.ExternalId) ]
+                )
+
+            let modelRevisionRetrieved = modelRevisionRetrieveRes |> Seq.head
+
             let modelRevisionFound =
                 modelRevisionListRes.Items
                 |> Seq.find (fun item -> item.ExternalId = modelRevisionToCreate.ExternalId)
@@ -493,6 +525,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             test <@ isNull modelRevisionCreated.StatusMessage @>
 
             test <@ modelRevisionFound.ExternalId = modelRevisionToCreate.ExternalId @>
+            test <@ modelRevisionRetrieved.ExternalId = modelRevisionToCreate.ExternalId @>
 
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.success @>
@@ -727,13 +760,22 @@ let ``Create simulator predefined routine revisions is Ok`` () =
             let! resRevision =
                 azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
+            let! resRevisionRetrieve =
+                azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
+                    [ new Identity(routineRevisionExternalId) ]
+                )
+
+            let retrievedRevision = resRevisionRetrieve |> Seq.head
+
             // Assert
             let lenPredefinedRoutine = Seq.length resRoutinePredefined
             test <@ lenPredefinedRoutine = 1 @>
 
-            // Assert
             test <@ resRevision |> Seq.length = 1 @>
             let revision = resRevision |> Seq.head
+
+            test <@ resRevisionRetrieve |> Seq.length = 1 @>
+            test <@ retrievedRevision.ExternalId = routineRevisionExternalId @>
 
             test <@ revision.ExternalId = routineRevisionExternalId @>
             test <@ revision.RoutineExternalId = routineExternalId @>
