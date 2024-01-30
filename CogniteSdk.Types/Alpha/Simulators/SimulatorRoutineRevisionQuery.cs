@@ -38,5 +38,20 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<string> RoutineExternalIds { get; set; }
 
+        /// <summary>
+        /// Filter by simulator external Ids
+        /// </summary>
+        public IEnumerable<string> SimulatorExternalIds { get; set; }
+
+        /// <summary>
+        /// Filter by created time
+        /// </summary>
+        public TimeRange CreatedTime { get; set; }
+
+        /// <summary>
+        /// Filter by simulator integration external Ids
+        /// </summary>
+        public IEnumerable<string> SimulatorIntegrationExternalIds { get; set; }
+
     }
 }

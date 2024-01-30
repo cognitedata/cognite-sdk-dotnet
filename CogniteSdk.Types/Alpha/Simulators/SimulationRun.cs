@@ -29,6 +29,11 @@ namespace CogniteSdk.Alpha
         public string ModelName { get; set; }
 
         /// <summary>
+        /// Simulator external id
+        /// </summary>
+        public string SimulatorExternalId { get; set; }
+
+        /// <summary>
         /// Routine revision external id
         /// </summary>
         public string RoutineRevisionExternalId { get; set; }

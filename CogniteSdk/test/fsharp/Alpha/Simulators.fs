@@ -807,7 +807,7 @@ let ``Create simulator routine revisions is Ok`` () =
                 )
 
             let scriptStage =
-                SimulatorRoutineRevisionStage(
+                SimulatorRoutineRevisionScriptStage(
                     Order = 1,
                     Description = "test",
                     Steps =

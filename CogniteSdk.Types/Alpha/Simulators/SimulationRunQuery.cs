@@ -90,6 +90,26 @@ namespace CogniteSdk.Alpha
         public string ModelName { get; set; }
 
         /// <summary>
+        /// Filter by simulator external ids
+        /// </summary>
+        public IEnumerable<string> SimulatorExternalIds { get; set; }
+
+        /// <summary>
+        /// Filter by simulator integration external ids
+        /// </summary>
+        public IEnumerable<string> SimulatorIntegrationExternalIds { get; set; }
+
+        /// <summary>
+        /// Filter by model revision external ids
+        /// </summary>
+        public IEnumerable<string> ModelRevisionExternalIds { get; set; }
+
+        /// <summary>
+        /// Filter by routine revision external ids
+        /// </summary>
+        public IEnumerable<string> RoutineRevisionExternalIds { get; set; }
+
+        /// <summary>
         /// Simulator integration external id
         /// </summary>
         public string SimulatorIntegrationExternalId { get; set; }

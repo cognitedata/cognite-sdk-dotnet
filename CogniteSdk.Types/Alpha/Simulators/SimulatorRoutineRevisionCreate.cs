@@ -27,7 +27,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of script configurations.
         /// </summary>
-        public IEnumerable<SimulatorRoutineRevisionStage> Script { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionScriptStage> Script { get; set; }
 
         /// <summary>
         /// Configuration settings for the simulator routine revision.
@@ -87,7 +87,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of input constants configurations.
         /// </summary>
-        public IEnumerable<InputConstants> InputConstants { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionInputConstants> InputConstants { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
@@ -319,7 +319,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Input constants configuration.
     /// </summary>
-    public class InputConstants
+    public class SimulatorRoutineRevisionInputConstants
     {
         /// <summary>
         /// Name of the input constant.
@@ -358,7 +358,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Script configuration.
     /// </summary>
-    public class SimulatorRoutineRevisionStage
+    public class SimulatorRoutineRevisionScriptStage
     {
         /// <summary>
         /// Order of the script.
@@ -402,7 +402,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Arguments for the step.
         /// </summary>
-        public Dictionary<String, String> Arguments { get; set; }
+        public Dictionary<string, string> Arguments { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
