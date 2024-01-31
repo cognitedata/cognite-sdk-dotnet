@@ -16,12 +16,6 @@ namespace CogniteSdk.Alpha
         public SimulatorRoutineFilter Filter { get; set; }
 
         /// <summary>
-        /// Limit the number of results.
-        /// </summary>
-        /// <value>Default to 100. Max is 1000.</value>
-        public int? Limit { get; set; }
-
-        /// <summary>
         /// Sort order.
         /// </summary>
         public IEnumerable<SimulatorSortItem> Sort { get; set; }

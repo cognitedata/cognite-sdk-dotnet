@@ -65,6 +65,11 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorSortItem> Sort { get; set; }
 
+        /// <summary>
+        /// Limits the number of results to return.
+        /// </summary>
+        public int? Limit { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunQuery>(this);
     }
