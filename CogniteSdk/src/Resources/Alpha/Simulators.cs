@@ -196,6 +196,23 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously retrieves information about multiple simulator model revisions.
+        /// </summary>
+        /// <param name="ids">The simulator model revision ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulator model revisions</returns>
+        public async Task<IEnumerable<SimulatorModelRevision>> RetrieveSimulatorModelRevisionsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Simulators.retrieveSimulatorModelRevisions<SimulatorModelRevision>(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously list simulator routines.
         /// </summary>
         /// <param name="query">The simulator routine query to retrieve.</param>
@@ -247,6 +264,23 @@ namespace CogniteSdk.Resources.Alpha
         public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default) 
         {
             var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously retrieves simulator routine revisions.
+        /// </summary>
+        /// <param name="ids">The simulator routine revision ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulator routine revisions</returns>
+        public async Task<IEnumerable<SimulatorRoutineRevision>> RetrieveSimulatorRoutineRevisionsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Simulators.retrieveSimulatorRoutineRevisions<SimulatorRoutineRevision>(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

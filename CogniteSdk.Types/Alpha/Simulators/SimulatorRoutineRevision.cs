@@ -29,7 +29,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of script configurations.
         /// </summary>
-        public IEnumerable<SimulatorRoutineRevisionStage> Script { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionScriptStage> Script { get; set; }
 
         /// <summary>
         /// Configuration settings for the simulator routine revision.

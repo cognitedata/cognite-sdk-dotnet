@@ -55,6 +55,11 @@ namespace CogniteSdk.Alpha
         public SimulatorModelRevisionFilter Filter { get; set; }
 
         /// <summary>
+        /// Limits the number of results to return.
+        /// </summary>
+        public int? Limit { get; set; }
+
+        /// <summary>
         /// Sort order.
         /// </summary>
         public IEnumerable<SimulatorSortItem> Sort { get; set; }
