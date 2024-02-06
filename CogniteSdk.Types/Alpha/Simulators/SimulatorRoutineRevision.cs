@@ -47,6 +47,16 @@ namespace CogniteSdk.Alpha
         public string SimulatorExternalId { get; set; }
 
         /// <summary>
+        /// The external id of the model.
+        /// </summary>
+        public string ModelExternalId { get; set; }
+
+        /// <summary>
+        /// The external id of the simulator integration.
+        /// </summary>
+        public string SimulatorIntegrationExternalId { get; set; }
+
+        /// <summary>
         /// The id of the user who created the revision.
         /// </summary>
         public string CreatedByUserId { get; set; }

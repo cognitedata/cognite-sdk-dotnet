@@ -630,6 +630,9 @@ let ``Create simulator routines is Ok`` () =
                 resList.Items
                 |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
+            let! resDeleteRoutine =
+                azureDevClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync([ new Identity(resListRoutine.Id) ])
+
             // Assert
             test <@ Seq.length resRoutine = 1 @>
             test <@ Seq.length resRoutinePredefined = 1 @>
@@ -637,6 +640,8 @@ let ``Create simulator routines is Ok`` () =
             test <@ resListRoutine.Name = routineToCreate.Name @>
             test <@ resListRoutinePredefined.CalculationType = routineToCreatePredefined.CalculationType @>
             test <@ resListRoutinePredefined.Name = "Rate by Nodal Analysis" @>
+
+            test <@ isNull resDeleteRoutine |> not @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
@@ -911,7 +916,17 @@ let ``Create simulator routine revisions is Ok`` () =
                 azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
             let! resListRevisions =
-                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(new SimulatorRoutineRevisionQuery())
+                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(
+                    new SimulatorRoutineRevisionQuery(
+                        Filter =
+                            SimulatorRoutineRevisionFilter(
+                                RoutineExternalIds = [ routineExternalId ],
+                                SimulatorIntegrationExternalIds = [ integrationCreated.ExternalId ],
+                                SimulatorExternalIds = [ simulatorExternalId ],
+                                CreatedTime = TimeRange(Min = now - 10000L)
+                            )
+                    )
+                )
 
             let revisionFound =
                 resListRevisions.Items
