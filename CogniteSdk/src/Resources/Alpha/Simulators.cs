@@ -246,6 +246,18 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously deletes simulator routines.
+        /// </summary>
+        /// <param name="items">The simulator routine items to delete.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<EmptyResponse> DeleteSimulatorRoutinesAsync(IEnumerable<Identity> items, CancellationToken token = default)
+        {
+            var query = new SimulatorRoutineDelete { Items = items };
+            var req = Simulators.deleteSimulatorRoutines(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously creates a set of simulation routine revisions .
         /// </summary>
         /// <param name="items">The simulator routine revision items to create.</param>

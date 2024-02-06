@@ -630,6 +630,11 @@ let ``Create simulator routines is Ok`` () =
                 resList.Items
                 |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
+            let! resDeleteRoutine =
+                azureDevClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync(
+                    [ new Identity(resListRoutine.Id) ]
+                )
+
             // Assert
             test <@ Seq.length resRoutine = 1 @>
             test <@ Seq.length resRoutinePredefined = 1 @>
@@ -637,6 +642,8 @@ let ``Create simulator routines is Ok`` () =
             test <@ resListRoutine.Name = routineToCreate.Name @>
             test <@ resListRoutinePredefined.CalculationType = routineToCreatePredefined.CalculationType @>
             test <@ resListRoutinePredefined.Name = "Rate by Nodal Analysis" @>
+
+            test <@ resDeleteRoutine = new EmptyResponse() @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
