@@ -44,6 +44,11 @@ namespace CogniteSdk.Alpha
         public IEnumerable<string> SimulatorExternalIds { get; set; }
 
         /// <summary>
+        /// Filter by model external Ids
+        /// </summary>
+        public IEnumerable<string> ModelExternalIds { get; set; }
+
+        /// <summary>
         /// Filter by created time
         /// </summary>
         public TimeRange CreatedTime { get; set; }
