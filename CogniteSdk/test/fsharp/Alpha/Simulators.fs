@@ -641,7 +641,7 @@ let ``Create simulator routines is Ok`` () =
             test <@ resListRoutinePredefined.CalculationType = routineToCreatePredefined.CalculationType @>
             test <@ resListRoutinePredefined.Name = "Rate by Nodal Analysis" @>
 
-            test <@ resDeleteRoutine = new EmptyResponse() @>
+            test <@ isNull resDeleteRoutine |> not @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
@@ -916,7 +916,17 @@ let ``Create simulator routine revisions is Ok`` () =
                 azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
             let! resListRevisions =
-                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(new SimulatorRoutineRevisionQuery())
+                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(
+                    new SimulatorRoutineRevisionQuery(
+                        Filter =
+                            SimulatorRoutineRevisionFilter(
+                                RoutineExternalIds = [ routineExternalId ],
+                                SimulatorIntegrationExternalIds = [ integrationCreated.ExternalId ],
+                                SimulatorExternalIds = [ simulatorExternalId ],
+                                CreatedTime = TimeRange(Min = now - 10000L)
+                            )
+                    )
+                )
 
             let revisionFound =
                 resListRevisions.Items
