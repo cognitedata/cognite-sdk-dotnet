@@ -631,9 +631,7 @@ let ``Create simulator routines is Ok`` () =
                 |> Seq.find (fun item -> item.ExternalId = routineExternalIdPredefined)
 
             let! resDeleteRoutine =
-                azureDevClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync(
-                    [ new Identity(resListRoutine.Id) ]
-                )
+                azureDevClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync([ new Identity(resListRoutine.Id) ])
 
             // Assert
             test <@ Seq.length resRoutine = 1 @>

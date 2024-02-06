@@ -171,7 +171,10 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.list query routinesUrl
 
-    let deleteSimulatorRoutines (items: SimulatorRoutineDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let deleteSimulatorRoutines
+        (items: SimulatorRoutineDelete)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "simulators:deleteSimulatorRoutines"
         |> withAlphaHeader
