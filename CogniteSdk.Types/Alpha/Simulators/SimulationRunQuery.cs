@@ -123,5 +123,15 @@ namespace CogniteSdk.Alpha
         /// The simulation run status
         /// </summary>
         public SimulationRunStatus? Status { get; set; }
+
+        /// <summary>
+        /// Filter by simulation run time
+        /// </summary>
+        public TimeRange SimulationTime { get; set; }
+
+        /// <summary>
+        /// Filter by created time
+        /// </summary>
+        public TimeRange CreatedTime { get; set; }
     }
 }

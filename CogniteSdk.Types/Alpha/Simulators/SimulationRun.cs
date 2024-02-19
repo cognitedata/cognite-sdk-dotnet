@@ -74,6 +74,11 @@ namespace CogniteSdk.Alpha
         public long? ValidationEndTime { get; set; }
 
         /// <summary>
+        /// Simulation time in milliseconds. This is the timestamp used for indexing inputs and outputs of the simulation.
+        /// </summary>
+        public long? SimulationTime { get; set; }
+
+        /// <summary>
         /// Time when this simulation run was created.
         /// </summary>
         public long CreatedTime { get; set; }

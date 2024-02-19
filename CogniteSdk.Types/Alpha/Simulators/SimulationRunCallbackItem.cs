@@ -24,6 +24,11 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string StatusMessage { get; set; }
 
+        /// <summary>
+        /// Simulation time in milliseconds. This is the timestamp used for indexing inputs and outputs of the simulation.
+        /// </summary>
+        public long? SimulationTime { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunCallbackItem>(this);
     }
