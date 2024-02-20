@@ -31,7 +31,7 @@ namespace CogniteSdk.Alpha
     public class SimulatorSortItem
     {
         /// <summary>
-        /// Sort by property. Only 'createdTime' is supported.
+        /// Sort by property name. E.g. "createdTime" or "simulationTime".
         /// </summary>
         public string Property { get; set; }
 
