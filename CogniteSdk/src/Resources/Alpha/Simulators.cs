@@ -297,6 +297,29 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously updates simulator logs.
+        /// </summary>
+        public async Task<IEnumerable<SimulatorLog>> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CancellationToken token = default)
+        {
+            var req = Simulators.updateSimulatorLogs(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asyncronously retrieves simulator logs.
+        /// </summary>
+        public async Task<IEnumerable<SimulatorLog>> RetrieveSimulatorLogsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Simulators.retrieveSimulatorLogs<SimulatorLog>(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously lists all simulators in the project.
         /// </summary>
         /// <param name="query">The simulator query to retrieve.</param>

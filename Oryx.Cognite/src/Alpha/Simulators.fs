@@ -19,6 +19,7 @@ module Simulators =
 
     let runUrl = Url +/ "run"
     let runsUrl = runUrl + "s"
+    let logsUrl = Url +/ "logs"
     let integrationsUrl = Url +/ "integrations"
     let modelsUrl = Url +/ "models"
     let modelRevisionsUrl = modelsUrl +/ "revisions"
@@ -225,6 +226,24 @@ module Simulators =
         |> withAlphaHeader
         |> retrieve ids routineRevisionsUrl
 
+    let updateSimulatorLogs
+        (items: UpdateItem<SimulatorLogUpdate> seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<SimulatorLog seq> =
+        source
+        |> withLogMessage "simulators:updateLogs"
+        |> withAlphaHeader
+        |> HttpHandler.update items Url
+
+    let retrieveSimulatorLogs
+        (ids: Identity seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<#SimulatorLog seq> =
+        source
+        |> withLogMessage "simulators:retrieveLogs"
+        |> withAlphaHeader
+        |> retrieve ids Url
+
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
         |> withLogMessage "simulators:list"
@@ -241,10 +260,10 @@ module Simulators =
         source
         |> withLogMessage "simulators:delete"
         |> withAlphaHeader
-        |> HttpHandler.delete items Url
+        |> HttpHandler.delete items logsUrl
 
     let update (items: UpdateItem<SimulatorUpdate> seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         source
         |> withLogMessage "simulators:update"
         |> withAlphaHeader
-        |> HttpHandler.update items Url
+        |> HttpHandler.update items logsUrl
