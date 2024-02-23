@@ -229,20 +229,23 @@ module Simulators =
     let updateSimulatorLogs
         (items: UpdateItem<SimulatorLogUpdate> seq)
         (source: HttpHandler<unit>)
-        : HttpHandler<SimulatorLog seq> =
+        : HttpHandler<EmptyResponse> =
+        let content = ItemsWithoutCursor<_>(Items = items)
+
         source
         |> withLogMessage "simulators:updateLogs"
         |> withAlphaHeader
-        |> HttpHandler.update items Url
+        |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
 
     let retrieveSimulatorLogs
         (ids: Identity seq)
         (source: HttpHandler<unit>)
         : HttpHandler<#SimulatorLog seq> =
+
         source
         |> withLogMessage "simulators:retrieveLogs"
         |> withAlphaHeader
-        |> retrieve ids Url
+        |> retrieve ids logsUrl
 
     let list (query: SimulatorQuery) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<Simulator>> =
         source
@@ -260,10 +263,10 @@ module Simulators =
         source
         |> withLogMessage "simulators:delete"
         |> withAlphaHeader
-        |> HttpHandler.delete items logsUrl
+        |> HttpHandler.delete items Url
 
     let update (items: UpdateItem<SimulatorUpdate> seq) (source: HttpHandler<unit>) : HttpHandler<Simulator seq> =
         source
         |> withLogMessage "simulators:update"
         |> withAlphaHeader
-        |> HttpHandler.update items logsUrl
+        |> HttpHandler.update items Url

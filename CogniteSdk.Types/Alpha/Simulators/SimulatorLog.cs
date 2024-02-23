@@ -22,9 +22,12 @@ namespace CogniteSdk.Alpha
         public string Message { get; set; }
 
         /// <summary>
-        /// The log level. DEBUG, INFO, WARNING, ERROR, FATAL.
+        /// The log severity level. Debug, Information, Warning, Error,.
         /// </summary>
-        public string Level { get; set; }
+        public string Severity { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorLogDataEntry>(this);
     }
 
     /// <summary>

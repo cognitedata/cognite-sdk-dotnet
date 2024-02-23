@@ -1,6 +1,8 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Alpha
 {
     /// <summary>
@@ -13,6 +15,9 @@ namespace CogniteSdk.Alpha
         /// List of log entries.
         /// </summary>
         public UpdateEnumerable<SimulatorLogDataEntry> Data { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorLogUpdate>(this);
     }
 
     /// <inheritdoc/>
@@ -25,5 +30,8 @@ namespace CogniteSdk.Alpha
         public SimulatorLogUpdateItem(long id) : base(id)
         {
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorLogUpdateItem>(this);
     }
 }

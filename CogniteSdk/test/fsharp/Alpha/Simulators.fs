@@ -952,7 +952,9 @@ let ``Create simulator routine revisions is Ok`` () =
 let ``Update simulation log is Ok`` () =
     task {
         // Arrange
-        let! listRunsRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(new SimulationRunQuery())
+        let! listRunsRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(new SimulationRunQuery(
+            Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
+        ))
 
         let firstRunWithLogId = listRunsRes.Items |> Seq.find (fun item -> item.LogId.HasValue)
         let logId = firstRunWithLogId.LogId.Value
@@ -961,7 +963,7 @@ let ``Update simulation log is Ok`` () =
         let simulatorLogUpdateData = SimulatorLogDataEntry(
             Message = logEntryStr,
             Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-            Level = "INFO"
+            Severity = "Information"
         )
 
         let simulatorLogUpdateItem =
@@ -976,14 +978,13 @@ let ``Update simulation log is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
+        let! _ = azureDevClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
         let! retrieveLogRes = azureDevClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
 
         // Assert
-        test <@ Seq.length res = 1 @>
         test <@ Seq.length retrieveLogRes = 1 @>
         let logEntry = retrieveLogRes |> Seq.head
         test <@ logEntry.Data |> Seq.length >= 1 @>
         let lastLogEntryData = logEntry.Data |> Seq.last
-        test <@ lastLogEntryData = simulatorLogUpdateData @>
+        test <@ lastLogEntryData.Message = simulatorLogUpdateData.Message @>
     }
