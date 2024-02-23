@@ -952,29 +952,31 @@ let ``Create simulator routine revisions is Ok`` () =
 let ``Update simulation log is Ok`` () =
     task {
         // Arrange
-        let! listRunsRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(new SimulationRunQuery(
-            Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
-        ))
+        let! listRunsRes =
+            azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(
+                new SimulationRunQuery(
+                    Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
+                )
+            )
 
-        let firstRunWithLogId = listRunsRes.Items |> Seq.find (fun item -> item.LogId.HasValue)
+        let firstRunWithLogId =
+            listRunsRes.Items |> Seq.find (fun item -> item.LogId.HasValue)
+
         let logId = firstRunWithLogId.LogId.Value
         let logEntryStr = $"test log {DateTimeOffset.Now.ToUnixTimeMilliseconds()}"
 
-        let simulatorLogUpdateData = SimulatorLogDataEntry(
-            Message = logEntryStr,
-            Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-            Severity = "Information"
-        )
+        let simulatorLogUpdateData =
+            SimulatorLogDataEntry(
+                Message = logEntryStr,
+                Timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+                Severity = "Information"
+            )
 
         let simulatorLogUpdateItem =
-            SimulatorLogUpdateItem (
+            SimulatorLogUpdateItem(
                 id = logId,
-                Update = SimulatorLogUpdate(
-                    Data = UpdateEnumerable<SimulatorLogDataEntry> (
-                        [ simulatorLogUpdateData ],
-                        null
-                    )
-                )
+                Update =
+                    SimulatorLogUpdate(Data = UpdateEnumerable<SimulatorLogDataEntry>([ simulatorLogUpdateData ], null))
             )
 
         // Act

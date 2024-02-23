@@ -237,10 +237,7 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
 
-    let retrieveSimulatorLogs
-        (ids: Identity seq)
-        (source: HttpHandler<unit>)
-        : HttpHandler<#SimulatorLog seq> =
+    let retrieveSimulatorLogs (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorLog seq> =
 
         source
         |> withLogMessage "simulators:retrieveLogs"
