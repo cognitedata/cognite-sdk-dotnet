@@ -79,6 +79,11 @@ namespace CogniteSdk.Alpha
         public long? SimulationTime { get; set; }
 
         /// <summary>
+        /// Log id of the simulation run
+        /// </summary>
+        public long? LogId { get; set; }
+
+        /// <summary>
         /// Time when this simulation run was created.
         /// </summary>
         public long CreatedTime { get; set; }
