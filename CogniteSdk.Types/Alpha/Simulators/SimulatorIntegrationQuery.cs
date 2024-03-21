@@ -14,10 +14,8 @@ namespace CogniteSdk.Alpha
         /// Filter simulators by this.
         /// </summary>
         public SimulatorIntegrationFilter Filter { get; set; }
-        /// <summary>
-        /// Cursor to use for iteration.
-        /// </summary>
-        public override string ToString() => Stringable.ToString(this);
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorIntegrationQuery>(this);
     }
 
 
@@ -28,5 +26,8 @@ namespace CogniteSdk.Alpha
         /// Filter by simulator external ids.
         /// </summary>
         public IEnumerable<string> simulatorExternalIds { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorIntegrationFilter>(this);
     }
 }
