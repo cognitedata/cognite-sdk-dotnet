@@ -12,7 +12,7 @@ open Tests.Integration.Alpha.Common
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
-let ``Create simulation runs by routine is Ok`` () =
+let ``Create simulation runs by routine with data and callback is Ok`` () =
     task {
         // Arrange
         let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
@@ -33,9 +33,37 @@ let ``Create simulation runs by routine is Ok`` () =
                 ValidationEndTime = now,
                 Queue = true
             )
+        
+        let callbackQuery =
+            SimulationRunCallbackItem(
+                Status = SimulationRunStatus.success,
+                StatusMessage = "Artificially set success via integration test",
+                Outputs = [ 
+                    SimulatorValueItem(
+                        ReferenceId = "ST",
+                        Value = SimulatorValue.Create(100),
+                        ValueType = SimulatorValueType.DOUBLE,
+                        Unit = SimulatorValueUnit(Name = "F")
+                    )
+                ]
+            )
 
         // Act
         let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
+        let simulationRun = res |> Seq.head 
+
+        let! resData = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync(
+            [ simulationRun.Id ]
+        )
+
+        callbackQuery.Id <- simulationRun.Id
+        let! callbackRes = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
+        let simulationRunAfterCallback = callbackRes.Items |> Seq.head
+
+        let! resDataAfterCallback = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync(
+            [ simulationRun.Id ]
+        )
+
 
         // Assert
         let len = Seq.length res
@@ -49,6 +77,25 @@ let ``Create simulation runs by routine is Ok`` () =
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
+        // Assert simulation data
+        let data = resData |> Seq.head
+        let item = data.Inputs |> Seq.tryFind (fun x -> x.ReferenceId = "CWTC")
+        test <@ item.IsSome @>
+        let item = item.Value
+        test <@ item.Value = SimulatorValue.Create(50.1) @>
+        test <@ item.Unit.Name = "F" @>
+
+        // Assert callback data
+        test <@ Seq.length callbackRes.Items = 1 @>
+
+        test <@ simulationRunAfterCallback.Status = SimulationRunStatus.success @>
+        
+        let dataAfterCallback = resDataAfterCallback |> Seq.head
+        let item = dataAfterCallback.Outputs |> Seq.tryFind (fun x -> x.ReferenceId = "ST")
+        test <@ item.IsSome @>
+        let item = item.Value
+        test <@ item.Value = SimulatorValue.Create(100) @>
+        test <@ item.Unit.Name = "F" @>
     }
 
 // [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]

@@ -13,7 +13,7 @@ namespace CogniteSdk.Alpha
     public abstract class SimulatorValue
     {
         /// <summary>
-        /// Type of multi value.
+        /// Type of simulator value.
         /// </summary>
         public SimulatorValueType Type { get; private set; }
 
@@ -61,6 +61,14 @@ namespace CogniteSdk.Alpha
             /// Return string representation of the double value.
             /// </summary>
             public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
+
+            /// <summary>
+            /// Check if two double values are equal.
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                return obj != null && Value == (obj as Double).Value;
+            }
         }
 
         /// <summary>
@@ -87,6 +95,14 @@ namespace CogniteSdk.Alpha
             /// Return string representation of the string value, i.e the string itself.
             /// </summary>
             public override string ToString() => Value;
+
+            /// <summary>
+            /// Check if two string values are equal.
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                return obj != null && Value == (obj as String).Value;
+            }
         }
     }
 }

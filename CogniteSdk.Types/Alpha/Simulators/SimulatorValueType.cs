@@ -4,7 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-namespace CogniteSdk
+namespace CogniteSdk.Alpha
 {
     /// <summary>
     /// Type of simulator value.

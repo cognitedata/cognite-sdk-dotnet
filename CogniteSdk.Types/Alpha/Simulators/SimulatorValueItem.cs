@@ -50,7 +50,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Whether the input was overridden for this simulation run
         /// </summary>
-        public bool Overridden { get; set; }
+        public bool? Overridden { get; set; }
 
         /// <summary>
         /// This is where the value was written to (for inputs) or read from (for outputs)

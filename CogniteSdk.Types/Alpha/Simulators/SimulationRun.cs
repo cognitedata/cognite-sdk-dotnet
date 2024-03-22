@@ -1,6 +1,8 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Alpha
 {
     /// <summary>
@@ -102,5 +104,8 @@ namespace CogniteSdk.Alpha
         /// Time when this simulation run was last updated.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulationRun>(this);
     }
 }
