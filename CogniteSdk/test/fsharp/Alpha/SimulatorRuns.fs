@@ -21,48 +21,40 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
             SimulationRunCreate(
                 RoutineExternalId = "ShowerMixerIntegrationTestWithExtendedIO",
                 RunType = SimulationRunType.external,
-                Inputs = [ 
-                    SimulationInputOverride(
-                        ReferenceId = "CWTC",
-                        Value = SimulatorValue.Create(50.1), // original value is 10 C
-                        Unit = SimulationInputUnitOverride(
-                            Name = "F"
-                        )
-                    )
-                ],
+                Inputs =
+                    [ SimulationInputOverride(
+                          ReferenceId = "CWTC",
+                          Value = SimulatorValue.Create(50.1), // original value is 10 C
+                          Unit = SimulationInputUnitOverride(Name = "F")
+                      ) ],
                 ValidationEndTime = now,
                 Queue = true
             )
-        
+
         let callbackQuery =
             SimulationRunCallbackItem(
                 Status = SimulationRunStatus.success,
                 StatusMessage = "Artificially set success via integration test",
-                Outputs = [ 
-                    SimulatorValueItem(
-                        ReferenceId = "ST",
-                        Value = SimulatorValue.Create(100),
-                        ValueType = SimulatorValueType.DOUBLE,
-                        Unit = SimulatorValueUnit(Name = "F")
-                    )
-                ]
+                Outputs =
+                    [ SimulatorValueItem(
+                          ReferenceId = "ST",
+                          Value = SimulatorValue.Create(100),
+                          ValueType = SimulatorValueType.DOUBLE,
+                          Unit = SimulatorValueUnit(Name = "F")
+                      ) ]
             )
 
         // Act
         let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
-        let simulationRun = res |> Seq.head 
+        let simulationRun = res |> Seq.head
 
-        let! resData = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync(
-            [ simulationRun.Id ]
-        )
+        let! resData = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
         callbackQuery.Id <- simulationRun.Id
         let! callbackRes = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
         let simulationRunAfterCallback = callbackRes.Items |> Seq.head
 
-        let! resDataAfterCallback = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync(
-            [ simulationRun.Id ]
-        )
+        let! resDataAfterCallback = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
 
         // Assert
@@ -89,7 +81,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         test <@ Seq.length callbackRes.Items = 1 @>
 
         test <@ simulationRunAfterCallback.Status = SimulationRunStatus.success @>
-        
+
         let dataAfterCallback = resDataAfterCallback |> Seq.head
         let item = dataAfterCallback.Outputs |> Seq.tryFind (fun x -> x.ReferenceId = "ST")
         test <@ item.IsSome @>

@@ -67,16 +67,17 @@ module Simulators =
         |> withAlphaHeader
         |> retrieve ids runsUrl
 
-    let listSimulationRunsData (ids: SimulationRunId seq) (source: HttpHandler<unit>) : HttpHandler<ItemsWithoutCursor<SimulationRunData>> =
+    let listSimulationRunsData
+        (ids: SimulationRunId seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulationRunData>> =
         let dataUrl = runsUrl +/ "data/list"
         let request = ItemsWithoutCursor<SimulationRunId>(Items = ids)
 
         source
-            |> withLogMessage "simulators:listSimulationRunsData"
-            |> withAlphaHeader
-            |> postV10<ItemsWithoutCursor<SimulationRunId>, ItemsWithoutCursor<SimulationRunData>>
-                request
-                dataUrl
+        |> withLogMessage "simulators:listSimulationRunsData"
+        |> withAlphaHeader
+        |> postV10<ItemsWithoutCursor<SimulationRunId>, ItemsWithoutCursor<SimulationRunData>> request dataUrl
 
     let listSimulatorIntegrations
         (query: SimulatorIntegrationQuery)

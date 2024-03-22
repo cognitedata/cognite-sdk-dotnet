@@ -5,6 +5,7 @@ open System
 module Common =
     open Tests.Integration.Common
     open Xunit
+
     let azureDevClient =
         let oAuth2AccessToken = Environment.GetEnvironmentVariable "TEST_TOKEN_WRITE"
 
