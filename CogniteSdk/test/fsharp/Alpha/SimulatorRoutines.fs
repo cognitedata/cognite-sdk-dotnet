@@ -259,7 +259,15 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             test <@ revision.ExternalId = routineRevisionExternalId @>
             test <@ revision.RoutineExternalId = routineExternalId @>
-            test <@ revision.Configuration.ToString() = revisionToCreate.Configuration.ToString() @>
+            
+            test <@ revision.Configuration.Schedule.ToString() = revisionToCreate.Configuration.Schedule.ToString() @>
+            test <@ revision.Configuration.LogicalCheck.ToString() = revisionToCreate.Configuration.LogicalCheck.ToString() @>
+            test <@ revision.Configuration.SteadyStateDetection.ToString() = revisionToCreate.Configuration.SteadyStateDetection.ToString() @>
+            test <@ revision.Configuration.DataSampling.ToString() = revisionToCreate.Configuration.DataSampling.ToString() @>
+            
+            test <@ revision.Configuration.InputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revisionToCreate.Configuration.InputTimeseries @>
+            test <@ revision.Configuration.OutputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revisionToCreate.Configuration.OutputTimeseries @>
+
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
@@ -390,31 +398,191 @@ let ``Create simulator routine revisions is Ok`` () =
             let! resRevision =
                 azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
 
-            let! resListRevisions =
-                azureDevClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(
-                    new SimulatorRoutineRevisionQuery(
-                        Filter =
-                            SimulatorRoutineRevisionFilter(
-                                RoutineExternalIds = [ routineExternalId ],
-                                SimulatorIntegrationExternalIds = [ integrationCreated.ExternalId ],
-                                SimulatorExternalIds = [ simulatorExternalId ],
-                                CreatedTime = TimeRange(Min = now - 10000L)
-                            )
-                    )
+            let! resRetrieveRevisions =
+                azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
+                    [ new Identity(routineRevisionExternalId) ]
                 )
 
-            let revisionFound =
-                resListRevisions.Items
-                |> Seq.find (fun item -> item.ExternalId = routineRevisionExternalId)
+            let revision = resRetrieveRevisions |> Seq.head
+            // Assert
+            test <@ resRevision |> Seq.length = 1 @>
+
+            test <@ revision.ExternalId = routineRevisionExternalId @>
+            test <@ revision.RoutineExternalId = routineExternalId @>
+
+            let revConfig = revision.Configuration
+            let revConfigToCreate = revisionToCreate.Configuration
+
+            test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
+            test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
+            test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
+            test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
+
+            test <@ revConfig.InputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputTimeseries @>
+            test <@ revConfig.OutputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.OutputTimeseries @>
+            test <@ revConfig.InputConstants |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputConstants @>
+
+            let scriptStageRes = Seq.head revision.Script
+            test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
+        finally
+            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            |> ignore
+    }
+
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Trait("resource", "simulatorRoutineRevisions")>]
+let ``Create simulator routine revisions with extended inputs / outputs is Ok`` () =
+    task {
+        // Arrange
+        let routineExternalId = $"test_routine_3_{now}"
+        let routineRevisionExternalId = $"{routineExternalId}_1"
+        let modelExternalId = $"test_model_{now}"
+        let simulatorExternalId = $"test_sim_2_{now}"
+        let integrationExternalId = $"test_integration_{now}"
+
+        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let dataSet = dataSetRes |> Seq.head
+
+        let simulatorToCreate =
+            SimulatorCreate(
+                ExternalId = simulatorExternalId,
+                Name = "test_sim",
+                FileExtensionTypes = [ "json" ],
+                Enabled = true
+            )
+
+        let integrationToCreate =
+            SimulatorIntegrationCreate(
+                ExternalId = integrationExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                DataSetId = dataSet.Id,
+                SimulatorVersion = "N/A",
+                ConnectorVersion = "1.2.3",
+                RunApiEnabled = true
+            )
+
+        let modelToCreate =
+            SimulatorModelCreate(
+                ExternalId = modelExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                Name = "test_model",
+                Description = "test_model_description",
+                Labels = [ new CogniteExternalId("test_label") ],
+                DataSetId = dataSet.Id
+            )
+
+        try
+            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+
+            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+
+            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+
+            let routineToCreate =
+                SimulatorRoutineCreateCommandItem(
+                    ExternalId = routineExternalId,
+                    ModelExternalId = modelToCreate.ExternalId,
+                    SimulatorIntegrationExternalId = integrationToCreate.ExternalId,
+                    Name = "Test"
+                )
+
+            let scriptStage =
+                SimulatorRoutineRevisionScriptStage(
+                    Order = 1,
+                    Description = "test",
+                    Steps =
+                        [ SimulatorRoutineRevisionScriptStep(
+                              Order = 1,
+                              StepType = "Set",
+                              Description = "test",
+                              Arguments =
+                                  new Dictionary<string, string>(
+                                      dict
+                                          [ "argumentType", "inputTimeSeries"
+                                            "referenceId", "test"
+                                            "objectName", "test"
+                                            "objectProperty", "test2" ]
+                                  )
+                          )
+                          SimulatorRoutineRevisionScriptStep(
+                              Order = 2,
+                              StepType = "Get",
+                              Description = "test",
+                              Arguments =
+                                  new Dictionary<string, string>(
+                                      dict
+                                          [ "argumentType", "outputTimeSeries"
+                                            "referenceId", "test"
+                                            "objectName", "test"
+                                            "objectProperty", "test2" ]
+                                  )
+                          ) ]
+                )
+
+            let revisionConfigurationToCreate = SimulatorRoutineRevisionConfiguration(
+                Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
+                LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
+                SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
+                DataSampling =
+                    SimulatorRoutineRevisionDataSampling(
+                        ValidationWindow = 1,
+                        SamplingWindow = 1,
+                        Granularity = 1,
+                        ValidationEndOffset = "1m"
+                    ),
+                Inputs = [
+                    SimulatorRoutineRevisionInput(
+                        Name = "test_input",
+                        ReferenceId = "test_input",
+                        Value = SimulatorValue.Create(1.0),
+                        ValueType = SimulatorValueType.DOUBLE,
+                        Unit = SimulatorValueUnit(
+                            Name = "test_unit",
+                            Type = "test_type"
+                        )
+                    )
+                ],
+                Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
+            )
+
+            let revisionToCreate =
+                SimulatorRoutineRevisionCreate(
+                    ExternalId = routineRevisionExternalId,
+                    RoutineExternalId = routineExternalId,
+                    Script = [ scriptStage ],
+                    Configuration = revisionConfigurationToCreate
+                )
+
+            // Act
+            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+
+            let! resRevision =
+                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+
+            let! resListRevisions =
+                azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
+                    [ new Identity(routineRevisionExternalId) ]
+                )
+
+            let revision = resListRevisions |> Seq.head
+            let revConfig = revision.Configuration
+            let revConfigToCreate = revisionToCreate.Configuration
 
             // Assert
             test <@ resRevision |> Seq.length = 1 @>
 
-            test <@ revisionFound.ExternalId = routineRevisionExternalId @>
-            test <@ revisionFound.RoutineExternalId = routineExternalId @>
-            test <@ revisionFound.Configuration.ToString() = revisionToCreate.Configuration.ToString() @>
+            test <@ revision.ExternalId = routineRevisionExternalId @>
+            test <@ revision.RoutineExternalId = routineExternalId @>
 
-            let scriptStageRes = Seq.head revisionFound.Script
+            test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
+            test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
+            test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
+            test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
+
+            test <@ revConfig.Inputs |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Inputs @>
+            test <@ revConfig.Outputs |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Outputs @>
+
+            let scriptStageRes = Seq.head revision.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])

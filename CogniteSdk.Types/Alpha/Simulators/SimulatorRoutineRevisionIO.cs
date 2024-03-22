@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
@@ -33,7 +34,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Value type of the input.
         /// </summary>
-        public string ValueType { get; set; }
+        public SimulatorValueType ValueType { get; set; }
 
         /// <summary>
         /// Unit of the input.
@@ -51,11 +52,13 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Whether the input is a time series.
         /// </summary>
+        [JsonIgnore]
         public bool IsTimeSeries => !String.IsNullOrEmpty(SourceExternalId);
 
         /// <summary>
         /// Whether the input is a constant value.
         /// </summary>
+        [JsonIgnore]
         public bool IsConstant => Value != null;
     }
 
@@ -76,7 +79,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Value type of the output.
         /// </summary>
-        public string ValueType { get; set; }
+        public SimulatorValueType ValueType { get; set; }
 
         /// <summary>
         /// Unit of the output.
