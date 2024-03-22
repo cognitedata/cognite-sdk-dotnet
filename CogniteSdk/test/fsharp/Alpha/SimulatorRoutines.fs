@@ -193,7 +193,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                 )
 
 
-            let revisionToCreate =
+            let revToCreate =
                 SimulatorRoutineRevisionCreate(
                     ExternalId = routineRevisionExternalId,
                     RoutineExternalId = routineExternalId,
@@ -237,8 +237,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
             let! resRoutinePredefined =
                 azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesPredefinedAsync([ routineToCreatePredefined ])
 
-            let! resRevision =
-                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
 
             let! resRevisionRetrieve =
                 azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
@@ -259,14 +258,34 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             test <@ revision.ExternalId = routineRevisionExternalId @>
             test <@ revision.RoutineExternalId = routineExternalId @>
-            
-            test <@ revision.Configuration.Schedule.ToString() = revisionToCreate.Configuration.Schedule.ToString() @>
-            test <@ revision.Configuration.LogicalCheck.ToString() = revisionToCreate.Configuration.LogicalCheck.ToString() @>
-            test <@ revision.Configuration.SteadyStateDetection.ToString() = revisionToCreate.Configuration.SteadyStateDetection.ToString() @>
-            test <@ revision.Configuration.DataSampling.ToString() = revisionToCreate.Configuration.DataSampling.ToString() @>
-            
-            test <@ revision.Configuration.InputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revisionToCreate.Configuration.InputTimeseries @>
-            test <@ revision.Configuration.OutputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revisionToCreate.Configuration.OutputTimeseries @>
+
+            test <@ revision.Configuration.Schedule.ToString() = revToCreate.Configuration.Schedule.ToString() @>
+
+            test
+                <@ revision.Configuration.LogicalCheck.ToString() = revToCreate.Configuration.LogicalCheck.ToString() @>
+
+            test
+                <@
+                    revision.Configuration.SteadyStateDetection.ToString() = revToCreate
+                        .Configuration
+                        .SteadyStateDetection
+                        .ToString()
+                @>
+
+            test
+                <@ revision.Configuration.DataSampling.ToString() = revToCreate.Configuration.DataSampling.ToString() @>
+
+            test
+                <@
+                    revision.Configuration.InputTimeseries
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revToCreate.Configuration.InputTimeseries
+                @>
+
+            test
+                <@
+                    revision.Configuration.OutputTimeseries
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revToCreate.Configuration.OutputTimeseries
+                @>
 
         finally
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
@@ -369,7 +388,7 @@ let ``Create simulator routine revisions is Ok`` () =
                           ) ]
                 )
 
-            let revisionToCreate =
+            let revToCreate =
                 SimulatorRoutineRevisionCreate(
                     ExternalId = routineRevisionExternalId,
                     RoutineExternalId = routineExternalId,
@@ -395,8 +414,7 @@ let ``Create simulator routine revisions is Ok`` () =
             // Act
             let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
-            let! resRevision =
-                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
 
             let! resRetrieveRevisions =
                 azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
@@ -411,16 +429,30 @@ let ``Create simulator routine revisions is Ok`` () =
             test <@ revision.RoutineExternalId = routineExternalId @>
 
             let revConfig = revision.Configuration
-            let revConfigToCreate = revisionToCreate.Configuration
+            let revConfigToCreate = revToCreate.Configuration
 
             test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
             test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
             test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
             test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
 
-            test <@ revConfig.InputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputTimeseries @>
-            test <@ revConfig.OutputTimeseries |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.OutputTimeseries @>
-            test <@ revConfig.InputConstants |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputConstants @>
+            test
+                <@
+                    revConfig.InputTimeseries
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputTimeseries
+                @>
+
+            test
+                <@
+                    revConfig.OutputTimeseries
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.OutputTimeseries
+                @>
+
+            test
+                <@
+                    revConfig.InputConstants
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.InputConstants
+                @>
 
             let scriptStageRes = Seq.head revision.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
@@ -519,33 +551,30 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
                           ) ]
                 )
 
-            let revisionConfigurationToCreate = SimulatorRoutineRevisionConfiguration(
-                Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
-                LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
-                SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
-                DataSampling =
-                    SimulatorRoutineRevisionDataSampling(
-                        ValidationWindow = 1,
-                        SamplingWindow = 1,
-                        Granularity = 1,
-                        ValidationEndOffset = "1m"
-                    ),
-                Inputs = [
-                    SimulatorRoutineRevisionInput(
-                        Name = "test_input",
-                        ReferenceId = "test_input",
-                        Value = SimulatorValue.Create(1.0),
-                        ValueType = SimulatorValueType.DOUBLE,
-                        Unit = SimulatorValueUnit(
-                            Name = "test_unit",
-                            Type = "test_type"
-                        )
-                    )
-                ],
-                Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
-            )
+            let revisionConfigurationToCreate =
+                SimulatorRoutineRevisionConfiguration(
+                    Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
+                    LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
+                    SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
+                    DataSampling =
+                        SimulatorRoutineRevisionDataSampling(
+                            ValidationWindow = 1,
+                            SamplingWindow = 1,
+                            Granularity = 1,
+                            ValidationEndOffset = "1m"
+                        ),
+                    Inputs =
+                        [ SimulatorRoutineRevisionInput(
+                              Name = "test_input",
+                              ReferenceId = "test_input",
+                              Value = SimulatorValue.Create(1.0),
+                              ValueType = SimulatorValueType.DOUBLE,
+                              Unit = SimulatorValueUnit(Name = "test_unit", Type = "test_type")
+                          ) ],
+                    Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
+                )
 
-            let revisionToCreate =
+            let revToCreate =
                 SimulatorRoutineRevisionCreate(
                     ExternalId = routineRevisionExternalId,
                     RoutineExternalId = routineExternalId,
@@ -556,8 +585,7 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
             // Act
             let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
-            let! resRevision =
-                azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
 
             let! resListRevisions =
                 azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
@@ -566,7 +594,7 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
 
             let revision = resListRevisions |> Seq.head
             let revConfig = revision.Configuration
-            let revConfigToCreate = revisionToCreate.Configuration
+            let revConfigToCreate = revToCreate.Configuration
 
             // Assert
             test <@ resRevision |> Seq.length = 1 @>
@@ -579,8 +607,17 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
             test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
             test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
 
-            test <@ revConfig.Inputs |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Inputs @>
-            test <@ revConfig.Outputs |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Outputs @>
+            test
+                <@
+                    revConfig.Inputs
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Inputs
+                @>
+
+            test
+                <@
+                    revConfig.Outputs
+                    |> Seq.forall2 (fun a b -> a.ToString() = b.ToString()) revConfigToCreate.Outputs
+                @>
 
             let scriptStageRes = Seq.head revision.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
@@ -588,4 +625,3 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
             azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
-
