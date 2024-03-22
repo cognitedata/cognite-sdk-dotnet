@@ -124,7 +124,7 @@ let ``Create simulator routines is Ok`` () =
 
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulatorRoutineRevisions")>]
+[<Trait("resource", "simulatorRoutines")>]
 let ``Create simulator predefined routine revisions is Ok`` () =
     task {
         // Arrange
@@ -275,7 +275,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulatorRoutineRevisions")>]
+[<Trait("resource", "simulatorRoutines")>]
 let ``Create simulator routine revisions is Ok`` () =
     task {
         // Arrange
@@ -430,7 +430,7 @@ let ``Create simulator routine revisions is Ok`` () =
     }
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulatorRoutineRevisions")>]
+[<Trait("resource", "simulatorRoutines")>]
 let ``Create simulator routine revisions with extended inputs / outputs is Ok`` () =
     task {
         // Arrange
