@@ -67,17 +67,30 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of input timeseries configurations.
         /// </summary>
+        /// <remarks>Deprecated</remarks>
         public IEnumerable<SimulatorRoutineRevisionInputTimeseries> InputTimeseries { get; set; }
 
         /// <summary>
         /// List of output timeseries configurations.
         /// </summary>
+        /// <remarks>Deprecated</remarks>
         public IEnumerable<SimulatorRoutineRevisionOutputTimeseries> OutputTimeseries { get; set; }
 
         /// <summary>
         /// List of output sequences configurations. Used only for the predefined calculations.
         /// </summary>
+        /// <remarks>Deprecated</remarks>
         public IEnumerable<SimulatorRoutineRevisionOutputSequence> OutputSequences { get; set; }
+
+        /// <summary>
+        /// List of inputs. Can be either timeseries or constants.
+        /// </summary>
+        public IEnumerable<SimulatorRoutineRevisionInput> Inputs { get; set; }
+
+        /// <summary>
+        /// List of outputs. Outputs can optionally be saved to a timeseries.
+        /// </summary>
+        public IEnumerable<SimulatorRoutineRevisionOutput> Outputs { get; set; }
 
         /// <summary>
         /// Extra paramethers for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.

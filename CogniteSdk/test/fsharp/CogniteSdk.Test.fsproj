@@ -22,7 +22,10 @@
     <Compile Include="Labels.fs" />
     <Compile Include="Groups.fs" />
     <Compile Include="Units.fs" />
+    <Compile Include="Alpha/Common.fs" />
     <Compile Include="Alpha/Simulators.fs" />
+    <Compile Include="Alpha/SimulatorRoutines.fs" />
+    <Compile Include="Alpha/SimulatorRuns.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

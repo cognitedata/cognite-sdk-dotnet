@@ -1,6 +1,8 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Alpha
 {
     /// <summary>
@@ -45,6 +47,9 @@ namespace CogniteSdk.Alpha
         /// Update the timestamp of the last connector status update in milliseconds since Jan 1, 1970.
         /// </summary>
         public Update<long> ConnectorStatusUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorIntegrationUpdate>(this);
     }
 
     /// <inheritdoc/>
@@ -57,5 +62,8 @@ namespace CogniteSdk.Alpha
         public SimulatorIntegrationUpdateItem(long id) : base(id)
         {
         }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorIntegrationUpdateItem>(this);
     }
 }

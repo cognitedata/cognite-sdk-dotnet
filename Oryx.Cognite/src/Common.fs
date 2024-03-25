@@ -7,6 +7,7 @@ namespace Oryx.Cognite
 open System.Text.Json
 
 open CogniteSdk
+open CogniteSdk.Alpha
 open CogniteSdk.Beta
 open CogniteSdk.Beta.DataModels
 
@@ -90,4 +91,6 @@ module Common =
         options.Converters.Add(AggregateResultTypeConverter())
         options.Converters.Add(PropertyTypeConverter())
         options.Converters.Add(InstanceDataConverter())
+        // Simulators converters
+        options.Converters.Add(SimulatorValueConverter())
         options

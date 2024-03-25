@@ -1,6 +1,8 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.Types.Common;
+
 namespace CogniteSdk.Alpha
 {
     /// <summary>
@@ -34,9 +36,19 @@ namespace CogniteSdk.Alpha
         public string SimulatorExternalId { get; set; }
 
         /// <summary>
+        /// Routine external id
+        /// </summary>
+        public string RoutineExternalId { get; set; }
+
+        /// <summary>
         /// Routine revision external id
         /// </summary>
         public string RoutineRevisionExternalId { get; set; }
+
+        /// <summary>
+        /// Model external id
+        /// </summary>
+        public string ModelExternalId { get; set; }
 
         /// <summary>
         /// Model revision external id
@@ -92,5 +104,8 @@ namespace CogniteSdk.Alpha
         /// Time when this simulation run was last updated.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulationRun>(this);
     }
 }

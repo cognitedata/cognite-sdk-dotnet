@@ -84,6 +84,25 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asynchronously retrieves inputs and outputs items for multiple simulation runs.
+        /// </summary>
+        /// <param name="runIds">The simulation run ids to retrieve data for.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulation runs data</returns>
+        public async Task<IEnumerable<SimulationRunData>> ListSimulationRunsDataAsync(IEnumerable<long> runIds, CancellationToken token = default)
+        {
+            if (runIds is null)
+            {
+                throw new ArgumentNullException(nameof(runIds));
+            }
+
+            var ids = runIds.Select(SimulationRunId.Create);
+            var req = Simulators.listSimulationRunsData(ids, GetContext(token));
+            var res = await RunAsync(req).ConfigureAwait(false);
+            return res.Items;
+        }
+
+        /// <summary>
         /// Asynchronously retrieves information about multiple simulator integrations. A maximum of 1000
         /// </summary>
         /// <param name="query">The simulator integration query to retrieve.</param>
