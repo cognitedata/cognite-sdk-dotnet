@@ -13,7 +13,7 @@ namespace CogniteSdk.Alpha
     public class SimulationInputUnitOverride
     {
         /// <summary>
-        /// The input name
+        /// The unit name
         /// </summary>
         public string Name { get; set; }
 

@@ -69,6 +69,11 @@ namespace CogniteSdk.Alpha
             {
                 return obj != null && Value == (obj as Double).Value;
             }
+
+            /// <summary>
+            /// Get hash code for the double value.
+            /// </summary>
+            public override int GetHashCode() => Value.GetHashCode();
         }
 
         /// <summary>
@@ -103,6 +108,11 @@ namespace CogniteSdk.Alpha
             {
                 return obj != null && Value == (obj as String).Value;
             }
+
+            /// <summary>
+            /// Get hash code for the string value.
+            /// </summary>
+            public override int GetHashCode() => Value.GetHashCode();
         }
     }
 }

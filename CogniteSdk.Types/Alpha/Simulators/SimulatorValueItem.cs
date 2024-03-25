@@ -57,7 +57,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public Dictionary<string, string> SimulatorObjectReference { get; set; }
 
-
         /// <summary>
         /// The input unit
         /// </summary>

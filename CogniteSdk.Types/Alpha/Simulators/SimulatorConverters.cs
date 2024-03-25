@@ -1,4 +1,4 @@
-// Copyright 2020 Cognite AS
+// Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -15,7 +15,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Creates SimulatorValue values from the JSON input.
         /// </summary>
-        /// <returns>The SimulatorValue. Either LongValue, DoubleValue or StringValue.</returns>
+        /// <returns>The SimulatorValue. Either DoubleValue or StringValue.</returns>
         public override SimulatorValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
