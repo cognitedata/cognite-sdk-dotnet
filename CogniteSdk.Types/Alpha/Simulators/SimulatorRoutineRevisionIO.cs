@@ -27,6 +27,12 @@ namespace CogniteSdk.Alpha
         public string SourceExternalId { get; set; }
 
         /// <summary>
+        /// If defined, this is time series aggregation to use when reading the value.
+        /// Allowed values are: "average", "interpolation", "stepInterpolation".
+        /// </summary>
+        public string Aggregate { get; set; }
+
+        /// <summary>
         /// Value of the input. Only used if the input is not a time series.
         /// </summary>
         public SimulatorValue Value { get; set; }
