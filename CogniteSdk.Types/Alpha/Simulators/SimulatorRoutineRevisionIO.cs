@@ -40,7 +40,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Value type of the input.
         /// </summary>
-        public SimulatorValueType ValueType { get; set; }
+        public SimulatorValueType? ValueType { get; set; }
 
         /// <summary>
         /// Unit of the input.
