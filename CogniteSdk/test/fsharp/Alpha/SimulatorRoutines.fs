@@ -221,8 +221,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                                 SimulatorRoutineRevisionDataSampling(
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
-                                    Granularity = 1,
-                                    ValidationEndOffset = "1m"
+                                    Granularity = 1
                                 ),
                             InputTimeseries = [],
                             OutputTimeseries = [],
@@ -261,16 +260,25 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             test <@ revision.Configuration.Schedule.ToString() = revToCreate.Configuration.Schedule.ToString() @>
 
-            test
-                <@ revision.Configuration.LogicalCheck.ToString() = revToCreate.Configuration.LogicalCheck.ToString() @>
-
-            test
-                <@
-                    revision.Configuration.SteadyStateDetection.ToString() = revToCreate
-                        .Configuration
-                        .SteadyStateDetection
-                        .ToString()
+            // test
+            //     <@ revision.Configuration.LogicalCheck.ToString() = revToCreate.Configuration.LogicalCheck.ToString() @>
+            test 
+                <@ 
+                    revision.Configuration.LogicalCheck
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revToCreate.Configuration.LogicalCheck 
                 @>
+            test 
+                <@ 
+                    revision.Configuration.SteadyStateDetection
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revToCreate.Configuration.SteadyStateDetection 
+                @>
+            // test
+            //     <@
+            //         revision.Configuration.SteadyStateDetection.ToString() = revToCreate
+            //             .Configuration
+            //             .SteadyStateDetection
+            //             .ToString()
+            //     @>
 
             test
                 <@ revision.Configuration.DataSampling.ToString() = revToCreate.Configuration.DataSampling.ToString() @>
@@ -402,8 +410,7 @@ let ``Create simulator routine revisions is Ok`` () =
                                 SimulatorRoutineRevisionDataSampling(
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
-                                    Granularity = 1,
-                                    ValidationEndOffset = "1m"
+                                    Granularity = 1
                                 ),
                             InputTimeseries = [],
                             OutputTimeseries = [],
@@ -433,9 +440,17 @@ let ``Create simulator routine revisions is Ok`` () =
 
             test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
             test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
-            test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
-            test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
-
+            test 
+                <@ 
+                    revConfig.LogicalCheck
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revConfigToCreate.LogicalCheck 
+                @>
+            // test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
+            test 
+                <@ 
+                    revConfig.SteadyStateDetection
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revConfigToCreate.SteadyStateDetection 
+                @>
             test
                 <@
                     revConfig.InputTimeseries
@@ -560,8 +575,7 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
                         SimulatorRoutineRevisionDataSampling(
                             ValidationWindow = 1,
                             SamplingWindow = 1,
-                            Granularity = 1,
-                            ValidationEndOffset = "1m"
+                            Granularity = 1
                         ),
                     Inputs =
                         [ SimulatorRoutineRevisionInput(
@@ -604,9 +618,18 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
 
             test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
             test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
-            test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
-            test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
-
+            // test <@ revConfig.LogicalCheck.ToString() = revConfigToCreate.LogicalCheck.ToString() @>
+            // test <@ revConfig.SteadyStateDetection.ToString() = revConfigToCreate.SteadyStateDetection.ToString() @>
+            test 
+                <@ 
+                    revConfig.LogicalCheck
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revConfigToCreate.LogicalCheck 
+                @>
+            test 
+                <@ 
+                    revConfig.SteadyStateDetection
+                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revConfigToCreate.SteadyStateDetection 
+                @>
             test
                 <@
                     revConfig.Inputs

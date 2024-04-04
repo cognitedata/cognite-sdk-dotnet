@@ -145,11 +145,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public int Granularity { get; set; }
 
-        /// <summary>
-        /// Validation end offset for data sampling.
-        /// </summary>
-        public string ValidationEndOffset { get; set; }
-
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
     }
