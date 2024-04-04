@@ -119,7 +119,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Cron expression for the schedule.
         /// </summary>
-        public string Cron { get; set; }
+        public string CronExpression { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);

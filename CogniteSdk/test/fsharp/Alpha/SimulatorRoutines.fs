@@ -199,7 +199,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                     RoutineExternalId = routineExternalId,
                     Configuration =
                         SimulatorRoutineRevisionConfiguration(
-                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, Cron = "0 * * * *"),
+                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, CronExpression = "0 * * * *"),
                             LogicalCheck =
                                 [SimulatorRoutineRevisionLogicalCheck(
                                     Enabled = true,
