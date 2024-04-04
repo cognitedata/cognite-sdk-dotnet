@@ -57,12 +57,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Logical check configuration.
         /// </summary>
-        public List<SimulatorRoutineRevisionLogicalCheck> LogicalCheck { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionLogicalCheck> LogicalCheck { get; set; }
 
         /// <summary>
         /// Steady state detection configuration.
         /// </summary>
-        public List<SimulatorRoutineRevisionSteadyStateDetection> SteadyStateDetection { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionSteadyStateDetection> SteadyStateDetection { get; set; }
 
         /// <summary>
         /// List of input timeseries configurations.
