@@ -52,7 +52,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Data sampling configuration.
         /// </summary>
-        public SimulatorRoutineRevisionDataSampling[] DataSampling { get; set; }
+        public SimulatorRoutineRevisionDataSampling DataSampling { get; set; }
 
         /// <summary>
         /// Logical check configuration.
