@@ -199,24 +199,24 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                     RoutineExternalId = routineExternalId,
                     Configuration =
                         SimulatorRoutineRevisionConfiguration(
-                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, StartTime = 100, Repeat = "15m"),
+                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, Cron = "0 * * * *"),
                             LogicalCheck =
-                                SimulatorRoutineRevisionLogicalCheck(
+                                [SimulatorRoutineRevisionLogicalCheck(
                                     Enabled = true,
                                     TimeseriesExternalId = "test",
                                     Value = 10.9,
                                     Operator = "gt",
                                     Aggregate = "average"
-                                ),
+                                )],
                             SteadyStateDetection =
-                                SimulatorRoutineRevisionSteadyStateDetection(
+                                [SimulatorRoutineRevisionSteadyStateDetection(
                                     Enabled = true,
                                     TimeseriesExternalId = "test",
                                     Aggregate = "average",
                                     MinSectionSize = 1,
                                     VarThreshold = 0.1,
                                     SlopeThreshold = 0.1
-                                ),
+                                )],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
                                     ValidationWindow = 1,
@@ -396,8 +396,8 @@ let ``Create simulator routine revisions is Ok`` () =
                     Configuration =
                         SimulatorRoutineRevisionConfiguration(
                             Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
-                            LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
-                            SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
+                            LogicalCheck = [SimulatorRoutineRevisionLogicalCheck(Enabled = false)],
+                            SteadyStateDetection = [SimulatorRoutineRevisionSteadyStateDetection(Enabled = false)],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
                                     ValidationWindow = 1,
@@ -554,8 +554,8 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
             let revisionConfigurationToCreate =
                 SimulatorRoutineRevisionConfiguration(
                     Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
-                    LogicalCheck = SimulatorRoutineRevisionLogicalCheck(Enabled = false),
-                    SteadyStateDetection = SimulatorRoutineRevisionSteadyStateDetection(Enabled = false),
+                    LogicalCheck = [SimulatorRoutineRevisionLogicalCheck(Enabled = false)],
+                    SteadyStateDetection = [SimulatorRoutineRevisionSteadyStateDetection(Enabled = false)],
                     DataSampling =
                         SimulatorRoutineRevisionDataSampling(
                             ValidationWindow = 1,
