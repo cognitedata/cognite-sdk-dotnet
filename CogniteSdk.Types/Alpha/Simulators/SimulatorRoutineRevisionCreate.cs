@@ -57,12 +57,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Logical check configuration.
         /// </summary>
-        public SimulatorRoutineRevisionLogicalCheck LogicalCheck { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionLogicalCheck> LogicalCheck { get; set; }
 
         /// <summary>
         /// Steady state detection configuration.
         /// </summary>
-        public SimulatorRoutineRevisionSteadyStateDetection SteadyStateDetection { get; set; }
+        public IEnumerable<SimulatorRoutineRevisionSteadyStateDetection> SteadyStateDetection { get; set; }
 
         /// <summary>
         /// List of input timeseries configurations.
@@ -117,14 +117,9 @@ namespace CogniteSdk.Alpha
         public bool Enabled { get; set; }
 
         /// <summary>
-        /// Start time for the schedule.
+        /// Cron expression for the schedule.
         /// </summary>
-        public long? StartTime { get; set; }
-
-        /// <summary>
-        /// Repeat interval for the schedule.
-        /// </summary>
-        public string Repeat { get; set; }
+        public string CronExpression { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
@@ -149,11 +144,6 @@ namespace CogniteSdk.Alpha
         /// Granularity for data sampling.
         /// </summary>
         public int Granularity { get; set; }
-
-        /// <summary>
-        /// Validation end offset for data sampling.
-        /// </summary>
-        public string ValidationEndOffset { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
