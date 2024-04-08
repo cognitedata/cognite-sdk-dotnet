@@ -131,6 +131,11 @@ namespace CogniteSdk.Alpha
     public class SimulatorRoutineRevisionDataSampling
     {
         /// <summary>
+        /// Indicates whether data sampling is enabled.
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
         /// Validation window for data sampling.
         /// </summary>
         public int ValidationWindow { get; set; }
