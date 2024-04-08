@@ -219,6 +219,7 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                                 )],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
+                                    Enabled=true,
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
                                     Granularity = 1
@@ -399,6 +400,7 @@ let ``Create simulator routine revisions is Ok`` () =
                             SteadyStateDetection = [],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
+                                    Enabled=true,
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
                                     Granularity = 1
@@ -563,6 +565,7 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
                     SteadyStateDetection = [],
                     DataSampling =
                         SimulatorRoutineRevisionDataSampling(
+                            Enabled=true,
                             ValidationWindow = 1,
                             SamplingWindow = 1,
                             Granularity = 1
