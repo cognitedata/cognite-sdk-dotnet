@@ -122,6 +122,11 @@ namespace CogniteSdk.Alpha
         public SimulatorModelRevisionStatus BoundaryConditionsStatus { get; set; }
 
         /// <summary>
+        /// Log id of the model revision
+        /// </summary>
+        public long? LogId { get; set; }
+
+        /// <summary>
         /// The number of milliseconds since epoch.
         /// </summary>
         public long CreatedTime { get; set; }

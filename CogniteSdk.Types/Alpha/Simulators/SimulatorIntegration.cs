@@ -58,6 +58,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public long? ConnectorStatusUpdatedTime { get; set; }
         /// <summary>
+        /// Log id of the simulator integration.
+        /// </summary>
+        public long? LogId { get; set; }
+        /// <summary>
         /// Created time in milliseconds since Jan 1, 1970.
         /// </summary>
         public long CreatedTime { get; set; }
