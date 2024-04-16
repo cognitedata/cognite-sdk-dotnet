@@ -124,7 +124,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Log id of the model revision
         /// </summary>
-        public long? LogId { get; set; }
+        public long LogId { get; set; }
 
         /// <summary>
         /// The number of milliseconds since epoch.
