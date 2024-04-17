@@ -7,7 +7,7 @@ using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Com.Cognite.V1.Timeseries.Proto.Alpha;
+using Com.Cognite.V1.Timeseries.Proto.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Pipeline;
@@ -17,14 +17,14 @@ namespace CogniteSdk.Resources
     /// <summary>
     /// For internal use. Contains all data points methods.
     /// </summary>
-    public class AlphaDataPointsResource : Resource
+    public class BetaDataPointsResource : Resource
     {
         /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">Authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal AlphaDataPointsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        internal BetaDataPointsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
@@ -41,7 +41,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Alpha.AlphaDataPoints.list(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.BetaDataPoints.list(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -58,7 +58,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.Alpha.AlphaDataPoints.create(points, GetContext(token));
+            var req = Oryx.Cognite.Beta.BetaDataPoints.create(points, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -79,7 +79,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(points));
             }
 
-            var req = Oryx.Cognite.Alpha.AlphaDataPoints.createWithGzip(points, compression, GetContext(token));
+            var req = Oryx.Cognite.Beta.BetaDataPoints.createWithGzip(points, compression, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -97,7 +97,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Alpha.AlphaDataPoints.delete(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.BetaDataPoints.delete(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -114,7 +114,7 @@ namespace CogniteSdk.Resources
                 throw new ArgumentNullException(nameof(query));
             }
 
-            var req = Oryx.Cognite.Alpha.AlphaDataPoints.latest(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.BetaDataPoints.latest(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

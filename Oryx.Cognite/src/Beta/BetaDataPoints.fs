@@ -1,12 +1,12 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Oryx.Cognite.Alpha
+namespace Oryx.Cognite.Beta
 
 open System.Collections.Generic
 open System.IO.Compression
 
-open Com.Cognite.V1.Timeseries.Proto.Alpha
+open Com.Cognite.V1.Timeseries.Proto.Beta
 open Oryx
 open Oryx.Cognite
 
@@ -15,7 +15,7 @@ open CogniteSdk
 /// Various time series data points HTTP handlers
 
 [<RequireQualifiedAccess>]
-module AlphaDataPoints =
+module BetaDataPoints =
     [<Literal>]
     let Url = "/timeseries/data"
 
@@ -23,21 +23,21 @@ module AlphaDataPoints =
     let list (query: DataPointsQuery) (source: HttpHandler<unit>) : HttpHandler<DataPointListResponse> =
         source
         |> withLogMessage "DataPoints:list"
-        |> withAlphaHeader
+        |> withBetaHeader
         |> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Retrieves a list of aggregate data points from multiple time series in a project.
     let listAggregates (query: DataPointsQuery) (source: HttpHandler<unit>) : HttpHandler<DataPointListResponse> =
         source
         |> withLogMessage "DataPoints:listAggregates"
-        |> withAlphaHeader
+        |> withBetaHeader
         |> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
     /// Create one or more new timeseries. Returns a list of created time series.
     let create (items: DataPointInsertionRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "DataPoints:create"
-        |> withAlphaHeader
+        |> withBetaHeader
         |> createProtobuf items Url
 
     let createWithGzip
@@ -47,14 +47,14 @@ module AlphaDataPoints =
         : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "DataPoints:create"
-        |> withAlphaHeader
+        |> withBetaHeader
         |> createGzipProtobuf items compression Url
 
     /// Delete data points from 1 or more (multiple) time series.
     let delete (items: DataPointsDelete) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
         source
         |> withLogMessage "DataPoints:delete"
-        |> withAlphaHeader
+        |> withBetaHeader
         |> delete items Url
 
     /// Retrieves the latest data point in multiple time series in the same project.
@@ -68,7 +68,7 @@ module AlphaDataPoints =
             let! ret =
                 source
                 |> withLogMessage "DataPoints:latest"
-                |> withAlphaHeader
+                |> withBetaHeader
                 |> postV10<DataPointsLatestQuery, ItemsWithoutCursor<DataPointsItem<DataPoint>>> query url
 
             return ret.Items

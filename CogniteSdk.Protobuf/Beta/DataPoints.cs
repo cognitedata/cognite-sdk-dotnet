@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
+namespace Com.Cognite.V1.Timeseries.Proto.Beta {
 
   /// <summary>Holder for reflection information generated from data_points.proto</summary>
   public static partial class DataPointsReflection {
@@ -24,35 +24,40 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     static DataPointsReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFkYXRhX3BvaW50cy5wcm90bxIfY29tLmNvZ25pdGUudjEudGltZXNlcmll",
-            "cy5wcm90byImCgZTdGF0dXMSDAoEY29kZRgBIAEoAxIOCgZzeW1ib2wYAiAB",
-            "KAkibQoQTnVtZXJpY0RhdGFwb2ludBIRCgl0aW1lc3RhbXAYASABKAMSDQoF",
-            "dmFsdWUYAiABKAESNwoGc3RhdHVzGAMgASgLMicuY29tLmNvZ25pdGUudjEu",
-            "dGltZXNlcmllcy5wcm90by5TdGF0dXMiWgoRTnVtZXJpY0RhdGFwb2ludHMS",
-            "RQoKZGF0YXBvaW50cxgBIAMoCzIxLmNvbS5jb2duaXRlLnYxLnRpbWVzZXJp",
-            "ZXMucHJvdG8uTnVtZXJpY0RhdGFwb2ludCIzCg9TdHJpbmdEYXRhcG9pbnQS",
-            "EQoJdGltZXN0YW1wGAEgASgDEg0KBXZhbHVlGAIgASgJIlgKEFN0cmluZ0Rh",
-            "dGFwb2ludHMSRAoKZGF0YXBvaW50cxgBIAMoCzIwLmNvbS5jb2duaXRlLnYx",
-            "LnRpbWVzZXJpZXMucHJvdG8uU3RyaW5nRGF0YXBvaW50Iu4BChJBZ2dyZWdh",
-            "dGVEYXRhcG9pbnQSEQoJdGltZXN0YW1wGAEgASgDEg8KB2F2ZXJhZ2UYAiAB",
-            "KAESCwoDbWF4GAMgASgBEgsKA21pbhgEIAEoARINCgVjb3VudBgFIAEoARIL",
-            "CgNzdW0YBiABKAESFQoNaW50ZXJwb2xhdGlvbhgHIAEoARIZChFzdGVwSW50",
-            "ZXJwb2xhdGlvbhgIIAEoARIaChJjb250aW51b3VzVmFyaWFuY2UYCSABKAES",
-            "GAoQZGlzY3JldGVWYXJpYW5jZRgKIAEoARIWCg50b3RhbFZhcmlhdGlvbhgL",
-            "IAEoASJeChNBZ2dyZWdhdGVEYXRhcG9pbnRzEkcKCmRhdGFwb2ludHMYASAD",
-            "KAsyMy5jb20uY29nbml0ZS52MS50aW1lc2VyaWVzLnByb3RvLkFnZ3JlZ2F0",
-            "ZURhdGFwb2ludEIqUAGqAiVDb20uQ29nbml0ZS5WMS5UaW1lc2VyaWVzLlBy",
-            "b3RvLkFscGhhYgZwcm90bzM="));
+            "ChFkYXRhX3BvaW50cy5wcm90bxIkY29tLmNvZ25pdGUudjEudGltZXNlcmll",
+            "cy5wcm90by5iZXRhIiYKBlN0YXR1cxIMCgRjb2RlGAEgASgDEg4KBnN5bWJv",
+            "bBgCIAEoCSKFAQoQTnVtZXJpY0RhdGFwb2ludBIRCgl0aW1lc3RhbXAYASAB",
+            "KAMSDQoFdmFsdWUYAiABKAESPAoGc3RhdHVzGAMgASgLMiwuY29tLmNvZ25p",
+            "dGUudjEudGltZXNlcmllcy5wcm90by5iZXRhLlN0YXR1cxIRCgludWxsVmFs",
+            "dWUYBCABKAgiXwoRTnVtZXJpY0RhdGFwb2ludHMSSgoKZGF0YXBvaW50cxgB",
+            "IAMoCzI2LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uYmV0YS5O",
+            "dW1lcmljRGF0YXBvaW50IoQBCg9TdHJpbmdEYXRhcG9pbnQSEQoJdGltZXN0",
+            "YW1wGAEgASgDEg0KBXZhbHVlGAIgASgJEjwKBnN0YXR1cxgDIAEoCzIsLmNv",
+            "bS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uYmV0YS5TdGF0dXMSEQoJ",
+            "bnVsbFZhbHVlGAQgASgIIl0KEFN0cmluZ0RhdGFwb2ludHMSSQoKZGF0YXBv",
+            "aW50cxgBIAMoCzI1LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8u",
+            "YmV0YS5TdHJpbmdEYXRhcG9pbnQi8QIKEkFnZ3JlZ2F0ZURhdGFwb2ludBIR",
+            "Cgl0aW1lc3RhbXAYASABKAMSDwoHYXZlcmFnZRgCIAEoARILCgNtYXgYAyAB",
+            "KAESCwoDbWluGAQgASgBEg0KBWNvdW50GAUgASgBEgsKA3N1bRgGIAEoARIV",
+            "Cg1pbnRlcnBvbGF0aW9uGAcgASgBEhkKEXN0ZXBJbnRlcnBvbGF0aW9uGAgg",
+            "ASgBEhoKEmNvbnRpbnVvdXNWYXJpYW5jZRgJIAEoARIYChBkaXNjcmV0ZVZh",
+            "cmlhbmNlGAogASgBEhYKDnRvdGFsVmFyaWF0aW9uGAsgASgBEhEKCWNvdW50",
+            "R29vZBgMIAEoARIWCg5jb3VudFVuY2VydGFpbhgNIAEoARIQCghjb3VudEJh",
+            "ZBgOIAEoARIUCgxkdXJhdGlvbkdvb2QYDyABKAESGQoRZHVyYXRpb25VbmNl",
+            "cnRhaW4YECABKAESEwoLZHVyYXRpb25CYWQYESABKAEiYwoTQWdncmVnYXRl",
+            "RGF0YXBvaW50cxJMCgpkYXRhcG9pbnRzGAEgAygLMjguY29tLmNvZ25pdGUu",
+            "djEudGltZXNlcmllcy5wcm90by5iZXRhLkFnZ3JlZ2F0ZURhdGFwb2ludEIC",
+            "UAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status), global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status.Parser, new[]{ "Code", "Symbol" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint.Parser, new[]{ "Timestamp", "Value", "Status" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint.Parser, new[]{ "Timestamp", "Value" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint.Parser, new[]{ "Timestamp", "Average", "Max", "Min", "Count", "Sum", "Interpolation", "StepInterpolation", "ContinuousVariance", "DiscreteVariance", "TotalVariation" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.Status), global::Com.Cognite.V1.Timeseries.Proto.Beta.Status.Parser, new[]{ "Code", "Symbol" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint.Parser, new[]{ "Timestamp", "Value", "Status", "NullValue" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint.Parser, new[]{ "Timestamp", "Value", "Status", "NullValue" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint), global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint.Parser, new[]{ "Timestamp", "Average", "Max", "Min", "Count", "Sum", "Interpolation", "StepInterpolation", "ContinuousVariance", "DiscreteVariance", "TotalVariation", "CountGood", "CountUncertain", "CountBad", "DurationGood", "DurationUncertain", "DurationBad" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoints), global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoints.Parser, new[]{ "Datapoints" }, null, null, null, null)
           }));
     }
     #endregion
@@ -74,7 +79,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -301,7 +306,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[1]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -324,6 +329,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       timestamp_ = other.timestamp_;
       value_ = other.value_;
       status_ = other.status_ != null ? other.status_.Clone() : null;
+      nullValue_ = other.nullValue_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -359,13 +365,25 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 3;
-    private global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status status_;
+    private global::Com.Cognite.V1.Timeseries.Proto.Beta.Status status_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status Status {
+    public global::Com.Cognite.V1.Timeseries.Proto.Beta.Status Status {
       get { return status_; }
       set {
         status_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "nullValue" field.</summary>
+    public const int NullValueFieldNumber = 4;
+    private bool nullValue_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool NullValue {
+      get { return nullValue_; }
+      set {
+        nullValue_ = value;
       }
     }
 
@@ -387,6 +405,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       if (Timestamp != other.Timestamp) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Value, other.Value)) return false;
       if (!object.Equals(Status, other.Status)) return false;
+      if (NullValue != other.NullValue) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -397,6 +416,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
       if (Value != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Value);
       if (status_ != null) hash ^= Status.GetHashCode();
+      if (NullValue != false) hash ^= NullValue.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -427,6 +447,10 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(26);
         output.WriteMessage(Status);
       }
+      if (NullValue != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(NullValue);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -449,6 +473,10 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(26);
         output.WriteMessage(Status);
       }
+      if (NullValue != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(NullValue);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -467,6 +495,9 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (status_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Status);
+      }
+      if (NullValue != false) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -488,9 +519,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (other.status_ != null) {
         if (status_ == null) {
-          Status = new global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status();
+          Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
         }
         Status.MergeFrom(other.Status);
+      }
+      if (other.NullValue != false) {
+        NullValue = other.NullValue;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -517,9 +551,13 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
           }
           case 26: {
             if (status_ == null) {
-              Status = new global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status();
+              Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
             }
             input.ReadMessage(Status);
+            break;
+          }
+          case 32: {
+            NullValue = input.ReadBool();
             break;
           }
         }
@@ -547,9 +585,13 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
           }
           case 26: {
             if (status_ == null) {
-              Status = new global::Com.Cognite.V1.Timeseries.Proto.Alpha.Status();
+              Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
             }
             input.ReadMessage(Status);
+            break;
+          }
+          case 32: {
+            NullValue = input.ReadBool();
             break;
           }
         }
@@ -574,7 +616,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[2]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -606,12 +648,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
 
     /// <summary>Field number for the "datapoints" field.</summary>
     public const int DatapointsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint> _repeated_datapoints_codec
-        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint.Parser);
-    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint>();
+    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint> _repeated_datapoints_codec
+        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint.Parser);
+    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.NumericDatapoint> Datapoints {
+    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.NumericDatapoint> Datapoints {
       get { return datapoints_; }
     }
 
@@ -753,7 +795,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[3]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -775,6 +817,8 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     public StringDatapoint(StringDatapoint other) : this() {
       timestamp_ = other.timestamp_;
       value_ = other.value_;
+      status_ = other.status_ != null ? other.status_.Clone() : null;
+      nullValue_ = other.nullValue_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -808,6 +852,30 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
     }
 
+    /// <summary>Field number for the "status" field.</summary>
+    public const int StatusFieldNumber = 3;
+    private global::Com.Cognite.V1.Timeseries.Proto.Beta.Status status_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Com.Cognite.V1.Timeseries.Proto.Beta.Status Status {
+      get { return status_; }
+      set {
+        status_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "nullValue" field.</summary>
+    public const int NullValueFieldNumber = 4;
+    private bool nullValue_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool NullValue {
+      get { return nullValue_; }
+      set {
+        nullValue_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -825,6 +893,8 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (Timestamp != other.Timestamp) return false;
       if (Value != other.Value) return false;
+      if (!object.Equals(Status, other.Status)) return false;
+      if (NullValue != other.NullValue) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -834,6 +904,8 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       int hash = 1;
       if (Timestamp != 0L) hash ^= Timestamp.GetHashCode();
       if (Value.Length != 0) hash ^= Value.GetHashCode();
+      if (status_ != null) hash ^= Status.GetHashCode();
+      if (NullValue != false) hash ^= NullValue.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -860,6 +932,14 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(18);
         output.WriteString(Value);
       }
+      if (status_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Status);
+      }
+      if (NullValue != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(NullValue);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -878,6 +958,14 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(18);
         output.WriteString(Value);
       }
+      if (status_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(Status);
+      }
+      if (NullValue != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(NullValue);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -893,6 +981,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (Value.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Value);
+      }
+      if (status_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Status);
+      }
+      if (NullValue != false) {
+        size += 1 + 1;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -911,6 +1005,15 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (other.Value.Length != 0) {
         Value = other.Value;
+      }
+      if (other.status_ != null) {
+        if (status_ == null) {
+          Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
+        }
+        Status.MergeFrom(other.Status);
+      }
+      if (other.NullValue != false) {
+        NullValue = other.NullValue;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -933,6 +1036,17 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
           }
           case 18: {
             Value = input.ReadString();
+            break;
+          }
+          case 26: {
+            if (status_ == null) {
+              Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
+            }
+            input.ReadMessage(Status);
+            break;
+          }
+          case 32: {
+            NullValue = input.ReadBool();
             break;
           }
         }
@@ -958,6 +1072,17 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
             Value = input.ReadString();
             break;
           }
+          case 26: {
+            if (status_ == null) {
+              Status = new global::Com.Cognite.V1.Timeseries.Proto.Beta.Status();
+            }
+            input.ReadMessage(Status);
+            break;
+          }
+          case 32: {
+            NullValue = input.ReadBool();
+            break;
+          }
         }
       }
     }
@@ -980,7 +1105,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[4]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1012,12 +1137,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
 
     /// <summary>Field number for the "datapoints" field.</summary>
     public const int DatapointsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint> _repeated_datapoints_codec
-        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint.Parser);
-    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint>();
+    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint> _repeated_datapoints_codec
+        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint.Parser);
+    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.StringDatapoint> Datapoints {
+    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.StringDatapoint> Datapoints {
       get { return datapoints_; }
     }
 
@@ -1159,7 +1284,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[5]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1190,6 +1315,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       continuousVariance_ = other.continuousVariance_;
       discreteVariance_ = other.discreteVariance_;
       totalVariation_ = other.totalVariation_;
+      countGood_ = other.countGood_;
+      countUncertain_ = other.countUncertain_;
+      countBad_ = other.countBad_;
+      durationGood_ = other.durationGood_;
+      durationUncertain_ = other.durationUncertain_;
+      durationBad_ = other.durationBad_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1331,6 +1462,78 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
     }
 
+    /// <summary>Field number for the "countGood" field.</summary>
+    public const int CountGoodFieldNumber = 12;
+    private double countGood_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double CountGood {
+      get { return countGood_; }
+      set {
+        countGood_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "countUncertain" field.</summary>
+    public const int CountUncertainFieldNumber = 13;
+    private double countUncertain_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double CountUncertain {
+      get { return countUncertain_; }
+      set {
+        countUncertain_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "countBad" field.</summary>
+    public const int CountBadFieldNumber = 14;
+    private double countBad_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double CountBad {
+      get { return countBad_; }
+      set {
+        countBad_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "durationGood" field.</summary>
+    public const int DurationGoodFieldNumber = 15;
+    private double durationGood_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double DurationGood {
+      get { return durationGood_; }
+      set {
+        durationGood_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "durationUncertain" field.</summary>
+    public const int DurationUncertainFieldNumber = 16;
+    private double durationUncertain_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double DurationUncertain {
+      get { return durationUncertain_; }
+      set {
+        durationUncertain_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "durationBad" field.</summary>
+    public const int DurationBadFieldNumber = 17;
+    private double durationBad_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public double DurationBad {
+      get { return durationBad_; }
+      set {
+        durationBad_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -1357,6 +1560,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(ContinuousVariance, other.ContinuousVariance)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DiscreteVariance, other.DiscreteVariance)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(TotalVariation, other.TotalVariation)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(CountGood, other.CountGood)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(CountUncertain, other.CountUncertain)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(CountBad, other.CountBad)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DurationGood, other.DurationGood)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DurationUncertain, other.DurationUncertain)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DurationBad, other.DurationBad)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -1375,6 +1584,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       if (ContinuousVariance != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(ContinuousVariance);
       if (DiscreteVariance != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DiscreteVariance);
       if (TotalVariation != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(TotalVariation);
+      if (CountGood != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(CountGood);
+      if (CountUncertain != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(CountUncertain);
+      if (CountBad != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(CountBad);
+      if (DurationGood != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DurationGood);
+      if (DurationUncertain != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DurationUncertain);
+      if (DurationBad != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DurationBad);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1437,6 +1652,30 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(89);
         output.WriteDouble(TotalVariation);
       }
+      if (CountGood != 0D) {
+        output.WriteRawTag(97);
+        output.WriteDouble(CountGood);
+      }
+      if (CountUncertain != 0D) {
+        output.WriteRawTag(105);
+        output.WriteDouble(CountUncertain);
+      }
+      if (CountBad != 0D) {
+        output.WriteRawTag(113);
+        output.WriteDouble(CountBad);
+      }
+      if (DurationGood != 0D) {
+        output.WriteRawTag(121);
+        output.WriteDouble(DurationGood);
+      }
+      if (DurationUncertain != 0D) {
+        output.WriteRawTag(129, 1);
+        output.WriteDouble(DurationUncertain);
+      }
+      if (DurationBad != 0D) {
+        output.WriteRawTag(137, 1);
+        output.WriteDouble(DurationBad);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -1491,6 +1730,30 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
         output.WriteRawTag(89);
         output.WriteDouble(TotalVariation);
       }
+      if (CountGood != 0D) {
+        output.WriteRawTag(97);
+        output.WriteDouble(CountGood);
+      }
+      if (CountUncertain != 0D) {
+        output.WriteRawTag(105);
+        output.WriteDouble(CountUncertain);
+      }
+      if (CountBad != 0D) {
+        output.WriteRawTag(113);
+        output.WriteDouble(CountBad);
+      }
+      if (DurationGood != 0D) {
+        output.WriteRawTag(121);
+        output.WriteDouble(DurationGood);
+      }
+      if (DurationUncertain != 0D) {
+        output.WriteRawTag(129, 1);
+        output.WriteDouble(DurationUncertain);
+      }
+      if (DurationBad != 0D) {
+        output.WriteRawTag(137, 1);
+        output.WriteDouble(DurationBad);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -1533,6 +1796,24 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (TotalVariation != 0D) {
         size += 1 + 8;
+      }
+      if (CountGood != 0D) {
+        size += 1 + 8;
+      }
+      if (CountUncertain != 0D) {
+        size += 1 + 8;
+      }
+      if (CountBad != 0D) {
+        size += 1 + 8;
+      }
+      if (DurationGood != 0D) {
+        size += 1 + 8;
+      }
+      if (DurationUncertain != 0D) {
+        size += 2 + 8;
+      }
+      if (DurationBad != 0D) {
+        size += 2 + 8;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1578,6 +1859,24 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
       }
       if (other.TotalVariation != 0D) {
         TotalVariation = other.TotalVariation;
+      }
+      if (other.CountGood != 0D) {
+        CountGood = other.CountGood;
+      }
+      if (other.CountUncertain != 0D) {
+        CountUncertain = other.CountUncertain;
+      }
+      if (other.CountBad != 0D) {
+        CountBad = other.CountBad;
+      }
+      if (other.DurationGood != 0D) {
+        DurationGood = other.DurationGood;
+      }
+      if (other.DurationUncertain != 0D) {
+        DurationUncertain = other.DurationUncertain;
+      }
+      if (other.DurationBad != 0D) {
+        DurationBad = other.DurationBad;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -1636,6 +1935,30 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
           }
           case 89: {
             TotalVariation = input.ReadDouble();
+            break;
+          }
+          case 97: {
+            CountGood = input.ReadDouble();
+            break;
+          }
+          case 105: {
+            CountUncertain = input.ReadDouble();
+            break;
+          }
+          case 113: {
+            CountBad = input.ReadDouble();
+            break;
+          }
+          case 121: {
+            DurationGood = input.ReadDouble();
+            break;
+          }
+          case 129: {
+            DurationUncertain = input.ReadDouble();
+            break;
+          }
+          case 137: {
+            DurationBad = input.ReadDouble();
             break;
           }
         }
@@ -1697,6 +2020,30 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
             TotalVariation = input.ReadDouble();
             break;
           }
+          case 97: {
+            CountGood = input.ReadDouble();
+            break;
+          }
+          case 105: {
+            CountUncertain = input.ReadDouble();
+            break;
+          }
+          case 113: {
+            CountBad = input.ReadDouble();
+            break;
+          }
+          case 121: {
+            DurationGood = input.ReadDouble();
+            break;
+          }
+          case 129: {
+            DurationUncertain = input.ReadDouble();
+            break;
+          }
+          case 137: {
+            DurationBad = input.ReadDouble();
+            break;
+          }
         }
       }
     }
@@ -1719,7 +2066,7 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Com.Cognite.V1.Timeseries.Proto.Alpha.DataPointsReflection.Descriptor.MessageTypes[6]; }
+      get { return global::Com.Cognite.V1.Timeseries.Proto.Beta.DataPointsReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1751,12 +2098,12 @@ namespace Com.Cognite.V1.Timeseries.Proto.Alpha {
 
     /// <summary>Field number for the "datapoints" field.</summary>
     public const int DatapointsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint> _repeated_datapoints_codec
-        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint.Parser);
-    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint>();
+    private static readonly pb::FieldCodec<global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint> _repeated_datapoints_codec
+        = pb::FieldCodec.ForMessage(10, global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint.Parser);
+    private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint> datapoints_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Alpha.AggregateDatapoint> Datapoints {
+    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.Beta.AggregateDatapoint> Datapoints {
       get { return datapoints_; }
     }
 
