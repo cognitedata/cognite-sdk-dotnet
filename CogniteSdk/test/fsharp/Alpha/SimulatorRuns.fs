@@ -28,7 +28,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
                           Value = SimulatorValue.Create(50.1), // original value is 10 C
                           Unit = SimulationInputUnitOverride(Name = "F")
                       ) ],
-                ValidationEndTime = now,
+                RunTime = now,
                 Queue = true
             )
 
@@ -66,7 +66,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         test <@ itemRes.RoutineExternalId = itemToCreate.RoutineExternalId @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
         test <@ itemRes.RunType = SimulationRunType.external @>
-        test <@ itemRes.ValidationEndTime = Nullable(now) @>
+        test <@ itemRes.RunTime = Nullable(now) @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
@@ -104,7 +104,7 @@ let ``Create simulation runs is Ok`` () =
                 ModelName = "ShowerMixerIntegrationTest",
                 RoutineName = "ShowerMixerCalculation",
                 RunType = SimulationRunType.external,
-                ValidationEndTime = now,
+                RunTime = now,
                 Queue = true
             )
 
@@ -121,7 +121,7 @@ let ``Create simulation runs is Ok`` () =
         test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
         test <@ itemRes.Status = SimulationRunStatus.ready @>
         test <@ itemRes.RunType = SimulationRunType.external @>
-        test <@ itemRes.ValidationEndTime = Nullable(now) @>
+        test <@ itemRes.RunTime = Nullable(now) @>
         test <@ now - itemRes.CreatedTime < 10000 @>
         test <@ now - itemRes.LastUpdatedTime < 10000 @>
 
