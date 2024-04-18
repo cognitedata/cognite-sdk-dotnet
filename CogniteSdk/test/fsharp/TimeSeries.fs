@@ -485,3 +485,59 @@ let ``Synthetic Query with Error is Ok`` () = task {
     test <@ ts |> Seq.length > 0 @>
     test <@ ts |> Seq.forall (fun x -> x.Error |> (not << isNull)) @>
 }
+
+[<Fact>]
+let ``Interact with timeseries using the new unit capabilities is Ok`` () = task {
+    // Arrange
+    let externalIdString = Guid.NewGuid().ToString()
+    let unitExternalId = "temperature:deg_c"
+    let unitQuantity = "Temperature"
+    let dto =
+        TimeSeriesCreate(
+            ExternalId = externalIdString,
+            Name = "Create Timeseries sdk test",
+            Description = "dotnet sdk test",
+            IsStep = false,
+            UnitExternalId = unitExternalId
+        )
+    let query1 =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(UnitExternalId = unitExternalId),
+            Limit = Nullable 10
+        )
+    let query2 =
+        TimeSeriesSearch(
+            Filter = TimeSeriesFilter(UnitQuantity = unitQuantity),
+            Limit = Nullable 10
+        )
+    let updateDto =
+        TimeSeriesUpdateItem(
+            externalId = externalIdString,
+            Update = TimeSeriesUpdate(
+                UnitExternalId = UpdateNullable("temperature:deg_f")
+            )
+        )
+
+    // Act
+    let! timeSereiesResponses = writeClient.TimeSeries.CreateAsync [ dto ]
+    do! Task.Delay 1000 // Wait for 1 second
+
+    let! filterRes1 = writeClient.TimeSeries.SearchAsync query1
+    let! filterRes2 = writeClient.TimeSeries.SearchAsync query2
+
+    let! updateRes = writeClient.TimeSeries.UpdateAsync [ updateDto ]
+    do! Task.Delay 1000 // Wait for 1 second
+
+    let! delRes = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
+
+    let resExternalId =
+        let h = Seq.tryHead timeSereiesResponses
+        match h with
+        | Some timeSereiesResponse -> timeSereiesResponse.ExternalId
+        | None -> String.Empty
+
+    // Assert
+    test <@ resExternalId = externalIdString @>
+    test <@ Seq.length filterRes1 > 0 @>
+    test <@ Seq.length filterRes2 > 0 @>
+}

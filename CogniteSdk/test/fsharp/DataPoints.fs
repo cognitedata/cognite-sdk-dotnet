@@ -2,6 +2,7 @@ module Tests.Integration.Datapoints
 
 open System
 
+open System.Threading.Tasks
 open FSharp.Control.TaskBuilder
 open Swensen.Unquote
 open Xunit
@@ -299,3 +300,103 @@ let ``Delete datapoints is Ok`` () = task {
     ()
 }
 
+[<Fact>]
+let ``Interact with datapoints using the new unit capabilities is Ok`` () = task {
+    // Arrange
+    let externalIdString = Guid.NewGuid().ToString()
+    let unitExternalId = "temperature:deg_c"
+    let dto =
+        TimeSeriesCreate(
+            ExternalId = externalIdString,
+            Name = "Interact with datapoints test",
+            Description = "dotnet sdk test",
+            IsString = false,
+            UnitExternalId = unitExternalId
+        )
+
+    let startTimestamp = 1704672000000L;
+    let timestamps = [ startTimestamp; startTimestamp + 3600000L ; startTimestamp + 7200000L ]
+    let values = [ 30.5; 29.4; 13.2 ]
+    let valuesFahrenheit = [ 86.9; 84.92; 55.76 ]
+    let valuesKelvin = [ 303.65; 302.55; 286.35 ]
+
+    let dataPoints = NumericDatapoints()
+    dataPoints.Datapoints.AddRange(
+        List.zip timestamps values |> List.map (
+            fun (ts, v) -> NumericDatapoint(Timestamp = ts, Value = v)
+        )
+    )
+    let dataPointsRequest = DataPointInsertionRequest()
+    dataPointsRequest.Items.Add [
+        DataPointInsertionItem(ExternalId = externalIdString, NumericDatapoints = dataPoints)
+    ]
+
+    let query1 =
+        DataPointsQuery(
+            Start = startTimestamp.ToString(),
+            Items = [
+                DataPointsQueryItem(ExternalId = externalIdString)
+            ]
+        )
+    let query2 = 
+        DataPointsQuery(
+            Start = startTimestamp.ToString(),
+            Items = [
+                DataPointsQueryItem(ExternalId = externalIdString, TargetUnit = "temperature:deg_f")
+            ]
+        )
+    let query3 =
+        DataPointsQuery(
+            Start = startTimestamp.ToString(),
+            Items = [
+                DataPointsQueryItem(ExternalId = externalIdString, TargetUnitSystem = "SI")
+            ]
+    )
+
+    // Act
+    let! _ = writeClient.TimeSeries.CreateAsync [ dto ]
+    do! Task.Delay 1000 // Wait for 1 second
+
+    let! _ = writeClient.DataPoints.CreateAsync dataPointsRequest
+    do! Task.Delay 1000 // Wait for 1 second
+
+    let! resWithoutConversion = writeClient.DataPoints.ListAsync query1
+    let! resWithTargetUnit = writeClient.DataPoints.ListAsync query2
+    let! resWithTargetUnitSystem = writeClient.DataPoints.ListAsync query3
+    let! _ = writeClient.TimeSeries.DeleteAsync [ externalIdString ]
+
+    let unitWithoutConversion = resWithoutConversion.Items
+                                        |> Seq.head
+                                        |> fun dps -> dps.UnitExternalId
+    let valuesWithoutConversion = resWithoutConversion.Items
+                                  |> Seq.head
+                                  |> fun dps -> dps.NumericDatapoints.Datapoints
+                                  |> Seq.map (fun dp -> dp.Value)
+
+    let unitWithTargetUnit = resWithTargetUnit.Items
+                              |> Seq.head
+                              |> fun dps -> dps.UnitExternalId
+    let valuesWithTargetUnit = resWithTargetUnit.Items
+                               |> Seq.head
+                               |> fun dps -> dps.NumericDatapoints.Datapoints
+                               |> Seq.map (fun dp -> dp.Value)
+
+    let unitWithTargetUnitSystem = resWithTargetUnitSystem.Items
+                                     |> Seq.head
+                                     |> fun dps -> dps.UnitExternalId
+    let valuesWithTargetUnitSystem = resWithTargetUnitSystem.Items
+                                     |> Seq.head
+                                     |> fun dps -> dps.NumericDatapoints.Datapoints
+                                     |> Seq.map (fun dp -> dp.Value)
+
+    // Assert
+    // No conversion
+    test <@ unitWithoutConversion = unitExternalId @>
+    test <@ Seq.compareWith compare valuesWithoutConversion values = 0 @>
+    // Conversion from Celsius to Fahrenheit
+    test <@ unitWithTargetUnit = "temperature:deg_f" @>
+    test <@ Seq.compareWith compare valuesWithTargetUnit valuesFahrenheit = 0 @>
+    // Conversion from Celsius to Kelvin
+    test <@ unitWithTargetUnitSystem = "temperature:k" @>
+    test <@ Seq.compareWith compare valuesWithTargetUnitSystem valuesKelvin = 0 @>
+}

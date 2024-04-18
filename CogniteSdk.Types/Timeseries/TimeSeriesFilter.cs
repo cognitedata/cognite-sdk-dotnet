@@ -17,12 +17,23 @@ namespace CogniteSdk
         public string Name { get; set; }
 
         /// <summary>
-        /// The unit of the time series.
+        /// The physical unit of the time series (free-text field).
         /// </summary>
         public string Unit { get; set; }
 
         /// <summary>
-        /// Filter on isStep..
+        /// The physical unit of the time series (reference to unit catalog). Only available for numeric time series.
+        /// </summary>
+        public string UnitExternalId { get; set; }
+
+        /// <summary>
+        /// The physical quantity of the time series (reference to unit catalog). Only available for numeric time
+        /// series.
+        /// </summary>
+        public string UnitQuantity { get; set; }
+
+        /// <summary>
+        /// Filter on isStep.
         /// </summary>
         public bool? IsStep { get; set; }
 

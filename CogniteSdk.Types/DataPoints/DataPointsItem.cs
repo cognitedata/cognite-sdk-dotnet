@@ -34,9 +34,16 @@ namespace CogniteSdk
         public bool? IsStep { get; set; }
 
         /// <summary>
-        /// The physical unit of the time series.
+        /// The physical unit of the time series (free-text field). Omitted if data points were converted to a
+        /// different unit.
         /// </summary>
         public string Unit { get; set; }
+
+        /// <summary>
+        /// The physical unit of the time series (reference to unit catalog). Replaced with target unit if data
+        /// points were converted.
+        /// </summary>
+        public string UnitExternalId { get; set; }
 
         /// <summary>
         /// The cursor to get the next page of results (if available). `nextCursor` will be omitted

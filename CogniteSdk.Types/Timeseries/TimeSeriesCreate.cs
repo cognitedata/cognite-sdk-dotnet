@@ -50,9 +50,14 @@ namespace CogniteSdk
         public Dictionary<string, string> Metadata { get; set; }
 
         /// <summary>
-        /// The physical unit of the time series.
+        /// The physical unit of the time series (free-text field).
         /// </summary>
         public string Unit { get; set; }
+
+        /// <summary>
+        /// The physical unit of the time series (reference to unit catalog). Only available for numeric time series.
+        /// </summary>
+        public string UnitExternalId { get; set; }
 
         /// <summary>
         /// Asset this time series should be related to.

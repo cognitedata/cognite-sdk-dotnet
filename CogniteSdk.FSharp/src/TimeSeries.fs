@@ -9,6 +9,8 @@ open Oryx.Cognite
 type TimeSeriesFilter =
     { Name: string option
       Unit: string option
+      UnitExternalId: string option
+      UnitQuantity: string option
       IsString: bool option
       IsStep: bool option
       AssetIds: int64 list
@@ -31,6 +33,10 @@ type TimeSeriesFilter =
 
         x.Unit |> Option.iter (fun x -> filter.Unit <- x)
 
+        x.UnitExternalId |> Option.iter (fun x -> filter.UnitExternalId <- x)
+
+        x.UnitQuantity |> Option.iter (fun x -> filter.UnitQuantity <- x)
+
         x.IsStep |> Option.iter (fun x -> filter.IsStep <- x)
 
         x.IsString |> Option.iter (fun x -> filter.IsString <- x)
@@ -49,7 +55,6 @@ type TimeSeriesFilter =
 
         if not (List.isEmpty x.DataSetIds) then
             filter.DataSetIds <- x.DataSetIds |> List.map (fun x -> x.ToIdentifier()) |> Array.ofList
-
 
         x.CreatedTime |> Option.iter (fun x -> filter.CreatedTime <- x.ToTimeRange())
 
@@ -75,6 +80,8 @@ type TimeSeriesFilter =
               DataSetIds = set (x.DataSetIds @ other.DataSetIds) |> List.ofSeq
               MetaData = Map.toList x.MetaData @ Map.toList other.MetaData |> Map.ofList
               Unit = x.Unit |> Option.orElse other.Unit
+              UnitExternalId = x.UnitExternalId |> Option.orElse other.UnitExternalId
+              UnitQuantity = x.UnitQuantity |> Option.orElse other.UnitQuantity
               CreatedTime = x.CreatedTime |> Option.orElse other.CreatedTime
               LastUpdatedTime = x.LastUpdatedTime |> Option.orElse other.LastUpdatedTime
               IsStep = x.IsStep |> Option.orElse other.IsStep
@@ -90,6 +97,8 @@ type TimeSeriesFilter =
           DataSetIds = []
           MetaData = Map.empty
           Unit = None
+          UnitExternalId = None
+          UnitQuantity = None
           IsStep = None
           IsString = None
           CreatedTime = None

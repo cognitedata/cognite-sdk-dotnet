@@ -8,7 +8,8 @@
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)/strong_name.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../strong_name.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common.fs" />
@@ -38,6 +39,7 @@
     <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
     <Compile Include="Beta/DataModels.fs" />
+    <Compile Include="Beta/BetaDataPoints.fs" />
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/Simulators.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
