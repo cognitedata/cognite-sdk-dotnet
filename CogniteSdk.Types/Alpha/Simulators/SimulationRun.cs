@@ -83,7 +83,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Timestamp that overwrites the validation end
         /// </summary>
-        public long? ValidationEndTime { get; set; }
+        public long? RunTime { get; set; }
 
         /// <summary>
         /// Simulation time in milliseconds. This is the timestamp used for indexing inputs and outputs of the simulation.

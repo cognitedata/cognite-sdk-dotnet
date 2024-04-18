@@ -74,7 +74,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Timestamp that overwrites the validation end
         /// </summary>
-        public long? ValidationEndTime { get; set; }
+        public long? RunTime { get; set; }
 
         /// <summary>
         /// Queue the simulation run when connector is down
