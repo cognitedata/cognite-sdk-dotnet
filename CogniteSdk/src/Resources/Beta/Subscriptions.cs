@@ -9,7 +9,6 @@ using System.Threading;
 using CogniteSdk.Beta;
 
 using Oryx;
-using Oryx.Pipeline;
 using Oryx.Cognite.Beta;
 
 using Microsoft.FSharp.Core;
@@ -24,7 +23,7 @@ namespace CogniteSdk.Resources.Beta
         /// <summary>
         /// Constructor
         /// </summary>
-        public SubscriptionsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        public SubscriptionsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
