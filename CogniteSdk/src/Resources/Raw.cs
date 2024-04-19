@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.FSharp.Core;
 using Oryx;
-using Oryx.Pipeline;
 
 namespace CogniteSdk.Resources
 {
@@ -23,7 +22,7 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">The HTTP context to use for the request.</param>
-        internal RawResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        internal RawResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 

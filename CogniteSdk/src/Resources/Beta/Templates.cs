@@ -10,7 +10,6 @@ using Microsoft.FSharp.Core;
 
 using Oryx;
 using Oryx.Cognite.Beta;
-using Oryx.Pipeline;
 
 using CogniteSdk.Beta;
 
@@ -27,7 +26,7 @@ namespace CogniteSdk.Resources.Beta
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
         /// <param name="ctx">Context to use for the request.</param>
-        public TemplatesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        public TemplatesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 

@@ -10,7 +10,6 @@ using CogniteSdk.Beta.DataModels;
 
 using Oryx;
 using Oryx.Cognite.Beta;
-using Oryx.Pipeline;
 
 using Microsoft.FSharp.Core;
 
@@ -24,7 +23,7 @@ namespace CogniteSdk.Resources.Beta
         /// <summary>
         /// Constructor
         /// </summary>
-        public DataModelsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IAsyncNext<HttpContext, Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        public DataModelsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
