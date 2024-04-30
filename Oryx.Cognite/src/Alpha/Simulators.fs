@@ -124,10 +124,7 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.list query modelsUrl
 
-    let retrieveSimulatorModels
-        (ids: Identity seq)
-        (source: HttpHandler<unit>)
-        : HttpHandler<#SimulatorModel seq> =
+    let retrieveSimulatorModels (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorModel seq> =
         source
         |> withLogMessage "simulators:retrieveSimulatorModels"
         |> withAlphaHeader

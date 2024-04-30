@@ -101,10 +101,7 @@ let ``List simulation runs is Ok`` () =
         // Arrange
         let query =
             SimulationRunQuery(
-                Filter = SimulationRunFilter(
-                    SimulatorExternalIds = [ "DWSIM" ],
-                    Status = SimulationRunStatus.success
-                )
+                Filter = SimulationRunFilter(SimulatorExternalIds = [ "DWSIM" ], Status = SimulationRunStatus.success)
             )
 
         // Act
