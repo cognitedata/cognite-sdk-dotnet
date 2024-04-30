@@ -158,6 +158,23 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Asyncronously retrieves information about multiple simulation models.
+        /// </summary>
+        /// <param name="ids">The simulator model ids to retrieve.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulation models</returns>
+        public async Task<IEnumerable<SimulatorModel>> RetrieveSimulatorModelsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        {
+            if (ids is null)
+            {
+                throw new ArgumentNullException(nameof(ids));
+            }
+
+            var req = Simulators.retrieveSimulatorModels<SimulatorModel>(ids, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asyncronously updates simulation models. Only one at a time is supported as of now.
         /// </summary>
         /// <param name="items">The simulator model items to update.</param>

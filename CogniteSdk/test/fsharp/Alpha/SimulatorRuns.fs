@@ -13,6 +13,7 @@ open CogniteSdk
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
 let ``Create simulation runs by routine with data and callback is Ok`` () =
     task {
         // Arrange
@@ -20,7 +21,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
 
         let itemToCreate =
             SimulationRunCreate(
-                RoutineExternalId = "ShowerMixerIntegrationTestWithExtendedIO",
+                RoutineExternalId = "ShowerMixerWithExtendedIO",
                 RunType = SimulationRunType.external,
                 Inputs =
                     [ SimulationInputOverride(
@@ -93,49 +94,17 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
-let ``Create simulation runs is Ok`` () =
-    task {
-        // Arrange
-        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
-
-        let itemToCreate =
-            SimulationRunCreate(
-                SimulatorName = "DWSIM",
-                ModelName = "ShowerMixerIntegrationTest",
-                RoutineName = "ShowerMixerCalculation",
-                RunType = SimulationRunType.external,
-                RunTime = now,
-                Queue = true
-            )
-
-        // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
-
-        // Assert
-        let len = Seq.length res
-        test <@ len = 1 @>
-        let itemRes = res |> Seq.head
-
-        test <@ itemRes.SimulatorName = itemToCreate.SimulatorName @>
-        test <@ itemRes.ModelName = itemToCreate.ModelName @>
-        test <@ itemRes.RoutineName = itemToCreate.RoutineName @>
-        test <@ itemRes.Status = SimulationRunStatus.ready @>
-        test <@ itemRes.RunType = SimulationRunType.external @>
-        test <@ itemRes.RunTime = Nullable(now) @>
-        test <@ now - itemRes.CreatedTime < 10000 @>
-        test <@ now - itemRes.LastUpdatedTime < 10000 @>
-
-    }
-
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
 let ``List simulation runs is Ok`` () =
     task {
 
         // Arrange
         let query =
             SimulationRunQuery(
-                Filter = SimulationRunFilter(SimulatorName = "DWSIM", Status = SimulationRunStatus.success)
+                Filter = SimulationRunFilter(
+                    SimulatorExternalIds = [ "DWSIM" ],
+                    Status = SimulationRunStatus.success
+                )
             )
 
         // Act
@@ -143,7 +112,7 @@ let ``List simulation runs is Ok`` () =
 
         let len = Seq.length res.Items
 
-        test <@ res.Items |> Seq.forall (fun item -> item.SimulatorName = "DWSIM") @>
+        test <@ res.Items |> Seq.forall (fun item -> item.SimulatorExternalId = "DWSIM") @>
         test <@ res.Items |> Seq.forall (fun item -> item.Status = SimulationRunStatus.success) @>
 
         test
@@ -158,6 +127,7 @@ let ``List simulation runs is Ok`` () =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
 let ``List simulation runs with external id filters is Ok`` () =
     task {
 
@@ -183,46 +153,7 @@ let ``List simulation runs with external id filters is Ok`` () =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulationRuns")>]
-let ``Callback simulation runs is Ok`` () =
-    task {
-
-        // Arrange
-        let listQuery =
-            SimulationRunQuery(
-                Filter =
-                    SimulationRunFilter(
-                        SimulatorName = "DWSIM",
-                        ModelName = "ShowerMixerIntegrationTest",
-                        RoutineName = "ShowerMixerCalculation",
-                        Status = SimulationRunStatus.ready
-                    )
-            )
-
-        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
-
-        test <@ Seq.length listRes.Items > 0 @>
-
-        let simulationRun = listRes.Items |> Seq.head
-        let ts = DateTimeOffset(DateTime.Now).ToUnixTimeSeconds().ToString()
-
-
-        let query =
-            SimulationRunCallbackItem(Id = simulationRun.Id, Status = SimulationRunStatus.success, StatusMessage = ts)
-
-        // Act
-        let! res = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync query
-        let simulationRunCallbackRes = res.Items |> Seq.head
-
-        // Assert
-        test <@ Seq.length res.Items = 1 @>
-
-        test <@ simulationRunCallbackRes.Status = SimulationRunStatus.success @>
-        test <@ simulationRunCallbackRes.StatusMessage = ts @>
-    }
-
-
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
 let ``Retrieve simulation runs is Ok`` () =
     task {
 
@@ -246,6 +177,7 @@ let ``Retrieve simulation runs is Ok`` () =
 
 [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulatorLogs")>]
+[<Trait("api", "simulators")>]
 let ``Update simulation log is Ok`` () =
     task {
         // Arrange

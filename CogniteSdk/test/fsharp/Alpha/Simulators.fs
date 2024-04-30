@@ -202,6 +202,11 @@ let ``Create and list simulator models is Ok`` () =
                     )
                 )
 
+            let! modelRetriveRes =
+                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
+
+            let modelRetrieved = modelRetriveRes |> Seq.head
+
             let modelCreated = modelCreateRes |> Seq.head
 
             let foundCreatedModel =
@@ -233,6 +238,8 @@ let ``Create and list simulator models is Ok`` () =
             test <@ foundCreatedModel.Name = modelToCreate.Name @>
             test <@ foundCreatedModel.Description = modelToCreate.Description @>
             test <@ foundCreatedModel.DataSetId = modelToCreate.DataSetId @>
+
+            test <@ modelRetrieved.ExternalId = modelToCreate.ExternalId @>
 
             test <@ updatedModel.Description = modelPatch.Update.Description.Set @>
             test <@ updatedModel.Name = modelPatch.Update.Name.Set @>
