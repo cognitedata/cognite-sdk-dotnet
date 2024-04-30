@@ -201,25 +201,25 @@ let ``Create simulator predefined routine revisions is Ok`` () =
                         SimulatorRoutineRevisionConfiguration(
                             Schedule = SimulatorRoutineRevisionSchedule(Enabled = true, CronExpression = "0 * * * *"),
                             LogicalCheck =
-                                [SimulatorRoutineRevisionLogicalCheck(
-                                    Enabled = true,
-                                    TimeseriesExternalId = "test",
-                                    Value = 10.9,
-                                    Operator = "gt",
-                                    Aggregate = "average"
-                                )],
+                                [ SimulatorRoutineRevisionLogicalCheck(
+                                      Enabled = true,
+                                      TimeseriesExternalId = "test",
+                                      Value = 10.9,
+                                      Operator = "gt",
+                                      Aggregate = "average"
+                                  ) ],
                             SteadyStateDetection =
-                                [SimulatorRoutineRevisionSteadyStateDetection(
-                                    Enabled = true,
-                                    TimeseriesExternalId = "test",
-                                    Aggregate = "average",
-                                    MinSectionSize = 1,
-                                    VarThreshold = 0.1,
-                                    SlopeThreshold = 0.1
-                                )],
+                                [ SimulatorRoutineRevisionSteadyStateDetection(
+                                      Enabled = true,
+                                      TimeseriesExternalId = "test",
+                                      Aggregate = "average",
+                                      MinSectionSize = 1,
+                                      VarThreshold = 0.1,
+                                      SlopeThreshold = 0.1
+                                  ) ],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
-                                    Enabled=true,
+                                    Enabled = true,
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
                                     Granularity = 1
@@ -261,15 +261,20 @@ let ``Create simulator predefined routine revisions is Ok`` () =
 
             test <@ revision.Configuration.Schedule.ToString() = revToCreate.Configuration.Schedule.ToString() @>
 
-            test 
-                <@ 
+            test
+                <@
                     revision.Configuration.LogicalCheck
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revToCreate.Configuration.LogicalCheck 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString())
+                        revToCreate.Configuration.LogicalCheck
                 @>
-            test 
-                <@ 
+
+            test
+                <@
                     revision.Configuration.SteadyStateDetection
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revToCreate.Configuration.SteadyStateDetection 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString())
+                        revToCreate.Configuration.SteadyStateDetection
                 @>
 
             test
@@ -400,7 +405,7 @@ let ``Create simulator routine revisions is Ok`` () =
                             SteadyStateDetection = [],
                             DataSampling =
                                 SimulatorRoutineRevisionDataSampling(
-                                    Enabled=true,
+                                    Enabled = true,
                                     ValidationWindow = 1,
                                     SamplingWindow = 1,
                                     Granularity = 1
@@ -433,16 +438,23 @@ let ``Create simulator routine revisions is Ok`` () =
 
             test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
             test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
-            test 
-                <@ 
+
+            test
+                <@
                     revConfig.LogicalCheck
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revConfigToCreate.LogicalCheck 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString())
+                        revConfigToCreate.LogicalCheck
                 @>
-            test 
-                <@ 
+
+            test
+                <@
                     revConfig.SteadyStateDetection
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revConfigToCreate.SteadyStateDetection 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString())
+                        revConfigToCreate.SteadyStateDetection
                 @>
+
             test
                 <@
                     revConfig.InputTimeseries
@@ -565,7 +577,7 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
                     SteadyStateDetection = [],
                     DataSampling =
                         SimulatorRoutineRevisionDataSampling(
-                            Enabled=true,
+                            Enabled = true,
                             ValidationWindow = 1,
                             SamplingWindow = 1,
                             Granularity = 1
@@ -612,16 +624,22 @@ let ``Create simulator routine revisions with extended inputs / outputs is Ok`` 
             test <@ revConfig.DataSampling.ToString() = revConfigToCreate.DataSampling.ToString() @>
             test <@ revConfig.Schedule.ToString() = revConfigToCreate.Schedule.ToString() @>
 
-            test 
-                <@ 
+            test
+                <@
                     revConfig.LogicalCheck
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString()) revConfigToCreate.LogicalCheck 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionLogicalCheck) b -> a.ToString() = b.ToString())
+                        revConfigToCreate.LogicalCheck
                 @>
-            test 
-                <@ 
+
+            test
+                <@
                     revConfig.SteadyStateDetection
-                    |> Seq.forall2 (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString()) revConfigToCreate.SteadyStateDetection 
+                    |> Seq.forall2
+                        (fun (a: SimulatorRoutineRevisionSteadyStateDetection) b -> a.ToString() = b.ToString())
+                        revConfigToCreate.SteadyStateDetection
                 @>
+
             test
                 <@
                     revConfig.Inputs

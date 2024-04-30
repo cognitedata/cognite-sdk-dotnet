@@ -16,21 +16,6 @@ namespace CogniteSdk.Alpha
         public long Id { get; set; }
 
         /// <summary>
-        /// The simulator name
-        /// </summary>
-        public string SimulatorName { get; set; }
-
-        /// <summary>
-        /// The routine name
-        /// </summary>
-        public string RoutineName { get; set; }
-
-        /// <summary>
-        /// The model name
-        /// </summary>
-        public string ModelName { get; set; }
-
-        /// <summary>
         /// Simulator external id
         /// </summary>
         public string SimulatorExternalId { get; set; }
@@ -81,7 +66,7 @@ namespace CogniteSdk.Alpha
         public long? EventId { get; set; }
 
         /// <summary>
-        /// Timestamp that overwrites the validation end
+        /// Timestamp that overwrites the timestamp at which the simulation run reads from the input time series.
         /// </summary>
         public long? RunTime { get; set; }
 
