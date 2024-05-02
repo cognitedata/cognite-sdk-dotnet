@@ -237,7 +237,7 @@ let ``Insert datapoints is Ok`` () = task {
 
 
     let dataPoints = NumericDatapoints()
-    dataPoints.Datapoints.Add(NumericDatapoint(Timestamp = 1563048800000L, Value = 3.0))
+    dataPoints.Datapoints.Add(NumericDatapoint(Timestamp = 1563048800000L, Value = 3.0, Status = Status(Symbol = "GoodClamped")))
 
     let points = DataPointInsertionRequest()
     points.Items.Add [
