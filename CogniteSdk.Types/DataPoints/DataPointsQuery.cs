@@ -88,6 +88,27 @@ namespace CogniteSdk
         /// </summary>
         public string TargetUnitSystem { get; set; }
 
+        /// <summary>
+        /// Show the status code for each data point in the response. Good (code = 0) status codes are always omitted.
+        /// 
+        /// Default false.
+        /// </summary>
+        public bool? IncludeStatus { get; set; }
+
+        /// <summary>
+        /// Treat data points with a Bad status code as if they do not exist. Set to false to include all data points.
+        /// 
+        /// Default true.
+        /// </summary>
+        public bool? IgnoreBadDataPoints { get; set; }
+
+        /// <summary>
+        /// Treat data points with Uncertain status codes as Bad. Set to false to to include uncertain data points.
+        /// 
+        /// Default true.
+        /// </summary>
+        public bool? TreatUncertainAsBad { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<DataPointsQueryItem>(this);
     }

@@ -48,6 +48,15 @@ namespace CogniteSdk
         }
 
         /// <summary>
+        /// Create a null value.
+        /// </summary>
+        /// <returns>New value.</returns>
+        public static MultiValue Create()
+        {
+            return new MultiValue.Null();
+        }
+
+        /// <summary>
         /// Long (int64) error value
         /// </summary>
         public sealed class Long : MultiValue
@@ -123,6 +132,25 @@ namespace CogniteSdk
             /// Return string representation of the string value, i.e the string itself.
             /// </summary>
             public override string ToString() => Value;
+        }
+
+        /// <summary>
+        /// Null value.
+        /// </summary>
+        public sealed class Null : MultiValue
+        {
+            /// <summary>
+            /// Initialize new string value.
+            /// </summary>
+            public Null()
+            {
+                Type = MultiValueType.NULL;
+            }
+
+            /// <summary>
+            /// Return string representation of the string value, i.e the string itself.
+            /// </summary>
+            public override string ToString() => "null";
         }
     }
 }

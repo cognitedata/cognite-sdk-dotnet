@@ -30,6 +30,8 @@ namespace CogniteSdk
                     }
 
                     return MultiValue.Create(reader.GetDouble());
+                case JsonTokenType.Null:
+                    return MultiValue.Create();
                 default:
                     throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
             }
@@ -55,6 +57,9 @@ namespace CogniteSdk
                     break;
                 case MultiValue.Long l:
                     writer.WriteNumberValue(l.Value);
+                    break;
+                case MultiValue.Null n:
+                    writer.WriteNullValue();
                     break;
                 default:
                     throw new ArgumentException($"Unknown MultiValue: {value}");
