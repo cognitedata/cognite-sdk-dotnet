@@ -51,11 +51,6 @@ namespace CogniteSdk.Alpha
         public string Type { get; set; }
 
         /// <summary>
-        /// Unit system of the simulation model.
-        /// </summary>
-        public string UnitSystem { get; set; }
-
-        /// <summary>
         /// The number of milliseconds since epoch.
         /// </summary>
         public long CreatedTime { get; set; }

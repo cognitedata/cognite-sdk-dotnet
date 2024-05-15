@@ -46,11 +46,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string Type { get; set; }
 
-        /// <summary>
-        /// Unit system of the simulation model.
-        /// </summary>
-        public string UnitSystem { get; set; }
-
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorModelCreate>(this);
     }

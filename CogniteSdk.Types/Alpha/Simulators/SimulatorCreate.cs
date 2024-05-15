@@ -48,8 +48,8 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorStepField> StepFields { get; set; }
         /// <summary>
-        /// Supported units by the simulator.
+        /// Supported unit quantities and units.
         /// </summary>
-        public SimulatorUnits Units { get; set; }
+        public IEnumerable<SimulatorUnitQuantity> UnitQuantities { get; set; }
     }
 }

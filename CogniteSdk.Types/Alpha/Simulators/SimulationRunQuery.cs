@@ -80,21 +80,6 @@ namespace CogniteSdk.Alpha
     public class SimulationRunFilter
     {
         /// <summary>
-        /// The simulator name
-        /// </summary>
-        public string SimulatorName { get; set; }
-
-        /// <summary>
-        /// The routine name
-        /// </summary>
-        public string RoutineName { get; set; }
-
-        /// <summary>
-        /// The model name
-        /// </summary>
-        public string ModelName { get; set; }
-
-        /// <summary>
         /// Filter by simulator external ids
         /// </summary>
         public IEnumerable<string> SimulatorExternalIds { get; set; }

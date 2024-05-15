@@ -14,14 +14,14 @@ namespace CogniteSdk.Alpha
     public class SimulatorValueUnit
     {
         /// <summary>
-        /// The input name
+        /// The unit name
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// The unit type
+        /// The quantity of measurement
         /// </summary>
-        public string Type { get; set; }
+        public string Quantity { get; set; }
 
         /// <inheritdoc/>
         public override string ToString() => Stringable.ToString<SimulatorValueUnit>(this);
