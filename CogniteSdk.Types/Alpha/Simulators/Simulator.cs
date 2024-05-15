@@ -52,9 +52,9 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorStepField> StepFields { get; set; }
         /// <summary>
-        /// Supported units by the simulator.
+        /// Supported unit quantities and units.
         /// </summary>
-        public SimulatorUnits Units { get; set; }
+        public IEnumerable<SimulatorUnitQuantity> UnitQuantities { get; set; }
         /// <summary>
         /// Created time in milliseconds since Jan 1, 1970.
         /// </summary>
@@ -66,61 +66,37 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Represents the units used by the simulator.
+    /// Represents the mapping of units to quantity of measurement.
     /// </summary>
-    public class SimulatorUnits
+    public class SimulatorUnitQuantity
     {
         /// <summary>
-        /// The mapping of measurements and their supported units.
-        /// </summary>
-        public Dictionary<string, SimulatorUnitsMap> UnitsMap { get; set; }
-        /// <summary>
-        /// The map of unit systems and their default units.
-        /// </summary>
-        public Dictionary<string, SimulatorUnitSystem> UnitSystem { get; set; }
-    }
-    /// <summary>
-    /// Represents the unit system used by the simulator.
-    /// </summary>
-    public class SimulatorUnitSystem
-    {
-        /// <summary>
-        /// The label of the unit system.
+        /// The label of the quantity of measurement. For display purposes.
         /// </summary>
         public string Label { get; set; }
         /// <summary>
-        /// The default units for given quantities.
+        /// The name of the quantity of measurement.
         /// </summary>
-        public Dictionary<string, string> DefaultUnits { get; set; }
-    }
-    /// <summary>
-    /// Represents the mapping of units used by the simulator.
-    /// </summary>
-    public class SimulatorUnitsMap
-    {
+        public string Name { get; set; }
         /// <summary>
-        /// The label of the units map.
+        /// The collection of units for the quantity of measurement.
         /// </summary>
-        public string Label { get; set; }
-        /// <summary>
-        /// The collection of units in the map.
-        /// </summary>
-        public IEnumerable<UnitsMapItem> Units { get; set; }
+        public IEnumerable<SimulatorUnitEntry> Units { get; set; }
     }
 
     /// <summary>
     /// Represents an item in the units map.
     /// </summary>
-    public class UnitsMapItem
+    public class SimulatorUnitEntry
     {
         /// <summary>
-        /// The label of the units map item.
+        /// The label of the unit, for display purposes. E.g. meter, kilometer, etc.
         /// </summary>
         public string Label { get; set; }
         /// <summary>
-        /// The value of the units map item.
+        /// The name of the unit. E.g. m, ft, etc.
         /// </summary>
-        public string Value { get; set; }
+        public string Name { get; set; }
     }
 
     /// <summary>

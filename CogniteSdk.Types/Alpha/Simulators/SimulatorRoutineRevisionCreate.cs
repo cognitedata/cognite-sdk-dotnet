@@ -65,24 +65,6 @@ namespace CogniteSdk.Alpha
         public IEnumerable<SimulatorRoutineRevisionSteadyStateDetection> SteadyStateDetection { get; set; }
 
         /// <summary>
-        /// List of input timeseries configurations.
-        /// </summary>
-        /// <remarks>Deprecated</remarks>
-        public IEnumerable<SimulatorRoutineRevisionInputTimeseries> InputTimeseries { get; set; }
-
-        /// <summary>
-        /// List of output timeseries configurations.
-        /// </summary>
-        /// <remarks>Deprecated</remarks>
-        public IEnumerable<SimulatorRoutineRevisionOutputTimeseries> OutputTimeseries { get; set; }
-
-        /// <summary>
-        /// List of output sequences configurations. Used only for the predefined calculations.
-        /// </summary>
-        /// <remarks>Deprecated</remarks>
-        public IEnumerable<SimulatorRoutineRevisionOutputSequence> OutputSequences { get; set; }
-
-        /// <summary>
         /// List of inputs. Can be either timeseries or constants.
         /// </summary>
         public IEnumerable<SimulatorRoutineRevisionInput> Inputs { get; set; }
@@ -91,16 +73,6 @@ namespace CogniteSdk.Alpha
         /// List of outputs. Outputs can optionally be saved to a timeseries.
         /// </summary>
         public IEnumerable<SimulatorRoutineRevisionOutput> Outputs { get; set; }
-
-        /// <summary>
-        /// Extra paramethers for the predefined calculations. Used for ChokeDp, IPR, VLP, BhpFromGradientTraverse, and BhpFromGaugeBhp calculation types.
-        /// </summary>
-        public Dictionary<string, JsonElement> ExtraOptions { get; set; }
-
-        /// <summary>
-        /// List of input constants configurations.
-        /// </summary>
-        public IEnumerable<SimulatorRoutineRevisionInputConstants> InputConstants { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
@@ -222,142 +194,6 @@ namespace CogniteSdk.Alpha
         /// Slope threshold for steady state detection.
         /// </summary>
         public double? SlopeThreshold { get; set; }
-
-        /// <inheritdoc />      
-        public override string ToString() => Stringable.ToString(this);
-    }
-
-    /// <summary>
-    /// Input timeseries configuration.
-    /// </summary>
-    public class SimulatorRoutineRevisionInputTimeseries
-    {
-        /// <summary>
-        /// Name of the input timeseries.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Reference id of the input timeseries.
-        /// </summary>
-        public string ReferenceId { get; set; }
-
-        /// <summary>
-        /// Unit of the input timeseries.
-        /// </summary>
-        public string Unit { get; set; }
-
-        /// <summary>
-        /// Unit type of the input timeseries.
-        /// </summary>
-        public string UnitType { get; set; }
-
-        /// <summary>
-        /// External id of the source for the input timeseries.
-        /// </summary>
-        public string SourceExternalId { get; set; }
-
-        /// <summary>
-        /// Aggregate function for the input timeseries.
-        /// </summary>
-        public string Aggregate { get; set; }
-
-        /// <summary>
-        /// External id to save the input timeseries.
-        /// </summary>
-        public string SaveTimeseriesExternalId { get; set; }
-
-        /// <inheritdoc />      
-        public override string ToString() => Stringable.ToString(this);
-    }
-
-    /// <summary>
-    /// Output timeseries configuration.
-    /// </summary>
-    public class SimulatorRoutineRevisionOutputTimeseries
-    {
-        /// <summary>
-        /// Name of the output timeseries.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Reference id of the output timeseries.
-        /// </summary>
-        public string ReferenceId { get; set; }
-
-        /// <summary>
-        /// Unit of the output timeseries.
-        /// </summary>
-        public string Unit { get; set; }
-
-        /// <summary>
-        /// Unit type of the output timeseries.
-        /// </summary>
-        public string UnitType { get; set; }
-
-        /// <summary>
-        /// External id to save the output timeseries.
-        /// </summary>
-        public string SaveTimeseriesExternalId { get; set; }
-
-        /// <inheritdoc />      
-        public override string ToString() => Stringable.ToString(this);
-    }
-
-    /// <summary>
-    /// Output sequences configuration.
-    /// </summary>
-    public class SimulatorRoutineRevisionOutputSequence
-    {
-        /// <summary>
-        /// Name of the output sequence.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Reference id of the output sequence.
-        /// </summary>
-        public string ReferenceId { get; set; }
-
-        /// <inheritdoc />      
-        public override string ToString() => Stringable.ToString(this);
-    }
-
-    /// <summary>
-    /// Input constants configuration.
-    /// </summary>
-    public class SimulatorRoutineRevisionInputConstants
-    {
-        /// <summary>
-        /// Name of the input constant.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// External id to save the input constant.
-        /// </summary>
-        public string SaveTimeseriesExternalId { get; set; }
-
-        /// <summary>
-        /// Value of the input constant.
-        /// </summary>
-        public string Value { get; set; }
-
-        /// <summary>
-        /// Unit of the input constant.
-        /// </summary>
-        public string Unit { get; set; }
-
-        /// <summary>
-        /// Unit type of the input constant.
-        /// </summary>
-        public string UnitType { get; set; }
-
-        /// <summary>
-        /// Reference id of the input constant.
-        /// </summary>
-        public string ReferenceId { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);

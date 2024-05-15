@@ -55,12 +55,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string SimulatorIntegrationExternalId { get; set; }
 
-        /// <summary>
-        /// The calculation type of the routine
-        /// The values must be one of the following : "IPR/VLP" "ChokeDp" "VLP" "IPR" "BhpFromRate" "BhpFromGradientTraverse" "BhpFromGaugeBhp"
-        /// </summary>
-        public string CalculationType { get; set; }
-
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
