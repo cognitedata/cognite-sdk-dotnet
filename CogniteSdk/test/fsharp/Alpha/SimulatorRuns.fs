@@ -181,12 +181,8 @@ let ``Update simulation log is Ok`` () =
         let! listRunsRes =
             azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(
                 new SimulationRunQuery(
-                    Filter = new SimulationRunFilter(
-                        RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]
-                    ),
-                    Sort = [ new SimulatorSortItem(
-                        Property = "createdTime",
-                        Order = SimulatorSortOrder.desc) ]
+                    Filter = new SimulationRunFilter(RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]),
+                    Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
                 )
             )
 

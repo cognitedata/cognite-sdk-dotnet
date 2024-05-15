@@ -171,10 +171,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict
-                                          [ "referenceId", "test"
-                                            "objectName", "test"
-                                            "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
                                   )
                           )
                           SimulatorRoutineRevisionScriptStep(
@@ -183,10 +180,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict
-                                          [ "referenceId", "test"
-                                            "objectName", "test"
-                                            "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
                                   )
                           ) ]
                 )
