@@ -21,7 +21,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
 
         let itemToCreate =
             SimulationRunCreate(
-                RoutineExternalId = "ShowerMixerWithExtendedIO",
+                RoutineExternalId = "ShowerMixerForTests",
                 RunType = SimulationRunType.external,
                 Inputs =
                     [ SimulationInputOverride(
@@ -181,7 +181,12 @@ let ``Update simulation log is Ok`` () =
         let! listRunsRes =
             azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(
                 new SimulationRunQuery(
-                    Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
+                    Filter = new SimulationRunFilter(
+                        RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]
+                    ),
+                    Sort = [ new SimulatorSortItem(
+                        Property = "createdTime",
+                        Order = SimulatorSortOrder.desc) ]
                 )
             )
 
