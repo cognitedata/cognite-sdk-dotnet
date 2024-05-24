@@ -32,8 +32,7 @@ let ``Create simulator routines is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
+                FileExtensionTypes = [ "json" ]
             )
 
         let integrationToCreate =
@@ -42,8 +41,7 @@ let ``Create simulator routines is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 DataSetId = dataSet.Id,
                 SimulatorVersion = "N/A",
-                ConnectorVersion = "1.2.3",
-                RunApiEnabled = true
+                ConnectorVersion = "1.2.3"
             )
 
         let modelToCreate =
@@ -121,8 +119,7 @@ let ``Create simulator routine revision is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
+                FileExtensionTypes = [ "json" ]
             )
 
         let integrationToCreate =
@@ -131,8 +128,7 @@ let ``Create simulator routine revision is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 DataSetId = dataSet.Id,
                 SimulatorVersion = "N/A",
-                ConnectorVersion = "1.2.3",
-                RunApiEnabled = true
+                ConnectorVersion = "1.2.3"
             )
 
         let modelToCreate =

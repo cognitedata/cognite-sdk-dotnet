@@ -26,8 +26,7 @@ let ``Create and delete simulators is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = fileExtensionTypes,
-                Enabled = true
+                FileExtensionTypes = fileExtensionTypes
             )
 
         // Act
@@ -40,7 +39,6 @@ let ``Create and delete simulators is Ok`` () =
         let itemRes = res |> Seq.head
 
         test <@ itemRes.Name = itemToCreate.Name @>
-        test <@ itemRes.Enabled = itemToCreate.Enabled.Value @>
         test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
         test <@ itemRes.CreatedTime >= now @>
         test <@ itemRes.LastUpdatedTime >= now @>
@@ -54,7 +52,7 @@ let ``List simulators is Ok`` () =
     task {
 
         // Arrange
-        let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
+        let query = SimulatorQuery(Filter = SimulatorFilter())
 
         // Act
         let! res = writeClient.Alpha.Simulators.ListAsync(query)
@@ -64,7 +62,6 @@ let ``List simulators is Ok`` () =
         // Assert
         test <@ len > 0 @>
 
-        test <@ res.Items |> Seq.forall (fun item -> item.Enabled = true) @>
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
@@ -80,8 +77,7 @@ let ``Create and update simulator integration is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
+                FileExtensionTypes = [ "json" ]
             )
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
@@ -93,8 +89,7 @@ let ``Create and update simulator integration is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 DataSetId = dataSet.Id,
                 SimulatorVersion = "N/A",
-                ConnectorVersion = "1.2.3",
-                RunApiEnabled = true
+                ConnectorVersion = "1.2.3"
             )
 
         try
@@ -175,8 +170,7 @@ let ``Create and list simulator models is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
+                FileExtensionTypes = [ "json" ]
             )
 
         let modelToCreate =
@@ -260,8 +254,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
+                FileExtensionTypes = [ "json" ]
             )
 
 

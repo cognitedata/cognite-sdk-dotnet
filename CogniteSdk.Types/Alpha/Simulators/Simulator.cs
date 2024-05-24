@@ -28,25 +28,9 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<string> FileExtensionTypes { get; set; }
         /// <summary>
-        /// Whether the boundary conditions are enabled.
-        /// </summary>
-        public bool IsBoundaryConditionsEnabled { get; set; }
-        /// <summary>
-        /// Boundary conditions supported by the simulator.
-        /// </summary>
-        public IEnumerable<SimulatorBoundaryCondition> BoundaryConditions { get; set; }
-        /// <summary>
-        /// Whether the calculations are enabled.
-        /// </summary>
-        public bool IsCalculationsEnabled { get; set; }
-        /// <summary>
         /// Supported model types.
         /// </summary>
         public IEnumerable<SimulatorModelType> ModelTypes { get; set; }
-        /// <summary>
-        /// Whether the simulator is enabled.
-        /// </summary>
-        public bool Enabled { get; set; }
         /// <summary>
         /// Supported calculation steps.
         /// </summary>

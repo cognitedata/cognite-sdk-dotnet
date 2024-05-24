@@ -36,10 +36,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string SimulatorVersion { get; set; }
         /// <summary>
-        /// Whether the simulator runs api is enabled.
-        /// </summary>
-        public bool RunApiEnabled { get; set; }
-        /// <summary>
         /// The status of the license.
         /// </summary>
         public string LicenseStatus { get; set; }

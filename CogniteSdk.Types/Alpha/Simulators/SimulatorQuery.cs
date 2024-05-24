@@ -20,9 +20,5 @@ namespace CogniteSdk.Alpha
     /// </summary>
     public class SimulatorFilter
     {
-        /// <summary>
-        /// Whether simulator is enabled
-        /// </summary>
-        public bool Enabled { get; set; }
     }
 }
