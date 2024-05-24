@@ -15,7 +15,8 @@ open Tests.Integration.Alpha.Common
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
@@ -26,8 +27,7 @@ let ``Create and delete simulators is Ok`` () =
             SimulatorCreate(
                 ExternalId = simulatorExternalId,
                 Name = "test_sim",
-                FileExtensionTypes = fileExtensionTypes,
-                Enabled = true
+                FileExtensionTypes = fileExtensionTypes
             )
 
         // Act
@@ -40,7 +40,6 @@ let ``Create and delete simulators is Ok`` () =
         let itemRes = res |> Seq.head
 
         test <@ itemRes.Name = itemToCreate.Name @>
-        test <@ itemRes.Enabled = itemToCreate.Enabled.Value @>
         test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
         test <@ itemRes.CreatedTime >= now @>
         test <@ itemRes.LastUpdatedTime >= now @>
@@ -48,13 +47,14 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
 
         // Arrange
-        let query = SimulatorQuery(Filter = SimulatorFilter(Enabled = true))
+        let query = SimulatorQuery(Filter = SimulatorFilter())
 
         // Act
         let! res = writeClient.Alpha.Simulators.ListAsync(query)
@@ -64,11 +64,11 @@ let ``List simulators is Ok`` () =
         // Assert
         test <@ len > 0 @>
 
-        test <@ res.Items |> Seq.forall (fun item -> item.Enabled = true) @>
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
@@ -77,12 +77,7 @@ let ``Create and update simulator integration is Ok`` () =
         let integrationExternalId = $"test_integration_{now}"
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
@@ -93,8 +88,7 @@ let ``Create and update simulator integration is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 DataSetId = dataSet.Id,
                 SimulatorVersion = "N/A",
-                ConnectorVersion = "1.2.3",
-                RunApiEnabled = true
+                ConnectorVersion = "1.2.3"
             )
 
         try
@@ -144,7 +138,8 @@ let ``Create and update simulator integration is Ok`` () =
             |> ignore
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
@@ -172,12 +167,7 @@ let ``Create and list simulator models is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -257,12 +247,7 @@ let ``Create and list simulator model revisions is Ok`` () =
         let modelExternalId = $"test_model_{now}"
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ],
-                Enabled = true
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
 
         let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
