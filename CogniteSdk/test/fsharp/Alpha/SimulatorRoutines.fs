@@ -29,11 +29,7 @@ let ``Create simulator routines is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ]
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let integrationToCreate =
             SimulatorIntegrationCreate(
@@ -116,11 +112,7 @@ let ``Create simulator routine revision is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ]
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let integrationToCreate =
             SimulatorIntegrationCreate(

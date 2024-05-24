@@ -74,11 +74,7 @@ let ``Create and update simulator integration is Ok`` () =
         let integrationExternalId = $"test_integration_{now}"
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ]
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
@@ -167,11 +163,7 @@ let ``Create and list simulator models is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ]
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -251,11 +243,7 @@ let ``Create and list simulator model revisions is Ok`` () =
         let modelExternalId = $"test_model_{now}"
 
         let simulatorToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = [ "json" ]
-            )
+            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
 
         let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
