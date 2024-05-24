@@ -15,7 +15,8 @@ open Tests.Integration.Alpha.Common
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
@@ -46,7 +47,8 @@ let ``Create and delete simulators is Ok`` () =
         ()
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
@@ -65,7 +67,8 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
@@ -135,7 +138,8 @@ let ``Create and update simulator integration is Ok`` () =
             |> ignore
     }
 
-[<Fact>]
+// [<Fact>]
+[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
