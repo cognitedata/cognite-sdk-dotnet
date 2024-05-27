@@ -208,13 +208,18 @@ namespace csharp
         {
             Console.WriteLine("C# Client");
 
-            var tenantId = Environment.GetEnvironmentVariable("TENANT_ID");
-            var clientId = Environment.GetEnvironmentVariable("CLIENT_ID");
-            var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET");
-            var cluster = Environment.GetEnvironmentVariable("CDF_CLUSTER");
-            var project = Environment.GetEnvironmentVariable("CDF_PROJECT");
+            var tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
+                           ?? throw new InvalidOperationException("TENANT_ID environment variable not set.");
+            var clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
+                           ?? throw new InvalidOperationException("CLIENT_ID environment variable not set.");
+            var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
+                               ?? throw new InvalidOperationException("CLIENT_SECRET environment variable not set.");
+            var cluster = Environment.GetEnvironmentVariable("CDF_CLUSTER")
+                          ?? throw new InvalidOperationException("CDF_CLUSTER environment variable not set.");
+            var project = Environment.GetEnvironmentVariable("CDF_PROJECT")
+                          ?? throw new InvalidOperationException("CDF_PROJECT environment variable not set.");
 
-            var scopes = new List<string> { $"https://{cluster}.cognitedata.com/.default" };
+            var scopes = new[] { $"https://{cluster}.cognitedata.com/.default" };
 
             var app = ConfidentialClientApplicationBuilder
                 .Create(clientId)
@@ -229,28 +234,23 @@ namespace csharp
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
+
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
+            var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
             using var httpClient = new HttpClient(handler);
-            var builder = new Client.Builder();
-            var client =
-                builder
-                    .SetAppId("playground")
-                    .SetHttpClient(httpClient)
-                    .AddHeader("Authorization", $"Bearer {accessToken}")
-                    .SetProject(project)
-                    .SetBaseUrl(new Uri($"https://{cluster}.cognitedata.com"))
-                    .SetLogger(logger)
-                    .SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Debug)
-                    .Build();
+            var client = new Client.Builder()
+                .SetAppId("playground")
+                .SetHttpClient(httpClient)
+                .AddHeader("Authorization", $"Bearer {accessToken}")
+                .SetProject(project)
+                .SetBaseUrl(new Uri($"https://{cluster}.cognitedata.com"))
+                .SetLogger(logger)
+                .SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Debug)
+                .Build();
 
-            // var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
-            // Console.WriteLine($"{asset}");
-            // var data = await QueryTimeseriesDataExample(client);
             await GzipPerformanceTest(client);
         }
     }
