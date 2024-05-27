@@ -121,7 +121,7 @@ var result = await client.Assets.ListAsync(query);
 
 ## Examples
 
-There are examples for both C# and F# in the Playground folder.
+There are examples for both C# and F# in the Examples folder.
 
 ## Developing
 
