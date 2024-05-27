@@ -71,6 +71,7 @@ group Examples
     nuget Microsoft.Extensions.Hosting
     nuget Microsoft.Extensions.Logging
     nuget Microsoft.Extensions.Logging.EventLog
+    nuget Microsoft.Identity.Client
     nuget Oryx ~> 6
     nuget Oryx.Protobuf ~> 6
     nuget Oryx.SystemTextJson ~> 6
