@@ -130,7 +130,7 @@ There are examples for both C# and F# in the Examples folder.
 A dotnet tools manifest is used to version tools used by this repo.  Install these tools with:
 
 ```sh
-> dotnet tool restore
+dotnet tool restore
 ```
 
 This will install Paket locally which is used for dependency management.
@@ -140,7 +140,7 @@ This will install Paket locally which is used for dependency management.
 Dependencies for all projects are handled using [Paket](https://fsprojects.github.io/Paket/). To install dependencies:
 
 ```sh
-> dotnet paket install
+dotnet paket install
 ```
 
 This will install the main dependencies and sub-dependencies. The main dependencies are:
@@ -154,12 +154,19 @@ This will install the main dependencies and sub-dependencies. The main dependenc
 - [Google.Protobuf](https://www.nuget.org/packages/Google.Protobuf) - for Protobuf support.
 
 ### Running tests locally
+To run the tests locally, you can use the following script:
 ```sh
 sh ./test.sh
 ```
-For this script AAD env variables need to be defined: `TEST_TENANT_ID_WRITE`, `TEST_CLIENT_ID_WRITE`, `TEST_CLIENT_SECRET_WRITE`.
+For this script, the following AAD environment variables need to be defined:
+- `TEST_TENANT_ID_WRITE`
+- `TEST_CLIENT_ID_WRITE`
+- `TEST_CLIENT_SECRET_WRITE`
 
-You also need read credentials for `publicdata` project `TEST_TENANT_ID_READ`, `TEST_CLIENT_ID_READ`, `TEST_CLIENT_SECRET_READ`.
+You also need read credentials for the `publicdata` project:
+- `TEST_TENANT_ID_READ`
+- `TEST_CLIENT_ID_READ`
+- `TEST_CLIENT_SECRET_READ`
 
 # Code of Conduct
 
