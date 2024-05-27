@@ -1,4 +1,4 @@
-group Playground
+group Examples
     FsConfig
     Microsoft.Extensions.Configuration
     FSharp.Core

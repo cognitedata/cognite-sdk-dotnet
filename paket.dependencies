@@ -59,7 +59,7 @@ group Test
     nuget Oryx.SystemTextJson ~> 6
     nuget FsToolkit.ErrorHandling ~> 4
 
-group Playground
+group Examples
     source https://www.nuget.org/api/v2
     storage: none
 
