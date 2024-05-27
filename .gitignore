@@ -15,4 +15,4 @@ launchSettings.json
 .fake
 .envrc
 
-.paket/*
+**/.paket
