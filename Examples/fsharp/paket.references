@@ -5,3 +5,4 @@ group Examples
     Oryx
     Oryx.Protobuf
     CogniteSdk.Protobuf
+    Microsoft.Identity.Client
