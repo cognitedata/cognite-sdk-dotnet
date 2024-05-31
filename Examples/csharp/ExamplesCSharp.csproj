@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
+    <RootNamespace>App</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CogniteSdk.Types\CogniteSdk.Types.csproj" />
