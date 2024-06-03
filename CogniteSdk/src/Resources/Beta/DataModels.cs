@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using CogniteSdk.Beta.DataModels;
 
 using Oryx;
-using Oryx.Cognite.Beta;
 
 using Microsoft.FSharp.Core;
 
@@ -35,7 +34,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Created/updated spaces</returns>
         public async Task<IEnumerable<Space>> UpsertSpaces(IEnumerable<SpaceCreate> spaces, CancellationToken token = default)
         {
-            var req = DataModels.upsertSpaces(spaces, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.upsertSpaces(spaces, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -47,7 +46,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>All spaces in project</returns>
         public async Task<ItemsWithCursor<Space>> ListSpaces(SpaceQuery query, CancellationToken token = default)
         {
-            var req = DataModels.listSpaces(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.listSpaces(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -59,7 +58,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved spaces</returns>
         public async Task<IEnumerable<Space>> RetrieveSpaces(IEnumerable<string> ids, CancellationToken token = default)
         {
-            var req = DataModels.retrieveSpaces(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveSpaces(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -71,7 +70,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Deleted spaces</returns>
         public async Task<IEnumerable<string>> DeleteSpaces(IEnumerable<string> ids, CancellationToken token = default)
         {
-            var req = DataModels.deleteSpaces(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.deleteSpaces(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -83,7 +82,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Created data models</returns>
         public async Task<IEnumerable<DataModel>> UpsertDataModels(IEnumerable<DataModelCreate> dataModels, CancellationToken token = default)
         {
-            var req = DataModels.upsertDataModels(dataModels, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.upsertDataModels(dataModels, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -95,7 +94,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Data models with cursor for pagination</returns>
         public async Task<ItemsWithCursor<DataModel>> ListDataModels(DataModelQuery query, CancellationToken token = default)
         {
-            var req = DataModels.listDataModels(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.listDataModels(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -107,7 +106,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Data models with cursor for pagination</returns>
         public async Task<ItemsWithCursor<DataModel>> FilterDataModels(DataModelFilter filter, CancellationToken token = default)
         {
-            var req = DataModels.filterDataModels(filter, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.filterDataModels(filter, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -120,7 +119,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved data models</returns>
         public async Task<IEnumerable<DataModel>> RetrieveDataModels(IEnumerable<FDMExternalId> ids, bool inlineViews, CancellationToken token = default)
         {
-            var req = DataModels.retrieveDataModels(ids, inlineViews, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveDataModels(ids, inlineViews, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -132,7 +131,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Ids of deleted data models</returns>
         public async Task<IEnumerable<FDMExternalId>> DeleteDataModels(IEnumerable<FDMExternalId> ids, CancellationToken token = default)
         {
-            var req = DataModels.deleteDataModels(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.deleteDataModels(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -144,7 +143,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Created or updated views</returns>
         public async Task<IEnumerable<View>> UpsertViews(IEnumerable<ViewCreate> views, CancellationToken token = default)
         {
-            var req = DataModels.upsertViews(views, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.upsertViews(views, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -156,7 +155,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Views with cursor for pagination</returns>
         public async Task<ItemsWithCursor<View>> ListViews(ViewQuery query, CancellationToken token = default)
         {
-            var req = DataModels.listViews(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.listViews(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -169,7 +168,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved views</returns>
         public async Task<IEnumerable<View>> RetrieveViews(IEnumerable<FDMExternalId> ids, bool includeInheritedProperties = true, CancellationToken token = default)
         {
-            var req = DataModels.retrieveViews(ids, includeInheritedProperties, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveViews(ids, includeInheritedProperties, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -181,7 +180,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Ids of deleted views</returns>
         public async Task<IEnumerable<FDMExternalId>> DeleteViews(IEnumerable<FDMExternalId> ids, CancellationToken token = default)
         {
-            var req = DataModels.deleteViews(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.deleteViews(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -193,7 +192,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Created or updated containers</returns>
         public async Task<IEnumerable<Container>> UpsertContainers(IEnumerable<ContainerCreate> containers, CancellationToken token = default)
         {
-            var req = DataModels.upsertContainers(containers, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.upsertContainers(containers, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -205,7 +204,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Containers with cursor for pagination</returns>
         public async Task<ItemsWithCursor<Container>> ListContainers(ContainersQuery query, CancellationToken token = default)
         {
-            var req = DataModels.listContainers(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.listContainers(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -217,7 +216,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved containers</returns>
         public async Task<IEnumerable<Container>> RetrieveContainers(IEnumerable<ContainerId> ids, CancellationToken token = default)
         {
-            var req = DataModels.retrieveContainers(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveContainers(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -229,7 +228,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Ids of deleted containers</returns>
         public async Task<IEnumerable<ContainerId>> DeleteContainers(IEnumerable<ContainerId> ids, CancellationToken token = default)
         {
-            var req = DataModels.deleteContainers(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.deleteContainers(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -241,7 +240,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Created or updated instances</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertInstances(InstanceWriteRequest request, CancellationToken token = default)
         {
-            var req = DataModels.upsertInstances(request, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.upsertInstances(request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -254,7 +253,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved instances</returns>
         public async Task<InstancesFilterResponse<T>> FilterInstances<T>(InstancesFilter filter, CancellationToken token = default)
         {
-            var req = DataModels.filterInstances<T>(filter, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.filterInstances<T>(filter, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -267,7 +266,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved instances</returns>
         public async Task<InstancesRetrieveResponse<T>> RetrieveInstances<T>(InstancesRetrieve query, CancellationToken token = default)
         {
-            var req = DataModels.retrieveInstances<T>(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<T>(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -280,7 +279,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Retrieved instances</returns>
         public async Task<InstancesFilterResponse<T>> SearchInstances<T>(InstancesSearch query, CancellationToken token = default)
         {
-            var req = DataModels.searchInstances<T>(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.searchInstances<T>(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -292,7 +291,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Instance aggregates</returns>
         public async Task<InstancesAggregateResponse> AggregateInstances(InstancesAggregate query, CancellationToken token = default)
         {
-            var req = DataModels.aggregateInstances(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.aggregateInstances(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -304,7 +303,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Ids of deleted instances</returns>
         public async Task<IEnumerable<InstanceIdentifier>> DeleteInstances(IEnumerable<InstanceIdentifier> ids, CancellationToken token = default)
         {
-            var req = DataModels.deleteInstances(ids, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.deleteInstances(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -317,7 +316,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Result of query</returns>
         public async Task<QueryResult<T>> QueryInstances<T>(Query query, CancellationToken token = default)
         {
-            var req = DataModels.queryInstances<T>(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.queryInstances<T>(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -331,7 +330,7 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>Result of query</returns>
         public async Task<SyncResult<T>> SyncInstances<T>(SyncQuery query, CancellationToken token = default)
         {
-            var req = DataModels.syncInstances<T>(query, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.syncInstances<T>(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

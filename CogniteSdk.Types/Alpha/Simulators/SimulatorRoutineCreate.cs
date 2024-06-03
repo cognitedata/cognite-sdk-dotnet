@@ -10,7 +10,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator routine to create
     /// </summary>
-    public class SimulatorRoutineCreateCommandItem  {
+    public class SimulatorRoutineCreateCommandItem
+    {
         /// <summary>
         /// External id provided by client. Must be unique within the project.
         /// </summary>
@@ -38,8 +39,9 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator routine to create of type predefined
     /// </summary>
-    
-    public class SimulatorRoutineCreateCommandPredefined  {
+
+    public class SimulatorRoutineCreateCommandPredefined
+    {
         /// <summary>
         /// External id provided by client. Must be unique within the project.
         /// </summary>

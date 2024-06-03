@@ -12,7 +12,8 @@ namespace CogniteSdk.Alpha
     /// A Simulator model revision status.
     /// </summary>
     [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum SimulatorModelRevisionStatus {
+    public enum SimulatorModelRevisionStatus
+    {
         /// <summary>
         /// Unknown
         /// </summary>
@@ -30,7 +31,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator model boundary condition.
     /// </summary>
-    public class SimulatorModelBoundaryCondition {
+    public class SimulatorModelBoundaryCondition
+    {
         /// <summary>
         /// Key of the boundary condition.
         /// </summary>
@@ -55,7 +57,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator model revision resource.
     /// </summary>
-    public class SimulatorModelRevision {
+    public class SimulatorModelRevision
+    {
         /// <summary>
         /// A unique id of a simulation model revision.
         /// </summary>

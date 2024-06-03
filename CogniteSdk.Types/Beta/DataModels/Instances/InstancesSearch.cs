@@ -35,5 +35,9 @@ namespace CogniteSdk.Beta.DataModels
         /// Limits the number of results to return. Default 100.
         /// </summary>
         public int? Limit { get; set; }
+        /// <summary>
+        /// Sort the results
+        /// </summary>
+        public IEnumerable<InstanceSort> Sort { get; set; }
     }
 }

@@ -10,7 +10,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator model to create.
     /// </summary>
-    public class SimulatorModelCreate {
+    public class SimulatorModelCreate
+    {
         /// <summary>
         /// External id of the simulation model.
         /// </summary>

@@ -3,6 +3,7 @@
 
 using CogniteSdk;
 using CogniteSdk.Beta.DataModels;
+using CogniteSdk.Resources.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -640,6 +641,55 @@ namespace Test.CSharp.Integration
                 await tester.Write.Beta.DataModels.DeleteInstances(ids);
             }
 
+        }
+
+        [Fact]
+        public async Task TestCustomResource()
+        {
+            var resource = new TestResource(tester);
+            await resource.UpsertAsync(new[] {
+                new SourcedNodeWrite<TestItem> {
+                    ExternalId = "node9",
+                    Space = tester.TestSpace,
+                    Properties = new TestItem {
+                        Prop = "test",
+                        IntProp = 123
+                    }
+                }
+            }, new UpsertOptions());
+
+            var retrieved = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }});
+            Assert.Single(retrieved);
+            var node = retrieved.First();
+            Assert.Equal("test", node.Properties.Prop);
+            Assert.Equal(123, node.Properties.IntProp);
+
+            await resource.DeleteAsync(new[] { new InstanceIdentifier {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }});
+        }
+    }
+
+    class TestItem
+    {
+        public string Prop { get; set; }
+        public DirectRelationIdentifier RefProp { get; set; }
+        public int? IntProp { get; set; }
+    }
+
+    class TestResource : BaseDataModelResource<TestItem>
+    {
+        public override ViewIdentifier View { get; }
+
+        public TestResource(DataModelsFixture fixture) : base(fixture.Write.Beta.DataModels)
+        {
+            View = fixture.TestView;
         }
     }
 }

@@ -10,7 +10,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Simulator routine revision input.
     /// </summary>
-    public class SimulatorRoutineRevisionInput {
+    public class SimulatorRoutineRevisionInput
+    {
         /// <summary>
         /// Name of the input.
         /// </summary>
@@ -71,7 +72,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Simulator routine revision output.
     /// </summary>
-    public class SimulatorRoutineRevisionOutput {
+    public class SimulatorRoutineRevisionOutput
+    {
         /// <summary>
         /// Name of the output.
         /// </summary>

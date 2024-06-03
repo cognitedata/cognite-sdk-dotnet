@@ -51,6 +51,10 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         public string ExternalId { get; set; }
         /// <summary>
+        /// Instance type as direct relation to another node. Requried for edges.
+        /// </summary>
+        public DirectRelationIdentifier Type { get; set; }
+        /// <summary>
         /// List of source properties to write. The properties are from the
         /// views/containers that make up this instance.
         /// </summary>
@@ -83,10 +87,6 @@ namespace CogniteSdk.Beta.DataModels
         {
             InstanceType = InstanceType.edge;
         }
-        /// <summary>
-        /// Edge type as direct relation to another node.
-        /// </summary>
-        public DirectRelationIdentifier Type { get; set; }
         /// <summary>
         /// Start node of this edge.
         /// </summary>
@@ -173,6 +173,13 @@ namespace CogniteSdk.Beta.DataModels
     /// </summary>
     public class InstanceWriteRequest : ItemsWithoutCursor<BaseInstanceWrite>
     {
+        /// <summary>
+        /// Should we create missing target nodes of direct relations?
+        /// If the target-container constraint has been specified for a direct relation,
+        /// the target node cannot be auto-created. If you want to point direct relations
+        /// to a space where you have only read access, this option must be set to false.
+        /// </summary>
+        public bool AutoCreateDirectRelations { get; set; } = true;
         /// <summary>
         /// Auto create missing start nodes for edges.
         /// </summary>
