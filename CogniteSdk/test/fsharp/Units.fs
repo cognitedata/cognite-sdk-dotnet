@@ -56,7 +56,7 @@ let ``Retrieve units by external ids is Ok`` () =
         // Act
         let! res = readClient.Units.RetrieveUnitsAsync unitExternalIds
 
-        let len = Seq.length res.Items
+        let len = Seq.length res
 
         // Assert
         test <@ len = 3 @>

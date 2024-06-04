@@ -54,7 +54,7 @@ namespace CogniteSdk.Resources
         /// <param name="ignoreUnknownIds">Ignore IDs and external IDs that are not found. Default: false</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>A sequence of the requested units.</returns>
-        public async Task<IItemsWithoutCursor<UnitItem>> RetrieveUnitsAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
+        public async Task<IEnumerable<UnitItem>> RetrieveUnitsAsync(IEnumerable<string> externalIds, bool? ignoreUnknownIds = null, CancellationToken token = default)
         {
             if (externalIds is null)
             {

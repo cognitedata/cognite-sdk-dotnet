@@ -33,16 +33,21 @@ module Units =
         (items: string seq)
         (ignoreUnknownIds: Nullable<bool>)
         (source: HttpHandler<unit>)
-        : HttpHandler<IItemsWithoutCursor<UnitItem>> =
+        : HttpHandler<UnitItem seq> =
 
-        let url = Url +/ "byids"
+        http {
+            let url = Url +/ "byids"
 
-        let request =
-            ItemsWithIgnoreUnknownIds(
-                Items = (items |> Seq.map (fun id -> Identity(id))),
-                IgnoreUnknownIds = ignoreUnknownIds.GetValueOrDefault()
-            )
+            let request =
+                ItemsWithIgnoreUnknownIds(
+                    Items = (items |> Seq.map (fun id -> Identity(id))),
+                    IgnoreUnknownIds = ignoreUnknownIds.GetValueOrDefault()
+                )
 
-        source
-        |> withLogMessage "units:retrieve"
-        |> postV10<_, IItemsWithoutCursor<_>> request url
+            let! ret =
+                source
+                |> withLogMessage "units:retrieve"
+                |> postV10<_, ItemsWithCursor<_>> request url
+
+            return ret.Items
+        }
