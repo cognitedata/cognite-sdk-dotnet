@@ -1,35 +1,43 @@
-# Contributing Guidelines
+# Contributing to Cognite .NET SDK
 
-Write commits according to: <https://chris.beams.io/posts/git-commit/>
+Thank you for considering contributing to the Cognite .NET SDK! We welcome contributions from the community to help improve the SDK. Below are the guidelines for contributing to the project.
 
-Follow these steps when creating a pull request:
+## Development Instructions
 
-0. Update the [CHANGELOG.md](./CHANGELOG.md)
-1. `git add <your changes>`
-2. `git commit -m"<your commit message>"`
-3. `git rebase master -i`
-    During rebase:
-    - Squash all commits into one.
-    - Create a short commit message describing the pull request
-    - Write a longer description of the pull request under according to
-      <https://chris.beams.io/posts/git-commit/.>
-4. `git push -f`
+### Setup
 
-If you have to fix something in your pull request:
+Get the code!
 
-1. `git add <your changes>`
-2. `git commit --amend` or `git rebase master -i`
-3. `git push -f`
+```bash
+git clone https://github.com/cognitedata/cognite-sdk-dotnet.git
+cd cognite-sdk-dotnet
+```
 
-Prerequisites:
-run
-`git config --global alias.pushf "push --force-with-lease"`
-for safer force pushing.
-Also make sure master is up to date.
+We use [Paket](https://fsprojects.github.io/Paket/) for dependency management. Ensure you have .NET SDK installed.
 
-Since we are force pushing, you should never push to master or to someone elses branch.
+Install dependencies and initialize the environment with these commands:
+```bash
+dotnet tool restore
+dotnet paket install
+```
 
-## Releasing
+### Getting access to the test CDF project for running integration tests
+- Request access to the appropriate AAD tenant.
+- Set environment variables listed below. The READ credentials should be for the `publicdata` project.
+  - `TEST_TENANT_ID_WRITE`
+  - `TEST_CLIENT_ID_WRITE`
+  - `TEST_CLIENT_SECRET_WRITE`
+  - `TEST_TENANT_ID_READ`
+  - `TEST_CLIENT_ID_READ`
+  - `TEST_CLIENT_SECRET_READ`
+
+### Testing
+If you have appropriate credentials (see Environment Variables above), you can run the integration tests:
+```bash
+sh ./test.sh
+```
+
+### Releasing
 
 The SDK uses [Semantic versioning](https://semver.org/). To release a new version of the SDK, update the [version](https://github.com/cognitedata/cognite-sdk-dotnet/blob/master/version) file to contain the new version and nothing else.
 

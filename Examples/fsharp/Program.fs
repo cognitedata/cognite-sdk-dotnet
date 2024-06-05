@@ -6,6 +6,8 @@ open System.Net.Http
 open FsConfig
 open Com.Cognite.V1.Timeseries.Proto
 
+open Microsoft.Identity.Client
+
 open Oryx
 open Oryx.Cognite
 
@@ -13,9 +15,15 @@ open CogniteSdk
 open FSharp.Control.TaskBuilder
 
 type Config =
-    { [<CustomName("API_KEY")>]
-      ApiKey: string
-      [<CustomName("PROJECT")>]
+    { [<CustomName("TENANT_ID")>]
+      TenantId: string
+      [<CustomName("CLIENT_ID")>]
+      ClientId: string
+      [<CustomName("CLIENT_SECRET")>]
+      ClientSecret: string
+      [<CustomName("CDF_CLUSTER")>]
+      Cluster: string
+      [<CustomName("CDF_PROJECT")>]
       Project: string }
 
 let getDatapointsExample (ctx: HttpHandler<unit>) =
@@ -126,7 +134,10 @@ let syntheticQueryExample (ctx: HttpHandler<unit>) =
         let query =
             TimeSeriesSyntheticQuery(
                 Items =
-                    [ TimeSeriesSyntheticQueryItem(Expression = "ts{externalId='pi:160627'} + 1", Start = "30d-ago") ]
+                    [ TimeSeriesSyntheticQueryItem(
+                          Expression = "ts{externalId='pi:PI-13148-A2'} + 1",
+                          Start = "30d-ago"
+                      ) ]
             )
 
         let! res = ctx |> TimeSeries.syntheticQuery query |> runUnsafeAsync
@@ -139,9 +150,25 @@ let asyncMain argv =
         printfn "F# Client"
 
         let config =
-            match EnvConfig.Get<Config>() with
-            | Ok config -> config
-            | Error error -> failwith "Failed to read config"
+            EnvConfig.Get<Config>()
+            |> function
+                | Ok config -> config
+                | Error error -> failwith "Failed to read config"
+
+        let scopes = [ $"https://{config.Cluster}.cognitedata.com/.default" ]
+
+        let app =
+            ConfidentialClientApplicationBuilder
+                .Create(config.ClientId)
+                .WithAuthority(AzureCloudInstance.AzurePublic, config.TenantId)
+                .WithClientSecret(config.ClientSecret)
+                .Build()
+
+        let! accessToken =
+            task {
+                let! result = app.AcquireTokenForClient(scopes).ExecuteAsync() |> Async.AwaitTask
+                return result.AccessToken
+            }
 
         use client = new HttpClient()
 
@@ -149,10 +176,11 @@ let asyncMain argv =
             HttpHandler.empty
             |> withAppId "playground"
             |> withHttpClient client
-            |> withHeader ("api-key", Uri.EscapeDataString config.ApiKey)
+            |> withHeader ("Authorization", $"Bearer {accessToken}")
             |> withProject (Uri.EscapeDataString config.Project)
+            |> withBaseUrl (Uri($"https://{config.Cluster}.cognitedata.com"))
 
-        do! getAssetsExample ctx
+        do! syntheticQueryExample ctx
     }
 
 [<EntryPoint>]
