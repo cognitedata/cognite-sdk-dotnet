@@ -1,4 +1,4 @@
-group Playground
+group Examples
     FSharp.Core
     Microsoft.AspNetCore.Hosting
     Microsoft.Extensions.DependencyInjection
@@ -6,3 +6,4 @@ group Playground
     Microsoft.Extensions.Hosting
     Microsoft.Extensions.Logging
     Microsoft.Extensions.Logging.EventLog
+    Microsoft.Identity.Client

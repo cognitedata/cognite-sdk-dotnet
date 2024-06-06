@@ -10,20 +10,24 @@ using System.Diagnostics;
 using Com.Cognite.V1.Timeseries.Proto;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 
 using CogniteSdk;
 
-namespace csharp {
+namespace csharp
+{
 
-    class Program {
+    class Program
+    {
 
-        static async Task CreateAssetsExample(Client client, string externalId, string name) {
+        static async Task CreateAssetsExample(Client client, string externalId, string name)
+        {
             var asset = new AssetCreate
             {
                 ExternalId = externalId,
                 Name = name
             };
-            var assets = new List<AssetCreate> {asset};
+            var assets = new List<AssetCreate> { asset };
 
             var result = await client.Assets.CreateAsync(assets).ConfigureAwait(false);
             var newAsset = result.FirstOrDefault();
@@ -31,7 +35,8 @@ namespace csharp {
             Console.WriteLine(newAsset.Name);
         }
 
-        static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData) {
+        static async Task UpdateAssetExample(Client client, string externalId, string newName, Dictionary<string, string> metaData)
+        {
             var query = new List<AssetUpdateItem>() {
                 new AssetUpdateItem(externalId) {
                     Update = new AssetUpdate {
@@ -47,7 +52,8 @@ namespace csharp {
             Console.WriteLine(updatedAsset.Name);
         }
 
-        static async Task<Asset> GetAssetsExample(Client client, string assetName) {
+        static async Task<Asset> GetAssetsExample(Client client, string assetName)
+        {
             var query = new AssetQuery
             {
                 Filter = new AssetFilter { Name = assetName }
@@ -59,8 +65,10 @@ namespace csharp {
             return asset;
         }
 
-        static async Task<AggregateDatapoint> QueryTimeseriesDataExample(Client client) {
-            var query = new DataPointsQuery() {
+        static async Task<AggregateDatapoint> QueryTimeseriesDataExample(Client client)
+        {
+            var query = new DataPointsQuery()
+            {
                 Items = new List<DataPointsQueryItem> {
                     new DataPointsQueryItem {
                         Id = 592785165400753L,
@@ -77,8 +85,10 @@ namespace csharp {
             return datapoints;
         }
 
-        static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId) {
-            var timeseries = new TimeSeriesCreate {
+        static async Task CreateTimeseriesDataExample(Client client, string timeseriesName, string timeseriesExternalId)
+        {
+            var timeseries = new TimeSeriesCreate
+            {
                 Name = timeseriesName
             };
 
@@ -102,7 +112,9 @@ namespace csharp {
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug));
+            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(
+                Microsoft.Extensions.Logging.LogLevel.Debug
+            ));
         }
 
         static async Task GzipPerformanceTest(Client client)
@@ -115,7 +127,8 @@ namespace csharp {
                         Name = $"gzip-ts-test-{idx}",
                         ExternalId = $"gzip-ts-test-{idx}"
                     }).ToList());
-            } catch (ResponseException rex) when (rex.Duplicated?.Any() ?? false) { }
+            }
+            catch (ResponseException rex) when (rex.Duplicated?.Any() ?? false) { }
 
             var chunks = new[]
             {
@@ -191,37 +204,53 @@ namespace csharp {
             });
         }
 
-        private static async Task Main() {
+        private static async Task Main()
+        {
             Console.WriteLine("C# Client");
 
-            var apiKey = Environment.GetEnvironmentVariable("API_KEY");
-            var project = Environment.GetEnvironmentVariable("PROJECT");
+            var tenantId = Environment.GetEnvironmentVariable("TENANT_ID")
+                           ?? throw new InvalidOperationException("TENANT_ID environment variable not set.");
+            var clientId = Environment.GetEnvironmentVariable("CLIENT_ID")
+                           ?? throw new InvalidOperationException("CLIENT_ID environment variable not set.");
+            var clientSecret = Environment.GetEnvironmentVariable("CLIENT_SECRET")
+                               ?? throw new InvalidOperationException("CLIENT_SECRET environment variable not set.");
+            var cluster = Environment.GetEnvironmentVariable("CDF_CLUSTER")
+                          ?? throw new InvalidOperationException("CDF_CLUSTER environment variable not set.");
+            var project = Environment.GetEnvironmentVariable("CDF_PROJECT")
+                          ?? throw new InvalidOperationException("CDF_PROJECT environment variable not set.");
+
+            var scopes = new[] { $"https://{cluster}.cognitedata.com/.default" };
+
+            var app = ConfidentialClientApplicationBuilder
+                .Create(clientId)
+                .WithAuthority(AzureCloudInstance.AzurePublic, tenantId)
+                .WithClientSecret(clientSecret)
+                .Build();
+
+            var result = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            var accessToken = result.AccessToken;
 
             using var handler = new HttpClientHandler
             {
                 ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
             };
+
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            var logger = serviceProvider.GetService<ILoggerFactory>().CreateLogger<Program>();
+            var logger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
             using var httpClient = new HttpClient(handler);
-            var builder = new Client.Builder();
-            var client =
-                builder
-                    .SetAppId("playground")
-                    .SetHttpClient(httpClient)
-                    .SetApiKey(apiKey)
-                    .SetProject(project)
-                    .SetLogger(logger)
-                    .SetLogLevel(LogLevel.Debug)
-                    .Build();
+            var client = new Client.Builder()
+                .SetAppId("playground")
+                .SetHttpClient(httpClient)
+                .AddHeader("Authorization", $"Bearer {accessToken}")
+                .SetProject(project)
+                .SetBaseUrl(new Uri($"https://{cluster}.cognitedata.com"))
+                .SetLogger(logger)
+                .SetLogLevel(Microsoft.Extensions.Logging.LogLevel.Debug)
+                .Build();
 
-            // var asset = await GetAssetsExample(client, "23-TE-96116-04").ConfigureAwait(false);
-            // Console.WriteLine($"{asset}");
-            // var data = await QueryTimeseriesDataExample(client);
             await GzipPerformanceTest(client);
         }
     }

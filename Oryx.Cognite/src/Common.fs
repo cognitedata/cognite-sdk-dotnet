@@ -15,14 +15,12 @@ type ApiVersion =
     | V05
     | V06
     | V10
-    | Playground
 
     override this.ToString() =
         match this with
         | V05 -> "0.5"
         | V06 -> "0.6"
         | V10 -> "v1"
-        | Playground -> "playground"
 
 /// Place holders that may be used in debug messages.
 module PlaceHolder =

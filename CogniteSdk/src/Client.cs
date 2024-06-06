@@ -101,11 +101,6 @@ namespace CogniteSdk
         public TokenResource Token { get; set; }
 
         /// <summary>
-        /// Client playground extension methods
-        /// </summary>
-        public PlaygroundResource Playground { get; }
-
-        /// <summary>
         /// Client extraction pipelines extension methods
         /// </summary>
         public ExtPipesResource ExtPipes { get; }
@@ -169,8 +164,6 @@ namespace CogniteSdk
             Annotations = new AnnotationsResource(authHandler, ctx);
             Units = new UnitsResource(authHandler, ctx);
 
-            // Playground features (experimental)
-            Playground = new PlaygroundResource(authHandler, ctx);
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
             // Alpha features (experimental)

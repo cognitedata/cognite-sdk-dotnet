@@ -34,6 +34,7 @@ module Units =
         (ignoreUnknownIds: Nullable<bool>)
         (source: HttpHandler<unit>)
         : HttpHandler<UnitItem seq> =
+
         http {
             let url = Url +/ "byids"
 
@@ -46,7 +47,7 @@ module Units =
             let! ret =
                 source
                 |> withLogMessage "units:retrieve"
-                |> postV10<_, ItemsWithIgnoreUnknownIds<_>> request url
+                |> postV10<_, ItemsWithCursor<_>> request url
 
             return ret.Items
         }
