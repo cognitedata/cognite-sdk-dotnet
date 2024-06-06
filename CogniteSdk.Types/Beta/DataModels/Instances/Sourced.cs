@@ -6,11 +6,11 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk.Beta.DataModels
 {
     /// <summary>
-    /// Special type for instances with data for a specific source,
+    /// Base class for instances with data for a specific source,
     /// to be used with `BaseDataModelResource`.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SourcedInstanceWrite<T>
+    public abstract class SourcedInstanceBase<T>
     {
         /// <summary>
         /// Instance space.
@@ -29,6 +29,16 @@ namespace CogniteSdk.Beta.DataModels
         /// The data to be ingested.
         /// </summary>
         public T Properties { get; set; }
+    }
+
+    /// <summary>
+    /// Special type for instances with data for a specific source,
+    /// to be used with `BaseDataModelResource`.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class SourcedInstanceWrite<T> : SourcedInstanceBase<T>
+    {
+
         /// <summary>
         /// Fail the ingestion request if the instance version is greater than this value.
         /// </summary>
@@ -104,29 +114,12 @@ namespace CogniteSdk.Beta.DataModels
     /// to be used with `BaseDataModelResource`.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class SourcedInstance<T>
+    public abstract class SourcedInstance<T> : SourcedInstanceBase<T>
     {
-        /// <summary>
-        /// Instance space.
-        /// </summary>
-        public string Space { get; set; }
-        /// <summary>
-        /// Instance external ID.
-        /// </summary>
-        public string ExternalId { get; set; }
-        /// <summary>
-        /// Optional instance type, which is a relation to another node.
-        /// Required for edges.
-        /// </summary>
-        public DirectRelationIdentifier Type { get; set; }
         /// <summary>
         /// Current version of this instance.
         /// </summary>
         public int Version { get; set; }
-        /// <summary>
-        /// The data to be ingested.
-        /// </summary>
-        public T Properties { get; set; }
         /// <summary>
         /// Time when this view was created in CDF in milliseconds since Jan 1, 1970.
         /// </summary>

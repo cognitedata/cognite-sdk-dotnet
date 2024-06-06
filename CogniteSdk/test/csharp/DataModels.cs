@@ -673,6 +673,13 @@ namespace Test.CSharp.Integration
                 Space = tester.TestSpace,
                 ExternalId = "node9"
             }});
+
+            var retrieved2 = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }});
+            Assert.Empty(retrieved2);
         }
     }
 
