@@ -21,7 +21,8 @@ namespace CogniteSdk.Alpha
         /// <param name="id">Internal id value</param>
         public static SimulationRunId Create(long id)
         {
-            return new SimulationRunId() {
+            return new SimulationRunId()
+            {
                 RunId = id
             };
         }

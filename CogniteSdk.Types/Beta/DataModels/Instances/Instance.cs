@@ -20,6 +20,10 @@ namespace CogniteSdk.Beta.DataModels
         /// </summary>
         public InstanceType InstanceType { get; set; }
         /// <summary>
+        /// Instance type as direct relation to another node. Required for edges.
+        /// </summary>
+        public DirectRelationIdentifier Type { get; set; }
+        /// <summary>
         /// Current version of this instance.
         /// </summary>
         public int Version { get; set; }
@@ -64,10 +68,6 @@ namespace CogniteSdk.Beta.DataModels
     /// <typeparam name="T"></typeparam>
     public class Edge<T> : BaseInstance<T>
     {
-        /// <summary>
-        /// Edge type as direct relation to another node.
-        /// </summary>
-        public DirectRelationIdentifier Type { get; set; }
         /// <summary>
         /// Start node of this edge.
         /// </summary>

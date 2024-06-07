@@ -66,7 +66,7 @@ namespace CogniteSdk.Alpha
         /// Optional, only used if the value is persisted as time series
         /// </summary>
         public string TimeseriesExternalId { get; set; }
-        
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorValueItem>(this);
     }

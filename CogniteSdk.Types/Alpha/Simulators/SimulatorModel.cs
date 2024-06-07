@@ -9,7 +9,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator model resource.
     /// </summary>
-    public class SimulatorModel {
+    public class SimulatorModel
+    {
         /// <summary>
         /// A unique id of a simulation model.
         /// </summary>

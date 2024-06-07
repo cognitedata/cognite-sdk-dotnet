@@ -44,7 +44,7 @@ namespace CogniteSdk.Alpha
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationInputOverride>(this);
     }
-    
+
 
     /// <summary>
     /// Simulation run to create

@@ -7,7 +7,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator routine .
     /// </summary>
-    public class SimulatorRoutine {
+    public class SimulatorRoutine
+    {
 
         /// <summary>
         /// The unique identifier of the routine.
@@ -22,7 +23,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// The external id of the simulator.
         /// </summary>
-        public string SimulatorExternalId { get; set; } 
+        public string SimulatorExternalId { get; set; }
 
         /// <summary>
         /// The external id of the model.

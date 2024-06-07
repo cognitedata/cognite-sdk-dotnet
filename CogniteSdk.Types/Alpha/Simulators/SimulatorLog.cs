@@ -33,7 +33,8 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// A Simulator log resource.
     /// </summary>
-    public class SimulatorLog {
+    public class SimulatorLog
+    {
         /// <summary>
         /// A unique id of a simulator log.
         /// </summary>

@@ -274,7 +274,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="items">The simulator routine items to create.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesPredefinedAsync(IEnumerable<SimulatorRoutineCreateCommandPredefined> items, CancellationToken token = default) 
+        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesPredefinedAsync(IEnumerable<SimulatorRoutineCreateCommandPredefined> items, CancellationToken token = default)
         {
             var req = Simulators.createSimulatorRoutinesPredefined(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -297,7 +297,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="items">The simulator routine revision items to create.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IEnumerable<SimulatorRoutineRevision>> CreateSimulatorRoutineRevisionsAsync(IEnumerable<SimulatorRoutineRevisionCreate> items, CancellationToken token = default) 
+        public async Task<IEnumerable<SimulatorRoutineRevision>> CreateSimulatorRoutineRevisionsAsync(IEnumerable<SimulatorRoutineRevisionCreate> items, CancellationToken token = default)
         {
             var req = Simulators.createSimulatorRoutineRevisions(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -308,7 +308,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator routine revisions query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default) 
+        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
