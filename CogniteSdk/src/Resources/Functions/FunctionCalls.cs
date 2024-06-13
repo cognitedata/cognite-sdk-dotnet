@@ -86,11 +86,12 @@ namespace CogniteSdk.Resources
         /// </summary>
         /// <param name="functionId">Id for function to get call from.</param>
         /// <param name="data">Data passed through the data argument to the function.</param>
+        /// <param name="nonce">Nonce obtained from the sessions API.</param>
         /// <param name="token">Optional cancellation token to use.</param>
         /// <returns>Response from function call.</returns>
-        public async Task<FunctionCall> CallFunction<T>(long functionId, T data, CancellationToken token = default)
+        public async Task<FunctionCall> CallFunction<T>(long functionId, T data, string nonce, CancellationToken token = default)
         {
-            var req = FunctionCalls.callFunction<T>(functionId, data, GetContext(token));
+            var req = FunctionCalls.callFunction<T>(functionId, data, nonce, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

@@ -31,6 +31,8 @@ namespace CogniteSdk.Resources
         /// <param name="ctx">The HTTP context to use for the request.</param>
         internal FunctionResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
+            Calls = new FunctionCallResource(authHandler, ctx);
+            Schedules = new FunctionScheduleResource(authHandler, ctx);
         }
 
         /// <summary>
