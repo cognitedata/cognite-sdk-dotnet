@@ -33,6 +33,7 @@
     <Compile Include="Annotations.fs" />
     <Compile Include="Transformations.fs" />
     <Compile Include="Units.fs" />
+    <Compile Include="Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
