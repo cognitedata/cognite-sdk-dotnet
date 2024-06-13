@@ -17,7 +17,7 @@ module Functions =
     let Url = "/functions"
 
     let activate (source: HttpHandler<unit>) : HttpHandler<FunctionsActivationResponse> =
-        source |> withLogMessage "Functions:activate" |> postV10 ()(Url +/ "status")
+        source |> withLogMessage "Functions:activate" |> postV10 () (Url +/ "status")
 
     /// <summary>
     /// Retrieves list of functions.
@@ -54,7 +54,8 @@ module Functions =
     /// <param name="ids">The list of ids for Functions to delete.</param>
     /// <returns>Empty result.</returns>
     let delete (ids: Identity seq) (ignoreUnknownIds: bool) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        let items = ItemsWithIgnoreUnknownIds(Items = ids, IgnoreUnknownIds = ignoreUnknownIds)
+        let items =
+            ItemsWithIgnoreUnknownIds(Items = ids, IgnoreUnknownIds = ignoreUnknownIds)
 
         source |> withLogMessage "Functions:delete" |> delete items Url
 
@@ -133,13 +134,16 @@ module FunctionCalls =
     /// <param name="functionId">Id for function to get call from.</param>
     /// <param name="data">Data passed through the data argument to the function.</param>
     /// <returns>Function call response.</returns>
-    let callFunction (functionId: int64) (data: 'b) (nonce: string) (source: HttpHandler<unit>) : HttpHandler<FunctionCall> =
+    let callFunction
+        (functionId: int64)
+        (data: 'b)
+        (nonce: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<FunctionCall> =
         let url = Url +/ sprintf "%d" functionId +/ "call"
-        let dataDto = FunctionCallData(Data = data, Nonce=nonce)
+        let dataDto = FunctionCallData(Data = data, Nonce = nonce)
 
-        source
-        |> withLogMessage "FunctionCalls:CallFunction"
-        |> postV10 dataDto url
+        source |> withLogMessage "FunctionCalls:CallFunction" |> postV10 dataDto url
 
 [<RequireQualifiedAccess>]
 module FunctionSchedules =
