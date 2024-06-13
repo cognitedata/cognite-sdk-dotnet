@@ -136,6 +136,11 @@ namespace CogniteSdk
         public UnitsResource Units { get; }
 
         /// <summary>
+        /// Client functions methods.
+        /// </summary>
+        public FunctionResource Functions { get; }
+
+        /// <summary>
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -163,6 +168,7 @@ namespace CogniteSdk
             Transformations = new TransformationsResource(authHandler, ctx);
             Annotations = new AnnotationsResource(authHandler, ctx);
             Units = new UnitsResource(authHandler, ctx);
+            Functions = new FunctionResource(authHandler, ctx);
 
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
