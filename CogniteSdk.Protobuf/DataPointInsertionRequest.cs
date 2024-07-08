@@ -9,40 +9,37 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Com.Cognite.V1.Timeseries.Proto
-{
+namespace Com.Cognite.V1.Timeseries.Proto {
 
   /// <summary>Holder for reflection information generated from data_point_insertion_request.proto</summary>
-  public static partial class DataPointInsertionRequestReflection
-  {
+  public static partial class DataPointInsertionRequestReflection {
 
     #region Descriptor
     /// <summary>File descriptor for data_point_insertion_request.proto</summary>
-    public static pbr::FileDescriptor Descriptor
-    {
+    public static pbr::FileDescriptor Descriptor {
       get { return descriptor; }
     }
     private static pbr::FileDescriptor descriptor;
 
-    static DataPointInsertionRequestReflection()
-    {
+    static DataPointInsertionRequestReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiJkYXRhX3BvaW50X2luc2VydGlvbl9yZXF1ZXN0LnByb3RvEh9jb20uY29n",
-            "bml0ZS52MS50aW1lc2VyaWVzLnByb3RvGhFkYXRhX3BvaW50cy5wcm90byL/",
-            "AQoWRGF0YVBvaW50SW5zZXJ0aW9uSXRlbRIMCgJpZBgBIAEoA0gAEhQKCmV4",
-            "dGVybmFsSWQYAiABKAlIABJPChFudW1lcmljRGF0YXBvaW50cxgDIAEoCzIy",
-            "LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uTnVtZXJpY0RhdGFw",
-            "b2ludHNIARJNChBzdHJpbmdEYXRhcG9pbnRzGAQgASgLMjEuY29tLmNvZ25p",
-            "dGUudjEudGltZXNlcmllcy5wcm90by5TdHJpbmdEYXRhcG9pbnRzSAFCEAoO",
-            "aWRPckV4dGVybmFsSWRCDwoNZGF0YXBvaW50VHlwZSJjChlEYXRhUG9pbnRJ",
-            "bnNlcnRpb25SZXF1ZXN0EkYKBWl0ZW1zGAEgAygLMjcuY29tLmNvZ25pdGUu",
-            "djEudGltZXNlcmllcy5wcm90by5EYXRhUG9pbnRJbnNlcnRpb25JdGVtQgJQ",
-            "AWIGcHJvdG8z"));
+            "bml0ZS52MS50aW1lc2VyaWVzLnByb3RvGhFkYXRhX3BvaW50cy5wcm90byLH",
+            "AgoWRGF0YVBvaW50SW5zZXJ0aW9uSXRlbRIMCgJpZBgBIAEoA0gAEhQKCmV4",
+            "dGVybmFsSWQYAiABKAlIABJBCgppbnN0YW5jZUlkGAUgASgLMisuY29tLmNv",
+            "Z25pdGUudjEudGltZXNlcmllcy5wcm90by5JbnN0YW5jZUlkSAASTwoRbnVt",
+            "ZXJpY0RhdGFwb2ludHMYAyABKAsyMi5jb20uY29nbml0ZS52MS50aW1lc2Vy",
+            "aWVzLnByb3RvLk51bWVyaWNEYXRhcG9pbnRzSAESTQoQc3RyaW5nRGF0YXBv",
+            "aW50cxgEIAEoCzIxLmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8u",
+            "U3RyaW5nRGF0YXBvaW50c0gBQhUKE3RpbWVTZXJpZXNSZWZlcmVuY2VCDwoN",
+            "ZGF0YXBvaW50VHlwZSJjChlEYXRhUG9pbnRJbnNlcnRpb25SZXF1ZXN0EkYK",
+            "BWl0ZW1zGAEgAygLMjcuY29tLmNvZ25pdGUudjEudGltZXNlcmllcy5wcm90",
+            "by5EYXRhUG9pbnRJbnNlcnRpb25JdGVtQgJQAWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Com.Cognite.V1.Timeseries.Proto.DataPointsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem.Parser, new[]{ "Id", "ExternalId", "NumericDatapoints", "StringDatapoints" }, new[]{ "IdOrExternalId", "DatapointType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "NumericDatapoints", "StringDatapoints" }, new[]{ "TimeSeriesReference", "DatapointType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequest), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequest.Parser, new[]{ "Items" }, null, null, null, null)
           }));
     }
@@ -52,9 +49,9 @@ namespace Com.Cognite.V1.Timeseries.Proto
   #region Messages
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class DataPointInsertionItem : pb::IMessage<DataPointInsertionItem>
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
-#endif
+  #endif
   {
     private static readonly pb::MessageParser<DataPointInsertionItem> _parser = new pb::MessageParser<DataPointInsertionItem>(() => new DataPointInsertionItem());
     private pb::UnknownFieldSet _unknownFields;
@@ -64,22 +61,19 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor
-    {
+    public static pbr::MessageDescriptor Descriptor {
       get { return global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequestReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor
-    {
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionItem()
-    {
+    public DataPointInsertionItem() {
       OnConstruction();
     }
 
@@ -87,20 +81,20 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionItem(DataPointInsertionItem other) : this()
-    {
-      switch (other.IdOrExternalIdCase)
-      {
-        case IdOrExternalIdOneofCase.Id:
+    public DataPointInsertionItem(DataPointInsertionItem other) : this() {
+      switch (other.TimeSeriesReferenceCase) {
+        case TimeSeriesReferenceOneofCase.Id:
           Id = other.Id;
           break;
-        case IdOrExternalIdOneofCase.ExternalId:
+        case TimeSeriesReferenceOneofCase.ExternalId:
           ExternalId = other.ExternalId;
+          break;
+        case TimeSeriesReferenceOneofCase.InstanceId:
+          InstanceId = other.InstanceId.Clone();
           break;
       }
 
-      switch (other.DatapointTypeCase)
-      {
+      switch (other.DatapointTypeCase) {
         case DatapointTypeOneofCase.NumericDatapoints:
           NumericDatapoints = other.NumericDatapoints.Clone();
           break;
@@ -114,8 +108,7 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionItem Clone()
-    {
+    public DataPointInsertionItem Clone() {
       return new DataPointInsertionItem(this);
     }
 
@@ -123,30 +116,25 @@ namespace Com.Cognite.V1.Timeseries.Proto
     public const int IdFieldNumber = 1;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public long Id
-    {
-      get { return HasId ? (long)idOrExternalId_ : 0L; }
-      set
-      {
-        idOrExternalId_ = value;
-        idOrExternalIdCase_ = IdOrExternalIdOneofCase.Id;
+    public long Id {
+      get { return HasId ? (long) timeSeriesReference_ : 0L; }
+      set {
+        timeSeriesReference_ = value;
+        timeSeriesReferenceCase_ = TimeSeriesReferenceOneofCase.Id;
       }
     }
     /// <summary>Gets whether the "id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasId
-    {
-      get { return idOrExternalIdCase_ == IdOrExternalIdOneofCase.Id; }
+    public bool HasId {
+      get { return timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.Id; }
     }
     /// <summary> Clears the value of the oneof if it's currently set to "id" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearId()
-    {
-      if (HasId)
-      {
-        ClearIdOrExternalId();
+    public void ClearId() {
+      if (HasId) {
+        ClearTimeSeriesReference();
       }
     }
 
@@ -154,30 +142,37 @@ namespace Com.Cognite.V1.Timeseries.Proto
     public const int ExternalIdFieldNumber = 2;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string ExternalId
-    {
-      get { return HasExternalId ? (string)idOrExternalId_ : ""; }
-      set
-      {
-        idOrExternalId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-        idOrExternalIdCase_ = IdOrExternalIdOneofCase.ExternalId;
+    public string ExternalId {
+      get { return HasExternalId ? (string) timeSeriesReference_ : ""; }
+      set {
+        timeSeriesReference_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        timeSeriesReferenceCase_ = TimeSeriesReferenceOneofCase.ExternalId;
       }
     }
     /// <summary>Gets whether the "externalId" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasExternalId
-    {
-      get { return idOrExternalIdCase_ == IdOrExternalIdOneofCase.ExternalId; }
+    public bool HasExternalId {
+      get { return timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.ExternalId; }
     }
     /// <summary> Clears the value of the oneof if it's currently set to "externalId" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearExternalId()
-    {
-      if (HasExternalId)
-      {
-        ClearIdOrExternalId();
+    public void ClearExternalId() {
+      if (HasExternalId) {
+        ClearTimeSeriesReference();
+      }
+    }
+
+    /// <summary>Field number for the "instanceId" field.</summary>
+    public const int InstanceIdFieldNumber = 5;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Com.Cognite.V1.Timeseries.Proto.InstanceId InstanceId {
+      get { return timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId ? (global::Com.Cognite.V1.Timeseries.Proto.InstanceId) timeSeriesReference_ : null; }
+      set {
+        timeSeriesReference_ = value;
+        timeSeriesReferenceCase_ = value == null ? TimeSeriesReferenceOneofCase.None : TimeSeriesReferenceOneofCase.InstanceId;
       }
     }
 
@@ -185,11 +180,9 @@ namespace Com.Cognite.V1.Timeseries.Proto
     public const int NumericDatapointsFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints NumericDatapoints
-    {
-      get { return datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints)datapointType_ : null; }
-      set
-      {
+    public global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints NumericDatapoints {
+      get { return datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints) datapointType_ : null; }
+      set {
         datapointType_ = value;
         datapointTypeCase_ = value == null ? DatapointTypeOneofCase.None : DatapointTypeOneofCase.NumericDatapoints;
       }
@@ -199,44 +192,39 @@ namespace Com.Cognite.V1.Timeseries.Proto
     public const int StringDatapointsFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints StringDatapoints
-    {
-      get { return datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints)datapointType_ : null; }
-      set
-      {
+    public global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints StringDatapoints {
+      get { return datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints) datapointType_ : null; }
+      set {
         datapointType_ = value;
         datapointTypeCase_ = value == null ? DatapointTypeOneofCase.None : DatapointTypeOneofCase.StringDatapoints;
       }
     }
 
-    private object idOrExternalId_;
-    /// <summary>Enum of possible cases for the "idOrExternalId" oneof.</summary>
-    public enum IdOrExternalIdOneofCase
-    {
+    private object timeSeriesReference_;
+    /// <summary>Enum of possible cases for the "timeSeriesReference" oneof.</summary>
+    public enum TimeSeriesReferenceOneofCase {
       None = 0,
       Id = 1,
       ExternalId = 2,
+      InstanceId = 5,
     }
-    private IdOrExternalIdOneofCase idOrExternalIdCase_ = IdOrExternalIdOneofCase.None;
+    private TimeSeriesReferenceOneofCase timeSeriesReferenceCase_ = TimeSeriesReferenceOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public IdOrExternalIdOneofCase IdOrExternalIdCase
-    {
-      get { return idOrExternalIdCase_; }
+    public TimeSeriesReferenceOneofCase TimeSeriesReferenceCase {
+      get { return timeSeriesReferenceCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearIdOrExternalId()
-    {
-      idOrExternalIdCase_ = IdOrExternalIdOneofCase.None;
-      idOrExternalId_ = null;
+    public void ClearTimeSeriesReference() {
+      timeSeriesReferenceCase_ = TimeSeriesReferenceOneofCase.None;
+      timeSeriesReference_ = null;
     }
 
     private object datapointType_;
     /// <summary>Enum of possible cases for the "datapointType" oneof.</summary>
-    public enum DatapointTypeOneofCase
-    {
+    public enum DatapointTypeOneofCase {
       None = 0,
       NumericDatapoints = 3,
       StringDatapoints = 4,
@@ -244,60 +232,54 @@ namespace Com.Cognite.V1.Timeseries.Proto
     private DatapointTypeOneofCase datapointTypeCase_ = DatapointTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DatapointTypeOneofCase DatapointTypeCase
-    {
+    public DatapointTypeOneofCase DatapointTypeCase {
       get { return datapointTypeCase_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearDatapointType()
-    {
+    public void ClearDatapointType() {
       datapointTypeCase_ = DatapointTypeOneofCase.None;
       datapointType_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other)
-    {
+    public override bool Equals(object other) {
       return Equals(other as DataPointInsertionItem);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(DataPointInsertionItem other)
-    {
-      if (ReferenceEquals(other, null))
-      {
+    public bool Equals(DataPointInsertionItem other) {
+      if (ReferenceEquals(other, null)) {
         return false;
       }
-      if (ReferenceEquals(other, this))
-      {
+      if (ReferenceEquals(other, this)) {
         return true;
       }
       if (Id != other.Id) return false;
       if (ExternalId != other.ExternalId) return false;
+      if (!object.Equals(InstanceId, other.InstanceId)) return false;
       if (!object.Equals(NumericDatapoints, other.NumericDatapoints)) return false;
       if (!object.Equals(StringDatapoints, other.StringDatapoints)) return false;
-      if (IdOrExternalIdCase != other.IdOrExternalIdCase) return false;
+      if (TimeSeriesReferenceCase != other.TimeSeriesReferenceCase) return false;
       if (DatapointTypeCase != other.DatapointTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode()
-    {
+    public override int GetHashCode() {
       int hash = 1;
       if (HasId) hash ^= Id.GetHashCode();
       if (HasExternalId) hash ^= ExternalId.GetHashCode();
+      if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) hash ^= InstanceId.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) hash ^= NumericDatapoints.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) hash ^= StringDatapoints.GetHashCode();
-      hash ^= (int)idOrExternalIdCase_;
-      hash ^= (int)datapointTypeCase_;
-      if (_unknownFields != null)
-      {
+      hash ^= (int) timeSeriesReferenceCase_;
+      hash ^= (int) datapointTypeCase_;
+      if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
@@ -305,18 +287,16 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString()
-    {
+    public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output)
-    {
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
-#else
+    #else
       if (HasId) {
         output.WriteRawTag(8);
         output.WriteInt64(Id);
@@ -333,67 +313,66 @@ namespace Com.Cognite.V1.Timeseries.Proto
         output.WriteRawTag(34);
         output.WriteMessage(StringDatapoints);
       }
+      if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) {
+        output.WriteRawTag(42);
+        output.WriteMessage(InstanceId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-#endif
+    #endif
     }
 
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output)
-    {
-      if (HasId)
-      {
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasId) {
         output.WriteRawTag(8);
         output.WriteInt64(Id);
       }
-      if (HasExternalId)
-      {
+      if (HasExternalId) {
         output.WriteRawTag(18);
         output.WriteString(ExternalId);
       }
-      if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints)
-      {
+      if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) {
         output.WriteRawTag(26);
         output.WriteMessage(NumericDatapoints);
       }
-      if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints)
-      {
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) {
         output.WriteRawTag(34);
         output.WriteMessage(StringDatapoints);
       }
-      if (_unknownFields != null)
-      {
+      if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) {
+        output.WriteRawTag(42);
+        output.WriteMessage(InstanceId);
+      }
+      if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
     }
-#endif
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize()
-    {
+    public int CalculateSize() {
       int size = 0;
-      if (HasId)
-      {
+      if (HasId) {
         size += 1 + pb::CodedOutputStream.ComputeInt64Size(Id);
       }
-      if (HasExternalId)
-      {
+      if (HasExternalId) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalId);
       }
-      if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints)
-      {
+      if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InstanceId);
+      }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(NumericDatapoints);
       }
-      if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints)
-      {
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(StringDatapoints);
       }
-      if (_unknownFields != null)
-      {
+      if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
       return size;
@@ -401,34 +380,34 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(DataPointInsertionItem other)
-    {
-      if (other == null)
-      {
+    public void MergeFrom(DataPointInsertionItem other) {
+      if (other == null) {
         return;
       }
-      switch (other.IdOrExternalIdCase)
-      {
-        case IdOrExternalIdOneofCase.Id:
+      switch (other.TimeSeriesReferenceCase) {
+        case TimeSeriesReferenceOneofCase.Id:
           Id = other.Id;
           break;
-        case IdOrExternalIdOneofCase.ExternalId:
+        case TimeSeriesReferenceOneofCase.ExternalId:
           ExternalId = other.ExternalId;
+          break;
+        case TimeSeriesReferenceOneofCase.InstanceId:
+          if (InstanceId == null) {
+            InstanceId = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+          }
+          InstanceId.MergeFrom(other.InstanceId);
           break;
       }
 
-      switch (other.DatapointTypeCase)
-      {
+      switch (other.DatapointTypeCase) {
         case DatapointTypeOneofCase.NumericDatapoints:
-          if (NumericDatapoints == null)
-          {
+          if (NumericDatapoints == null) {
             NumericDatapoints = new global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints();
           }
           NumericDatapoints.MergeFrom(other.NumericDatapoints);
           break;
         case DatapointTypeOneofCase.StringDatapoints:
-          if (StringDatapoints == null)
-          {
+          if (StringDatapoints == null) {
             StringDatapoints = new global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints();
           }
           StringDatapoints.MergeFrom(other.StringDatapoints);
@@ -440,11 +419,10 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input)
-    {
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
-#else
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -477,68 +455,77 @@ namespace Com.Cognite.V1.Timeseries.Proto
             StringDatapoints = subBuilder;
             break;
           }
+          case 42: {
+            global::Com.Cognite.V1.Timeseries.Proto.InstanceId subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+            if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) {
+              subBuilder.MergeFrom(InstanceId);
+            }
+            input.ReadMessage(subBuilder);
+            InstanceId = subBuilder;
+            break;
+          }
         }
       }
-#endif
+    #endif
     }
 
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input)
-    {
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
-      while ((tag = input.ReadTag()) != 0)
-      {
-        switch (tag)
-        {
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 8:
-            {
-              Id = input.ReadInt64();
-              break;
+          case 8: {
+            Id = input.ReadInt64();
+            break;
+          }
+          case 18: {
+            ExternalId = input.ReadString();
+            break;
+          }
+          case 26: {
+            global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) {
+              subBuilder.MergeFrom(NumericDatapoints);
             }
-          case 18:
-            {
-              ExternalId = input.ReadString();
-              break;
+            input.ReadMessage(subBuilder);
+            NumericDatapoints = subBuilder;
+            break;
+          }
+          case 34: {
+            global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) {
+              subBuilder.MergeFrom(StringDatapoints);
             }
-          case 26:
-            {
-              global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.NumericDatapoints();
-              if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints)
-              {
-                subBuilder.MergeFrom(NumericDatapoints);
-              }
-              input.ReadMessage(subBuilder);
-              NumericDatapoints = subBuilder;
-              break;
+            input.ReadMessage(subBuilder);
+            StringDatapoints = subBuilder;
+            break;
+          }
+          case 42: {
+            global::Com.Cognite.V1.Timeseries.Proto.InstanceId subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+            if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) {
+              subBuilder.MergeFrom(InstanceId);
             }
-          case 34:
-            {
-              global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StringDatapoints();
-              if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints)
-              {
-                subBuilder.MergeFrom(StringDatapoints);
-              }
-              input.ReadMessage(subBuilder);
-              StringDatapoints = subBuilder;
-              break;
-            }
+            input.ReadMessage(subBuilder);
+            InstanceId = subBuilder;
+            break;
+          }
         }
       }
     }
-#endif
+    #endif
 
   }
 
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class DataPointInsertionRequest : pb::IMessage<DataPointInsertionRequest>
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
-#endif
+  #endif
   {
     private static readonly pb::MessageParser<DataPointInsertionRequest> _parser = new pb::MessageParser<DataPointInsertionRequest>(() => new DataPointInsertionRequest());
     private pb::UnknownFieldSet _unknownFields;
@@ -548,22 +535,19 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pbr::MessageDescriptor Descriptor
-    {
+    public static pbr::MessageDescriptor Descriptor {
       get { return global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequestReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    pbr::MessageDescriptor pb::IMessage.Descriptor
-    {
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionRequest()
-    {
+    public DataPointInsertionRequest() {
       OnConstruction();
     }
 
@@ -571,16 +555,14 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionRequest(DataPointInsertionRequest other) : this()
-    {
+    public DataPointInsertionRequest(DataPointInsertionRequest other) : this() {
       items_ = other.items_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public DataPointInsertionRequest Clone()
-    {
+    public DataPointInsertionRequest Clone() {
       return new DataPointInsertionRequest(this);
     }
 
@@ -591,42 +573,35 @@ namespace Com.Cognite.V1.Timeseries.Proto
     private readonly pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem> items_ = new pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem> Items
-    {
+    public pbc::RepeatedField<global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem> Items {
       get { return items_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override bool Equals(object other)
-    {
+    public override bool Equals(object other) {
       return Equals(other as DataPointInsertionRequest);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(DataPointInsertionRequest other)
-    {
-      if (ReferenceEquals(other, null))
-      {
+    public bool Equals(DataPointInsertionRequest other) {
+      if (ReferenceEquals(other, null)) {
         return false;
       }
-      if (ReferenceEquals(other, this))
-      {
+      if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!items_.Equals(other.items_)) return false;
+      if(!items_.Equals(other.items_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override int GetHashCode()
-    {
+    public override int GetHashCode() {
       int hash = 1;
       hash ^= items_.GetHashCode();
-      if (_unknownFields != null)
-      {
+      if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
       return hash;
@@ -634,46 +609,40 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public override string ToString()
-    {
+    public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void WriteTo(pb::CodedOutputStream output)
-    {
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
-#else
+    #else
       items_.WriteTo(output, _repeated_items_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-#endif
+    #endif
     }
 
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output)
-    {
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       items_.WriteTo(ref output, _repeated_items_codec);
-      if (_unknownFields != null)
-      {
+      if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
     }
-#endif
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int CalculateSize()
-    {
+    public int CalculateSize() {
       int size = 0;
       size += items_.CalculateSize(_repeated_items_codec);
-      if (_unknownFields != null)
-      {
+      if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
       return size;
@@ -681,10 +650,8 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(DataPointInsertionRequest other)
-    {
-      if (other == null)
-      {
+    public void MergeFrom(DataPointInsertionRequest other) {
+      if (other == null) {
         return;
       }
       items_.Add(other.items_);
@@ -693,11 +660,10 @@ namespace Com.Cognite.V1.Timeseries.Proto
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(pb::CodedInputStream input)
-    {
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       input.ReadRawMessage(this);
-#else
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -710,31 +676,27 @@ namespace Com.Cognite.V1.Timeseries.Proto
           }
         }
       }
-#endif
+    #endif
     }
 
-#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input)
-    {
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
-      while ((tag = input.ReadTag()) != 0)
-      {
-        switch (tag)
-        {
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10:
-            {
-              items_.AddEntriesFrom(ref input, _repeated_items_codec);
-              break;
-            }
+          case 10: {
+            items_.AddEntriesFrom(ref input, _repeated_items_codec);
+            break;
+          }
         }
       }
     }
-#endif
+    #endif
 
   }
 

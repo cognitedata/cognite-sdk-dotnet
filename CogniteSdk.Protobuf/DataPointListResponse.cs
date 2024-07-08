@@ -25,23 +25,24 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch5kYXRhX3BvaW50X2xpc3RfcmVzcG9uc2UucHJvdG8SH2NvbS5jb2duaXRl",
-            "LnYxLnRpbWVzZXJpZXMucHJvdG8aEWRhdGFfcG9pbnRzLnByb3RvIpUDChFE",
+            "LnYxLnRpbWVzZXJpZXMucHJvdG8aEWRhdGFfcG9pbnRzLnByb3RvItYDChFE",
             "YXRhUG9pbnRMaXN0SXRlbRIKCgJpZBgBIAEoAxISCgpleHRlcm5hbElkGAIg",
-            "ASgJEhAKCGlzU3RyaW5nGAYgASgIEg4KBmlzU3RlcBgHIAEoCBIMCgR1bml0",
-            "GAggASgJEhIKCm5leHRDdXJzb3IYCSABKAkSFgoOdW5pdEV4dGVybmFsSWQY",
-            "CiABKAkSTwoRbnVtZXJpY0RhdGFwb2ludHMYAyABKAsyMi5jb20uY29nbml0",
-            "ZS52MS50aW1lc2VyaWVzLnByb3RvLk51bWVyaWNEYXRhcG9pbnRzSAASTQoQ",
-            "c3RyaW5nRGF0YXBvaW50cxgEIAEoCzIxLmNvbS5jb2duaXRlLnYxLnRpbWVz",
-            "ZXJpZXMucHJvdG8uU3RyaW5nRGF0YXBvaW50c0gAElMKE2FnZ3JlZ2F0ZURh",
-            "dGFwb2ludHMYBSABKAsyNC5jb20uY29nbml0ZS52MS50aW1lc2VyaWVzLnBy",
-            "b3RvLkFnZ3JlZ2F0ZURhdGFwb2ludHNIAEIPCg1kYXRhcG9pbnRUeXBlIloK",
-            "FURhdGFQb2ludExpc3RSZXNwb25zZRJBCgVpdGVtcxgBIAMoCzIyLmNvbS5j",
-            "b2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uRGF0YVBvaW50TGlzdEl0ZW1C",
-            "AlABYgZwcm90bzM="));
+            "ASgJEj8KCmluc3RhbmNlSWQYCyABKAsyKy5jb20uY29nbml0ZS52MS50aW1l",
+            "c2VyaWVzLnByb3RvLkluc3RhbmNlSWQSEAoIaXNTdHJpbmcYBiABKAgSDgoG",
+            "aXNTdGVwGAcgASgIEgwKBHVuaXQYCCABKAkSEgoKbmV4dEN1cnNvchgJIAEo",
+            "CRIWCg51bml0RXh0ZXJuYWxJZBgKIAEoCRJPChFudW1lcmljRGF0YXBvaW50",
+            "cxgDIAEoCzIyLmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uTnVt",
+            "ZXJpY0RhdGFwb2ludHNIABJNChBzdHJpbmdEYXRhcG9pbnRzGAQgASgLMjEu",
+            "Y29tLmNvZ25pdGUudjEudGltZXNlcmllcy5wcm90by5TdHJpbmdEYXRhcG9p",
+            "bnRzSAASUwoTYWdncmVnYXRlRGF0YXBvaW50cxgFIAEoCzI0LmNvbS5jb2du",
+            "aXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uQWdncmVnYXRlRGF0YXBvaW50c0gA",
+            "Qg8KDWRhdGFwb2ludFR5cGUiWgoVRGF0YVBvaW50TGlzdFJlc3BvbnNlEkEK",
+            "BWl0ZW1zGAEgAygLMjIuY29tLmNvZ25pdGUudjEudGltZXNlcmllcy5wcm90",
+            "by5EYXRhUG9pbnRMaXN0SXRlbUICUAFiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Com.Cognite.V1.Timeseries.Proto.DataPointsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem.Parser, new[]{ "Id", "ExternalId", "IsString", "IsStep", "Unit", "NextCursor", "UnitExternalId", "NumericDatapoints", "StringDatapoints", "AggregateDatapoints" }, new[]{ "DatapointType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "IsString", "IsStep", "Unit", "NextCursor", "UnitExternalId", "NumericDatapoints", "StringDatapoints", "AggregateDatapoints" }, new[]{ "DatapointType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListResponse), global::Com.Cognite.V1.Timeseries.Proto.DataPointListResponse.Parser, new[]{ "Items" }, null, null, null, null)
           }));
     }
@@ -86,6 +87,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
     public DataPointListItem(DataPointListItem other) : this() {
       id_ = other.id_;
       externalId_ = other.externalId_;
+      instanceId_ = other.instanceId_ != null ? other.instanceId_.Clone() : null;
       isString_ = other.isString_;
       isStep_ = other.isStep_;
       unit_ = other.unit_;
@@ -133,6 +135,18 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       get { return externalId_; }
       set {
         externalId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "instanceId" field.</summary>
+    public const int InstanceIdFieldNumber = 11;
+    private global::Com.Cognite.V1.Timeseries.Proto.InstanceId instanceId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Com.Cognite.V1.Timeseries.Proto.InstanceId InstanceId {
+      get { return instanceId_; }
+      set {
+        instanceId_ = value;
       }
     }
 
@@ -271,6 +285,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
       if (Id != other.Id) return false;
       if (ExternalId != other.ExternalId) return false;
+      if (!object.Equals(InstanceId, other.InstanceId)) return false;
       if (IsString != other.IsString) return false;
       if (IsStep != other.IsStep) return false;
       if (Unit != other.Unit) return false;
@@ -289,6 +304,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       int hash = 1;
       if (Id != 0L) hash ^= Id.GetHashCode();
       if (ExternalId.Length != 0) hash ^= ExternalId.GetHashCode();
+      if (instanceId_ != null) hash ^= InstanceId.GetHashCode();
       if (IsString != false) hash ^= IsString.GetHashCode();
       if (IsStep != false) hash ^= IsStep.GetHashCode();
       if (Unit.Length != 0) hash ^= Unit.GetHashCode();
@@ -356,6 +372,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(82);
         output.WriteString(UnitExternalId);
       }
+      if (instanceId_ != null) {
+        output.WriteRawTag(90);
+        output.WriteMessage(InstanceId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -406,6 +426,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(82);
         output.WriteString(UnitExternalId);
       }
+      if (instanceId_ != null) {
+        output.WriteRawTag(90);
+        output.WriteMessage(InstanceId);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -421,6 +445,9 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
       if (ExternalId.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(ExternalId);
+      }
+      if (instanceId_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(InstanceId);
       }
       if (IsString != false) {
         size += 1 + 1;
@@ -463,6 +490,12 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
       if (other.ExternalId.Length != 0) {
         ExternalId = other.ExternalId;
+      }
+      if (other.instanceId_ != null) {
+        if (instanceId_ == null) {
+          InstanceId = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+        }
+        InstanceId.MergeFrom(other.InstanceId);
       }
       if (other.IsString != false) {
         IsString = other.IsString;
@@ -570,6 +603,13 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             UnitExternalId = input.ReadString();
             break;
           }
+          case 90: {
+            if (instanceId_ == null) {
+              InstanceId = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+            }
+            input.ReadMessage(InstanceId);
+            break;
+          }
         }
       }
     #endif
@@ -638,6 +678,13 @@ namespace Com.Cognite.V1.Timeseries.Proto {
           }
           case 82: {
             UnitExternalId = input.ReadString();
+            break;
+          }
+          case 90: {
+            if (instanceId_ == null) {
+              InstanceId = new global::Com.Cognite.V1.Timeseries.Proto.InstanceId();
+            }
+            input.ReadMessage(InstanceId);
             break;
           }
         }
