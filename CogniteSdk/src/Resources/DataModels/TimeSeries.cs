@@ -16,7 +16,7 @@ namespace CogniteSdk.Resources.DataModels
     public class CoreTimeSeriesResource<T> : BaseDataModelResource<T> where T : TimeSeriesBase
     {
         /// <inheritdoc />
-        public override ViewIdentifier View => new ViewIdentifier("cdf_cdm_experimental", "TimeSeriesBase", "v1");
+        public override ViewIdentifier View { get; }
 
         private readonly TimeSeriesResource _tsResource;
         private readonly DataPointsResource _dpResource;
@@ -25,10 +25,12 @@ namespace CogniteSdk.Resources.DataModels
         public CoreTimeSeriesResource(
             DataModelsResource resource,
             TimeSeriesResource tsResource,
-            DataPointsResource dpResource) : base(resource)
+            DataPointsResource dpResource,
+            ViewIdentifier view) : base(resource)
         {
             _tsResource = tsResource;
             _dpResource = dpResource;
+            View = view ?? new ViewIdentifier("cdf_cdm_experimental", "TimeSeriesBase", "v1");
         }
 
         /// <summary>

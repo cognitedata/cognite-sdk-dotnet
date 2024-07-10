@@ -15,11 +15,13 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// <summary>
         /// Resource for core data model time series.
         /// </summary>
+        /// <param name="view">ID of the view to write to. Defaults to the TimeSeriesBase view in
+        /// the core data model.</param>
         /// <typeparam name="T">Time series type.</typeparam>
         /// <returns>Core data model time series resource.</returns>
-        public CoreTimeSeriesResource<T> TimeSeries<T>() where T : TimeSeriesBase
+        public CoreTimeSeriesResource<T> TimeSeries<T>(ViewIdentifier view = null) where T : TimeSeriesBase
         {
-            return new CoreTimeSeriesResource<T>(_client.Beta.DataModels, _client.TimeSeries, _client.DataPoints);
+            return new CoreTimeSeriesResource<T>(_client.Beta.DataModels, _client.TimeSeries, _client.DataPoints, view);
         }
 
         /// <summary>
