@@ -1,7 +1,9 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Alpha
@@ -35,6 +37,26 @@ namespace CogniteSdk.Alpha
         public static SimulatorValue Create(string value)
         {
             return new SimulatorValue.String(value);
+        }
+
+        /// <summary>
+        /// Create a string array value.
+        /// </summary>
+        /// <param name="value">String array value to use.</param>
+        /// <returns>New value.</returns>
+        public static SimulatorValue Create(IEnumerable<string> value)
+        {
+            return new SimulatorValue.StringArray(value);
+        }
+
+        /// <summary>
+        /// Create a double array value.
+        /// </summary>
+        /// <param name="value">Double array value to use.</param>
+        /// <returns>New value.</returns>
+        public static SimulatorValue Create(IEnumerable<double> value)
+        {
+            return new SimulatorValue.DoubleArray(value);
         }
 
         /// <summary>
@@ -111,6 +133,84 @@ namespace CogniteSdk.Alpha
 
             /// <summary>
             /// Get hash code for the string value.
+            /// </summary>
+            public override int GetHashCode() => Value.GetHashCode();
+        }
+
+        /// <summary>
+        /// Simulator value that contains a list of string values.
+        /// </summary>
+        public sealed class StringArray : SimulatorValue
+        {
+            /// <summary>
+            /// Initialize new string list value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public StringArray(IEnumerable<string> value)
+            {
+                Type = SimulatorValueType.STRING_ARRAY;
+                Value = value;
+            }
+
+            /// <summary>
+            /// The contained string array value.
+            /// </summary>
+            public IEnumerable<string> Value { get; set; }
+
+            /// <summary>
+            /// Return string representation of the string array value, i.e the string array itself.
+            /// </summary>
+            public override string ToString() => string.Join(", ", Value);
+
+            /// <summary>
+            /// Check if two string array values are equal.
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                return obj != null && Value.SequenceEqual((obj as StringArray).Value);
+            }
+
+            /// <summary>
+            /// Get hash code for the string array value.
+            /// </summary>
+            public override int GetHashCode() => Value.GetHashCode();
+        }
+
+        /// <summary>
+        /// Simulator value that contains a list of double values.
+        /// </summary>
+        public sealed class DoubleArray : SimulatorValue
+        {
+            /// <summary>
+            /// Initialize new double list value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public DoubleArray(IEnumerable<double> value)
+            {
+                Type = SimulatorValueType.DOUBLE_ARRAY;
+                Value = value;
+            }
+
+            /// <summary>
+            /// The contained double array value.
+            /// </summary>
+            public IEnumerable<double> Value { get; set; }
+
+            /// <summary>
+            /// Return string representation of the double array value, i.e the double array itself.
+            /// </summary>
+            public override string ToString() => string.Join(", ", Value.Select(v => v.ToString(CultureInfo.InvariantCulture)));
+
+            /// <summary>
+            /// Check if two double array values are equal.
+            /// </summary>
+            public override bool Equals(object obj)
+            {
+                return obj != null && Value.SequenceEqual((obj as DoubleArray).Value);
+            }
+
+            /// <summary>
+            /// Get hash code for the double array value.
             /// </summary>
             public override int GetHashCode() => Value.GetHashCode();
         }

@@ -322,7 +322,6 @@ let ``Create and list simulator model revisions is Ok`` () =
                     id = modelRevisionCreated.Id,
                     Update =
                         SimulatorModelRevisionUpdate(
-                            BoundaryConditionsStatus = Update(SimulatorModelRevisionStatus.success),
                             Status = Update(SimulatorModelRevisionStatus.failure),
                             StatusMessage = Update<string>("test")
                         )
@@ -338,7 +337,6 @@ let ``Create and list simulator model revisions is Ok`` () =
             test <@ modelRevisionCreated.ModelExternalId = modelRevisionToCreate.ModelExternalId @>
             test <@ modelRevisionCreated.Description = modelRevisionToCreate.Description @>
             test <@ modelRevisionCreated.Status = SimulatorModelRevisionStatus.unknown @>
-            test <@ modelRevisionCreated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.unknown @>
             test <@ modelRevisionCreated.DataSetId = dataSet.Id @>
             test <@ modelRevisionCreated.FileId = fileCreated.Id @>
             test <@ modelRevisionCreated.VersionNumber = 1 @>
@@ -349,7 +347,6 @@ let ``Create and list simulator model revisions is Ok`` () =
             test <@ modelRevisionRetrieved.ExternalId = modelRevisionToCreate.ExternalId @>
 
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
-            test <@ modelRevisionUpdated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.success @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
 
 
