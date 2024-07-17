@@ -6,10 +6,10 @@ module Common =
     open Tests.Integration.Common
     open Xunit
 
-    let azureDevClient =
+    let bluefieldClient =
         let oAuth2AccessToken = Environment.GetEnvironmentVariable "TEST_TOKEN_WRITE"
 
-        createOAuth2SdkClient oAuth2AccessToken "cognite-simulator-qualitycheck" "https://azure-dev.cognitedata.com"
+        createOAuth2SdkClient oAuth2AccessToken "cognite-simulator-qualitycheck" "https://bluefield.cognitedata.com"
 
     type FactIf(envVar: string, skipReason: string) =
         inherit FactAttribute()

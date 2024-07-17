@@ -163,7 +163,7 @@ let ``Create and list simulator models is Ok`` () =
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
@@ -181,19 +181,19 @@ let ``Create and list simulator models is Ok`` () =
 
         try
             // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! modelCreateRes = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let! modelsListRes =
-                azureDevClient.Alpha.Simulators.ListSimulatorModelsAsync(
+                bluefieldClient.Alpha.Simulators.ListSimulatorModelsAsync(
                     new SimulatorModelQuery(
                         Filter = SimulatorModelFilter(SimulatorExternalIds = [ simulatorExternalId ])
                     )
                 )
 
             let! modelRetriveRes =
-                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
+                bluefieldClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
 
             let modelRetrieved = modelRetriveRes |> Seq.head
 
@@ -212,9 +212,9 @@ let ``Create and list simulator models is Ok`` () =
                         )
                 )
 
-            let! modelUpdateRes = azureDevClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
+            let! modelUpdateRes = bluefieldClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
             let updatedModel = modelUpdateRes |> Seq.head
-            let! _ = azureDevClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
+            let! _ = bluefieldClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
 
             // Assert
             test <@ modelCreated.ExternalId = modelToCreate.ExternalId @>
@@ -234,7 +234,7 @@ let ``Create and list simulator models is Ok`` () =
             test <@ updatedModel.Description = modelPatch.Update.Description.Set @>
             test <@ updatedModel.Name = modelPatch.Update.Name.Set @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
 
@@ -250,7 +250,7 @@ let ``Create and list simulator model revisions is Ok`` () =
             SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
 
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let fileToCreate =
@@ -262,7 +262,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 DataSetId = dataSet.Id
             )
 
-        let! fileCreated = azureDevClient.Files.UploadAsync(fileToCreate)
+        let! fileCreated = bluefieldClient.Files.UploadAsync(fileToCreate)
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -284,15 +284,15 @@ let ``Create and list simulator model revisions is Ok`` () =
 
         try
             // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let! modelRevisionRes =
-                azureDevClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
+                bluefieldClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
 
             let! modelRevisionListRes =
-                azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                bluefieldClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
                         Filter =
                             SimulatorModelRevisionFilter(
@@ -305,7 +305,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 )
 
             let! modelRevisionRetrieveRes =
-                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
+                bluefieldClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
                     [ new Identity(modelRevisionToCreate.ExternalId) ]
                 )
 
@@ -328,7 +328,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 )
 
             let! modelRevisionUpdateRes =
-                azureDevClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
+                bluefieldClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
 
             let modelRevisionUpdated = modelRevisionUpdateRes |> Seq.head
 
@@ -351,9 +351,9 @@ let ``Create and list simulator model revisions is Ok`` () =
 
 
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
 
-            azureDevClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
+            bluefieldClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
             |> ignore
     }
