@@ -29,7 +29,7 @@ let ``Create simulator routines is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
+            testSimulatorCreate(simulatorExternalId)
 
         let integrationToCreate =
             SimulatorIntegrationCreate(
@@ -47,7 +47,8 @@ let ``Create simulator routines is Ok`` () =
                 Name = "test_model",
                 Description = "test_model_description",
                 Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
             )
 
         try
@@ -112,7 +113,7 @@ let ``Create simulator routine revision is Ok`` () =
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
+            testSimulatorCreate(simulatorExternalId)
 
         let integrationToCreate =
             SimulatorIntegrationCreate(
@@ -130,7 +131,8 @@ let ``Create simulator routine revision is Ok`` () =
                 Name = "test_model",
                 Description = "test_model_description",
                 Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
             )
 
         try
@@ -159,7 +161,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "address", "test2" ]
                                   )
                           )
                           SimulatorRoutineRevisionScriptStep(
@@ -168,7 +170,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "address", "test2" ]
                                   )
                           ) ]
                 )
