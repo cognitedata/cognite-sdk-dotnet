@@ -9,7 +9,7 @@ module Common =
     let azureDevClient =
         let oAuth2AccessToken = Environment.GetEnvironmentVariable "TEST_TOKEN_WRITE"
 
-        createOAuth2SdkClient oAuth2AccessToken "charts-azuredev" "https://azure-dev.cognitedata.com"
+        createOAuth2SdkClient oAuth2AccessToken "cognite-simulator-qualitycheck" "https://azure-dev.cognitedata.com"
 
     type FactIf(envVar: string, skipReason: string) =
         inherit FactAttribute()
