@@ -188,13 +188,22 @@ let ``Create simulator routine revision is Ok`` () =
                             Granularity = 1
                         ),
                     Inputs =
-                        [ SimulatorRoutineRevisionInput(
+                        [
+                            SimulatorRoutineRevisionInput(
                               Name = "test_input",
                               ReferenceId = "test_input",
                               Value = SimulatorValue.Create(1.0),
                               ValueType = SimulatorValueType.DOUBLE,
                               Unit = SimulatorValueUnit(Name = "test_unit", Quantity = "test_quantity")
-                          ) ],
+                            )
+                            SimulatorRoutineRevisionInput(
+                              Name = "test_input_array",
+                              ReferenceId = "test_input_array",
+                              Value = SimulatorValue.Create(seq [ 1.0; 2; 3 ]),
+                              ValueType = SimulatorValueType.DOUBLE_ARRAY,
+                              Unit = SimulatorValueUnit(Name = "test_unit", Quantity = "test_quantity")
+                            )
+                        ],
                     Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
                 )
 
