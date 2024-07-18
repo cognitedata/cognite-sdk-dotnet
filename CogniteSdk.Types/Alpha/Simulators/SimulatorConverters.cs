@@ -102,6 +102,9 @@ namespace CogniteSdk.Alpha
     /// </summary>
     public class SimulatorRoutineRevisionDataSamplingConverter : JsonConverter<ISimulatorRoutineRevisionDataSampling>
     {
+        /// <summary>
+        /// Reads JSON and converts it to an instance of ISimulatorRoutineRevisionDataSampling.
+        /// </summary>
         public override ISimulatorRoutineRevisionDataSampling Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
@@ -123,7 +126,7 @@ namespace CogniteSdk.Alpha
         }
 
         /// <summary>
-        /// Writes SimulatorRoutineRevisionDataSampling values to JSON numbers or strings.
+        /// Writes SimulatorRoutineRevisionDataSampling values to JSON.
         /// </summary>
         public override void Write(Utf8JsonWriter writer, ISimulatorRoutineRevisionDataSampling value, JsonSerializerOptions options)
         {
