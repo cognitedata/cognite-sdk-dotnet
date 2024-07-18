@@ -45,7 +45,8 @@ namespace CogniteSdk.Alpha
                     if (listStr.Count > 0 && listDbl.Count > 0)
                     {
                         throw new JsonException("Unable to parse value of type: mixed array");
-                    } else if (listStr.Count > 0)
+                    }
+                    else if (listStr.Count > 0)
                     {
                         return SimulatorValue.Create(listStr);
                     }
@@ -96,4 +97,39 @@ namespace CogniteSdk.Alpha
         }
     }
 
+    /// <summary>
+    /// Creates SimulatorRoutineRevisionDataSampling values from the JSON input.
+    /// </summary>
+    public class SimulatorRoutineRevisionDataSamplingConverter : JsonConverter<ISimulatorRoutineRevisionDataSampling>
+    {
+        public override ISimulatorRoutineRevisionDataSampling Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
+            {
+                JsonElement root = doc.RootElement;
+
+                // Check if "enabled" property is present and get its value
+                if (root.TryGetProperty("enabled", out JsonElement enabledProperty) && enabledProperty.GetBoolean())
+                {
+                    // Deserialize into SimulatorRoutineRevisionDataSamplingEnabled
+                    return JsonSerializer.Deserialize<SimulatorRoutineRevisionDataSamplingEnabled>(root.GetRawText(), options);
+                }
+                else
+                {
+                    // Default to SimulatorRoutineRevisionDataSamplingDisabled
+                    return new SimulatorRoutineRevisionDataSamplingDisabled();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Writes SimulatorRoutineRevisionDataSampling values to JSON numbers or strings.
+        /// </summary>
+        public override void Write(Utf8JsonWriter writer, ISimulatorRoutineRevisionDataSampling value, JsonSerializerOptions options)
+        {
+            JsonSerializer.Serialize(writer, value, value.GetType(), options);
+        }
+    }
+
 }
+

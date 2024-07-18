@@ -52,7 +52,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Data sampling configuration.
         /// </summary>
-        public SimulatorRoutineRevisionDataSampling DataSampling { get; set; }
+        public ISimulatorRoutineRevisionDataSampling DataSampling { get; set; }
 
         /// <summary>
         /// Logical check configuration.
@@ -98,14 +98,59 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Data sampling configuration.
+    /// Data sampling base configuration.
     /// </summary>
-    public class SimulatorRoutineRevisionDataSampling
+    public interface ISimulatorRoutineRevisionDataSampling
+    {
+        /// <summary>
+        /// Whether sampling is enabled or not
+        /// </summary>
+        bool Enabled {get;}
+    }
+
+    /// <summary>
+    /// Data sampling disabled configuration.
+    /// </summary>
+    public class SimulatorRoutineRevisionDataSamplingDisabled: ISimulatorRoutineRevisionDataSampling
     {
         /// <summary>
         /// Indicates whether data sampling is enabled.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; } = false;
+
+        public override string ToString() => Stringable.ToString(this);
+        
+        /// <summary>
+        /// Equality check
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            return obj is SimulatorRoutineRevisionDataSamplingDisabled other && Enabled == other.Enabled;
+        }
+
+        /// <summary>
+        /// Get the hash code
+        /// </summary>
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+                hash = hash * 23 + Enabled.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Data sampling enabled configuration.
+    /// </summary>
+    public class SimulatorRoutineRevisionDataSamplingEnabled : ISimulatorRoutineRevisionDataSampling
+    {
+        /// <summary>
+        /// Indicates whether data sampling is enabled.
+        /// </summary>
+        public bool Enabled { set; get; } = true;
 
         /// <summary>
         /// Validation window for data sampling.
@@ -121,6 +166,37 @@ namespace CogniteSdk.Alpha
         /// Granularity for data sampling.
         /// </summary>
         public int Granularity { get; set; }
+
+        /// <summary>
+        /// Equality check
+        /// </summary>
+        public override bool Equals(object obj)
+        {
+            if (obj is SimulatorRoutineRevisionDataSamplingEnabled other)
+            {
+                return Enabled == other.Enabled &&
+                    ValidationWindow == other.ValidationWindow &&
+                    SamplingWindow == other.SamplingWindow &&
+                    Granularity == other.Granularity;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Get the hash code
+        /// </summary>
+        public override int GetHashCode()
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = 17;
+                hash = hash * 23 + Enabled.GetHashCode();
+                hash = hash * 23 + ValidationWindow.GetHashCode();
+                hash = hash * 23 + SamplingWindow.GetHashCode();
+                hash = hash * 23 + Granularity.GetHashCode();
+                return hash;
+            }
+        }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
