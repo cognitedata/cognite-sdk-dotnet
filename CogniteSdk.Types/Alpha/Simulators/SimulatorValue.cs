@@ -167,13 +167,29 @@ namespace CogniteSdk.Alpha
             /// </summary>
             public override bool Equals(object obj)
             {
-                return obj != null && Value.SequenceEqual((obj as StringArray).Value);
+                if (obj is StringArray doublearray)
+                {
+                    return Value.SequenceEqual(doublearray.Value);
+                }
+
+                return false;
             }
 
             /// <summary>
             /// Get hash code for the string array value.
             /// </summary>
-            public override int GetHashCode() => Value.GetHashCode();
+            public override int GetHashCode()
+            {
+                int hash = 17;
+                const int multiplier = 23;
+
+                foreach (var item in Value)
+                {
+                    hash = hash * multiplier + (item?.GetHashCode() ?? 0);
+                }
+
+                return hash;
+            }
         }
 
         /// <summary>
@@ -206,13 +222,29 @@ namespace CogniteSdk.Alpha
             /// </summary>
             public override bool Equals(object obj)
             {
-                return obj != null && Value.SequenceEqual((obj as DoubleArray).Value);
+                if (obj is DoubleArray doublearray)
+                {
+                    return Value.SequenceEqual(doublearray.Value);
+                }
+
+                return false;
             }
 
             /// <summary>
             /// Get hash code for the double array value.
             /// </summary>
-            public override int GetHashCode() => Value.GetHashCode();
+            public override int GetHashCode()
+            {
+                int hash = 17;
+                const int multiplier = 23;
+
+                foreach (var item in Value)
+                {
+                    hash = hash * multiplier + item.GetHashCode();
+                }
+
+                return hash;
+            }
         }
     }
 }

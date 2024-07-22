@@ -14,7 +14,7 @@ open Tests.Integration.Alpha.Common
 
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulatorModels")>]
 let ``Create and list simulator models is Ok`` () =
     task {
@@ -98,7 +98,7 @@ let ``Create and list simulator models is Ok`` () =
             |> ignore
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulatorModels")>]
 let ``Create and list simulator model revisions is Ok`` () =
     task {
