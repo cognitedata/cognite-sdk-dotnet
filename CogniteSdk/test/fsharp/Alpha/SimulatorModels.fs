@@ -14,7 +14,7 @@ open Tests.Integration.Alpha.Common
 
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulatorModels")>]
 let ``Create and list simulator models is Ok`` () =
     task {
@@ -22,7 +22,7 @@ let ``Create and list simulator models is Ok`` () =
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
-        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
@@ -41,19 +41,19 @@ let ``Create and list simulator models is Ok`` () =
 
         try
             // Act
-            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            let! modelCreateRes = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! modelCreateRes = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let! modelsListRes =
-                bluefieldClient.Alpha.Simulators.ListSimulatorModelsAsync(
+                writeClient.Alpha.Simulators.ListSimulatorModelsAsync(
                     new SimulatorModelQuery(
                         Filter = SimulatorModelFilter(SimulatorExternalIds = [ simulatorExternalId ])
                     )
                 )
 
             let! modelRetriveRes =
-                bluefieldClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
+                writeClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
 
             let modelRetrieved = modelRetriveRes |> Seq.head
 
@@ -72,9 +72,9 @@ let ``Create and list simulator models is Ok`` () =
                         )
                 )
 
-            let! modelUpdateRes = bluefieldClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
+            let! modelUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
             let updatedModel = modelUpdateRes |> Seq.head
-            let! _ = bluefieldClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
+            let! _ = writeClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
 
             // Assert
             test <@ modelCreated.ExternalId = modelToCreate.ExternalId @>
@@ -94,11 +94,11 @@ let ``Create and list simulator models is Ok`` () =
             test <@ updatedModel.Description = modelPatch.Update.Description.Set @>
             test <@ updatedModel.Name = modelPatch.Update.Name.Set @>
         finally
-            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulatorModels")>]
 let ``Create and list simulator model revisions is Ok`` () =
     task {
@@ -109,8 +109,7 @@ let ``Create and list simulator model revisions is Ok`` () =
         let simulatorToCreate =
             testSimulatorCreate(simulatorExternalId)
 
-
-        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let fileToCreate =
@@ -122,7 +121,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 DataSetId = dataSet.Id
             )
 
-        let! fileCreated = bluefieldClient.Files.UploadAsync(fileToCreate)
+        let! fileCreated = writeClient.Files.UploadAsync(fileToCreate)
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -145,15 +144,15 @@ let ``Create and list simulator model revisions is Ok`` () =
 
         try
             // Act
-            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            let! _ = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let! modelRevisionRes =
-                bluefieldClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
+                writeClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
 
             let! modelRevisionListRes =
-                bluefieldClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
                         Filter =
                             SimulatorModelRevisionFilter(
@@ -166,7 +165,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 )
 
             let! modelRevisionRetrieveRes =
-                bluefieldClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
+                writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
                     [ new Identity(modelRevisionToCreate.ExternalId) ]
                 )
 
@@ -189,7 +188,7 @@ let ``Create and list simulator model revisions is Ok`` () =
                 )
 
             let! modelRevisionUpdateRes =
-                bluefieldClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
+                writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
 
             let modelRevisionUpdated = modelRevisionUpdateRes |> Seq.head
 
@@ -212,9 +211,9 @@ let ``Create and list simulator model revisions is Ok`` () =
 
 
         finally
-            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
 
-            bluefieldClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
+            writeClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
             |> ignore
     }

@@ -45,8 +45,7 @@ namespace CogniteSdk.Alpha
                     if (listStr.Count > 0 && listDbl.Count > 0)
                     {
                         throw new JsonException("Unable to parse value of type: mixed array");
-                    }
-                    else if (listStr.Count > 0)
+                    } else if (listStr.Count > 0)
                     {
                         return SimulatorValue.Create(listStr);
                     }

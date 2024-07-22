@@ -77,7 +77,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained double value.
             /// </summary>
-            public double Value { get; set; }
+            public double Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the double value.
@@ -116,7 +116,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained string value.
             /// </summary>
-            public string Value { get; set; }
+            public string Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the string value, i.e the string itself.
@@ -155,7 +155,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained string array value.
             /// </summary>
-            public IEnumerable<string> Value { get; set; }
+            public IEnumerable<string> Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the string array value, i.e the string array itself.
@@ -167,13 +167,29 @@ namespace CogniteSdk.Alpha
             /// </summary>
             public override bool Equals(object obj)
             {
-                return obj != null && Value.SequenceEqual((obj as StringArray).Value);
+                if (obj is StringArray doublearray)
+                {
+                    return Value.SequenceEqual(doublearray.Value);
+                }
+
+                return false;
             }
 
             /// <summary>
             /// Get hash code for the string array value.
             /// </summary>
-            public override int GetHashCode() => Value.GetHashCode();
+            public override int GetHashCode()
+            {
+                int hash = 17;
+                const int multiplier = 23;
+
+                foreach (var item in Value)
+                {
+                    hash = hash * multiplier + (item?.GetHashCode() ?? 0);
+                }
+
+                return hash;
+            }
         }
 
         /// <summary>
@@ -194,7 +210,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained double array value.
             /// </summary>
-            public IEnumerable<double> Value { get; set; }
+            public IEnumerable<double> Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the double array value, i.e the double array itself.
@@ -206,13 +222,29 @@ namespace CogniteSdk.Alpha
             /// </summary>
             public override bool Equals(object obj)
             {
-                return obj != null && Value.SequenceEqual((obj as DoubleArray).Value);
+                if (obj is DoubleArray doublearray)
+                {
+                    return Value.SequenceEqual(doublearray.Value);
+                }
+
+                return false;
             }
 
             /// <summary>
             /// Get hash code for the double array value.
             /// </summary>
-            public override int GetHashCode() => Value.GetHashCode();
+            public override int GetHashCode()
+            {
+                int hash = 17;
+                const int multiplier = 23;
+
+                foreach (var item in Value)
+                {
+                    hash = hash * multiplier + item.GetHashCode();
+                }
+
+                return hash;
+            }
         }
     }
 }
