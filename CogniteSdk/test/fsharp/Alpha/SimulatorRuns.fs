@@ -47,16 +47,16 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
+        let! res = bluefieldClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
         let simulationRun = res |> Seq.head
 
-        let! resData = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resData = bluefieldClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
         callbackQuery.Id <- simulationRun.Id
-        let! callbackRes = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
+        let! callbackRes = bluefieldClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
         let simulationRunAfterCallback = callbackRes.Items |> Seq.head
 
-        let! resDataAfterCallback = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resDataAfterCallback = bluefieldClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
 
         // Assert
@@ -105,7 +105,7 @@ let ``List simulation runs is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -140,7 +140,7 @@ let ``List simulation runs with external id filters is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -157,14 +157,14 @@ let ``Retrieve simulation runs is Ok`` () =
         // Arrange
         let listQuery = SimulationRunQuery()
 
-        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+        let! listRes = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
         test <@ Seq.length listRes.Items > 0 @>
 
         let simulationRun = listRes.Items |> Seq.head
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
+        let! res = bluefieldClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
         let simulationRunRetrieveRes = res |> Seq.head
 
         // Assert
@@ -179,7 +179,7 @@ let ``Update simulation log is Ok`` () =
     task {
         // Arrange
         let! listRunsRes =
-            azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(
+            bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(
                 new SimulationRunQuery(
                     Filter = new SimulationRunFilter(RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]),
                     Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
@@ -207,8 +207,8 @@ let ``Update simulation log is Ok`` () =
             )
 
         // Act
-        let! _ = azureDevClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
-        let! retrieveLogRes = azureDevClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
+        let! _ = bluefieldClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
+        let! retrieveLogRes = bluefieldClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
 
         // Assert
         test <@ Seq.length retrieveLogRes = 1 @>
