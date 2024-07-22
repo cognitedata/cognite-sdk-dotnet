@@ -77,7 +77,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained double value.
             /// </summary>
-            public double Value { get; set; }
+            public double Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the double value.
@@ -116,7 +116,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained string value.
             /// </summary>
-            public string Value { get; set; }
+            public string Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the string value, i.e the string itself.
@@ -155,7 +155,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained string array value.
             /// </summary>
-            public IEnumerable<string> Value { get; set; }
+            public IEnumerable<string> Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the string array value, i.e the string array itself.
@@ -210,7 +210,7 @@ namespace CogniteSdk.Alpha
             /// <summary>
             /// The contained double array value.
             /// </summary>
-            public IEnumerable<double> Value { get; set; }
+            public IEnumerable<double> Value { get; private set; }
 
             /// <summary>
             /// Return string representation of the double array value, i.e the double array itself.
