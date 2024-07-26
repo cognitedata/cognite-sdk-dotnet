@@ -7,11 +7,11 @@ open Xunit
 open Swensen.Unquote
 
 open CogniteSdk.Alpha
-open Tests.Integration.Alpha.Common
 open CogniteSdk
+open Common
 
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``Create simulation runs by routine with data and callback is Ok`` () =
@@ -47,16 +47,16 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
             )
 
         // Act
-        let! res = bluefieldClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
+        let! res = writeClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
         let simulationRun = res |> Seq.head
 
-        let! resData = bluefieldClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resData = writeClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
         callbackQuery.Id <- simulationRun.Id
-        let! callbackRes = bluefieldClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
+        let! callbackRes = writeClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
         let simulationRunAfterCallback = callbackRes.Items |> Seq.head
 
-        let! resDataAfterCallback = bluefieldClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resDataAfterCallback = writeClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
 
         // Assert
@@ -92,7 +92,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         test <@ item.Unit.Name = "F" @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``List simulation runs is Ok`` () =
@@ -105,7 +105,7 @@ let ``List simulation runs is Ok`` () =
             )
 
         // Act
-        let! res = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -122,7 +122,7 @@ let ``List simulation runs is Ok`` () =
         test <@ len > 0 @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``List simulation runs with external id filters is Ok`` () =
@@ -140,7 +140,7 @@ let ``List simulation runs with external id filters is Ok`` () =
             )
 
         // Act
-        let! res = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -148,7 +148,7 @@ let ``List simulation runs with external id filters is Ok`` () =
         test <@ len = 0 @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``Retrieve simulation runs is Ok`` () =
@@ -157,14 +157,14 @@ let ``Retrieve simulation runs is Ok`` () =
         // Arrange
         let listQuery = SimulationRunQuery()
 
-        let! listRes = bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+        let! listRes = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
         test <@ Seq.length listRes.Items > 0 @>
 
         let simulationRun = listRes.Items |> Seq.head
 
         // Act
-        let! res = bluefieldClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
+        let! res = writeClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
         let simulationRunRetrieveRes = res |> Seq.head
 
         // Assert
@@ -172,14 +172,14 @@ let ``Retrieve simulation runs is Ok`` () =
         test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulatorLogs")>]
 [<Trait("api", "simulators")>]
 let ``Update simulation log is Ok`` () =
     task {
         // Arrange
         let! listRunsRes =
-            bluefieldClient.Alpha.Simulators.ListSimulationRunsAsync(
+            writeClient.Alpha.Simulators.ListSimulationRunsAsync(
                 new SimulationRunQuery(
                     Filter = new SimulationRunFilter(RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]),
                     Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
@@ -207,8 +207,8 @@ let ``Update simulation log is Ok`` () =
             )
 
         // Act
-        let! _ = bluefieldClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
-        let! retrieveLogRes = bluefieldClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
+        let! _ = writeClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
+        let! retrieveLogRes = writeClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
 
         // Assert
         test <@ Seq.length retrieveLogRes = 1 @>

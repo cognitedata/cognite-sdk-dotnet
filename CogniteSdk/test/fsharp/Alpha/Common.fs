@@ -67,6 +67,9 @@ module Common =
 
         createOAuth2SdkClient oAuth2AccessToken "cognite-simulator-qualitycheck" "https://bluefield.cognitedata.com"
 
+    // Skip tests if environment variable is not set to "true"
+    // Example usage:
+    // [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
     type FactIf(envVar: string, skipReason: string) =
         inherit FactAttribute()
 
