@@ -12,13 +12,13 @@ open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
 
-let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 
 [<Fact>]
 [<Trait("resource", "simulatorModels")>]
 let ``Create and list simulator models is Ok`` () =
     task {
         // Arrange
+        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
@@ -103,6 +103,7 @@ let ``Create and list simulator models is Ok`` () =
 let ``Create and list simulator model revisions is Ok`` () =
     task {
         // Arrange
+        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
