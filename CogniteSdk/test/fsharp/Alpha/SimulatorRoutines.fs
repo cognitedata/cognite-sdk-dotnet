@@ -181,8 +181,7 @@ let ``Create simulator routine revision is Ok`` () =
                     LogicalCheck = [],
                     SteadyStateDetection = [],
                     DataSampling =
-                        SimulatorRoutineRevisionDataSampling(
-                            Enabled = true,
+                        SimulatorRoutineRevisionDataSamplingEnabled(
                             ValidationWindow = 1,
                             SamplingWindow = 1,
                             Granularity = 1

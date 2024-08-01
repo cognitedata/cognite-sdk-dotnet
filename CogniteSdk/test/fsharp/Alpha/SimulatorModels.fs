@@ -109,7 +109,6 @@ let ``Create and list simulator model revisions is Ok`` () =
         let simulatorToCreate =
             testSimulatorCreate(simulatorExternalId)
 
-
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 

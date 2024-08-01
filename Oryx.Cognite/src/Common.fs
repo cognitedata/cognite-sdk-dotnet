@@ -92,4 +92,5 @@ module Common =
         options.Converters.Add(InstanceDataConverter())
         // Simulators converters
         options.Converters.Add(SimulatorValueConverter())
+        options.Converters.Add(SimulatorRoutineRevisionDataSamplingConverter())
         options
