@@ -10,17 +10,8 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// The AssetClass core concept is used to define the class of an asset,
     /// serving as a base type for describing common properties for assets.
     /// </summary>
-    public class AssetClass : IDescribable
+    public class CogniteAssetClass : CogniteDescribable
     {
-        /// <inheritdoc />
-        public string Name { get; set; }
-        /// <inheritdoc />
-        public string Description { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Tags { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Aliases { get; set; }
-
         /// <summary>
         /// A unique identifier for the class of asset.
         /// </summary>
@@ -34,17 +25,8 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// <summary>
     /// The AssetType core concept is used to define the type of an asset.
     /// </summary>
-    public class AssetType : IDescribable
+    public class CogniteAssetType : CogniteDescribable
     {
-        /// <inheritdoc />
-        public string Name { get; set; }
-        /// <inheritdoc />
-        public string Description { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Tags { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Aliases { get; set; }
-
         /// <summary>
         /// A unique identifier for the type of asset.
         /// </summary>
@@ -56,14 +38,18 @@ namespace CogniteSdk.Beta.DataModels.Core
     }
 
     /// <summary>
-    /// Bare bones representation of an asset in the core data model.
+    /// Representation of an asset in the core data model.
     /// </summary>
-    public class Asset : CoreInstanceBase, IObject3D
+    public class CogniteAsset : CogniteAssetBase
     {
         /// <summary>
         /// Parent of this asset.
         /// </summary>
         public DirectRelationIdentifier Parent { get; set; }
+        /// <summary>
+        /// List of assets that reference this asset as parent.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Children { get; set; }
         /// <summary>
         /// Asset at the top of the hierarchy.
         /// </summary>
@@ -73,13 +59,13 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Path { get; set; }
         /// <summary>
-        /// Last time the path materialized updated the path of this asset.
-        /// </summary>
-        public DateTime? LastPathMaterializationTime { get; set; }
-        /// <summary>
         /// Equipment associated with this asset.
         /// </summary>
         public DirectRelationIdentifier Equipment { get; set; }
+        /// <summary>
+        /// Time series associated with this asset.
+        /// </summary>
+        public DirectRelationIdentifier TimeSeries { get; set; }
         /// <summary>
         /// Class of this asset.
         /// </summary>
@@ -88,5 +74,22 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// Type of this asset.
         /// </summary>
         public DirectRelationIdentifier Type { get; set; }
+        /// <summary>
+        /// Activities associated with this asset.
+        /// </summary>
+        public DirectRelationIdentifier Activities { get; set; }
+        /// <summary>
+        /// Files associated with this asset.
+        /// </summary>
+        public DirectRelationIdentifier Files { get; set; }
+    }
+
+    /// <summary>
+    /// Base class for CogniteAsset.
+    /// </summary>
+    public abstract class CogniteAssetBase : CogniteCoreInstanceBase, ICogniteVisualizable
+    {
+        /// <inheritdoc />
+        public DirectRelationIdentifier Object3D { get; set; }
     }
 }

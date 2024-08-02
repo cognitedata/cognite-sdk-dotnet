@@ -9,7 +9,7 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// <summary>
     /// Core data model representation of an activity.
     /// </summary>
-    public class Activity : CoreInstanceBase, ISchedulable
+    public class CogniteActivity : CogniteCoreInstanceBase, ICogniteSchedulable
     {
         /// <inheritdoc />
         public DateTime? StartTime { get; set; }

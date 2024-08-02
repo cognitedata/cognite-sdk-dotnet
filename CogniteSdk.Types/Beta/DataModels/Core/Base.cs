@@ -7,12 +7,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Beta.DataModels.Core
 {
     /// <summary>
-    /// Core data model interface for instances.
-    /// 
-    /// The describable core concept is used as a standard way of holding
-    /// the bare minimum of information about the instance. Used for nodes.
+    /// Abstract class implementing describable concept.
     /// /// </summary>
-    public interface ICogniteDescribable
+    public abstract class CogniteDescribable : ICogniteDescribable
     {
         /// <summary>
         /// Name of the instance.
@@ -34,12 +31,9 @@ namespace CogniteSdk.Beta.DataModels.Core
     }
 
     /// <summary>
-    /// Core data model interface for instances.
-    /// 
-    /// The sourceable core concept is used as way to describe the origin of
-    /// an instance, and providing a link back to the source system.
+    /// Abstract class implementing sourcable concept.
     /// </summary>
-    public interface ICogniteSourceable
+    public abstract class CogniteSourceable : ICogniteSourceable
     {
         /// <summary>
         /// Identifier in the source system.
@@ -75,11 +69,9 @@ namespace CogniteSdk.Beta.DataModels.Core
     }
 
     /// <summary>
-    /// Core data model interface for instances.
-    /// 
-    /// Represents the source system the data comes from
+    /// Abstract class implementing source system concept.
     /// </summary>
-    public interface ICogniteSourceSystem : ICogniteDescribable
+    public abstract class CogniteSourceSystem : CogniteDescribable, ICogniteSourceSystem
     {
         /// <summary>
         /// Version identifier for the source system.
@@ -91,12 +83,11 @@ namespace CogniteSdk.Beta.DataModels.Core
         public string Manufacturer { get; set; }
     }
 
+
     /// <summary>
-    /// Core data model interface for instances.
-    /// 
-    /// Schedulable represents the metadata about when an activity (or similar) starts and ends.
+    /// Abstract class implementing schedulable system concept.
     /// </summary>
-    public interface ICogniteSchedulable
+    public abstract class CogniteSchedulable : ICogniteSchedulable
     {
         /// <summary>
         /// The actual start time of an activity (or similar that extends this).
@@ -118,11 +109,9 @@ namespace CogniteSdk.Beta.DataModels.Core
     }
 
     /// <summary>
-    /// Core data model interface for instances.
-    /// 
-    /// Visualizable represents the standard way to reference a related 3D resource.
+    /// Abstract class implementing visualizable concept.
     /// </summary>
-    public interface ICogniteVisualizable
+    public abstract class CogniteVisualizable : ICogniteVisualizable
     {
         /// <summary>
         /// Direct relation to a 3D object.
@@ -131,9 +120,25 @@ namespace CogniteSdk.Beta.DataModels.Core
     }
 
     /// <summary>
-    /// Interface for types representing 3D objects.
+    /// Does not correspond to a core data model view,
+    /// this is a convenience class implementing Describable and Sourcable.
     /// </summary>
-    public interface ICogniteObject3D : ICogniteSourceable, ICogniteDescribable
+    public abstract class CogniteCoreInstanceBase : CogniteSourceable, ICogniteDescribable
+    {
+        /// <inheritdoc />
+        public string Name { get; set; }
+        /// <inheritdoc />
+        public string Description { get; set; }
+        /// <inheritdoc />
+        public IEnumerable<string> Tags { get; set; }
+        /// <inheritdoc />
+        public IEnumerable<string> Aliases { get; set; }
+    }
+
+    /// <summary>
+    /// Abstract class implementing object 3D concept.
+    /// </summary>
+    public abstract class CogniteObject3DBase : CogniteCoreInstanceBase
     {
 
     }

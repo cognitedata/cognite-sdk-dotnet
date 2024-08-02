@@ -13,7 +13,7 @@ namespace CogniteSdk.Resources.DataModels
     /// Base resource for time series in core data models.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class CoreTimeSeriesResource<T> : BaseDataModelResource<T> where T : TimeSeriesBase
+    public class CoreTimeSeriesResource<T> : BaseDataModelResource<T> where T : CogniteTimeSeriesBase
     {
         /// <inheritdoc />
         public override ViewIdentifier View { get; }

@@ -8,18 +8,17 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// <summary>
     /// Representation of a CDF timeseries in core data models.
     /// </summary>
-    public class TimeSeriesBase : CoreInstanceBase
+    public class CogniteTimeSeriesBase : CogniteCoreInstanceBase
     {
         /// <summary>
         /// Defines whether the time series is a step series or not.
         /// </summary>
         public bool? IsStep { get; set; }
         /// <summary>
-        /// Defines whether the time series contains string values or numeric values.
-        /// Not updatable - this field cannot be changed after the time series has been
-        /// created.
+        /// Type of datapoints the time series contains.
         /// </summary>
-        public bool? IsString { get; set; }
+        public TimeSeriesType Type { get; set; }
+
         /// <summary>
         /// The physical unit of the time series as described in the source.
         /// </summary>
@@ -34,8 +33,27 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Assets { get; set; }
         /// <summary>
+        /// List of activities associated with this time series.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Activities { get; set; }
+        /// <summary>
         /// List of equipment associated with this time series.
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Equipment { get; set; }
+    }
+
+    /// <summary>
+    /// Type of datapoints the time series contains.
+    /// </summary>
+    public enum TimeSeriesType
+    {
+        /// <summary>
+        /// Time series containing string values.
+        /// </summary>
+        String,
+        /// <summary>
+        /// Time series containing numeric values.
+        /// </summary>
+        Numeric,
     }
 }

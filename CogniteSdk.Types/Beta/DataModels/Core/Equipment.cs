@@ -8,7 +8,7 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// <summary>
     /// Represents a physical piece of equipment.
     /// </summary>
-    public class Equipment : CoreInstanceBase, IObject3D
+    public class CogniteEquipment : CogniteCoreInstanceBase
     {
         /// <summary>
         /// Serial number of the equipment.
@@ -23,22 +23,34 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// </summary>
         /// <value></value>
         public DirectRelationIdentifier EquipmentType { get; set; }
+
+        /// <summary>
+        /// Asset this equipment relates to.
+        /// </summary>
+        public DirectRelationIdentifier Asset { get; set; }
+        /// <summary>
+        /// List of activities this equipment relates to.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Activities { get; set; }
+        /// <summary>
+        /// List of timeseries this equipment relates to.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Timeseries { get; set; }
+        /// <summary>
+        /// List of files this equipment relates to.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Files { get; set; }
+        /// <summary>
+        /// Model3D this equipment relates to.
+        /// </summary>
+        public DirectRelationIdentifier Model3D { get; set; }
     }
 
     /// <summary>
     /// This identifies the type of an equipment.
     /// </summary>
-    public class EquipmentType : IDescribable
+    public class CogniteEquipmentType : CogniteDescribable
     {
-        /// <inheritdoc />
-        public string Name { get; set; }
-        /// <inheritdoc />
-        public string Description { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Tags { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Aliases { get; set; }
-
         /// <summary>
         /// A unique identifier for the type of equipment.
         /// </summary>
@@ -48,12 +60,12 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// </summary>
         public string EquipmentClass { get; set; }
         /// <summary>
-        /// Source of the equipment specification.
+        /// Standard of the equipment specification.
         /// </summary>
-        public string Source { get; set; }
+        public string Standard { get; set; }
         /// <summary>
-        /// Reference to the source of the equipment specification.
+        /// Reference to the standard of the equipment specification.
         /// </summary>
-        public string SourceReference { get; set; }
+        public string StandardReference { get; set; }
     }
 }

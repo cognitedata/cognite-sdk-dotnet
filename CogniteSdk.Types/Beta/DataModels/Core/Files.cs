@@ -1,6 +1,7 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Beta.DataModels.Core
@@ -8,12 +9,16 @@ namespace CogniteSdk.Beta.DataModels.Core
     /// <summary>
     /// Core data model representation of a file.
     /// </summary>
-    public class FileBase : CoreInstanceBase
+    public class CogniteFile : CogniteCoreInstanceBase
     {
         /// <summary>
         /// List of assets this file relates to.
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Assets { get; set; }
+        /// <summary>
+        /// List of equipment this file relates to.
+        /// </summary>
+        public IEnumerable<DirectRelationIdentifier> Equipment { get; set; }
         /// <summary>
         /// MIME type of the file.
         /// </summary>
@@ -29,24 +34,32 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// <value></value>
         public bool? IsUploaded { get; set; }
         /// <summary>
-        /// Class of this file, direct relation to `FileClass`.
+        /// Point in time when the file upload was completed and the file was made available.
         /// </summary>
-        public DirectRelationIdentifier FileClass { get; set; }
+        /// <value></value>
+        public DateTime? UploadedTime { get; set; }
+        /// <summary>
+        /// Category of this file, direct relation to `CogniteFileCategory`.
+        /// </summary>
+        public DirectRelationIdentifier Category { get; set; }
     }
 
     /// <summary>
-    /// Core data model representation of the class of a file,
-    /// containing common properties.
+    /// This identifies the category of an CogniteFile.
     /// </summary>
-    public class FileClass : IDescribable
+    public class CogniteFileCategory : CogniteDescribable
     {
-        /// <inheritdoc />
-        public string Name { get; set; }
-        /// <inheritdoc />
-        public string Description { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Tags { get; set; }
-        /// <inheritdoc />
-        public IEnumerable<string> Aliases { get; set; }
+        /// <summary>
+        /// Identified category code, such as “AA” for Accounting (from Norsok). The full name, “Accounting” would be written to the inherited name field.
+        /// </summary>
+        public string Code { get; set; }
+        /// <summary>
+        /// Name of the standard the category originates from, such as “Norsok”.
+        /// </summary>
+        public string Standard { get; set; }
+        /// <summary>
+        /// Reference to where to find the standard used (preferably a URL).
+        /// </summary>
+        public string StandardReference { get; set; }
     }
 }
