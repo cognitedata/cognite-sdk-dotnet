@@ -25,11 +25,11 @@ let ``Create simulator routines is Ok`` () =
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
+            testSimulatorCreate(simulatorExternalId)
 
         let integrationToCreate =
             SimulatorIntegrationCreate(
@@ -47,18 +47,19 @@ let ``Create simulator routines is Ok`` () =
                 Name = "test_model",
                 Description = "test_model_description",
                 Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
             )
 
         try
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
             let! integrationCreateRes =
-                azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+                bluefieldClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
 
             let integrationCreated = integrationCreateRes |> Seq.head
 
-            let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! modelCreateRes = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let modelCreated = modelCreateRes |> Seq.head
 
@@ -71,10 +72,10 @@ let ``Create simulator routines is Ok`` () =
                 )
 
             // Act
-            let! resRoutine = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+            let! resRoutine = bluefieldClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
             let! resList =
-                azureDevClient.Alpha.Simulators.ListSimulatorRoutinesAsync(
+                bluefieldClient.Alpha.Simulators.ListSimulatorRoutinesAsync(
                     new SimulatorRoutineQuery(
                         Filter = SimulatorRoutineFilter(ModelExternalIds = [ modelCreated.ExternalId ])
                     )
@@ -84,7 +85,7 @@ let ``Create simulator routines is Ok`` () =
                 resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalId)
 
             let! resDeleteRoutine =
-                azureDevClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync([ new Identity(resListRoutine.Id) ])
+                bluefieldClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync([ new Identity(resListRoutine.Id) ])
 
             // Assert
             test <@ Seq.length resRoutine = 1 @>
@@ -93,7 +94,7 @@ let ``Create simulator routines is Ok`` () =
 
             test <@ isNull resDeleteRoutine |> not @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
 
@@ -108,11 +109,11 @@ let ``Create simulator routine revision is Ok`` () =
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let! dataSetRes = bluefieldClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
         let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
+            testSimulatorCreate(simulatorExternalId)
 
         let integrationToCreate =
             SimulatorIntegrationCreate(
@@ -130,15 +131,16 @@ let ``Create simulator routine revision is Ok`` () =
                 Name = "test_model",
                 Description = "test_model_description",
                 Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
             )
 
         try
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
 
-            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
             let routineToCreate =
                 SimulatorRoutineCreateCommandItem(
@@ -159,7 +161,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "address", "test2" ]
                                   )
                           )
                           SimulatorRoutineRevisionScriptStep(
@@ -168,7 +170,7 @@ let ``Create simulator routine revision is Ok`` () =
                               Description = "test",
                               Arguments =
                                   new Dictionary<string, string>(
-                                      dict [ "referenceId", "test"; "objectName", "test"; "objectProperty", "test2" ]
+                                      dict [ "referenceId", "test"; "address", "test2" ]
                                   )
                           ) ]
                 )
@@ -186,13 +188,22 @@ let ``Create simulator routine revision is Ok`` () =
                             Granularity = 1
                         ),
                     Inputs =
-                        [ SimulatorRoutineRevisionInput(
+                        [
+                            SimulatorRoutineRevisionInput(
                               Name = "test_input",
                               ReferenceId = "test_input",
                               Value = SimulatorValue.Create(1.0),
                               ValueType = SimulatorValueType.DOUBLE,
                               Unit = SimulatorValueUnit(Name = "test_unit", Quantity = "test_quantity")
-                          ) ],
+                            )
+                            SimulatorRoutineRevisionInput(
+                              Name = "test_input_array",
+                              ReferenceId = "test_input_array",
+                              Value = SimulatorValue.Create(seq [ 1.0; 2; 3 ]),
+                              ValueType = SimulatorValueType.DOUBLE_ARRAY,
+                              Unit = SimulatorValueUnit(Name = "test_unit", Quantity = "test_quantity")
+                            )
+                        ],
                     Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
                 )
 
@@ -205,12 +216,12 @@ let ``Create simulator routine revision is Ok`` () =
                 )
 
             // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+            let! _ = bluefieldClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
-            let! resRevision = azureDevClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
+            let! resRevision = bluefieldClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
 
             let! resListRevisions =
-                azureDevClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
+                bluefieldClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
                     [ new Identity(routineRevisionExternalId) ]
                 )
 
@@ -258,6 +269,6 @@ let ``Create simulator routine revision is Ok`` () =
             let scriptStageRes = Seq.head revision.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
         finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            bluefieldClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }

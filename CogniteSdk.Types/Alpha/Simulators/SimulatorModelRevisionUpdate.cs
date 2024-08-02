@@ -22,17 +22,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public Update<string> StatusMessage { get; set; }
 
-        /// <summary>
-        /// Update the boundary conditions of the simulation model revision.
-        /// </summary>
-        public Update<List<SimulatorModelBoundaryCondition>> BoundaryConditions { get; set; }
-
-
-        /// <summary>
-        /// Update the status of the boundary conditions of the simulation model revision.
-        /// </summary>
-        public Update<SimulatorModelRevisionStatus> BoundaryConditionsStatus { get; set; }
-
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorModelRevisionUpdate>(this);
     }

@@ -149,24 +149,4 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string Key { get; set; }
     }
-    /// <summary>
-    /// Represents a boundary condition in the simulator.
-    /// </summary>
-    public class SimulatorBoundaryCondition
-    {
-        /// <summary>
-        /// The name of the boundary condition.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The address of the boundary condition.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// The key of the boundary condition.
-        /// </summary>
-        public string Key { get; set; }
-    }
 }
