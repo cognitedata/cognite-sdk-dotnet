@@ -12,6 +12,7 @@ using Oryx;
 using CogniteSdk.Resources;
 using Microsoft.FSharp.Core;
 using static Oryx.Cognite.HttpHandlerModule;
+using CogniteSdk.Beta.DataModels.Core;
 
 namespace CogniteSdk
 {
@@ -136,6 +137,12 @@ namespace CogniteSdk
         public UnitsResource Units { get; }
 
         /// <summary>
+        /// ALPHA: Resource for the core data model.
+        /// </summary>
+        /// <value></value>
+        public CoreResource CoreDataModel { get; }
+
+        /// <summary>
         /// Client for making requests to the API.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -168,6 +175,9 @@ namespace CogniteSdk
             Beta = new BetaResource(authHandler, ctx);
             // Alpha features (experimental)
             Alpha = new AlphaResource(authHandler, ctx);
+
+            // Core data model (experimental)
+            CoreDataModel = new CoreResource(this);
         }
 
         /// <summary>
