@@ -130,7 +130,6 @@ let ``Create and update simulator integration is Ok`` () =
     }
 
 [<Fact>]
-// [<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
 [<Trait("resource", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
