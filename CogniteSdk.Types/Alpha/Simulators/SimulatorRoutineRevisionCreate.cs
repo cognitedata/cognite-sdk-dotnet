@@ -109,18 +109,21 @@ namespace CogniteSdk.Alpha
 
         /// <summary>
         /// Validation window for data sampling.
+        /// Only used if data sampling is enabled.
         /// </summary>
-        public int ValidationWindow { get; set; }
+        public int? ValidationWindow { get; set; }
 
         /// <summary>
         /// Sampling window for data sampling.
+        /// Only used if data sampling is enabled.
         /// </summary>
-        public int SamplingWindow { get; set; }
+        public int? SamplingWindow { get; set; }
 
         /// <summary>
         /// Granularity for data sampling.
+        /// Only used if data sampling is enabled.
         /// </summary>
-        public int Granularity { get; set; }
+        public int? Granularity { get; set; }
 
         /// <inheritdoc />      
         public override string ToString() => Stringable.ToString(this);
