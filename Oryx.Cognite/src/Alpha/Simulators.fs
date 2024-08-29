@@ -40,7 +40,7 @@ module Simulators =
     let listSimulationRuns
         (query: SimulationRunQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulationRun>> =
+        : HttpHandler<ItemsWithCursor<SimulationRun>> =
         source
         |> withLogMessage "simulators:listSimulationRuns"
         |> withAlphaHeader

@@ -46,7 +46,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="query">Simulation run filter query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>All simulation runs in project</returns>
-        public async Task<IItemsWithoutCursor<SimulationRun>> ListSimulationRunsAsync(SimulationRunQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulationRun>> ListSimulationRunsAsync(SimulationRunQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulationRuns(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
