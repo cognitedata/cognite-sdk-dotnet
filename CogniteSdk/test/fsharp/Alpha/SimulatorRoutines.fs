@@ -183,7 +183,6 @@ let ``Create simulator routine revision is Ok`` () =
                     DataSampling =
                         SimulatorRoutineRevisionDataSampling(
                             Enabled = true,
-                            ValidationWindow = 1,
                             SamplingWindow = 1,
                             Granularity = 1
                         ),
