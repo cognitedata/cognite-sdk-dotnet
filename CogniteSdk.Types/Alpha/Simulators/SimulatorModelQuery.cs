@@ -9,7 +9,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulator model class.
     /// </summary>
-    public class SimulatorModelQuery
+    public class SimulatorModelQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on simulators models.

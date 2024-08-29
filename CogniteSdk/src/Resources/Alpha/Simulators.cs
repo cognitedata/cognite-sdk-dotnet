@@ -151,7 +151,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator model query to filter.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorModel>> ListSimulatorModelsAsync(SimulatorModelQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorModel>> ListSimulatorModelsAsync(SimulatorModelQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorModels(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -213,7 +213,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator model revision query to filter.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorModelRevision>> ListSimulatorModelRevisionsAsync(SimulatorModelRevisionQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorModelRevision>> ListSimulatorModelRevisionsAsync(SimulatorModelRevisionQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorModelRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -252,7 +252,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator routine query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorRoutines(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -308,7 +308,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator routine revisions query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
