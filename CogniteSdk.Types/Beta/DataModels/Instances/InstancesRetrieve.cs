@@ -8,7 +8,7 @@ namespace CogniteSdk.Beta.DataModels
     /// <summary>
     /// Class for retrieving a list of instances.
     /// </summary>
-    public class InstancesRetrieve : ItemsWithoutCursor<InstanceIdentifier>
+    public class InstancesRetrieve : ItemsWithoutCursor<InstanceIdentifierWithType>
     {
         /// <summary>
         /// Sources to retrieve from.

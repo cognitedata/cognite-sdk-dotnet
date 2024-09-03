@@ -280,9 +280,9 @@ module DataModels =
 
     /// Delete instances by id
     let deleteInstances
-        (items: InstanceIdentifier seq)
+        (items: InstanceIdentifierWithType seq)
         (source: HttpHandler<unit>)
-        : HttpHandler<InstanceIdentifier seq> =
+        : HttpHandler<InstanceIdentifierWithType seq> =
         http {
             let url = instancesUrl +/ "delete"
             let request = ItemsWithoutCursor(Items = items)

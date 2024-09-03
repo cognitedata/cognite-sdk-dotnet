@@ -164,22 +164,19 @@ namespace CogniteSdk.Beta.DataModels
     }
 
     /// <summary>
-    /// Identifier for an instance, node or edge.
+    /// Identifier for an instance.
     /// </summary>
     public class InstanceIdentifier
     {
         /// <summary>
-        /// Type of instance
+        /// Space the instance belongs to.
         /// </summary>
-        public InstanceType InstanceType { get; set; }
+        public string Space { get; set; }
+
         /// <summary>
         /// ExternalId of instance.
         /// </summary>
         public string ExternalId { get; set; }
-        /// <summary>
-        /// Space the instance belongs to.
-        /// </summary>
-        public string Space { get; set; }
 
         /// <summary>
         /// Empty constructor
@@ -189,14 +186,85 @@ namespace CogniteSdk.Beta.DataModels
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="space">View space</param>
+        /// <param name="externalId">View externalId</param>
+        public InstanceIdentifier(string space, string externalId)
+        {
+            Space = space;
+            ExternalId = externalId;
+        }
+
+        /// <summary>Returns a string that represents the current object.</summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            return $"{{ Space = \"{Space}\" ExternalId = \"{ExternalId}\" }}";
+        }
+
+        /// <summary>
+        /// Return true if <paramref name="obj"/> is another, identitical Identity.
+        /// </summary>
+        /// <param name="obj">Object to compare</param>
+        /// <returns>True if equal, false otherwise</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (!(obj is InstanceIdentifier other))
+            {
+                return false;
+            }
+
+            return ExternalId == other.ExternalId && Space == other.Space;
+        }
+
+        /// <summary>
+        /// Returns a hashcode representing this Identity.
+        /// </summary>
+        /// <returns>Hashcode representing this</returns>
+        public override int GetHashCode()
+        {
+            return $"Space:{Space}-ExternalId:{ExternalId}".GetHashCode();
+        }
+    }
+
+    /// <summary>
+    /// Identifier for an instance, node or edge.
+    /// </summary>
+    public class InstanceIdentifierWithType : InstanceIdentifier
+    {
+        /// <summary>
+        /// Type of instance
+        /// </summary>
+        public InstanceType InstanceType { get; set; }
+
+        /// <summary>
+        /// Empty constructor
+        /// </summary>
+        public InstanceIdentifierWithType() { }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         /// <param name="type">Type of instance</param>
         /// <param name="externalId">ExternalId of instance</param>
         /// <param name="space">Space the instance belongs to</param>
-        public InstanceIdentifier(InstanceType type, string space, string externalId)
+        public InstanceIdentifierWithType(InstanceType type, string space, string externalId) : base(space, externalId)
         {
             InstanceType = type;
-            ExternalId = externalId;
-            Space = space;
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="type">Type of instance</param>
+        /// <param name="instanceIdentifier">InstanceId</param>
+        public InstanceIdentifierWithType(InstanceType type, InstanceIdentifier instanceIdentifier) : base(instanceIdentifier?.Space, instanceIdentifier?.ExternalId)
+        {
+            InstanceType = type;
         }
     }
 

@@ -346,8 +346,8 @@ namespace Test.CSharp.Integration
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node1"),
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node2")
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node1"),
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node2")
             };
 
             try
@@ -432,8 +432,8 @@ namespace Test.CSharp.Integration
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge1"),
-                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge2")
+                new InstanceIdentifierWithType(InstanceType.edge, tester.TestSpace, "edge1"),
+                new InstanceIdentifierWithType(InstanceType.edge, tester.TestSpace, "edge2")
             };
 
             try
@@ -461,9 +461,9 @@ namespace Test.CSharp.Integration
                 Assert.Equal(2, deleted.Count());
                 var deletedNodes = await tester.Write.Beta.DataModels.DeleteInstances(new[]
                 {
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node3"),
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node4"),
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node5"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node3"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node4"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node5"),
                 });
                 Assert.Equal(3, deletedNodes.Count());
             }
@@ -579,8 +579,8 @@ namespace Test.CSharp.Integration
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node6"),
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node7")
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node6"),
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node7")
             };
 
             var q = new Query
@@ -658,7 +658,7 @@ namespace Test.CSharp.Integration
                 }
             }, new UpsertOptions());
 
-            var retrieved = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+            var retrieved = await resource.RetrieveAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
@@ -668,13 +668,13 @@ namespace Test.CSharp.Integration
             Assert.Equal("test", node.Properties.Prop);
             Assert.Equal(123, node.Properties.IntProp);
 
-            await resource.DeleteAsync(new[] { new InstanceIdentifier {
+            await resource.DeleteAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
             }});
 
-            var retrieved2 = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+            var retrieved2 = await resource.RetrieveAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"

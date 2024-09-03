@@ -76,13 +76,15 @@ namespace CogniteSdk.Resources.DataModels
                 }
             }).ToList();
 
+            var opts = options ?? new UpsertOptions();
+
             return await _resource.UpsertInstances(new InstanceWriteRequest
             {
-                AutoCreateDirectRelations = options.AutoCreateDirectRelations,
-                AutoCreateEndNodes = options.AutoCreateEndNodes,
-                AutoCreateStartNodes = options.AutoCreateStartNodes,
-                SkipOnVersionConflict = options.SkipOnVersionConflict,
-                Replace = options.Replace,
+                AutoCreateDirectRelations = opts.AutoCreateDirectRelations,
+                AutoCreateEndNodes = opts.AutoCreateEndNodes,
+                AutoCreateStartNodes = opts.AutoCreateStartNodes,
+                SkipOnVersionConflict = opts.SkipOnVersionConflict,
+                Replace = opts.Replace,
                 Items = upserts
             }, token);
         }
@@ -108,7 +110,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <param name="ids">IDs to retrieve.</param>
         /// <param name="token">Cancellation token</param>
         /// <returns>Retrieved instances.</returns>
-        public async Task<IEnumerable<SourcedInstance<T>>> RetrieveAsync(IEnumerable<InstanceIdentifier> ids, CancellationToken token = default)
+        public async Task<IEnumerable<SourcedInstance<T>>> RetrieveAsync(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
             var results = await _resource.RetrieveInstances<Dictionary<string, Dictionary<string, T>>>(new InstancesRetrieve
             {
@@ -128,7 +130,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <param name="ids">Instance IDs to delete.</param>
         /// <param name="token">Cancellation token.</param>
         /// <returns>Deleted instance IDs.</returns>
-        public async Task<IEnumerable<InstanceIdentifier>> DeleteAsync(IEnumerable<InstanceIdentifier> ids, CancellationToken token = default)
+        public async Task<IEnumerable<InstanceIdentifierWithType>> DeleteAsync(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
             return await _resource.DeleteInstances(ids, token);
         }

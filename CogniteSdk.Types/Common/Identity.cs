@@ -6,9 +6,23 @@ using System;
 namespace CogniteSdk
 {
     /// <summary>
+    /// Interface defining an identity class.
+    /// </summary>
+    public interface IIdentity
+    {
+        /// <summary>
+        /// Identity with internal id.
+        /// </summary>
+        public long? Id { get; set; }
+        /// <summary>
+        /// Identity with externalId
+        /// </summary>
+        public string ExternalId { get; set; }
+    }
+    /// <summary>
     /// Identity class. Set either Id or ExternalId.
     /// </summary>
-    public class Identity
+    public class Identity : IIdentity
     {
         private long? _id;
         private string _externalId;

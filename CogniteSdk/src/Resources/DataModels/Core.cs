@@ -21,7 +21,7 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// <returns>Core data model time series resource.</returns>
         public CoreTimeSeriesResource<T> TimeSeries<T>(ViewIdentifier view = null) where T : CogniteTimeSeriesBase
         {
-            return new CoreTimeSeriesResource<T>(_client.Beta.DataModels, _client.TimeSeries, _client.DataPoints, view);
+            return new CoreTimeSeriesResource<T>(_client.Beta.DataModels, _client.Alpha.DataPoints, view);
         }
 
         /// <summary>
