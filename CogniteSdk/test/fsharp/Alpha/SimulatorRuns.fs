@@ -155,7 +155,7 @@ let ``Retrieve simulation runs is Ok`` () =
     task {
 
         // Arrange
-        let listQuery = SimulationRunQuery()
+        let listQuery: SimulationRunQuery = SimulationRunQuery()
 
         let! listRes = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
@@ -170,6 +170,22 @@ let ``Retrieve simulation runs is Ok`` () =
         // Assert
         test <@ Seq.length res = 1 @>
         test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
+    }
+
+
+[<Fact>]
+[<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
+let ``Retrieve simulation runs with cursor is Ok`` () =
+    task {
+
+        // Arrange
+        let listQuery: SimulationRunQuery = SimulationRunQuery()
+
+        let! listRes = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+
+        test <@ Seq.length listRes.Items > 0 @>
+        test <@ isNull listRes.NextCursor |> not @>
     }
 
 [<Fact>]
