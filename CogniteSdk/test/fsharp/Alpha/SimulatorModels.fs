@@ -166,6 +166,15 @@ let ``Create and list simulator model revisions is Ok`` () =
                     )
                 )
 
+            let! (modelRevisionListResCursor: IItemsWithCursor<SimulatorModelRevision>) =
+                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                    new SimulatorModelRevisionQuery(
+                        Limit = 1
+                    )
+                )
+
+            test <@ isNull modelRevisionListResCursor.NextCursor |> not @>
+
             let! modelRevisionRetrieveRes =
                 writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
                     [ new Identity(modelRevisionToCreate.ExternalId) ]

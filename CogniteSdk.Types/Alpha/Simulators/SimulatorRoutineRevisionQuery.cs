@@ -8,18 +8,12 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulation Routine Revision query class.
     /// </summary>
-    public class SimulatorRoutineRevisionQuery
+    public class SimulatorRoutineRevisionQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on simulators with strict matching.
         /// </summary>
         public SimulatorRoutineRevisionFilter Filter { get; set; }
-
-        /// <summary>
-        /// Limit the number of results.
-        /// </summary>
-        /// <value>Default to 100. Max is 1000.</value>
-        public int? Limit { get; set; }
 
         /// <summary>
         /// Sort order.
