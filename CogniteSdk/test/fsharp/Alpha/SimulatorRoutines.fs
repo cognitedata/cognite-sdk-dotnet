@@ -73,15 +73,25 @@ let ``Create simulator routines is Ok`` () =
             // Act
             let! resRoutine = writeClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
 
-            let! resList =
+            let! (resList: IItemsWithCursor<SimulatorRoutine>) =
                 writeClient.Alpha.Simulators.ListSimulatorRoutinesAsync(
                     new SimulatorRoutineQuery(
                         Filter = SimulatorRoutineFilter(ModelExternalIds = [ modelCreated.ExternalId ])
                     )
                 )
 
+            let! (resListCursor: IItemsWithCursor<SimulatorRoutine>) =
+                writeClient.Alpha.Simulators.ListSimulatorRoutinesAsync(
+                    new SimulatorRoutineQuery(
+                        Filter = SimulatorRoutineFilter(ModelExternalIds = [ modelCreated.ExternalId ]),
+                        Limit = 1
+                    )
+                )
+
+            test <@ isNull resListCursor.NextCursor |> not @>
+
             let resListRoutine =
-                resList.Items |> Seq.find (fun item -> item.ExternalId = routineExternalId)
+                resList.Items |> Seq.find (fun (item: SimulatorRoutine) -> item.ExternalId = routineExternalId)
 
             let! resDeleteRoutine =
                 writeClient.Alpha.Simulators.DeleteSimulatorRoutinesAsync([ new Identity(resListRoutine.Id) ])
