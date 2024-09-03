@@ -180,9 +180,9 @@ let ``Retrieve simulation runs with cursor is Ok`` () =
     task {
 
         // Arrange
-        let listQuery: SimulationRunQuery = SimulationRunQuery()
+        let listQuery: SimulationRunQuery = SimulationRunQuery(Limit = 1)
 
-        let! listRes = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+        let! (listRes: IItemsWithCursor<SimulationRun>) = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
         test <@ Seq.length listRes.Items > 0 @>
         test <@ isNull listRes.NextCursor |> not @>
