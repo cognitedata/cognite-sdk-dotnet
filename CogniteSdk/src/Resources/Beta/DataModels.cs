@@ -301,7 +301,7 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="ids">Instance ids to delete</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Ids of deleted instances</returns>
-        public async Task<IEnumerable<InstanceIdentifier>> DeleteInstances(IEnumerable<InstanceIdentifier> ids, CancellationToken token = default)
+        public async Task<IEnumerable<InstanceIdentifierWithType>> DeleteInstances(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
             var req = Oryx.Cognite.Beta.DataModels.deleteInstances(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);

@@ -141,6 +141,36 @@ namespace CogniteSdk.Beta.DataModels
     /// <typeparam name="T"></typeparam>
     public class SourcedNode<T> : SourcedInstance<T>
     {
+        /// <summary>
+        /// Empty constructor.
+        /// </summary>
+        public SourcedNode()
+        {
+        }
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public SourcedNode(SlimInstance instance, T properties)
+        {
+            Version = instance.Version;
+            CreatedTime = instance.CreatedTime;
+            LastUpdatedTime = instance.LastUpdatedTime;
+            Space = instance.Space;
+            ExternalId = instance.ExternalId;
+            Properties = properties;
+        }
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public SourcedNode(SourcedInstance<T> instance)
+        {
+            Version = instance.Version;
+            CreatedTime = instance.CreatedTime;
+            LastUpdatedTime = instance.LastUpdatedTime;
+            Space = instance.Space;
+            ExternalId = instance.ExternalId;
+            Properties = instance.Properties;
+        }
     }
 
     /// <summary>

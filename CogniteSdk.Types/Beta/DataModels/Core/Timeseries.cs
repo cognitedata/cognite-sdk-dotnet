@@ -1,6 +1,7 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Beta.DataModels.Core
@@ -14,10 +15,12 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// Defines whether the time series is a step series or not.
         /// </summary>
         public bool? IsStep { get; set; }
+
+        private readonly TimeSeriesType? _type;
         /// <summary>
         /// Type of datapoints the time series contains.
         /// </summary>
-        public TimeSeriesType Type { get; set; }
+        public string Type { get { return _type == null ? null : Enum.GetName(typeof(TimeSeriesType), _type).ToLower(); } }
 
         /// <summary>
         /// The physical unit of the time series as described in the source.
@@ -40,6 +43,21 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// List of equipment associated with this time series.
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Equipment { get; set; }
+
+
+        /// <summary>
+        /// Empty constructor. For partial updates only.
+        /// </summary>
+        public CogniteTimeSeriesBase()
+        {
+        }
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public CogniteTimeSeriesBase(TimeSeriesType type)
+        {
+            _type = type;
+        }
     }
 
     /// <summary>
