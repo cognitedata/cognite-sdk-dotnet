@@ -15,6 +15,8 @@ open CogniteSdk.Beta.DataModels.Core
 let testSpace = "dotnet-sdk-integration-test-space"
 
 module Fixtures =
+    open System.Text.Json.Nodes
+
     type DMFixture() =
         do
             writeClient.Beta.DataModels
@@ -25,6 +27,35 @@ module Fixtures =
 
         interface IDisposable with
             member __.Dispose() =
+                let nodes =
+                    writeClient.Beta.DataModels
+                        .FilterInstances<JsonNode>(
+                            InstancesFilter(
+                                Filter =
+                                    EqualsFilter(
+                                        Property = [ "node"; "space" ],
+                                        Value = RawPropertyValue(Value = testSpace)
+                                    ),
+                                Limit = 1000,
+                                InstanceType = InstanceType.node
+                            )
+                        )
+                        .GetAwaiter()
+                        .GetResult()
+
+                if not <| Seq.isEmpty (nodes.Items) then
+                    writeClient.Beta.DataModels
+                        .DeleteInstances(
+                            nodes.Items
+                            |> Seq.map (fun x ->
+                                let item = new InstanceIdentifierWithType(InstanceType.node, x.Space, x.ExternalId)
+
+                                item)
+                        )
+                        .GetAwaiter()
+                        .GetResult()
+                    |> ignore
+
                 writeClient.Beta.DataModels.DeleteSpaces([ testSpace ]).GetAwaiter().GetResult()
                 |> ignore
 
@@ -44,7 +75,7 @@ module DataPointsTests =
                         ExternalId = externalIdString,
                         Properties =
                             CogniteTimeSeriesBase(
-                                TimeSeriesType.Numeric,
+                                Type = TimeSeriesType.Numeric,
                                 Name = "Insert datapoints test",
                                 Description = "dotnet sdk test"
                             )
@@ -92,7 +123,7 @@ module DataPointsTests =
                         ExternalId = externalIdString,
                         Properties =
                             CogniteTimeSeriesBase(
-                                TimeSeriesType.Numeric,
+                                Type = TimeSeriesType.Numeric,
                                 Name = "Delete datapoints test",
                                 Description = "dotnet sdk test"
                             )

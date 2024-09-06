@@ -10,6 +10,7 @@ open CogniteSdk
 open CogniteSdk.Alpha
 open CogniteSdk.Beta
 open CogniteSdk.Beta.DataModels
+open CogniteSdk.Beta.DataModels.Core
 
 open System.Text.Json.Serialization
 
@@ -71,6 +72,7 @@ module Common =
         options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
 
         options.Converters.Add(MultiValueConverter())
+        options.Converters.Add(ObjectToTimeSeriesTypeConverter())
         options.Converters.Add(ObjectToDictionaryJsonConverter())
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
