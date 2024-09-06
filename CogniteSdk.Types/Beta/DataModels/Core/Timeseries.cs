@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace CogniteSdk.Beta.DataModels.Core
 {
@@ -15,13 +17,10 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// Defines whether the time series is a step series or not.
         /// </summary>
         public bool? IsStep { get; set; }
-
-        private readonly TimeSeriesType? _type;
         /// <summary>
         /// Type of datapoints the time series contains.
         /// </summary>
-        public string Type { get { return _type == null ? null : Enum.GetName(typeof(TimeSeriesType), _type).ToLower(); } }
-
+        public TimeSeriesType? Type { get; set; }
         /// <summary>
         /// The physical unit of the time series as described in the source.
         /// </summary>
@@ -46,17 +45,10 @@ namespace CogniteSdk.Beta.DataModels.Core
 
 
         /// <summary>
-        /// Empty constructor. For partial updates only.
+        /// Empty constructor.
         /// </summary>
         public CogniteTimeSeriesBase()
         {
-        }
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public CogniteTimeSeriesBase(TimeSeriesType type)
-        {
-            _type = type;
         }
     }
 
@@ -73,5 +65,49 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// Time series containing numeric values.
         /// </summary>
         Numeric,
+    }
+
+    /// <summary>
+    /// Converts string to TimeSeriesType
+    /// </summary>
+    public class ObjectToTimeSeriesTypeConverter : JsonConverter<TimeSeriesType?>
+    {
+        /// <summary>
+        /// Reads string into an TimeSeriesType
+        /// </summary>
+        public override TimeSeriesType? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                return null;
+            }
+            if (reader.TokenType != JsonTokenType.String)
+            {
+                throw new JsonException($"JsonTokenType was of type {reader.TokenType}, must be a string");
+            }
+
+            var typeVal = reader.GetString().ToLower();
+
+            switch (typeVal)
+            {
+                case "numeric":
+                    return TimeSeriesType.Numeric;
+                case "string":
+                    return TimeSeriesType.String;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(CogniteTimeSeriesBase.Type), "TimeSeries type can either be numeric or string");
+            }
+        }
+
+        /// <summary>
+        /// Writes a TimeSeriesType to string.
+        /// </summary>
+        public override void Write(Utf8JsonWriter writer, TimeSeriesType? value, JsonSerializerOptions options)
+        {
+            if (value == null)
+                writer.WriteNullValue();
+            else
+                writer.WriteStringValue(Enum.GetName(typeof(TimeSeriesType), value).ToLower());
+        }
     }
 }

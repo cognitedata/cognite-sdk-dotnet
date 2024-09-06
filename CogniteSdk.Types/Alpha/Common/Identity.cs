@@ -148,7 +148,7 @@ namespace CogniteSdk.Alpha
             }
             else
             {
-                return $"{{{InstanceId}}}";
+                return InstanceId.ToString();
             }
 
         }
