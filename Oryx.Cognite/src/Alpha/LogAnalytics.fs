@@ -3,8 +3,6 @@
 
 namespace Oryx.Cognite.Alpha
 
-open System.Collections.Generic
-
 open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Alpha
@@ -20,7 +18,7 @@ module LogAnalytics =
         source
         |> withLogMessage "loganalytics:ingest"
         |> withAlphaHeader
-        |> postV10<LogIngest, CogniteSdk.EmptyResponse> items Url
+        |> postV10 items Url
 
     let retrieve<'T> (request: LogRetrieve) (source: HttpHandler<unit>) : HttpHandler<Log<'T> seq> =
         http {
