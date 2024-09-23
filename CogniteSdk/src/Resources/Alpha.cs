@@ -26,6 +26,11 @@ namespace CogniteSdk.Resources
         public Alpha.DataPointsResource DataPoints { get; }
 
         /// <summary>
+        /// Resource for Industrial Log Analytics (ILA)
+        /// </summary>
+        public LogAnalyticsResource LogAnalytics { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -34,6 +39,7 @@ namespace CogniteSdk.Resources
         {
             Simulators = new SimulatorsResource(authHandler, ctx);
             DataPoints = new Alpha.DataPointsResource(authHandler, ctx);
+            LogAnalytics = new LogAnalyticsResource(authHandler, ctx);
         }
     }
 }

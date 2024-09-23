@@ -40,6 +40,7 @@
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/DataPoints.fs" />
     <Compile Include="Alpha/Simulators.fs" />
+    <Compile Include="Alpha/LogAnalytics.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
