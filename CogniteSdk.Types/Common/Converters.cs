@@ -142,7 +142,7 @@ namespace CogniteSdk
                         return number.ToString();
                     }
                     return reader.GetDouble().ToString();
-              default:
+                default:
                     throw new JsonException($"'{reader.TokenType}' is not supported");
             }
         }
