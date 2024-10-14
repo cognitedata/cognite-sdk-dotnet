@@ -21,11 +21,6 @@ namespace CogniteSdk.Resources
         public SimulatorsResource Simulators { get; }
 
         /// <summary>
-        /// Data Points resource with InstanceId support
-        /// </summary>
-        public Alpha.DataPointsResource DataPoints { get; }
-
-        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -33,7 +28,6 @@ namespace CogniteSdk.Resources
         internal AlphaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Simulators = new SimulatorsResource(authHandler, ctx);
-            DataPoints = new Alpha.DataPointsResource(authHandler, ctx);
         }
     }
 }

@@ -14,12 +14,12 @@ namespace CogniteSdk.Resources.DataModels
         /// <inheritdoc />
         public override ViewIdentifier View { get; }
 
-        private readonly Alpha.DataPointsResource _dpResource;
+        private readonly DataPointsResource _dpResource;
 
         /// <inheritdoc />
         public CoreTimeSeriesResource(
             DataModelsResource resource,
-            Alpha.DataPointsResource dpResource,
+            DataPointsResource dpResource,
             ViewIdentifier view) : base(resource)
         {
             _dpResource = dpResource;
