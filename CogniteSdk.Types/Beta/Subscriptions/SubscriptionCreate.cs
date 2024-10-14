@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Beta
 {

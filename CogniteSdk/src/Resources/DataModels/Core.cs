@@ -3,7 +3,7 @@
 
 using CogniteSdk.Resources.DataModels;
 
-namespace CogniteSdk.Beta.DataModels.Core
+namespace CogniteSdk.DataModels.Core
 {
     /// <summary>
     /// Resource for CDF core data models.
@@ -21,7 +21,7 @@ namespace CogniteSdk.Beta.DataModels.Core
         /// <returns>Core data model time series resource.</returns>
         public CoreTimeSeriesResource<T> TimeSeries<T>(ViewIdentifier view = null) where T : CogniteTimeSeriesBase
         {
-            return new CoreTimeSeriesResource<T>(_client.Beta.DataModels, _client.Alpha.DataPoints, view);
+            return new CoreTimeSeriesResource<T>(_client.DataModels, _client.DataPoints, view);
         }
 
         /// <summary>

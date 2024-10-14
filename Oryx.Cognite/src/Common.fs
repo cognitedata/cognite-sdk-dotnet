@@ -9,8 +9,8 @@ open System.Text.Json
 open CogniteSdk
 open CogniteSdk.Alpha
 open CogniteSdk.Beta
-open CogniteSdk.Beta.DataModels
-open CogniteSdk.Beta.DataModels.Core
+open CogniteSdk.DataModels
+open CogniteSdk.DataModels.Core
 
 open System.Text.Json.Serialization
 

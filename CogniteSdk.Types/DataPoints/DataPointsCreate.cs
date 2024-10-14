@@ -26,6 +26,11 @@ namespace CogniteSdk
         /// </summary>
         public Identity ExternalId { get; set; }
 
+        /// <summary>
+        /// The instance ID provided by the client. Must be unique for the resource type.
+        /// </summary>
+        public Identity InstanceId { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<DataPointsCreate>(this);
     }

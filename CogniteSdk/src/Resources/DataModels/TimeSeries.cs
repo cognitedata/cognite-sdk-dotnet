@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using CogniteSdk.Beta.DataModels;
-using CogniteSdk.Beta.DataModels.Core;
-using CogniteSdk.Resources.Beta;
+using CogniteSdk.DataModels;
+using CogniteSdk.DataModels.Core;
 
 namespace CogniteSdk.Resources.DataModels
 {
@@ -14,12 +13,12 @@ namespace CogniteSdk.Resources.DataModels
         /// <inheritdoc />
         public override ViewIdentifier View { get; }
 
-        private readonly Alpha.DataPointsResource _dpResource;
+        private readonly DataPointsResource _dpResource;
 
         /// <inheritdoc />
         public CoreTimeSeriesResource(
             DataModelsResource resource,
-            Alpha.DataPointsResource dpResource,
+            DataPointsResource dpResource,
             ViewIdentifier view) : base(resource)
         {
             _dpResource = dpResource;
