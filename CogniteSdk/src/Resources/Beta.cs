@@ -21,11 +21,6 @@ namespace CogniteSdk.Resources
         public TemplatesResource Templates { get; }
 
         /// <summary>
-        /// Flexible data models
-        /// </summary>
-        public DataModelsResource DataModels { get; }
-
-        /// <summary>
         /// Timeseries subscriptions
         /// </summary>
         public SubscriptionsResource Subscriptions { get; }
@@ -38,7 +33,6 @@ namespace CogniteSdk.Resources
         internal BetaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Templates = new TemplatesResource(authHandler, ctx);
-            DataModels = new DataModelsResource(authHandler, ctx);
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
         }
     }

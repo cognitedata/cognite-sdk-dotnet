@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using CogniteSdk.Beta.DataModels;
-using CogniteSdk.Beta.DataModels.Core;
-using CogniteSdk.Resources.Beta;
+using CogniteSdk.DataModels;
+using CogniteSdk.DataModels.Core;
 
 namespace CogniteSdk.Resources.DataModels
 {

@@ -1,7 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk

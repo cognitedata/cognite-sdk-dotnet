@@ -12,7 +12,7 @@ using Oryx;
 using CogniteSdk.Resources;
 using Microsoft.FSharp.Core;
 using static Oryx.Cognite.HttpHandlerModule;
-using CogniteSdk.Beta.DataModels.Core;
+using CogniteSdk.DataModels.Core;
 
 namespace CogniteSdk
 {
@@ -137,10 +137,15 @@ namespace CogniteSdk
         public UnitsResource Units { get; }
 
         /// <summary>
-        /// ALPHA: Resource for the core data model.
+        /// Resource for the core data model.
         /// </summary>
         /// <value></value>
         public CoreResource CoreDataModel { get; }
+
+        /// <summary>
+        /// Flexible data models
+        /// </summary>
+        public DataModelsResource DataModels { get; }
 
         /// <summary>
         /// Client for making requests to the API.
@@ -170,6 +175,7 @@ namespace CogniteSdk
             Transformations = new TransformationsResource(authHandler, ctx);
             Annotations = new AnnotationsResource(authHandler, ctx);
             Units = new UnitsResource(authHandler, ctx);
+            DataModels = new DataModelsResource(authHandler, ctx);
 
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
