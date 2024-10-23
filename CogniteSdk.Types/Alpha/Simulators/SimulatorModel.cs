@@ -42,11 +42,6 @@ namespace CogniteSdk.Alpha
         public long DataSetId { get; set; }
 
         /// <summary>
-        /// Labels of the simulation model.
-        /// </summary>
-        public IEnumerable<CogniteExternalId> Labels { get; set; }
-
-        /// <summary>
         /// Model type of the simulation model. List of available types is available in the simulator resource.
         /// </summary>
         public string Type { get; set; }

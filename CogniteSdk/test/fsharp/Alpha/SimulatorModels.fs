@@ -15,6 +15,7 @@ open Tests.Integration.Alpha.Common
 
 [<Fact>]
 [<Trait("resource", "simulatorModels")>]
+[<Trait("api", "simulators")>]
 let ``Create and list simulator models is Ok`` () =
     task {
         // Arrange
@@ -34,7 +35,6 @@ let ``Create and list simulator models is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 Name = "test_model",
                 Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
                 DataSetId = dataSet.Id,
                 Type = "OilWell"
             )
@@ -100,6 +100,7 @@ let ``Create and list simulator models is Ok`` () =
 
 [<Fact>]
 [<Trait("resource", "simulatorModels")>]
+[<Trait("api", "simulators")>]
 let ``Create and list simulator model revisions is Ok`` () =
     task {
         // Arrange
@@ -131,7 +132,6 @@ let ``Create and list simulator model revisions is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 Name = "test_model",
                 Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
                 DataSetId = dataSet.Id,
                 Type = "OilWell"
             )

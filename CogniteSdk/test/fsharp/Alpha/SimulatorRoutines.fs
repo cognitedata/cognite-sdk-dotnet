@@ -15,6 +15,7 @@ open Common
 
 [<Fact>]
 [<Trait("resource", "simulatorRoutines")>]
+[<Trait("api", "simulators")>]
 let ``Create simulator routines is Ok`` () =
     task {
         // Arrange
@@ -45,7 +46,6 @@ let ``Create simulator routines is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 Name = "test_model",
                 Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
                 DataSetId = dataSet.Id,
                 Type = "OilWell"
             )
@@ -109,13 +109,14 @@ let ``Create simulator routines is Ok`` () =
 
 [<Fact>]
 [<Trait("resource", "simulatorRoutines")>]
+[<Trait("api", "simulators")>]
 let ``Create simulator routine revision is Ok`` () =
     task {
         // Arrange
         let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
         let routineExternalId = $"test_routine_3_{now}"
         let routineRevisionExternalId = $"{routineExternalId}_1"
-        let modelExternalId = $"test_model_{now}"
+        let modelExternalId = $"test_model_1_{now}"
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
@@ -140,7 +141,6 @@ let ``Create simulator routine revision is Ok`` () =
                 SimulatorExternalId = simulatorExternalId,
                 Name = "test_model",
                 Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
                 DataSetId = dataSet.Id,
                 Type = "OilWell"
             )
@@ -229,14 +229,22 @@ let ``Create simulator routine revision is Ok`` () =
 
             let! resRevision = writeClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revToCreate ])
 
-            let! resListRevisions =
+            let! resRetrieveRevisions =
                 writeClient.Alpha.Simulators.RetrieveSimulatorRoutineRevisionsAsync(
                     [ new Identity(routineRevisionExternalId) ]
                 )
 
-            let revision = resListRevisions |> Seq.head
+            let revision = resRetrieveRevisions |> Seq.head
             let revConfig = revision.Configuration
             let revConfigToCreate = revToCreate.Configuration
+
+            let! resListRevisions = writeClient.Alpha.Simulators.ListSimulatorRoutineRevisionsAsync(
+                new SimulatorRoutineRevisionQuery(
+                    Filter = SimulatorRoutineRevisionFilter(RoutineExternalIds = [ routineExternalId ]),
+                    IncludeAllFields = true,
+                    Limit = 10
+                )
+            )
 
             // Assert
             test <@ resRevision |> Seq.length = 1 @>
@@ -277,6 +285,9 @@ let ``Create simulator routine revision is Ok`` () =
 
             let scriptStageRes = Seq.head revision.Script
             test <@ scriptStageRes.ToString() = scriptStage.ToString() @>
+
+            let listRev = resListRevisions.Items |> Seq.find (fun (item: SimulatorRoutineRevision) -> item.ExternalId = routineRevisionExternalId)
+            test <@ listRev.ToString() = revision.ToString() @>
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore

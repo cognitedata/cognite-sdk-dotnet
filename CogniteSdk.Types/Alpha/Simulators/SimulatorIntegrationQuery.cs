@@ -25,7 +25,13 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Filter by simulator external ids.
         /// </summary>
-        public IEnumerable<string> simulatorExternalIds { get; set; }
+        public IEnumerable<string> SimulatorExternalIds { get; set; }
+
+        /// <summary>
+        /// Filter by whether the simulator integration is active or not.
+        /// Connector is considered active if the heartbeat was reported within the last minute.
+        /// </summary>
+        public bool? Active { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorIntegrationFilter>(this);
