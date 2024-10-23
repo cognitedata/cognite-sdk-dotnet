@@ -46,6 +46,12 @@ namespace CogniteSdk.Alpha
         public IEnumerable<SimulatorLogDataEntry> Data { get; set; }
 
         /// <summary>
+        /// Minimum severity level of the log data.
+        /// This overrides connector configuration minimum severity level and can be used for more granular control, e.g. to debug a specific simulation run.
+        /// </summary>
+        public string Severity { get; set; }
+
+        /// <summary>
         /// Data set id of the simulator log.
         /// </summary>
         public long DataSetId { get; set; }

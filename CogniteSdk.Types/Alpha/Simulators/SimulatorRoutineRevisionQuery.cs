@@ -20,6 +20,11 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorSortItem> Sort { get; set; }
 
+        /// <summary>
+        /// If all fields should be included in the response.
+        /// If set to false - script, configuration.inputs and configuration.outputs are excluded from the response.
+        /// </summary>
+        public bool? IncludeAllFields { get; set; }
     }
 
     /// <summary>

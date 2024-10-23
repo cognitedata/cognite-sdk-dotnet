@@ -17,6 +17,7 @@ let simulatorExternalId = $"test_sim_{now}"
 
 [<Fact>]
 [<Trait("resource", "simulators")>]
+[<Trait("api", "simulators")>]
 let ``Create and delete simulators is Ok`` () =
     task {
 
@@ -61,7 +62,8 @@ let ``List simulators is Ok`` () =
     }
 
 [<Fact>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulatorIntegrations")>]
+[<Trait("api", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
         // Arrange
@@ -130,11 +132,12 @@ let ``Create and update simulator integration is Ok`` () =
     }
 
 [<Fact>]
-[<Trait("resource", "simulators")>]
+[<Trait("resource", "simulatorIntegrations")>]
+[<Trait("api", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
         // Arrange
-        let query = SimulatorIntegrationQuery()
+        let query = SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active=true))
 
         // Act
         let! res = writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
