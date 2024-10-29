@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Alpha
 {
@@ -28,9 +28,5 @@ namespace CogniteSdk.Alpha
     /// </summary>
     public class LogIngest : ItemsWithoutCursor<LogItem>
     {
-        /// <summary>
-        /// Name of the stream where the logs are located.
-        /// </summary>
-        public string Stream { get; set; }
     }
 }

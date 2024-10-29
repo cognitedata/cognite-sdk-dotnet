@@ -12,27 +12,27 @@ open CogniteSdk.Alpha
 [<RequireQualifiedAccess>]
 module LogAnalytics =
     [<Literal>]
-    let Url = "/logs"
+    let Url = "/streams"
 
-    let ingest (items: LogIngest) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
+    let ingest (stream: string) (items: LogIngest) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
         source
         |> withLogMessage "loganalytics:ingest"
         |> withAlphaHeader
-        |> postV10 items Url
+        |> postV10 items (Url +/ stream +/ "records")
 
-    let retrieve<'T> (request: LogRetrieve) (source: HttpHandler<unit>) : HttpHandler<Log<'T> seq> =
+    let retrieve<'T> (stream: string) (request: LogRetrieve) (source: HttpHandler<unit>) : HttpHandler<Log<'T> seq> =
         http {
             let! ret =
                 source
                 |> withLogMessage "loganalytics:retrieve"
                 |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
-                |> postV10<_, CogniteSdk.ItemsWithoutCursor<_>> request (Url +/ "list")
+                |> postV10<_, CogniteSdk.ItemsWithoutCursor<_>> request (Url +/ stream +/ "records/filter")
 
             return ret.Items
         }
 
-    let sync<'T> (request: LogSync) (source: HttpHandler<unit>) : HttpHandler<LogSyncResponse<'T>> =
+    let sync<'T> (stream: string) (request: LogSync) (source: HttpHandler<unit>) : HttpHandler<LogSyncResponse<'T>> =
         source
         |> withLogMessage "loganalytics:sync"
         |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
-        |> postV10 request (Url +/ "sync")
+        |> postV10 request (Url +/ stream +/ "records/sync")

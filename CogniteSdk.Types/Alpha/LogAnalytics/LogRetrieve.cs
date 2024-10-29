@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Alpha
 {
@@ -96,11 +96,6 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<LogSource> Sources { get; set; }
         /// <summary>
-        /// Optional attribute to extend the filter with full text search capabilities
-        /// for a single field in the list of log properties with OR logic.
-        /// </summary>
-        public LogSearch Search { get; set; }
-        /// <summary>
         /// A filter Domain Specific Language (DSL) used to create advanced filter queries.
         /// 
         /// Note that some filter types are not supported with ILA, see API docs.
@@ -127,10 +122,6 @@ namespace CogniteSdk.Alpha
     public class LogSync
     {
         /// <summary>
-        /// Name of the stream where logs are located, required.
-        /// </summary>
-        public string Stream { get; set; }
-        /// <summary>
         /// List of containers and the properties that should be selected.
         /// 
         /// Optional, if this is left out all properties are returned.
@@ -145,7 +136,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// A cursor returned from the previous sync request.
         /// </summary>
-        public string Cursors { get; set; }
+        public string Cursor { get; set; }
         /// <summary>
         /// Maximum number of results to return.
         /// </summary>
