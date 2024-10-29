@@ -1,4 +1,4 @@
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Alpha
 {

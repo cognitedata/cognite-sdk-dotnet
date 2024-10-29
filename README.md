@@ -37,9 +37,9 @@ The SDK may be used from both C# and F#.
 - Token
 - Groups
 - Units
+- Data Models
 
 ### Beta Resources
-- Data Models
 - Subscriptions
 - Templates
 

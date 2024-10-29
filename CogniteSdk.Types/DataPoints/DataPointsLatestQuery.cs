@@ -1,6 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using CogniteSdk.DataModels;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -69,6 +70,16 @@ namespace CogniteSdk
         }
 
         /// <summary>
+        /// Creates an identity with a before parameter and instanceId set
+        /// </summary>
+        /// <param name="instanceId">The instanceId to set</param>
+        /// <param name="before">Get datapoints before this time. The format is N[timeunit]-ago where timeunit is w,d,h,m,s</param>
+        public IdentityWithBefore(InstanceIdentifier instanceId, string before) : base(instanceId)
+        {
+            Before = before;
+        }
+
+        /// <summary>
         /// Create new external Id and null before.
         /// </summary>
         /// <param name="externalId">External id value</param>
@@ -86,6 +97,16 @@ namespace CogniteSdk
         public new static IdentityWithBefore Create(long internalId)
         {
             return new IdentityWithBefore(internalId, null);
+        }
+
+        /// <summary>
+        /// Create new instance Id and null before.
+        /// </summary>
+        /// <param name="instanceId">Insatnce id value</param>
+        /// <returns>New external Id.</returns>
+        public new static IdentityWithBefore Create(InstanceIdentifier instanceId)
+        {
+            return new IdentityWithBefore(instanceId, null);
         }
 
         /// <inheritdoc />

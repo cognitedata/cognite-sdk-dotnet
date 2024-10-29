@@ -1,7 +1,5 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-
-using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
@@ -20,11 +18,6 @@ namespace CogniteSdk.Alpha
         /// Update the description of the simulator model.
         /// </summary>
         public Update<string> Description { get; set; }
-
-        /// <summary>
-        /// Update the labels of the simulator model.
-        /// </summary>
-        public Update<IEnumerable<string>> Labels { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorModelUpdate>(this);

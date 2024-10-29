@@ -21,11 +21,6 @@ namespace CogniteSdk.Resources
         public SimulatorsResource Simulators { get; }
 
         /// <summary>
-        /// Data Points resource with InstanceId support
-        /// </summary>
-        public Alpha.DataPointsResource DataPoints { get; }
-
-        /// <summary>
         /// Resource for Industrial Log Analytics (ILA)
         /// </summary>
         public LogAnalyticsResource LogAnalytics { get; }
@@ -38,7 +33,6 @@ namespace CogniteSdk.Resources
         internal AlphaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Simulators = new SimulatorsResource(authHandler, ctx);
-            DataPoints = new Alpha.DataPointsResource(authHandler, ctx);
             LogAnalytics = new LogAnalyticsResource(authHandler, ctx);
         }
     }

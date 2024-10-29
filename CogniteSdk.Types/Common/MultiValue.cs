@@ -1,8 +1,7 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk.Beta.DataModels;
-using CogniteSdk.Beta;
+using CogniteSdk.DataModels;
 using System.Globalization;
 using System.Text.Json.Serialization;
 

@@ -29,6 +29,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
                           Value = SimulatorValue.Create(50.1), // original value is 10 C
                           Unit = SimulationInputUnitOverride(Name = "F")
                       ) ],
+                LogSeverity = "Debug",
                 RunTime = now,
                 Queue = true
             )
@@ -57,6 +58,10 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         let simulationRunAfterCallback = callbackRes.Items |> Seq.head
 
         let! resDataAfterCallback = writeClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+
+        let! resSimRunLogs = writeClient.Alpha.Simulators.RetrieveSimulatorLogsAsync(
+            [ new Identity(simulationRun.LogId.Value) ]
+        )
 
 
         // Assert
@@ -90,6 +95,11 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         let item = item.Value
         test <@ item.Value = SimulatorValue.Create(100) @>
         test <@ item.Unit.Name = "F" @>
+
+        // Assert log 
+        test <@ resSimRunLogs |> Seq.length = 1 @>
+        let logItem = resSimRunLogs |> Seq.head
+        test <@ logItem.Severity = "Debug" @>
     }
 
 [<Fact>]
