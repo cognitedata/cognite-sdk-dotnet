@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CogniteSdk.DataModels;
 using CogniteSdk.DataModels.Core;
 
