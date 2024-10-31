@@ -77,5 +77,63 @@ namespace CogniteSdk.Resources.Alpha
             var req = Oryx.Cognite.Alpha.LogAnalytics.sync<T>(stream, request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Create a new stream. A stream is a target for high volume data ingestion,
+        /// with data shaped by the Data Modeling concepts.
+        /// For beta we allow each project to create up to 10 streams.
+        /// </summary>
+        /// <param name="stream">Stream to create</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Created stream</returns>
+        public async Task<Stream> CreateStreamAsync(StreamWrite stream, CancellationToken token = default)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var req = Oryx.Cognite.Alpha.LogAnalytics.createStream(stream, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete a stream by its identifier.
+        /// </summary>
+        /// <param name="stream">Stream to delete</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task DeleteStreamAsync(string stream, CancellationToken token = default)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var req = Oryx.Cognite.Alpha.LogAnalytics.deleteStream(stream, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// List all streams in the project.
+        /// </summary>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Listed streams.</returns>
+        public async Task<IEnumerable<Stream>> ListStreamsAsync(CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.Alpha.LogAnalytics.listStreams(GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve a stream by its identifier.
+        /// </summary>
+        /// <param name="stream">Stream to retrieve</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved stream</returns>
+        public async Task<Stream> RetrieveStreamAsync(string stream, CancellationToken token = default)
+        {
+            var req = Oryx.Cognite.Alpha.LogAnalytics.retrieveStream(stream, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
     }
 }

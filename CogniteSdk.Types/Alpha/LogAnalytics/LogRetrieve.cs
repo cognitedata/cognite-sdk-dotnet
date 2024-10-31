@@ -141,6 +141,10 @@ namespace CogniteSdk.Alpha
         /// Maximum number of results to return.
         /// </summary>
         public int Limit { get; set; }
+        /// <summary>
+        /// Initialize cursor. Required if `Cursor` is not set.
+        /// </summary>
+        public bool InitializeCursor { get; set; }
     }
 
     /// <summary>
