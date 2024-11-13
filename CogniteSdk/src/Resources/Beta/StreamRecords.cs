@@ -5,76 +5,76 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CogniteSdk.Alpha;
+using CogniteSdk.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
 
-namespace CogniteSdk.Resources.Alpha
+namespace CogniteSdk.Resources.Beta
 {
     /// <summary>
-    /// Contains methods for industrial log analytics.
+    /// Contains methods for stream records.
     /// </summary>
-    public class LogAnalyticsResource : Resource
+    public class StreamRecordsResource : Resource
     {
-        internal LogAnalyticsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        internal StreamRecordsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
         /// <summary>
-        /// Creates a list of logs in the provided stream.
+        /// Creates a list of records in the provided stream.
         /// </summary>
-        /// <param name="stream">Stream to ingest logs into.</param>
-        /// <param name="logs">Logs to ingest.</param>
+        /// <param name="stream">Stream to ingest records into.</param>
+        /// <param name="records">Records to ingest.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task IngestAsync(string stream, IEnumerable<LogItem> logs, CancellationToken token = default)
+        public async Task IngestAsync(string stream, IEnumerable<StreamRecordWrite> records, CancellationToken token = default)
         {
             if (stream is null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var req = Oryx.Cognite.Alpha.LogAnalytics.ingest(stream, new LogIngest
+            var req = Oryx.Cognite.Beta.StreamRecords.ingest(stream, new StreamRecordIngest
             {
-                Items = logs,
+                Items = records,
             }, GetContext(token));
             await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Retrieve a list of logs.
+        /// Retrieve a list of records.
         /// </summary>
-        /// <typeparam name="T">Type of properties in the retrieved logs.</typeparam>
-        /// <param name="stream">Stream to ingest logs into.</param>
-        /// <param name="request">Log retrieval request.</param>
+        /// <typeparam name="T">Type of properties in the retrieved records.</typeparam>
+        /// <param name="stream">Stream to ingest records into.</param>
+        /// <param name="request">record retrieval request.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>Retrieved logs.</returns>
-        public async Task<IEnumerable<Log<T>>> RetrieveAsync<T>(string stream, LogRetrieve request, CancellationToken token = default)
+        /// <returns>Retrieved records.</returns>
+        public async Task<IEnumerable<StreamRecord<T>>> RetrieveAsync<T>(string stream, StreamRecordsRetrieve request, CancellationToken token = default)
         {
             if (request is null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var req = Oryx.Cognite.Alpha.LogAnalytics.retrieve<T>(stream, request, GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.retrieve<T>(stream, request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Synchronizes updates to logs. This endpoint will always return a cursor.
+        /// Synchronizes updates to records. This endpoint will always return a cursor.
         /// </summary>
-        /// <typeparam name="T">Type of properties in the retrieved logs.</typeparam>
-        /// <param name="stream">Stream to ingest logs into.</param>
-        /// <param name="request">Log retreival request.</param>
+        /// <typeparam name="T">Type of properties in the retrieved records.</typeparam>
+        /// <param name="stream">Stream to ingest records into.</param>
+        /// <param name="request">record retreival request.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>Sync response.</returns>
-        public async Task<LogSyncResponse<T>> SyncAsync<T>(string stream, LogSync request, CancellationToken token = default)
+        public async Task<StreamRecordsSyncResponse<T>> SyncAsync<T>(string stream, StreamRecordsSync request, CancellationToken token = default)
         {
             if (request is null)
             {
                 throw new ArgumentNullException(nameof(request));
             }
 
-            var req = Oryx.Cognite.Alpha.LogAnalytics.sync<T>(stream, request, GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.sync<T>(stream, request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -93,10 +93,11 @@ namespace CogniteSdk.Resources.Alpha
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var req = Oryx.Cognite.Alpha.LogAnalytics.createStream(stream, GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.createStream(stream, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
+        /* Unimplemented
         /// <summary>
         /// Delete a stream by its identifier.
         /// </summary>
@@ -109,9 +110,10 @@ namespace CogniteSdk.Resources.Alpha
                 throw new ArgumentNullException(nameof(stream));
             }
 
-            var req = Oryx.Cognite.Alpha.LogAnalytics.deleteStream(stream, GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.deleteStream(stream, GetContext(token));
             await RunAsync(req).ConfigureAwait(false);
         }
+        */
 
         /// <summary>
         /// List all streams in the project.
@@ -120,7 +122,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Listed streams.</returns>
         public async Task<IEnumerable<Stream>> ListStreamsAsync(CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Alpha.LogAnalytics.listStreams(GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.listStreams(GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
@@ -132,7 +134,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Retrieved stream</returns>
         public async Task<Stream> RetrieveStreamAsync(string stream, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Alpha.LogAnalytics.retrieveStream(stream, GetContext(token));
+            var req = Oryx.Cognite.Beta.StreamRecords.retrieveStream(stream, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

@@ -1,30 +1,30 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-namespace Oryx.Cognite.Alpha
+namespace Oryx.Cognite.Beta
 
 open Oryx
 open Oryx.Cognite
-open Oryx.Cognite.Alpha
+open Oryx.Cognite.Beta
 
-open CogniteSdk.Alpha
+open CogniteSdk.Beta
 
 [<RequireQualifiedAccess>]
-module LogAnalytics =
+module StreamRecords =
     [<Literal>]
     let Url = "/streams"
 
-    let ingest (stream: string) (items: LogIngest) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
+    let ingest (stream: string) (items: StreamRecordIngest) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
         source
-        |> withLogMessage "loganalytics:ingest"
+        |> withLogMessage "streamrecords:ingest"
         |> withAlphaHeader
         |> postV10 items (Url +/ stream +/ "records")
 
-    let retrieve<'T> (stream: string) (request: LogRetrieve) (source: HttpHandler<unit>) : HttpHandler<Log<'T> seq> =
+    let retrieve<'T> (stream: string) (request: StreamRecordsRetrieve) (source: HttpHandler<unit>) : HttpHandler<StreamRecord<'T> seq> =
         http {
             let! ret =
                 source
-                |> withLogMessage "loganalytics:retrieve"
+                |> withLogMessage "streamrecords:retrieve"
                 |> withAlphaHeader
                 |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
                 |> postV10<_, CogniteSdk.ItemsWithoutCursor<_>> request (Url +/ stream +/ "records/filter")
@@ -32,9 +32,9 @@ module LogAnalytics =
             return ret.Items
         }
 
-    let sync<'T> (stream: string) (request: LogSync) (source: HttpHandler<unit>) : HttpHandler<LogSyncResponse<'T>> =
+    let sync<'T> (stream: string) (request: StreamRecordsSync) (source: HttpHandler<unit>) : HttpHandler<StreamRecordsSyncResponse<'T>> =
         source
-        |> withLogMessage "loganalytics:sync"
+        |> withLogMessage "streamrecords:sync"
         |> withAlphaHeader
         |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
         |> postV10 request (Url +/ stream +/ "records/sync")
@@ -44,24 +44,25 @@ module LogAnalytics =
             let request = CogniteSdk.ItemsWithoutCursor(Items = [ stream ])
             let! ret =
                 source
-                |> withLogMessage "loganalytics:createstream"
+                |> withLogMessage "streamrecords:createstream"
                 |> withAlphaHeader
                 |> postV10<_, CogniteSdk.ItemsWithoutCursor<_>> request Url
             
             return Seq.exactlyOne(ret.Items)
         }
     
-    let deleteStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
-        source
-        |> withLogMessage "loganalytics:deletestream"
-        |> withAlphaHeader
-        |> deleteV10 (Url +/ stream)
+    // Unimplemented
+    // let deleteStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
+    //     source
+    //     |> withLogMessage "streamrecords:deletestream"
+    //     |> withAlphaHeader
+    //     |> deleteV10 (Url +/ stream)
     
     let listStreams (source: HttpHandler<unit>) : HttpHandler<Stream seq> =
         http {
             let! ret =
                 source
-                |> withLogMessage "loganalytics:liststreams"
+                |> withLogMessage "streamrecords:liststreams"
                 |> withAlphaHeader
                 |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
                 |> getV10<CogniteSdk.ItemsWithoutCursor<_>> Url
@@ -71,6 +72,6 @@ module LogAnalytics =
     
     let retrieveStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<Stream> =
         source
-        |> withLogMessage "loganalyitics:retrievestream"
+        |> withLogMessage "streamrecords:retrievestream"
         |> withAlphaHeader
         |> getV10 (Url +/ stream)

@@ -1,15 +1,18 @@
+// Copyright 2024 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using CogniteSdk.DataModels;
 
-namespace CogniteSdk.Alpha
+namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// A retrieved log from ILA.
+    /// A retrieved stream record.
     /// </summary>
     /// <typeparam name="T">Type of the properties bag.</typeparam>
-    public class Log<T>
+    public class StreamRecord<T>
     {
         /// <summary>
-        /// Id of the space the log belongs to.
+        /// Id of the space the record belongs to.
         /// </summary>
         public string Space { get; set; }
         /// <summary>

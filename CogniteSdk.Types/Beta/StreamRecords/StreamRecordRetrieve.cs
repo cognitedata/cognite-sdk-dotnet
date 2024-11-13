@@ -1,13 +1,16 @@
+// Copyright 2024 Cognite AS
+// SPDX-License-Identifier: Apache-2.0
+
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using CogniteSdk.DataModels;
 
-namespace CogniteSdk.Alpha
+namespace CogniteSdk.Beta
 {
     /// <summary>
-    /// Sources to retrieve log data from.
+    /// Sources to retrieve stream record data from.
     /// </summary>
-    public class LogSource
+    public class StreamRecordSource
     {
         /// <summary>
         /// Container reference.
@@ -21,9 +24,9 @@ namespace CogniteSdk.Alpha
 
     /// <summary>
     /// Optional attribute to extend the filter with full text search capabilities for
-    /// a single query in the list of log properties with OR logic.
+    /// a single query in the list of record properties with OR logic.
     /// </summary>
-    public class LogSearch
+    public class StreamRecordSearch
     {
         /// <summary>
         /// Query string that will be parsed and used for search.
@@ -36,7 +39,7 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Filter on logs created within the provided range.
+    /// Filter on records created within the provided range.
     /// </summary>
     public class CreatedTimeFilter
     {
@@ -66,9 +69,9 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Specification for sorting retrieved ILA logs.
+    /// Specification for sorting retrieved records.
     /// </summary>
-    public class LogSort
+    public class StreamRecordsSort
     {
         /// <summary>
         /// Property you want to sort on.
@@ -77,16 +80,16 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Sort direction.
         /// </summary>
-        public SortDirection Direction { get; set; }
+        public SortDirection? Direction { get; set; }
     }
 
     /// <summary>
-    /// Retrieve logs from ILA.
+    /// Retrieve stream records.
     /// </summary>
-    public class LogRetrieve
+    public class StreamRecordsRetrieve
     {
         /// <summary>
-        /// Name of the stream where logs are located, required.
+        /// Name of the stream where records are located, required.
         /// </summary>
         public string Stream { get; set; }
         /// <summary>
@@ -94,43 +97,43 @@ namespace CogniteSdk.Alpha
         /// 
         /// Optional, if this is left out all properties are returned.
         /// </summary>
-        public IEnumerable<LogSource> Sources { get; set; }
+        public IEnumerable<StreamRecordSource> Sources { get; set; }
         /// <summary>
         /// A filter Domain Specific Language (DSL) used to create advanced filter queries.
         /// 
-        /// Note that some filter types are not supported with ILA, see API docs.
+        /// Note that some filter types are not supported, see API docs.
         /// </summary>
         public IDMSFilter Filter { get; set; }
         /// <summary>
-        /// Matches logs with created time within the provided range.
+        /// Matches records with created time within the provided range.
         /// </summary>
         public CreatedTimeFilter CreatedTime { get; set; }
         /// <summary>
         /// Maximum number of results to return. Default 10, max 10000.
         /// </summary>
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
         /// <summary>
         /// Ordered list of sorting specifications.
         /// </summary>
-        public IEnumerable<LogSort> Sort { get; set; }
+        public IEnumerable<StreamRecordsSort> Sort { get; set; }
     }
 
 
     /// <summary>
-    /// Request for syncing logs.
+    /// Request for syncing records.
     /// </summary>
-    public class LogSync
+    public class StreamRecordsSync
     {
         /// <summary>
         /// List of containers and the properties that should be selected.
         /// 
         /// Optional, if this is left out all properties are returned.
         /// </summary>
-        public IEnumerable<LogSource> Sources { get; set; }
+        public IEnumerable<StreamRecordSource> Sources { get; set; }
         /// <summary>
         /// A filter Domain Specific Language (DSL) used to create advanced filter queries.
         /// 
-        /// Note that some filter types are not supported with ILA, see API docs.
+        /// Note that some filter types are not supported, see API docs.
         /// </summary>
         public IDMSFilter Filter { get; set; }
         /// <summary>
@@ -140,7 +143,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Maximum number of results to return.
         /// </summary>
-        public int Limit { get; set; }
+        public int? Limit { get; set; }
         /// <summary>
         /// Initialize cursor. Required if `Cursor` is not set.
         /// </summary>
@@ -148,13 +151,13 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Response from an ILA sync request.
+    /// Response from a sync request.
     /// </summary>
-    /// <typeparam name="T">Type of properties in returned logs.</typeparam>
-    public class LogSyncResponse<T> : ItemsWithCursor<Log<T>>
+    /// <typeparam name="T">Type of properties in returned records.</typeparam>
+    public class StreamRecordsSyncResponse<T> : ItemsWithCursor<StreamRecord<T>>
     {
         /// <summary>
-        /// The attribute indiciates if there are more logs to read in storage,
+        /// The attribute indiciates if there are more records to read in storage,
         /// or if the cursor points to the last item.
         /// </summary>
         public bool HasNext { get; set; }

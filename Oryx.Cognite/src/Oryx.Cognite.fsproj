@@ -37,9 +37,9 @@
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/TemplateGroups.fs" />
+    <Compile Include="Beta/StreamRecords.fs" />
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/Simulators.fs" />
-    <Compile Include="Alpha/LogAnalytics.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
