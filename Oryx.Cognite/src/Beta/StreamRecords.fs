@@ -14,13 +14,21 @@ module StreamRecords =
     [<Literal>]
     let Url = "/streams"
 
-    let ingest (stream: string) (items: StreamRecordIngest) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
+    let ingest
+        (stream: string)
+        (items: StreamRecordIngest)
+        (source: HttpHandler<unit>)
+        : HttpHandler<CogniteSdk.EmptyResponse> =
         source
         |> withLogMessage "streamrecords:ingest"
         |> withAlphaHeader
         |> postV10 items (Url +/ stream +/ "records")
 
-    let retrieve<'T> (stream: string) (request: StreamRecordsRetrieve) (source: HttpHandler<unit>) : HttpHandler<StreamRecord<'T> seq> =
+    let retrieve<'T>
+        (stream: string)
+        (request: StreamRecordsRetrieve)
+        (source: HttpHandler<unit>)
+        : HttpHandler<StreamRecord<'T> seq> =
         http {
             let! ret =
                 source
@@ -32,7 +40,11 @@ module StreamRecords =
             return ret.Items
         }
 
-    let sync<'T> (stream: string) (request: StreamRecordsSync) (source: HttpHandler<unit>) : HttpHandler<StreamRecordsSyncResponse<'T>> =
+    let sync<'T>
+        (stream: string)
+        (request: StreamRecordsSync)
+        (source: HttpHandler<unit>)
+        : HttpHandler<StreamRecordsSyncResponse<'T>> =
         source
         |> withLogMessage "streamrecords:sync"
         |> withAlphaHeader
@@ -42,22 +54,23 @@ module StreamRecords =
     let createStream (stream: StreamWrite) (source: HttpHandler<unit>) : HttpHandler<Stream> =
         http {
             let request = CogniteSdk.ItemsWithoutCursor(Items = [ stream ])
+
             let! ret =
                 source
                 |> withLogMessage "streamrecords:createstream"
                 |> withAlphaHeader
                 |> postV10<_, CogniteSdk.ItemsWithoutCursor<_>> request Url
-            
-            return Seq.exactlyOne(ret.Items)
+
+            return Seq.exactlyOne (ret.Items)
         }
-    
+
     // Unimplemented
     // let deleteStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
     //     source
     //     |> withLogMessage "streamrecords:deletestream"
     //     |> withAlphaHeader
     //     |> deleteV10 (Url +/ stream)
-    
+
     let listStreams (source: HttpHandler<unit>) : HttpHandler<Stream seq> =
         http {
             let! ret =
@@ -66,10 +79,10 @@ module StreamRecords =
                 |> withAlphaHeader
                 |> withCompletion System.Net.Http.HttpCompletionOption.ResponseHeadersRead
                 |> getV10<CogniteSdk.ItemsWithoutCursor<_>> Url
-            
+
             return ret.Items
         }
-    
+
     let retrieveStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<Stream> =
         source
         |> withLogMessage "streamrecords:retrievestream"
