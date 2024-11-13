@@ -217,6 +217,16 @@ module HttpHandler =
     let getV10<'TResult> (url: string) source =
         source |> withVersion V10 |> get<'TResult> url
 
+    let deleteV10<'TResult> (url: string) (source: HttpHandler<unit>) =
+        source
+        |> withVersion V10
+        |> DELETE
+        |> withResource url
+        |> fetch
+        |> withError decodeError
+        |> json<'TResult> jsonOptions
+        |> log
+
     let getV10Options<'TResult>
         (url: string)
         (options: JsonSerializerOptions)

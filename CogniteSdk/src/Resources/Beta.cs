@@ -26,6 +26,11 @@ namespace CogniteSdk.Resources
         public SubscriptionsResource Subscriptions { get; }
 
         /// <summary>
+        /// Resource for Stream Records.
+        /// </summary>
+        public StreamRecordsResource StreamRecords { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -34,6 +39,7 @@ namespace CogniteSdk.Resources
         {
             Templates = new TemplatesResource(authHandler, ctx);
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
+            StreamRecords = new StreamRecordsResource(authHandler, ctx);
         }
     }
 }
