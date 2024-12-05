@@ -40,7 +40,7 @@ namespace CogniteSdk.Beta
         /// List of instance ids of time series that this subscription will listen to.
         /// Not compatible with filter.
         /// </summary>
-        public IEnumerable<InstanceIdentifier> instanceIds { get; set; }
+        public IEnumerable<InstanceIdentifier> InstanceIds { get; set; }
         /// <summary>
         /// A filter DSL (Domain Specific Language) to define advanced filter queries.
         /// 
