@@ -17,6 +17,12 @@ namespace CogniteSdk.Beta
         /// </summary>
         public UpdateEnumerable<string> TimeSeriesIds { get; set; }
         /// <summary>
+        /// Add or remove time series instance IDs for this subscription.
+        /// 
+        /// Not applicable to filter based subscriptions.
+        /// </summary>
+        public UpdateEnumerable<InstanceIdentifier> InstanceIds { get; set; }
+        /// <summary>
         /// Update subscription name.
         /// </summary>
         public UpdateNullable<string> Name { get; set; }
