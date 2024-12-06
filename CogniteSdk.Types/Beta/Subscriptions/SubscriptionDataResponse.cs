@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Beta
 {
@@ -18,6 +19,10 @@ namespace CogniteSdk.Beta
         /// Timeseries external ID.
         /// </summary>
         public string ExternalId { get; set; }
+        /// <summary>
+        /// Timeseries instance ID.
+        /// </summary>
+        public InstanceIdentifier InstanceId { get; set; }
     }
 
     /// <summary>
