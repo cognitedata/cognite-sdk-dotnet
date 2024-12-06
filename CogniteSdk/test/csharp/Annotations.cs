@@ -71,7 +71,6 @@ namespace Test.CSharp.Integration
                 CreatingUser = "user",
                 Data = boundingVolume
             };
-            Console.WriteLine(suggestAnnotationQuery);
             var annotation = (
                 await WriteClient.Annotations.SuggestAsync(new List<AnnotationSuggest> { suggestAnnotationQuery })
 
@@ -120,7 +119,6 @@ namespace Test.CSharp.Integration
                 Data = boundingVolume,
                 Status = "suggested"
             };
-            Console.WriteLine(createAnnotationQuery);
             var annotation = (
                 await WriteClient.Annotations.CreateAsync(new List<AnnotationCreate> { createAnnotationQuery })
 
