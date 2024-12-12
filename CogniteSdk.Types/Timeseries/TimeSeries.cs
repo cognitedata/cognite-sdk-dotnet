@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using CogniteSdk.DataModels;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -21,6 +22,11 @@ namespace CogniteSdk
         /// The externally supplied ID for the time series
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
+        /// The instance ID of the time series
+        /// </summary>
+        public InstanceIdentifier InstanceId { get; set; }
 
         /// <summary>
         /// Javascript friendly internal ID given to the object.
