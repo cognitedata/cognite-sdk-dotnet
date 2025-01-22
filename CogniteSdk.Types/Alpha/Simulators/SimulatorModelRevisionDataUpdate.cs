@@ -20,4 +20,19 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public Update<Dictionary<string, string>> Info { get; set; }
     }
+
+    public class SimulatorModelRevisionDataUpdateItem
+
+    {
+        /// <summary>
+        /// External id of the model revision.
+        /// </summary>
+        public string ModelRevisionExternalId { get; set; }
+
+        /// <summary>
+        /// Update object for the model revision data.
+        /// </summary>
+        public SimulatorModelRevisionDataUpdate Update { get; set; }
+    }
+
 }

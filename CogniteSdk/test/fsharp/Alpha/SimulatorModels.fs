@@ -11,6 +11,7 @@ open Common
 open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
+open System.Collections.Generic
 
 
 [<Fact>]
@@ -71,6 +72,7 @@ let ``Create and list simulator models is Ok`` () =
                             Name = Update<string>("test_model_updated")
                         )
                 )
+
 
             let! modelUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
             let updatedModel = modelUpdateRes |> Seq.head
@@ -144,6 +146,8 @@ let ``Create and list simulator model revisions is Ok`` () =
                 FileId = fileCreated.Id
             )
 
+
+
         try
             // Act
             let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
@@ -198,6 +202,23 @@ let ``Create and list simulator model revisions is Ok`` () =
                         )
                 )
 
+            // Create test revision data
+            let modelRevisionDataUpdate = Dictionary<string, string>()
+            modelRevisionDataUpdate.Add("key1", "value1")
+            modelRevisionDataUpdate.Add("key2", "value2")
+
+            let dataUpdate =
+                new SimulatorModelRevisionDataUpdateItem(
+                    ModelRevisionExternalId = modelRevisionCreated.ExternalId,
+                    Update = SimulatorModelRevisionDataUpdate(
+                        Info = Update(modelRevisionDataUpdate)
+                    )
+                )
+
+
+            let! modelRevisionDataUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync([ dataUpdate ])
+            let! modelRevisionUpdatedData = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
+
             let! modelRevisionUpdateRes =
                 writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
 
@@ -219,6 +240,8 @@ let ``Create and list simulator model revisions is Ok`` () =
 
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
+            test <@ modelRevisionUpdatedData.Info.["key1"] = "value1" @>
+            test <@ modelRevisionUpdatedData.Info.["key2"] = "value2" @>
 
 
         finally
