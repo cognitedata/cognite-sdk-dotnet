@@ -13,12 +13,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Flowsheet of the model revision.
         /// </summary>
-        public Update<SimulatorModelRevisionDataFlowsheet> Flowsheet { get; set; }
+        public Update<SimulatorModelRevisionDataFlowsheet>? Flowsheet { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
         /// </summary>
-        public Update<Dictionary<string, string>> Info { get; set; }
+        public Update<Dictionary<string, string>>? Info { get; set; }
     }
 
     public class SimulatorModelRevisionDataUpdateItem

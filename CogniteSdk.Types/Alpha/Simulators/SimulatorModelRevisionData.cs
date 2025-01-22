@@ -156,7 +156,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Node name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Node type.
@@ -166,7 +166,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Graphical representation.
         /// </summary>
-        public SimulatorModelRevisionDataGraphicalObject GraphicalObject { get; set; }
+        public SimulatorModelRevisionDataGraphicalObject? GraphicalObject { get; set; }
 
         /// <summary>
         /// IEnumerable of node properties.
@@ -187,7 +187,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Edge name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Source node identifier.
@@ -259,12 +259,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Flowsheet of the model revision.
         /// </summary>
-        public SimulatorModelRevisionDataFlowsheet Flowsheet { get; set; }
+        public SimulatorModelRevisionDataFlowsheet? Flowsheet { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
         /// </summary>
-        public Dictionary<string, string> Info { get; set; }
+        public Dictionary<string, string>? Info { get; set; }
 
         /// <summary>
         /// The number of milliseconds since epoch.
