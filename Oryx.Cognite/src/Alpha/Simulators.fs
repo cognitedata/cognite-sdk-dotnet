@@ -188,9 +188,12 @@ module Simulators =
         let updateItems =
             items
             |> Seq.map (fun item ->
-                let updateItem = UpdateItem<SimulatorModelRevisionDataUpdate>(item.ModelRevisionExternalId) 
+                let updateItem =
+                    UpdateItem<SimulatorModelRevisionDataUpdate>(item.ModelRevisionExternalId)
+
                 updateItem.Update <- item.Update
                 updateItem)
+
         source
         |> withLogMessage "simulators:updateSimulatorModelRevisionData"
         |> withAlphaHeader
@@ -202,14 +205,16 @@ module Simulators =
         : HttpHandler<'T seq> =
         http {
             let url = modelRevisionsUrl +/ "data"
+
             let! ret =
                 source
                 |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
                 |> withAlphaHeader
                 |> postV10<ItemsWithoutCursor<string>, ItemsWithoutCursor<'T>> request url
+
             return ret.Items
         }
-        
+
     let listSimulatorRoutines
         (query: SimulatorRoutineQuery)
         (source: HttpHandler<unit>)
