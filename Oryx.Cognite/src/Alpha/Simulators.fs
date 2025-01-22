@@ -204,7 +204,7 @@ module Simulators =
         (source: HttpHandler<unit>)
         : HttpHandler<'T seq> =
         http {
-            let url = modelRevisionsUrl +/ "data"
+            let url = modelRevisionsUrl +/ "data/list"
 
             let! ret =
                 source
