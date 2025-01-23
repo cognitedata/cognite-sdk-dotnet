@@ -1,5 +1,6 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
+#nullable enable
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 

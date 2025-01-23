@@ -21,6 +21,10 @@ namespace CogniteSdk.Alpha
         public UpdateNullable<Dictionary<string, string>> Info { get; set; }
     }
 
+    /// <summary>
+    /// Update class for simulator model revision data.
+    /// </summary>
+
     public class SimulatorModelRevisionDataUpdateItem
 
     {
