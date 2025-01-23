@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Cognite AS
+﻿﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -247,6 +247,8 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
 
+        
+
         /// <summary>
         /// Asyncronously list simulator routines.
         /// </summary>
@@ -329,6 +331,45 @@ namespace CogniteSdk.Resources.Alpha
 
             var req = Simulators.retrieveSimulatorRoutineRevisions<SimulatorRoutineRevision>(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously updates simulator model revision data.
+        /// </summary>
+        /// <param name="items">The simulator model revision data items to update.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorModelRevisionData>> UpdateSimulatorModelRevisionDataAsync(SimulatorModelRevisionDataUpdateItem item, CancellationToken token = default)
+        {
+            if (item is null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            var req = Simulators.updateSimulatorModelRevisionData(item, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves simulator model revision data.
+        /// </summary>
+        /// <param name="modelRevisionExternalId">The external id of the model revision to retrieve data for.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulator model revision data</returns>
+        public async Task<SimulatorModelRevisionData> RetrieveSimulatorModelRevisionDataAsync(string modelRevisionExternalId, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(modelRevisionExternalId))
+            {
+                throw new ArgumentNullException(nameof(modelRevisionExternalId));
+            }
+
+            var request = new ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>
+            {
+                Items = new[] { new SimulatorModelRevisionDataRetrieve { ModelRevisionExternalId = modelRevisionExternalId } }
+            };
+
+            var req = Simulators.retrieveSimulatorModelRevisionData(request, GetContext(token));
+            var result = await RunAsync(req).ConfigureAwait(false);
+            return result.Items.FirstOrDefault();
         }
 
         /// <summary>
