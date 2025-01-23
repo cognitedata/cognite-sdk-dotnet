@@ -278,4 +278,20 @@ namespace CogniteSdk.Alpha
         public long LastUpdatedTime { get; set; }
     }
 
+    /// <summary>
+    /// Retreive class for simulator model revision data.
+    /// </summary>
+    public class SimulatorModelRevisionDataRetrieve
+    {
+        /// <summary>
+        /// External id of the model revision.
+        ///
+        /// </summary>
+        /// <value>External id of the model revision.</value>
+        /// <example>model-revision-external-id</example>
+        /// 
+        public string ModelRevisionExternalId { get; set; }
+
+    }
+
 }
