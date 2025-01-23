@@ -213,7 +213,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             )
 
 
-
+            let! _test = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
             let! modelRevisionDataUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync( dataUpdate )
             let! modelRevisionUpdatedData = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
 
