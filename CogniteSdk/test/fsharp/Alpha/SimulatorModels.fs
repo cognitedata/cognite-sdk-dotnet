@@ -207,13 +207,13 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             modelRevisionDataUpdate.Add("key1", "value1")
             modelRevisionDataUpdate.Add("key2", "value2")
 
-            let dataUpdate =
-                new SimulatorModelRevisionDataUpdateItem(
-                    ModelRevisionExternalId = modelRevisionCreated.ExternalId,
-                    Update = SimulatorModelRevisionDataUpdate(
-                        Info = Update(modelRevisionDataUpdate)  // Use Update instead of UpdateNullable
-                    )
-                )
+            let update = SimulatorModelRevisionDataUpdate()
+            update.Info <- UpdateNullable(modelRevisionDataUpdate)
+
+            let dataUpdate = SimulatorModelRevisionDataUpdateItem()
+            dataUpdate.ModelRevisionExternalId <- modelRevisionCreated.ExternalId
+            dataUpdate.Update <- update
+
 
 
             let! modelRevisionDataUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync([ dataUpdate ])
