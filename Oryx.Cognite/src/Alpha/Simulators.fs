@@ -182,19 +182,24 @@ module Simulators =
         |> HttpHandler.update items modelRevisionsUrl
 
     let updateSimulatorModelRevisionData
-        (items: SimulatorModelRevisionDataUpdateItem seq)
+        (item: SimulatorModelRevisionDataUpdateItem)
         (source: HttpHandler<unit>)
-        : HttpHandler<SimulatorModelRevisionData seq> =
-        let updateItems =
-            items
-            |> Seq.map (fun item ->
-                {| modelRevisionExternalId = item.ModelRevisionExternalId
-                   update = item.Update |})
+        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+
+        let updateUrl = modelRevisionsUrl +/ "data/update"
+
+        let request =
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>(Items = [ item ])
 
         source
         |> withLogMessage "simulators:updateSimulatorModelRevisionData"
         |> withAlphaHeader
-        |> HttpHandler.postV10<_, _> updateItems (modelRevisionsUrl +/ "data/update")
+        |> postV10<
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>,
+            ItemsWithoutCursor<SimulatorModelRevisionData>
+            >
+            request
+            updateUrl
 
 
 
