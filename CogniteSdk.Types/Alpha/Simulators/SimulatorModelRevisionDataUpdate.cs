@@ -1,5 +1,6 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
+#nullable enable
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
@@ -13,12 +14,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Flowsheet of the model revision.
         /// </summary>
-        public UpdateNullable<SimulatorModelRevisionDataFlowsheet> Flowsheet { get; set; }
+        public SimulatorModelRevisionDataFlowsheet? Flowsheet { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
         /// </summary>
-        public UpdateNullable<Dictionary<string, string>> Info { get; set; }
+        public Dictionary<string, string>? Info { get; set; }
     }
 
     /// <summary>

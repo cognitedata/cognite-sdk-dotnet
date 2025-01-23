@@ -199,21 +199,17 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.update updateItems (modelRevisionsUrl +/ "data")
 
+
+
     let retrieveSimulatorModelRevisionData<'T when 'T :> SimulatorModelRevisionData>
         (request: ItemsWithoutCursor<string>)
         (source: HttpHandler<unit>)
         : HttpHandler<'T seq> =
-        http {
-            let url = modelRevisionsUrl +/ "data/list"
-
-            let! ret =
-                source
-                |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
-                |> withAlphaHeader
-                |> postV10<ItemsWithoutCursor<string>, ItemsWithoutCursor<'T>> request url
-
-            return ret.Items
-        }
+        source
+        |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
+        |> withAlphaHeader
+        |> postV10<ItemsWithoutCursor<string>, ItemsWithoutCursor<'T>> request (modelRevisionsUrl +/ "data/list")
+        |> HttpHandler.map (fun ret -> ret.Items)
 
     let listSimulatorRoutines
         (query: SimulatorRoutineQuery)
