@@ -194,7 +194,7 @@ module Simulators =
         source
         |> withLogMessage "simulators:updateSimulatorModelRevisionData"
         |> withAlphaHeader
-        |> HttpHandler.postV10<_, _> updateItems (modelRevisionsUrl +/ "data")
+        |> HttpHandler.postV10<_, _> updateItems (modelRevisionsUrl +/ "data/update")
 
 
 
