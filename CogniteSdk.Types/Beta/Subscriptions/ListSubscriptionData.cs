@@ -53,5 +53,29 @@ namespace CogniteSdk.Beta
         /// Note that InitializeCursors is not exact, a deviation of some seconds can occur.
         /// </summary>
         public string InitializeCursors { get; set; }
+        // <summary>
+        // The maximum time to wait for data to arrive, in seconds. As soon as data is available,
+        // the request will return immediately with the data. If the timeout is reached while waiting
+        // for data, the request will return an empty data response.
+        // Default value is 5, range is from 0 to 5.
+        // </summary>
+        public int? pollTimeoutSeconds { get; set; }
+        // <summary>
+        // Show the status code for each data point in the response. Good (code = 0) status codes are always
+        // omitted.
+        // Default value false.
+        // </summary>
+        public bool? includeStatus { get; set; }
+        // <summary>
+        // Treat data points with a Bad status code as if they do not exist. Set to false to include all data
+        // points.
+        // Default value true.
+        // </summary>
+        public bool? ignoreBadDataPoints { get; set; }
+        // <summary>
+        // Treat data points with Uncertain status codes as Bad. Set to false to include uncertain data points.
+        // Default value true.
+        // </summary>
+        public bool? treatUncertainAsBad { get; set; }
     }
 }
