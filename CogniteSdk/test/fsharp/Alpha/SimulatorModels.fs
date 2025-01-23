@@ -211,7 +211,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                 new SimulatorModelRevisionDataUpdateItem(
                     ModelRevisionExternalId = modelRevisionCreated.ExternalId,
                     Update = SimulatorModelRevisionDataUpdate(
-                        Info = modelRevisionDataUpdate
+                        Info = Update(modelRevisionDataUpdate)  // Use Update instead of UpdateNullable
                     )
                 )
 
