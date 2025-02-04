@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Alpha
 {
@@ -25,6 +26,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Task type.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TaskType
     {
         /// <summary>

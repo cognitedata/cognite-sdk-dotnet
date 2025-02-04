@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.Alpha
 {
@@ -40,11 +41,18 @@ namespace CogniteSdk.Alpha
         /// i.e. that tasks are started after they end etc.
         /// </summary>
         public long Timestamp { get; set; }
+        /// <summary>
+        /// Optional message for the task update. Note that we only store a single
+        /// message per task _run_, so if you set a different message when starting and stopping the run,
+        /// the message reported when starting the task will be overwritten with the one reported when stopping the task.
+        /// </summary>
+        public string Message { get; set; }
     }
 
     /// <summary>
     /// Error severity level.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ErrorLevel
     {
         /// <summary>
