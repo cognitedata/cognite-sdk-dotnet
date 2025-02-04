@@ -26,11 +26,11 @@ module Integrations =
         |> withAlphaHeader
         |> postV10 request (Url +/ "checkin")
 
-    let extractorInfo (request: ExtractorInfo) (source: HttpHandler<unit>) : HttpHandler<CheckInResponse> =
+    let startup (request: StartupRequest) (source: HttpHandler<unit>) : HttpHandler<CheckInResponse> =
         source
-        |> withLogMessage "integrations:extractorinfo"
+        |> withLogMessage "integrations:startup"
         |> withAlphaHeader
-        |> postV10 request (Url +/ "extractorinfo")
+        |> postV10 request (Url +/ "startup")
 
     let createConfigRevision
         (revision: CreateConfigRevision)
