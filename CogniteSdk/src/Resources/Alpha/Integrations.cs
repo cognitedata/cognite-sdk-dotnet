@@ -43,9 +43,9 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="request">Changes to extractor info.</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Response with changes and notifications the extractor should be aware of.</returns>
-        public async Task<CheckInResponse> ExtractorInfoAsync(ExtractorInfo request, CancellationToken token = default)
+        public async Task<CheckInResponse> StartupAsync(StartupRequest request, CancellationToken token = default)
         {
-            var req = Integrations.extractorInfo(request, GetContext(token));
+            var req = Integrations.startup(request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

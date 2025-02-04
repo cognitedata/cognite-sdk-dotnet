@@ -143,7 +143,7 @@ namespace CogniteSdk.Alpha
     /// Report changes to general information about the extractor.
     /// This is typically used on extractor startup and when loading a new config file.
     /// </summary>
-    public class ExtractorInfo
+    public class StartupRequest
     {
         /// <summary>
         /// ID of the running extractor.
