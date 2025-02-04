@@ -21,6 +21,11 @@ namespace CogniteSdk.Resources
         public SimulatorsResource Simulators { get; }
 
         /// <summary>
+        /// Integrations API extension methods.
+        /// </summary>
+        public IntegrationsResource Integrations { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -28,6 +33,7 @@ namespace CogniteSdk.Resources
         internal AlphaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
             Simulators = new SimulatorsResource(authHandler, ctx);
+            Integrations = new IntegrationsResource(authHandler, ctx);
         }
     }
 }
