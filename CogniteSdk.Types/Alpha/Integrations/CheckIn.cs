@@ -9,6 +9,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Type of task update.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TaskUpdateType
     {
         /// <summary>
