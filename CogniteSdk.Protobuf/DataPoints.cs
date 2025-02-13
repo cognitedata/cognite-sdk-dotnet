@@ -1535,6 +1535,34 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
     }
 
+    /// <summary>Field number for the "maxDatapoint" field.</summary>
+    public const int MaxDatapointFieldNumber = 18;
+    private NumericDatapoint maxDatapoint_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public NumericDatapoint MaxDatapoint
+        {
+        get { return maxDatapoint_; }
+        set
+        {
+            maxDatapoint_ = value;
+        }
+    }
+
+    /// <summary>Field number for the "minDatapoint" field.</summary>
+    public const int MinDatapointFieldNumber = 19;
+    private NumericDatapoint minDatapoint_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public NumericDatapoint MinDatapoint
+        {
+        get { return minDatapoint_; }
+        set
+        {
+            minDatapoint_ = value;
+        }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
