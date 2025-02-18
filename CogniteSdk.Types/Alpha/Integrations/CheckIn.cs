@@ -155,6 +155,10 @@ namespace CogniteSdk.Alpha
     public class StartupRequest
     {
         /// <summary>
+        /// ExternalId of the integration to report startup to.
+        /// </summary>
+        public string ExternalId { get; set; }
+        /// <summary>
         /// ID of the running extractor.
         /// </summary>
         public ExtractorId Extractor { get; set; }
