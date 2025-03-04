@@ -155,7 +155,7 @@ namespace Test.CSharp.Integration
                 tester.TestStream,
                 new StreamRecordsRetrieve
                 {
-                    CreatedTime = new CreatedTimeFilter
+                    LastUpdatedTime = new LastUpdatedTimeFilter
                     {
                         GreaterThan = new RawPropertyValue<long>(start),
                         LessThan = new RawPropertyValue<long>(start + 1000 * 60 * 5),

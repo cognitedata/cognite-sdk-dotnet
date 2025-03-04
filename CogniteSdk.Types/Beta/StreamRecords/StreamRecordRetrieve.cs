@@ -41,7 +41,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Filter on records created within the provided range.
     /// </summary>
-    public class CreatedTimeFilter
+    public class LastUpdatedTimeFilter
     {
         /// <summary>
         /// Value must be greater than this
@@ -105,9 +105,9 @@ namespace CogniteSdk.Beta
         /// </summary>
         public IDMSFilter Filter { get; set; }
         /// <summary>
-        /// Matches records with created time within the provided range.
+        /// Matches records with last updated time time within the provided range.
         /// </summary>
-        public CreatedTimeFilter CreatedTime { get; set; }
+        public LastUpdatedTimeFilter LastUpdatedTime { get; set; }
         /// <summary>
         /// Maximum number of results to return. Default 10, max 10000.
         /// </summary>
