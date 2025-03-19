@@ -107,6 +107,7 @@ namespace Test.CSharp.Integration
             // Create some records
             var req = new[] {
                 new StreamRecordWrite {
+                    ExternalId = $"{tester.Prefix}test-record-1",
                     Space = tester.TestSpace,
                     Sources = new[] {
                         new InstanceData<StandardInstanceWriteData>
@@ -124,6 +125,7 @@ namespace Test.CSharp.Integration
                     }
                 },
                 new StreamRecordWrite {
+                    ExternalId = $"{tester.Prefix}test-record-2",
                     Space = tester.TestSpace,
                     Sources = new[] {
                         new InstanceData<StandardInstanceWriteData>
