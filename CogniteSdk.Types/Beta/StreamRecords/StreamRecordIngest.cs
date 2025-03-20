@@ -12,6 +12,10 @@ namespace CogniteSdk.Beta
     public class StreamRecordWrite
     {
         /// <summary>
+        /// External ID of the record, required.
+        /// </summary>
+        public string ExternalId { get; set; }
+        /// <summary>
         /// Id of the space the record belongs to.
         /// </summary>
         public string Space { get; set; }
