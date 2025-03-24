@@ -15,6 +15,7 @@ namespace CogniteSdk
         /// Max value.
         /// </summary>
         public IEnumerable<double> Max { get; set; }
+
         /// <summary>
         /// Min value.
         /// </summary>

@@ -14,10 +14,12 @@ namespace CogniteSdk
         /// The ID of the 3D Node.
         /// </summary>
         public long NodeId { get; set; }
+
         /// <summary>
         /// The ID of the associated asset (Cognite's Assets API).
         /// </summary>
         public long AssetId { get; set; }
+
         /// <summary>Determines whether the specified object is equal to the current object.</summary>
         /// <param name="obj">The object to compare with the current object.</param>
         /// <returns>true if the specified object  is equal to the current object; otherwise, false.</returns>

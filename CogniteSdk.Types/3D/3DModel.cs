@@ -16,14 +16,17 @@ namespace CogniteSdk
         /// The Id of the 3D Model.
         /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// The name of the model.
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// The creation time of the 3D model.
         /// </summary>
         public long CreatedTime { get; set; }
+
         /// <summary>
         /// The DataSetId of the 3D Model.
         /// </summary>

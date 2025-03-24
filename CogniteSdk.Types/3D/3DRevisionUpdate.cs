@@ -15,14 +15,17 @@ namespace CogniteSdk
         /// Set a new value for the string.
         /// </summary>
         public Update<bool> Published { get; set; }
+
         /// <summary>
         /// Set new value for rotation.
         /// </summary>
         public Update<IEnumerable<double>> Rotation { get; set; }
+
         /// <summary>
         /// Set new camera target and position.
         /// </summary>
         public Update<RevisionCameraProperties> Camera { get; set; }
+
         /// <summary>
         /// Custom, application specific metadata. String key -> String value. Limits: Maximum length of key is 32
         /// bytes, value 512 bytes, up to 16 key-value pairs.
