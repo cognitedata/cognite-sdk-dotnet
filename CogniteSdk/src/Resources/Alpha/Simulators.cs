@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CogniteSdk.Alpha;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite.Alpha;
-
-using Microsoft.FSharp.Core;
-using System.Linq;
 
 namespace CogniteSdk.Resources.Alpha
 {
