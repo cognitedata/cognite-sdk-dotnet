@@ -16,35 +16,43 @@ namespace CogniteSdk
         /// The Id of the 3D revision.
         /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// The file id.
         /// </summary>
         public long FileId { get; set; }
+
         /// <summary>
-        /// True if revision is marked as published. 
+        /// True if revision is marked as published.
         /// </summary>
         public bool Published { get; set; }
+
         /// <summary>
         /// List of 3 numbers.
         /// </summary>
         public IEnumerable<double> Rotation { get; set; }
+
         /// <summary>
         /// Initial camera position and target.
         /// </summary>
         public RevisionCameraProperties Camera { get; set; }
+
         /// <summary>
         ///  Enum: "Queued" "Processing" "Done" "Failed"
         /// The status of the revision.
         /// </summary>
         public string Status { get; set; }
+
         /// <summary>
         /// The 3D file ID of a thumbnail for the revision. Use /3d/files/{id} to retrieve the file.
         /// </summary>
         public long ThumbnailThreeDFileId { get; set; }
+
         /// <summary>
         /// The URL of a thumbnail for the revision.
         /// </summary>
         public string ThumbnailUrl { get; set; }
+
         /// <summary>
         /// The number of asset mappings for this revision.
         /// </summary>

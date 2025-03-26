@@ -78,6 +78,7 @@ module Common =
         options.Converters.Add(TransformationSchemaConverter())
         options.Converters.Add(FieldResolverConverter())
         options.Converters.Add(StatusCodeConverter())
+        options.Converters.Add(StringOrIntConverter())
         // DMS converters
         options.Converters.Add(ViewDefinitionOrReferenceConverter())
         options.Converters.Add(ViewCreateOrReferenceConverter())

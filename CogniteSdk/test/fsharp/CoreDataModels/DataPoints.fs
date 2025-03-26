@@ -70,7 +70,7 @@ module DataPointsTests =
 
 
                 let dto =
-                    SourcedNodeWrite<'CogniteTimeSeriesBase>(
+                    SourcedNodeWrite(
                         Space = testSpace,
                         ExternalId = externalIdString,
                         Properties =
@@ -100,8 +100,7 @@ module DataPointsTests =
                 let! _ = writeClient.CoreDataModel.TimeSeries().UpsertAsync([ dto ], null)
                 let! _ = writeClient.DataPoints.CreateAsync points
 
-                let! _ =
-                    writeClient.DataPoints.CreateAsync(points, System.IO.Compression.CompressionLevel.Fastest)
+                let! _ = writeClient.DataPoints.CreateAsync(points, System.IO.Compression.CompressionLevel.Fastest)
 
                 let! _ =
                     writeClient.CoreDataModel.TimeSeries().DeleteAsync
@@ -118,7 +117,7 @@ module DataPointsTests =
                 let externalIdString = Guid.NewGuid().ToString()
 
                 let dto =
-                    SourcedNodeWrite<'CogniteTimeSeriesBase>(
+                    SourcedNodeWrite(
                         Space = testSpace,
                         ExternalId = externalIdString,
                         Properties =

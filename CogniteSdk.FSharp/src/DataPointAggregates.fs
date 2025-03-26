@@ -230,9 +230,7 @@ module DataPointAggregates =
                 | Some dpAgg, extId ->
                     Some(
                         extId,
-                        (dpAgg.Timestamp |> fromCdfTimestamp)
-                            .Add(granularityAsTimeSpan)
-                            .ToUnixTimeMilliseconds()
+                        (dpAgg.Timestamp |> fromCdfTimestamp).Add(granularityAsTimeSpan).ToUnixTimeMilliseconds()
                     )
                 | _ -> None)
             |> Seq.choose (fun (extId, nextTimestamp) ->
