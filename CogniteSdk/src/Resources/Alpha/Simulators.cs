@@ -1,4 +1,4 @@
-﻿﻿// Copyright 2023 Cognite AS
+﻿﻿// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -244,7 +244,7 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
 
-        
+
 
         /// <summary>
         /// Asyncronously list simulator routines.

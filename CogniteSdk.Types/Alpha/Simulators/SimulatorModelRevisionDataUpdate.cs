@@ -26,7 +26,7 @@ namespace CogniteSdk.Alpha
     /// Update class for simulator model revision data.
     /// </summary>
 
-    public class SimulatorModelRevisionDataUpdateItem: UpdateItem<SimulatorModelRevisionDataUpdate>
+    public class SimulatorModelRevisionDataUpdateItem : UpdateItem<SimulatorModelRevisionDataUpdate>
     {
         /// <summary>
         /// External id of the model revision.
