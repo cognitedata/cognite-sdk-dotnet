@@ -23,6 +23,7 @@ module Simulators =
     let integrationsUrl = Url +/ "integrations"
     let modelsUrl = Url +/ "models"
     let modelRevisionsUrl = modelsUrl +/ "revisions"
+    let modelRevisionDataUrl: string = modelRevisionsUrl +/ "data"
     let routinesUrl = Url +/ "routines"
     let routineRevisionsUrl = routinesUrl +/ "revisions"
 
@@ -186,12 +187,10 @@ module Simulators =
         (source: HttpHandler<unit>)
         : HttpHandler<SimulatorModelRevisionData seq> =
 
-        let updateUrl = modelRevisionsUrl +/ "data/update"
-
         source
         |> withLogMessage "simulators:updateSimulatorModelRevisionData"
         |> withAlphaHeader
-        |> HttpHandler.update items updateUrl
+        |> HttpHandler.update items modelRevisionDataUrl
 
 
 
