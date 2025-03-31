@@ -1,6 +1,5 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-#nullable enable
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
@@ -14,12 +13,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Flowsheet of the model revision.
         /// </summary>
-        public Update<SimulatorModelRevisionDataFlowsheet?> Flowsheet { get; set; }
+        public Update<SimulatorModelRevisionDataFlowsheet> Flowsheet { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
         /// </summary>
-        public Update<Dictionary<string, string>?> Info { get; set; }
+        public Update<Dictionary<string, string>> Info { get; set; }
 
     }
 
@@ -27,18 +26,17 @@ namespace CogniteSdk.Alpha
     /// Update class for simulator model revision data.
     /// </summary>
 
-    public class SimulatorModelRevisionDataUpdateItem
-
+    public class SimulatorModelRevisionDataUpdateItem: UpdateItem<SimulatorModelRevisionDataUpdate>
     {
         /// <summary>
         /// External id of the model revision.
         /// </summary>
-        public string ModelRevisionExternalId { get; set; }
+        public SimulatorModelRevisionDataUpdateItem(string ModelRevisionExternalId) : base(ModelRevisionExternalId)
+        {
+        }
 
-        /// <summary>
-        /// Update object for the model revision data.
-        /// </summary>
-        public SimulatorModelRevisionDataUpdate Update { get; set; }
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionDataUpdateItem>(this);
     }
 
 }

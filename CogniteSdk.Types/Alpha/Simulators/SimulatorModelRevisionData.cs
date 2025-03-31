@@ -1,8 +1,6 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-#nullable enable
 using System.Collections.Generic;
-using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -20,13 +18,13 @@ namespace CogniteSdk.Alpha
         /// External id of the unit (e.g., "mass:kilogm", "length:m", "pressure:pa").
         /// Optional.
         /// </summary>
-        public string? ExternalId { get; set; }
+        public string ExternalId { get; set; }
 
         /// <summary>
         /// Quantity of measure for the unit (e.g., "Mass", "Length", "Pressure").
         /// Optional.
         /// </summary>
-        public string? Quantity { get; set; }
+        public string Quantity { get; set; }
     }
 
     /// <summary>
@@ -136,7 +134,7 @@ namespace CogniteSdk.Alpha
         /// Unit of the property.
         /// Optional.
         /// </summary>
-        public SimulatorValueUnitQuantity? Unit { get; set; }
+        public SimulatorValueUnitQuantity Unit { get; set; }
 
         /// <summary>
         /// Whether the property is read-only.
@@ -157,7 +155,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Node name.
         /// </summary>
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Node type.
@@ -167,7 +165,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Graphical representation.
         /// </summary>
-        public SimulatorModelRevisionDataGraphicalObject? GraphicalObject { get; set; }
+        public SimulatorModelRevisionDataGraphicalObject GraphicalObject { get; set; }
 
         /// <summary>
         /// IEnumerable of node properties.
@@ -188,7 +186,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Edge name.
         /// </summary>
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Source node identifier.
@@ -249,10 +247,6 @@ namespace CogniteSdk.Alpha
     public class SimulatorModelRevisionData
     {
         /// <summary>
-        /// A unique identifier.
-        /// </summary>
-        public long Id { get; set; }
-        /// <summary>
         /// External id of the model revision.
         /// </summary>
         public string ModelRevisionExternalId { get; set; }
@@ -260,12 +254,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Flowsheet of the model revision.
         /// </summary>
-        public SimulatorModelRevisionDataFlowsheet? Flowsheet { get; set; }
+        public SimulatorModelRevisionDataFlowsheet Flowsheet { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
         /// </summary>
-        public Dictionary<string, string>? Info { get; set; }
+        public Dictionary<string, string> Info { get; set; }
 
         /// <summary>
         /// The number of milliseconds since epoch.

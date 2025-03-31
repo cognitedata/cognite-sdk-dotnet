@@ -335,14 +335,10 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="items">The simulator model revision data items to update.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorModelRevisionData>> UpdateSimulatorModelRevisionDataAsync(SimulatorModelRevisionDataUpdateItem item, CancellationToken token = default)
+        public async Task<IEnumerable<SimulatorModelRevisionData>> UpdateSimulatorModelRevisionDataAsync(IEnumerable<UpdateItem<SimulatorModelRevisionDataUpdate>> items, CancellationToken token = default)
         {
-            if (item is null)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            var req = Simulators.updateSimulatorModelRevisionData(item, GetContext(token));
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            var req = Simulators.updateSimulatorModelRevisionData(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
