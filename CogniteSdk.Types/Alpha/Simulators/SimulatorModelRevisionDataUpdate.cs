@@ -23,10 +23,24 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// Update class for simulator model revision data.
+    /// Update class by model revision external id.
+    /// </summary>
+    public class UpdateItemWithModelRevisionExternalId<TUpdate> : UpdateItem<TUpdate>
+    {
+        /// <summary>
+        /// Initialize the update item with a UUID.
+        /// </summary>
+        /// <param name="modelRevisionExternalId">External id of the model revision.</param>
+        public UpdateItemWithModelRevisionExternalId(string modelRevisionExternalId) : base(modelRevisionExternalId)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Update class for simulator model revision data.xx
     /// </summary>
 
-    public class SimulatorModelRevisionDataUpdateItem : UpdateItem<SimulatorModelRevisionDataUpdate>
+    public class SimulatorModelRevisionDataUpdateItem : UpdateItemWithModelRevisionExternalId<SimulatorModelRevisionDataUpdate>
     {
         /// <summary>
         /// External id of the model revision.
