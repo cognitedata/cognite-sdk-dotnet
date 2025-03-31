@@ -1,6 +1,7 @@
 // Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -270,6 +271,8 @@ namespace CogniteSdk.Alpha
         /// The number of milliseconds since epoch.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionData>(this);
     }
 
     /// <summary>
@@ -285,6 +288,8 @@ namespace CogniteSdk.Alpha
         /// <example>model-revision-external-id</example>
         /// 
         public string ModelRevisionExternalId { get; set; }
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString<SimulatorModelRevisionDataRetrieve>(this);
 
     }
 
