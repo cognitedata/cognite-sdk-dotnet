@@ -30,8 +30,8 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Initialize the update item with a UUID.
         /// </summary>
-        /// <param name="modelRevisionExternalId">External id of the model revision.</param>
-        public UpdateItemWithModelRevisionExternalId(string modelRevisionExternalId) : base(modelRevisionExternalId)
+        /// <param name="ModelRevisionExternalId">External id of the model revision.</param>
+        public UpdateItemWithModelRevisionExternalId(string ModelRevisionExternalId) : base(ModelRevisionExternalId)
         {
         }
     }
