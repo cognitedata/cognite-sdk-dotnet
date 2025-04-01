@@ -17,10 +17,12 @@ namespace CogniteSdk
         /// Get sub nodes up to this many levels below the specified node. Depth 0 is the root node.
         /// </summary>
         public int? Depth { get; set; }
+
         /// <summary>
         /// ID of a node that are the root of the subtree you request (default is the root node).
         /// </summary>
         public long? NodeId { get; set; }
+
         /// <summary>
         /// Filter for node properties. Only nodes that match all the given properties exactly
         /// will be listed. The filter must be a JSON object with the same format as the properties field.

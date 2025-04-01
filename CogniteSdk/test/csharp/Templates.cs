@@ -7,11 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-
-using Xunit;
-
 using CogniteSdk;
 using CogniteSdk.Beta;
+using Xunit;
 
 namespace Test.CSharp.Integration
 {
@@ -179,7 +177,7 @@ type MyType @template {
 
 
             // Assert
-            Assert.Single(createResult.First().FieldResolvers.Where(kvp => kvp.Value != null));
+            Assert.Single(createResult.First().FieldResolvers, kvp => kvp.Value != null);
             Assert.Equal(2, upsertResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
             Assert.Equal(2, retrieveResult.First().FieldResolvers.Where(kvp => kvp.Value != null).Count());
         }

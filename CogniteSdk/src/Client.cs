@@ -7,12 +7,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Logging;
-using Oryx;
-using CogniteSdk.Resources;
-using Microsoft.FSharp.Core;
-using static Oryx.Cognite.HttpHandlerModule;
 using CogniteSdk.DataModels.Core;
+using CogniteSdk.Resources;
+
+using Microsoft.Extensions.Logging;
+using Microsoft.FSharp.Core;
+
+using Oryx;
+using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk
 {
