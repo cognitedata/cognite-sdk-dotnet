@@ -194,10 +194,10 @@ module Simulators =
 
 
 
-    let retrieveSimulatorModelRevisionData
-        (request: ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>)
+    let retrieveSimulatorModelRevisionData<'T when 'T :> SimulatorModelRevisionData>
+        (request: ItemsWithoutCursor<string>)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+        : HttpHandler<'T seq> =
         source
         |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
         |> withAlphaHeader

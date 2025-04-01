@@ -355,14 +355,18 @@ namespace CogniteSdk.Resources.Alpha
                 throw new ArgumentNullException(nameof(modelRevisionExternalId));
             }
 
-            var request = new ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>
+            var request = new ItemsWithoutCursor<string>
             {
-                Items = new[] { new SimulatorModelRevisionDataRetrieve { ModelRevisionExternalId = modelRevisionExternalId } }
+                Items = new[] { modelRevisionExternalId }
             };
 
-            var req = Simulators.retrieveSimulatorModelRevisionData(request, GetContext(token));
+            var req = Simulators.retrieveSimulatorModelRevisionData<SimulatorModelRevisionData>(request, GetContext(token));
             var result = await RunAsync(req).ConfigureAwait(false);
-            return result.Items.FirstOrDefault();
+            if (result == null || !result.Any())
+            {
+                return null;
+            }
+            return result.First();
         }
 
         /// <summary>
