@@ -171,5 +171,10 @@ namespace CogniteSdk.Alpha
         /// currently in use.
         /// </summary>
         public StringOrInt ActiveConfigRevision { get; set; }
+        /// <summary>
+        /// The time this extractor started, in milliseconds since 01/01/1970 UTC.
+        /// API defaults to current time when it is stored in CDF.
+        /// </summary>
+        public long? Timestamp { get; set; }
     }
 }
