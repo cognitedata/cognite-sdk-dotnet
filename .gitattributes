@@ -1,1 +1,5 @@
 * text=auto
+
+# Mark auto-generated files
+paket.lock linguist-generated=true
+.paket/Paket.Restore.targets linguist-generated=true
