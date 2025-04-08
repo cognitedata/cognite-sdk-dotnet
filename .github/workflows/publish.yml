@@ -97,12 +97,12 @@ jobs:
         run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_TOKEN }}
         continue-on-error: false
 
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
       - name: Create Release
-        uses: actions/create-release@master
+        run: |
+          gh release create v${{ needs.build.outputs.version }} \
+            --title "Release v${{ needs.build.outputs.version }}" \
+            --notes "Automated release for version v${{ needs.build.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ needs.build.outputs.version }}
-          release_name: Release v${{ needs.build.outputs.version }}
-          draft: false
-          prerelease: false
