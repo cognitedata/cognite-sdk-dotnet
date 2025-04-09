@@ -64,12 +64,12 @@ jobs:
           retention-days: 1
 
   publish:
-    name: Create Release
+    name: Publish NuGet Packages
     runs-on: windows-latest
     environment: CD
     if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
     needs:
-     - build
+      - build
     steps:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
@@ -97,8 +97,16 @@ jobs:
         run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_TOKEN }}
         continue-on-error: false
 
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
+    needs:
+      - publish
+    steps:
       - name: Install GitHub CLI
         run: sudo apt-get install -y gh
+
       - name: Create Release
         run: |
           gh release create v${{ needs.build.outputs.version }} \
