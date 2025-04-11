@@ -181,6 +181,37 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
 
+    let updateSimulatorModelRevisionData
+        (items: SimulatorModelRevisionDataUpdateItem seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+
+        let updateUrl = modelRevisionsUrl +/ "data/update"
+
+        let request =
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>(Items = items)
+
+        source
+        |> withLogMessage "simulators:updateSimulatorModelRevisionData"
+        |> withAlphaHeader
+        |> postV10<
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>,
+            ItemsWithoutCursor<SimulatorModelRevisionData>
+            >
+            request
+            updateUrl
+
+
+
+    let retrieveSimulatorModelRevisionData
+        (request: ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+        source
+        |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
+        |> withAlphaHeader
+        |> HttpHandler.list request (modelRevisionsUrl +/ "data")
+
     let listSimulatorRoutines
         (query: SimulatorRoutineQuery)
         (source: HttpHandler<unit>)

@@ -5,12 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CogniteSdk.DataModels;
-
-using Oryx;
-
 using Microsoft.FSharp.Core;
+using Oryx;
 
 namespace CogniteSdk.Resources
 {

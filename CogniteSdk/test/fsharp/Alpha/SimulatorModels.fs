@@ -11,6 +11,7 @@ open Common
 open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
+open System.Collections.Generic
 
 
 [<Fact>]
@@ -72,6 +73,7 @@ let ``Create and list simulator models is Ok`` () =
                         )
                 )
 
+
             let! modelUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
             let updatedModel = modelUpdateRes |> Seq.head
             let! _ = writeClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
@@ -101,7 +103,7 @@ let ``Create and list simulator models is Ok`` () =
 [<Fact>]
 [<Trait("resource", "simulatorModels")>]
 [<Trait("api", "simulators")>]
-let ``Create and list simulator model revisions is Ok`` () =
+let ``Create and list simulator model revisions along with revision data is Ok`` () =
     task {
         // Arrange
         let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
@@ -143,6 +145,8 @@ let ``Create and list simulator model revisions is Ok`` () =
                 Description = "test_model_revision_description",
                 FileId = fileCreated.Id
             )
+
+
 
         try
             // Act
@@ -198,6 +202,21 @@ let ``Create and list simulator model revisions is Ok`` () =
                         )
                 )
 
+            // Create test revision data
+            let modelRevisionDataUpdate = Dictionary<string, string>()
+            modelRevisionDataUpdate.Add("key1", "value1")
+            modelRevisionDataUpdate.Add("key2", "value2")
+
+            let dataUpdate = new SimulatorModelRevisionDataUpdateItem(
+                ModelRevisionExternalId = modelRevisionCreated.ExternalId,
+                Update = SimulatorModelRevisionDataUpdate(Info = UpdateNullable(modelRevisionDataUpdate))
+            )
+
+
+            let! _test = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
+            let! modelRevisionDataUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync [ dataUpdate ]
+            let! modelRevisionUpdatedData = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
+
             let! modelRevisionUpdateRes =
                 writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
 
@@ -219,6 +238,8 @@ let ``Create and list simulator model revisions is Ok`` () =
 
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
+            test <@ modelRevisionUpdatedData.Info.["key1"] = "value1" @>
+            test <@ modelRevisionUpdatedData.Info.["key2"] = "value2" @>
 
 
         finally

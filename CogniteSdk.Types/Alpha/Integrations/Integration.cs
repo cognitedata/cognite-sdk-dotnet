@@ -53,6 +53,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public string Name { get; set; }
         /// <summary>
+        /// Task description.
+        /// </summary>
+        public string Description { get; set; }
+        /// <summary>
         /// Whether or not this task can be triggered through an external action.
         /// </summary>
         public bool Action { get; set; }

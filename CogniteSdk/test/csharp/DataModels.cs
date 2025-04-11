@@ -1,14 +1,14 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk;
-using CogniteSdk.DataModels;
-using CogniteSdk.Resources.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CogniteSdk;
+using CogniteSdk.DataModels;
+using CogniteSdk.Resources.DataModels;
 using Xunit;
 
 namespace Test.CSharp.Integration

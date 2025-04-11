@@ -23,15 +23,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-          
+
       - name: Get version
         id: get-version
         run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
-        
+
       - name: Get branch
         id: get-branch
         run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
-        
+
       - name: Confirm release
         id: confirm-release
         run: echo "test=$(git tag --list 'v${{ steps.get-version.outputs.version }}' | wc -l | sed s/\ //g)" >> $GITHUB_OUTPUT
@@ -50,7 +50,7 @@ jobs:
       - name: Dotnet Pack
         run: dotnet pack -c release -p:PackageVersion=${{ steps.get-version.outputs.version }} -p:FileVersion=${{ steps.get-version.outputs.version }} -p:InformationalVersion=${{ steps.get-version.outputs.version }} --no-build --output nuget-packages -p:TargetsForTfmSpecificContentInPackage=
       # Sign the nuget package itself
-      
+
       - name: Package will be released
         if: ${{ steps.confirm-release.outputs.test == 0 }}
         run: echo "Will release nuget package"
@@ -64,12 +64,12 @@ jobs:
           retention-days: 1
 
   publish:
-    name: Create Release
+    name: Publish NuGet Packages
     runs-on: windows-latest
     environment: CD
     if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
     needs:
-     - build
+      - build
     steps:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
@@ -94,15 +94,23 @@ jobs:
           path-to-binary: 'nuget-packages/'
 
       - name: Push nuget packages
-        run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_TOKEN }}
         continue-on-error: false
 
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
+    needs:
+      - publish
+    steps:
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+
       - name: Create Release
-        uses: actions/create-release@master
+        run: |
+          gh release create v${{ needs.build.outputs.version }} \
+            --title "Release v${{ needs.build.outputs.version }}" \
+            --notes "Automated release for version v${{ needs.build.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ needs.build.outputs.version }}
-          release_name: Release v${{ needs.build.outputs.version }}
-          draft: false
-          prerelease: false
