@@ -35,6 +35,16 @@ module Files =
     let upload (file: FileCreate) (overwrite: bool) (source: HttpHandler<unit>) : HttpHandler<FileUploadRead> =
         source |> withLogMessage "Files:upload" |> postV10 file Url
 
+    let uploadFile(uri: Uri) (fileStream: StreamContent) (source: HttpHandler<unit>) =
+        http {
+            let! ret =
+                source
+                |> withCompletion HttpCompletionOption.ResponseHeadersRead
+                |> put fileStream uri
+
+            return ret.Items
+        }
+
     /// Get download URL for file in the given project.
     let download (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<IEnumerable<FileDownload>> =
         http {

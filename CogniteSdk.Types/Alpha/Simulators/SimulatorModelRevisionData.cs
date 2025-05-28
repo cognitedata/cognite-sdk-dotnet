@@ -1,6 +1,7 @@
 // Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
@@ -31,6 +32,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Connection type for simulator model revision data.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum SimulatorModelRevisionDataConnectionType
     {
         /// <summary>
