@@ -12,6 +12,7 @@ open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
 open System.Collections.Generic
+open System.Net.Http
 
 
 [<Fact>]
@@ -127,6 +128,12 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             )
 
         let! fileCreated = writeClient.Files.UploadAsync(fileToCreate)
+        let uploadUrl = fileCreated.UploadUrl
+        let bytes = System.Text.Encoding.UTF8.GetBytes("Simulator Models")
+        let fileStream = new StreamContent(new System.IO.MemoryStream(bytes))
+
+        let! fileUpload = writeClient.Files.UploadFileAsync(uri = uploadUrl, fileStream = fileStream)
+
 
         let modelToCreate =
             SimulatorModelCreate(

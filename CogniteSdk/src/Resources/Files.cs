@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.FSharp.Core;
@@ -183,6 +184,19 @@ namespace CogniteSdk.Resources
             return await RunAsync(req).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Uploads a file to the specified URI using the provided file stream.
+        /// </summary>
+        /// <param name="uri">The URI to upload the file to.</param>
+        /// <param name="fileStream">The file stream containing the file data.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task<Microsoft.FSharp.Collections.FSharpMap<string, Value>> UploadFileAsync(Uri uri, StreamContent fileStream, CancellationToken token = default)
+        {
+            fileStream.Headers.Add("Content-Type", "application/octet-stream");
+            var req = Oryx.Cognite.Files.uploadFile(uri, fileStream, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
         /// <summary>
         /// Updates the information for the files specified in the request body.
         /// </summary>

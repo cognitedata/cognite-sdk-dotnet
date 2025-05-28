@@ -284,6 +284,23 @@ module HttpHandler =
         : HttpHandler<'TResult> =
         source |> withVersion V10 |> post<'TContent, 'TResult> content url
 
+    let put<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: Uri)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+
+        let url = url.ToString()
+        
+        source
+        |> PUT
+        |> withResource url
+        |> withContent (fun () -> new JsonPushStreamContent<'TContent>(content, jsonOptions) :> _)
+        |> fetch
+        |> withError decodeError
+        |> json<'TResult> jsonOptions
+        |> log
+
     let postWithQuery<'TContent, 'TResult>
         (content: 'TContent)
         (query: IQueryParams)
