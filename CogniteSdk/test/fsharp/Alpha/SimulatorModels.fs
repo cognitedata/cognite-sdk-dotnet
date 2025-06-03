@@ -12,6 +12,10 @@ open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
 open System.Collections.Generic
+open System.Net.Http
+open Oryx
+open Oryx.Cognite
+open System.Text
 
 
 [<Fact>]
@@ -127,6 +131,18 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             )
 
         let! fileCreated = writeClient.Files.UploadAsync(fileToCreate)
+        
+        let bytes = System.Text.Encoding.UTF8.GetBytes("Simulator Models")
+        let fileStream = new StreamContent(new System.IO.MemoryStream(bytes))
+        let uri = fileCreated.UploadUrl;
+        let revisionFileUploadAsync () (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+            source
+            |> withCompletion HttpCompletionOption.ResponseHeadersRead
+            |> put fileStream uri
+
+        do! revisionFileUploadAsync
+
+        
 
         let modelToCreate =
             SimulatorModelCreate(

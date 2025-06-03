@@ -354,6 +354,23 @@ module HttpHandler =
             return ret.Items
         }
 
+    let put<'TContent, 'TResult>
+        (content: 'TContent)
+        (url: Uri)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+
+        let url = url.ToString()
+
+        source
+        |> PUT
+        |> withResource url
+        |> withContent (fun () -> new JsonPushStreamContent<'TContent>(content, jsonOptions) :> _)
+        |> fetch
+        |> withError decodeError
+        |> json<'TResult> jsonOptions
+        |> log
+
     let retrieve<'TResult>
         (ids: Identity seq)
         (url: string)
