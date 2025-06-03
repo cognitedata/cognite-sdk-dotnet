@@ -354,11 +354,7 @@ module HttpHandler =
             return ret.Items
         }
 
-    let put<'TContent, 'TResult>
-        (content: 'TContent)
-        (url: Uri)
-        (source: HttpHandler<unit>)
-        : HttpHandler<'TResult> =
+    let put<'TContent, 'TResult> (content: 'TContent) (url: Uri) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
 
         let url = url.ToString()
 
