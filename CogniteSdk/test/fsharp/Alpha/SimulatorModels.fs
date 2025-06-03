@@ -12,6 +12,7 @@ open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
 open System.Collections.Generic
+open System.Net.Http
 
 
 [<Fact>]
@@ -27,8 +28,7 @@ let ``Create and list simulator models is Ok`` () =
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
-        let simulatorToCreate =
-            testSimulatorCreate(simulatorExternalId)
+        let simulatorToCreate = testSimulatorCreate (simulatorExternalId)
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -110,23 +110,14 @@ let ``Create and list simulator model revisions along with revision data is Ok``
         let simulatorExternalId = $"test_sim_3_{now}"
         let modelExternalId = $"test_model_{now}"
 
-        let simulatorToCreate =
-            testSimulatorCreate(simulatorExternalId)
+        let simulatorToCreate = testSimulatorCreate (simulatorExternalId)
 
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
 
-        let fileToCreate =
-            FileCreate(
-                ExternalId = $"model_revision_file_{now}",
-                Name = "test_file_for_model_revision.json",
-                MimeType = "application/json",
-                Source = "test_source",
-                DataSetId = dataSet.Id
-            )
-
-        let! fileCreated = writeClient.Files.UploadAsync(fileToCreate)
+        let! testFileRes = writeClient.Files.RetrieveAsync([ new Identity("empty.json") ])
+        let testFileId = testFileRes |> Seq.head |> (fun f -> f.Id)
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -143,7 +134,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                 ExternalId = "test_model_revision",
                 ModelExternalId = modelExternalId,
                 Description = "test_model_revision_description",
-                FileId = fileCreated.Id
+                FileId = testFileId
             )
 
 
@@ -172,9 +163,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
 
             let! (modelRevisionListResCursor: IItemsWithCursor<SimulatorModelRevision>) =
                 writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
-                    new SimulatorModelRevisionQuery(
-                        Limit = 1
-                    )
+                    new SimulatorModelRevisionQuery(Limit = 1)
                 )
 
             test <@ isNull modelRevisionListResCursor.NextCursor |> not @>
@@ -197,25 +186,71 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                     id = modelRevisionCreated.Id,
                     Update =
                         SimulatorModelRevisionUpdate(
-                            Status = Update(SimulatorModelRevisionStatus.failure),
-                            StatusMessage = Update<string>("test")
+                            Status = Update SimulatorModelRevisionStatus.failure,
+                            StatusMessage = Update<string> "test"
                         )
                 )
 
             // Create test revision data
-            let modelRevisionDataUpdate = Dictionary<string, string>()
-            modelRevisionDataUpdate.Add("key1", "value1")
-            modelRevisionDataUpdate.Add("key2", "value2")
+            let modelRevisionDataInfo = Dictionary(dict [ "key1", "value1"; "key2", "value2" ])
 
-            let dataUpdate = new SimulatorModelRevisionDataUpdateItem(
-                ModelRevisionExternalId = modelRevisionCreated.ExternalId,
-                Update = SimulatorModelRevisionDataUpdate(Info = UpdateNullable(modelRevisionDataUpdate))
-            )
+            let flowsheetData =
+                SimulatorModelRevisionDataFlowsheet(
+                    Thermodynamics =
+                        SimulatorModelRevisionDataThermodynamic(
+                            Components = [ "water"; "oil" ],
+                            PropertyPackages = [ "test_property_package" ]
+                        ),
+                    SimulatorObjectNodes =
+                        [ SimulatorModelRevisionDataObjectNode(
+                              Id = "test_object_1",
+                              Name = "Test Object",
+                              Type = "test_type",
+                              Properties =
+                                  [ SimulatorModelRevisionDataProperty(
+                                        Name = "test_property",
+                                        Value = SimulatorValue.Create "test_value",
+                                        ValueType = SimulatorValueType.STRING,
+                                        ReferenceObject = (dict [ "key", "value" ] |> Dictionary),
+                                        Unit = SimulatorValueUnitReference(Name = "F", Quantity = "Temperature")
+                                    ) ],
+                              GraphicalObject =
+                                  SimulatorModelRevisionDataGraphicalObject(
+                                      Position = SimulatorModelRevisionDataPosition(X = 100.0, Y = 200.0),
+                                      Height = Nullable 50.0,
+                                      Width = Nullable 100.0,
+                                      Angle = Nullable 0.0,
+                                      Active = true
+                                  )
+                          ) ],
+                    SimulatorObjectEdges =
+                        [ SimulatorModelRevisionDataObjectEdge(
+                              Id = "test_edge",
+                              Name = "Test Edge",
+                              SourceId = "test_object_1",
+                              TargetId = "test_object_2",
+                              ConnectionType = SimulatorModelRevisionDataConnectionType.Energy
+                          ) ]
+                )
 
+            let dataUpdate =
+                new SimulatorModelRevisionDataUpdateItem(
+                    ModelRevisionExternalId = modelRevisionCreated.ExternalId,
+                    Update =
+                        SimulatorModelRevisionDataUpdate(
+                            Flowsheet = UpdateNullable flowsheetData,
+                            Info = UpdateNullable modelRevisionDataInfo
+                        )
+                )
 
-            let! _test = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
-            let! modelRevisionDataUpdateRes = writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync [ dataUpdate ]
-            let! modelRevisionUpdatedData = writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync(modelRevisionCreated.ExternalId)
+            let! _test =
+                writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync modelRevisionCreated.ExternalId
+
+            let! modelRevisionDataUpdateRes =
+                writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionDataAsync [ dataUpdate ]
+
+            let! modelRevisionUpdatedData =
+                writeClient.Alpha.Simulators.RetrieveSimulatorModelRevisionDataAsync modelRevisionCreated.ExternalId
 
             let! modelRevisionUpdateRes =
                 writeClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
@@ -228,7 +263,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             test <@ modelRevisionCreated.Description = modelRevisionToCreate.Description @>
             test <@ modelRevisionCreated.Status = SimulatorModelRevisionStatus.unknown @>
             test <@ modelRevisionCreated.DataSetId = dataSet.Id @>
-            test <@ modelRevisionCreated.FileId = fileCreated.Id @>
+            test <@ modelRevisionCreated.FileId = testFileId @>
             test <@ modelRevisionCreated.VersionNumber = 1 @>
             test <@ modelRevisionCreated.SimulatorExternalId = simulatorExternalId @>
             test <@ isNull modelRevisionCreated.StatusMessage @>
@@ -239,13 +274,18 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
             test <@ modelRevisionUpdatedData.Info.["key1"] = "value1" @>
-            test <@ modelRevisionUpdatedData.Info.["key2"] = "value2" @>
+            test <@ modelRevisionUpdatedData.Info.ToString() = modelRevisionDataInfo.ToString() @>
+
+            test
+                <@
+                    List.ofSeq modelRevisionUpdatedData.Flowsheet.Thermodynamics.Components = List.ofSeq
+                        [ "water"; "oil" ]
+                @>
+
+            test <@ modelRevisionUpdatedData.Flowsheet.ToString() = flowsheetData.ToString() @>
 
 
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
-            |> ignore
-
-            writeClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
             |> ignore
     }

@@ -1,14 +1,15 @@
 // Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
     /// <summary>
-    /// Unit quantity for simulator value.
+    /// Unit of measure reference for simulator values.
     /// </summary>
-    public class SimulatorValueUnitQuantity
+    public class SimulatorValueUnitReference
     {
         /// <summary>
         /// Name of the unit (e.g., "kg", "m", "Pa").
@@ -31,6 +32,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Connection type for simulator model revision data.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum SimulatorModelRevisionDataConnectionType
     {
         /// <summary>
@@ -57,12 +59,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// X coordinate.
         /// </summary>
-        public float X { get; set; }
+        public double X { get; set; }
 
         /// <summary>
         /// Y coordinate.
         /// </summary>
-        public float Y { get; set; }
+        public double Y { get; set; }
     }
 
     /// <summary>
@@ -78,12 +80,12 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Height of the graphical object.
         /// </summary>
-        public float? Height { get; set; }
+        public double? Height { get; set; }
 
         /// <summary>
         /// Width of the graphical object.
         /// </summary>
-        public float? Width { get; set; }
+        public double? Width { get; set; }
 
         /// <summary>
         /// Horizontal scale factor.
@@ -98,7 +100,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Rotation angle.
         /// </summary>
-        public float? Angle { get; set; }
+        public double? Angle { get; set; }
 
         /// <summary>
         /// Whether the object is active.
@@ -135,7 +137,7 @@ namespace CogniteSdk.Alpha
         /// Unit of the property.
         /// Optional.
         /// </summary>
-        public SimulatorValueUnitQuantity Unit { get; set; }
+        public SimulatorValueUnitReference Unit { get; set; }
 
         /// <summary>
         /// Whether the property is read-only.
