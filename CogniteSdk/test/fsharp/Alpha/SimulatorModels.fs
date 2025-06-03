@@ -196,27 +196,24 @@ let ``Create and list simulator model revisions along with revision data is Ok``
 
             let flowsheetData =
                 SimulatorModelRevisionDataFlowsheet(
-                    Thermodynamics = SimulatorModelRevisionDataThermodynamic(
-                        Components = [ "water"; "oil" ],
-                        PropertyPackages = [ "test_property_package" ]
-                    ),
+                    Thermodynamics =
+                        SimulatorModelRevisionDataThermodynamic(
+                            Components = [ "water"; "oil" ],
+                            PropertyPackages = [ "test_property_package" ]
+                        ),
                     SimulatorObjectNodes =
                         [ SimulatorModelRevisionDataObjectNode(
                               Id = "test_object_1",
                               Name = "Test Object",
                               Type = "test_type",
-                              Properties = [
-                                  SimulatorModelRevisionDataProperty(
-                                    Name = "test_property",
-                                    Value = SimulatorValue.Create "test_value",
-                                    ValueType = SimulatorValueType.STRING,
-                                    ReferenceObject = (dict [ "key", "value" ] |> Dictionary),
-                                    Unit = SimulatorValueUnitReference(
-                                        Name = "F",
-                                        Quantity = "Temperature"
-                                    )
-                                )
-                              ],
+                              Properties =
+                                  [ SimulatorModelRevisionDataProperty(
+                                        Name = "test_property",
+                                        Value = SimulatorValue.Create "test_value",
+                                        ValueType = SimulatorValueType.STRING,
+                                        ReferenceObject = (dict [ "key", "value" ] |> Dictionary),
+                                        Unit = SimulatorValueUnitReference(Name = "F", Quantity = "Temperature")
+                                    ) ],
                               GraphicalObject =
                                   SimulatorModelRevisionDataGraphicalObject(
                                       Position = SimulatorModelRevisionDataPosition(X = 100.0, Y = 200.0),
@@ -276,7 +273,15 @@ let ``Create and list simulator model revisions along with revision data is Ok``
 
             test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
             test <@ modelRevisionUpdated.StatusMessage = "test" @>
+            test <@ modelRevisionUpdatedData.Info.["key1"] = "value1" @>
             test <@ modelRevisionUpdatedData.Info.ToString() = modelRevisionDataInfo.ToString() @>
+
+            test
+                <@
+                    List.ofSeq modelRevisionUpdatedData.Flowsheet.Thermodynamics.Components = List.ofSeq
+                        [ "water"; "oil" ]
+                @>
+
             test <@ modelRevisionUpdatedData.Flowsheet.ToString() = flowsheetData.ToString() @>
 
 
