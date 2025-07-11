@@ -23,6 +23,11 @@ namespace CogniteSdk.Alpha
         /// The name of the simulator. e.g. PROSPER, OLGA, etc.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Defines a structure for the model dependencies. Only used for the simulators that support models consisting of multiple files.
+        /// </summary>
+        public IEnumerable<SimulatorModelDependency> ModelDependencies { get; set; }
         /// <summary>
         /// Supported model types.
         /// </summary>

@@ -166,7 +166,7 @@ module Simulators =
     let retrieveSimulatorModelRevisions
         (ids: Identity seq)
         (source: HttpHandler<unit>)
-        : HttpHandler<#SimulatorModelRevision seq> =
+        : HttpHandler<#SimulatorModelRevisionDetail seq> =
         source
         |> withLogMessage "simulators:retrieveSimulatorModelRevisions"
         |> withAlphaHeader
