@@ -32,6 +32,11 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public long FileId { get; set; }
 
+        /// <summary>
+        /// List of external dependencies of the simulation model revision. Only used for the simulators that support models consisting of multiple files.
+        /// </summary>
+        public IEnumerable<SimulatorFileDependency> ExternalDependencies { get; set; }
+
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulatorModelRevisionCreate>(this);
     }
