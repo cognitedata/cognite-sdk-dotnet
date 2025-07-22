@@ -232,14 +232,14 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="ids">The simulator model revision ids to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>The requested simulator model revisions</returns>
-        public async Task<IEnumerable<SimulatorModelRevisionDetail>> RetrieveSimulatorModelRevisionsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
+        public async Task<IEnumerable<SimulatorModelRevision>> RetrieveSimulatorModelRevisionsAsync(IEnumerable<Identity> ids, CancellationToken token = default)
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
-            var req = Simulators.retrieveSimulatorModelRevisions<SimulatorModelRevisionDetail>(ids, GetContext(token));
+            var req = Simulators.retrieveSimulatorModelRevisions<SimulatorModelRevision>(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

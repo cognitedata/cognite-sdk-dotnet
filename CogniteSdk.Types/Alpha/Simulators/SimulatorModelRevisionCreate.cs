@@ -1,4 +1,4 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -38,6 +38,6 @@ namespace CogniteSdk.Alpha
         public IEnumerable<SimulatorFileDependency> ExternalDependencies { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SimulatorModelRevisionCreate>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

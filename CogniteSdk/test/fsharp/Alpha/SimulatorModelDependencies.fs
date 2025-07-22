@@ -1,34 +1,56 @@
+module Tests.Integration.SimulatorModelDependencies
+
+open System
+open System.Collections.Generic
+
+open FSharp.Control.TaskBuilder
+open Xunit
+open Swensen.Unquote
+
+open CogniteSdk
+open CogniteSdk.Alpha
+open Tests.Integration.Alpha.Common
+open Common
+
+
+let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+let simulatorExternalId = $"test_sim_{now}"
+let modelExternalId = $"test_model_deps_{now}"
+
 [<Fact>]
-[<Trait("resource", "simulatorModels")>]
+[<Trait("resource", "simulatorModelDependencies")>]
 [<Trait("api", "simulators")>]
-let ``Create and list simulator model revisions with external dependencies is Ok`` () =
+let ``Create and delete simulators is Ok`` () =
     task {
-        // Arrange
-        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
-        let simulatorExternalId = $"test_sim_deps_{now}"
-        let modelExternalId = $"test_model_deps_{now}"
 
-        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
-        let dataSet = dataSetRes |> Seq.head
+        let fileExtensionTypes = seq { "txt"; "json"; "out" }
 
-        let! testFileRes = writeClient.Files.RetrieveAsync([ new Identity("empty.json") ])
-        let testFileId = testFileRes |> Seq.head |> (fun f -> f.Id)
-
-        // Create a simulator with model dependencies
         let simulatorToCreate =
             testSimulatorCreate(simulatorExternalId)
-            |> fun s -> s.ModelDependencies <- [
-                SimulatorModelDependency(
-                    FileExtensionTypes = [ "txt"; "json" ],
-                    Fields = [
-                        SimulatorModelDependencyFields(
-                            Name = "test_field",
-                            Label = "Test Field",
-                            Info = "Test field for external deps"
-                        )
-                    ]
-                )
-            ]
+            |> fun simToCreate ->
+                simToCreate.ModelDependencies <- [
+                    SimulatorModelDependency(
+                        FileExtensionTypes = fileExtensionTypes,
+                        Fields = [
+                            SimulatorModelDependencyFields(
+                                Name = "test_field",
+                                Label = "Test Field",
+                                Info = "Test field for external deps"
+                            )
+                        ]
+                    )
+                ]
+                simToCreate
+        // test-dataset
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("prosper-simulator-test") ])
+        let dataSet = dataSetRes |> Seq.head
+        // empty.json for publicdata
+        // 3237317904039163 -> tests-dotnet.json in bluefield cognite-simulator-quality-check
+        let! testFileResRevision = writeClient.Files.RetrieveAsync([ 3237317904039163L ])
+        let testFileIdRevision = testFileResRevision |> Seq.head |> (fun f -> f.Id)
+
+        let! testFileResDependency = writeClient.Files.RetrieveAsync([ 1104203827922893L ])
+        let testFileIdDependency = testFileResDependency |> Seq.head |> (fun f -> f.Id)
 
         let modelToCreate =
             SimulatorModelCreate(
@@ -46,10 +68,10 @@ let ``Create and list simulator model revisions with external dependencies is Ok
                 ExternalId = "test_model_revision",
                 ModelExternalId = modelExternalId,
                 Description = "test_model_revision_description",
-                FileId = testFileId,
+                FileId = testFileIdRevision,
                 ExternalDependencies = [
                     SimulatorFileDependency(
-                        File = SimulatorFileDependencyFileField(Id = testFileId),
+                        File = SimulatorFileDependencyFileField(Id = testFileIdDependency),
                         Arguments = Dictionary(dict [ "test_field", "test_value" ])
                     )
                 ]
@@ -57,7 +79,22 @@ let ``Create and list simulator model revisions with external dependencies is Ok
 
         try
             // Act
-            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+            let! simulatorRes = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
+
+            // Assert
+            let len = Seq.length simulatorRes
+            test <@ len = 1 @>
+            let itemRes = simulatorRes |> Seq.head
+
+            test <@ itemRes.Name = simulatorToCreate.Name @>
+            test <@ itemRes.CreatedTime >= now @>
+            test <@ itemRes.LastUpdatedTime >= now @>
+
+            let lenModelDeps = Seq.length itemRes.ModelDependencies
+            test <@ lenModelDeps = 1 @>
+            let modelDep = itemRes.ModelDependencies |> Seq.head
+            test <@ Seq.toArray modelDep.FileExtensionTypes = Seq.toArray fileExtensionTypes @>
+
             let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
             let! modelRevisionRes = writeClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
 
@@ -70,10 +107,10 @@ let ``Create and list simulator model revisions with external dependencies is Ok
             test <@ modelRevisionCreated.FileId = modelRevisionToCreate.FileId @>
             
             let externalDep = modelRevisionCreated.ExternalDependencies |> Seq.head
-            test <@ externalDep.File.Id = testFileId @>
+            test <@ externalDep.File.Id = testFileIdDependency @>
             test <@ externalDep.Arguments.["test_field"] = "test_value" @>
 
-            // Test list endpoint returns SimulatorModelRevisionDetail
+            // Test list endpoint returns SimulatorModelRevision
             let! modelRevisionsListRes =
                 writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
                     new SimulatorModelRevisionQuery(
@@ -88,4 +125,5 @@ let ``Create and list simulator model revisions with external dependencies is Ok
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
+        ()
     }
