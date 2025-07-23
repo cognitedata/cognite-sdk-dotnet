@@ -77,7 +77,7 @@ namespace Test.CSharp.Integration
                     { 
                         template = new StreamTemplateSettings 
                         { 
-                            name = TestStream 
+                            name = StreamTemplateName.ImmutableTestStream
                         }
                     }
                 });
