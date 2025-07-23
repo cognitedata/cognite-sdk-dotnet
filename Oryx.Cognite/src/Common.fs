@@ -76,7 +76,6 @@ module Common =
         options.Converters.Add(ObjectToDictionaryJsonConverter())
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
-        options.Converters.Add(FieldResolverConverter())
         options.Converters.Add(StatusCodeConverter())
         options.Converters.Add(StringOrIntConverter())
         // DMS converters
