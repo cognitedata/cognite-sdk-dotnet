@@ -73,10 +73,10 @@ namespace Test.CSharp.Integration
                 await Write.Beta.StreamRecords.CreateStreamAsync(new StreamWrite
                 {
                     ExternalId = TestStream,
-                    Settings = new StreamSettings 
-                    { 
-                        template = new StreamTemplateSettings 
-                        { 
+                    Settings = new StreamSettings
+                    {
+                        template = new StreamTemplateSettings
+                        {
                             name = StreamTemplateName.ImmutableTestStream
                         }
                     }
