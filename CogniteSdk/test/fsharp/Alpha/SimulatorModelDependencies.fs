@@ -20,7 +20,7 @@ let modelExternalId = $"test_model_deps_{now}"
 [<Fact>]
 [<Trait("resource", "simulatorModelDependencies")>]
 [<Trait("api", "simulators")>]
-let ``Create and delete simulators is Ok`` () =
+let ``Create simulator with model dependencies support and model revisions with ext. deps`` () =
     task {
 
         let fileExtensionTypes = seq { "txt"; "json"; "out" }
