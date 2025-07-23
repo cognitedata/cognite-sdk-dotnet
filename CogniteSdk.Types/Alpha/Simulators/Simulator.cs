@@ -29,7 +29,7 @@ namespace CogniteSdk.Alpha
         public IEnumerable<string> FileExtensionTypes { get; set; }
 
         /// <summary>
-        /// Defines a structure for the model dependencies. Only used for the simulators that support models consisting of multiple files.
+        /// List of model dependencies supported by the simulator, includes the allowed fields and file extensions.
         /// </summary>
         public IEnumerable<SimulatorModelDependency> ModelDependencies { get; set; }
 
