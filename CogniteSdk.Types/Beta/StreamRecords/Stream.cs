@@ -19,7 +19,29 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Settings for the stream. Required field.
         /// </summary>
-        public object Settings { get; set; }
+        public StreamSettings Settings { get; set; }
+    }
+
+    /// <summary>
+    /// Settings for a stream.
+    /// </summary>
+    public class StreamSettings
+    {
+        /// <summary>
+        /// Template settings for the stream.
+        /// </summary>
+        public StreamTemplateSettings template { get; set; }
+    }
+
+    /// <summary>
+    /// Template settings for a stream.
+    /// </summary>
+    public class StreamTemplateSettings
+    {
+        /// <summary>
+        /// The name of the stream template.
+        /// </summary>
+        public string name { get; set; }
     }
 
     /// <summary>

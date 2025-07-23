@@ -73,7 +73,13 @@ namespace Test.CSharp.Integration
                 await Write.Beta.StreamRecords.CreateStreamAsync(new StreamWrite
                 {
                     ExternalId = TestStream,
-                    Settings = new { }  // Empty object as settings
+                    Settings = new StreamSettings 
+                    { 
+                        template = new StreamTemplateSettings 
+                        { 
+                            name = TestStream 
+                        }
+                    }
                 });
             }
             catch (ResponseException ex) when (ex.Code == 409) { }
