@@ -75,9 +75,9 @@ namespace Test.CSharp.Integration
                     ExternalId = TestStream,
                     Settings = new StreamSettings
                     {
-                        template = new StreamTemplateSettings
+                        Template = new StreamTemplateSettings
                         {
-                            name = StreamTemplateName.ImmutableTestStream
+                            Name = StreamTemplateName.ImmutableTestStream
                         }
                     }
                 });

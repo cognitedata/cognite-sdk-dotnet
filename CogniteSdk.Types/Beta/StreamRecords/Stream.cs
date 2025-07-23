@@ -1,6 +1,8 @@
 // Copyright 2024 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Text.Json.Serialization;
+
 namespace CogniteSdk.Beta
 {
     /// <summary>
@@ -30,12 +32,14 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Template settings for the stream.
         /// </summary>
-        public StreamTemplateSettings template { get; set; }
+        [JsonPropertyName("template")]
+        public StreamTemplateSettings Template { get; set; }
     }
 
     /// <summary>
     /// The name of the stream template.
     /// </summary>
+    [JsonConverter(typeof(StreamTemplateNameConverter))]
     public enum StreamTemplateName
     {
         /// <summary>
@@ -77,7 +81,8 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// The name of the stream template.
         /// </summary>
-        public StreamTemplateName name { get; set; }
+        [JsonPropertyName("name")]
+        public StreamTemplateName Name { get; set; }
     }
 
     /// <summary>
