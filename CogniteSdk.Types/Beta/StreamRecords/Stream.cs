@@ -15,6 +15,11 @@ namespace CogniteSdk.Beta
         /// Stream id cannot be "logs" or "records". Max length is 100 characters.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
+        /// Settings for the stream. Required field.
+        /// </summary>
+        public object Settings { get; set; }
     }
 
     /// <summary>
