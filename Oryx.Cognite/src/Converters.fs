@@ -11,9 +11,10 @@ open CogniteSdk.Beta
 /// Converter for StreamTemplateName enum that ensures proper string serialization
 type StreamTemplateNameConverter() =
     inherit JsonConverter<StreamTemplateName>()
-    
+
     override _.Read(reader: byref<Utf8JsonReader>, _: Type, _: JsonSerializerOptions) : StreamTemplateName =
         let value = reader.GetString()
+
         match value with
         | "ImmutableTestStream" -> StreamTemplateName.ImmutableTestStream
         | "ImmutableDataStaging" -> StreamTemplateName.ImmutableDataStaging
@@ -24,7 +25,7 @@ type StreamTemplateNameConverter() =
         | _ -> failwithf "Unknown stream template name: %s" value
 
     override _.Write(writer: Utf8JsonWriter, value: StreamTemplateName, _: JsonSerializerOptions) : unit =
-        let stringValue = 
+        let stringValue =
             match value with
             | StreamTemplateName.ImmutableTestStream -> "ImmutableTestStream"
             | StreamTemplateName.ImmutableDataStaging -> "ImmutableDataStaging"
@@ -33,4 +34,5 @@ type StreamTemplateNameConverter() =
             | StreamTemplateName.MutableTestStream -> "MutableTestStream"
             | StreamTemplateName.MutableLiveData -> "MutableLiveData"
             | _ -> failwithf "Unknown stream template name value: %A" value
+
         writer.WriteStringValue(stringValue)
