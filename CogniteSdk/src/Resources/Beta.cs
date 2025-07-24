@@ -16,11 +16,6 @@ namespace CogniteSdk.Resources
     public class BetaResource : Resource
     {
         /// <summary>
-        /// Client Templates extension methods
-        /// </summary>
-        public TemplatesResource Templates { get; }
-
-        /// <summary>
         /// Timeseries subscriptions
         /// </summary>
         public SubscriptionsResource Subscriptions { get; }
@@ -37,7 +32,6 @@ namespace CogniteSdk.Resources
         /// <param name="ctx">Context to use for the request.</param>
         internal BetaResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
-            Templates = new TemplatesResource(authHandler, ctx);
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
             StreamRecords = new StreamRecordsResource(authHandler, ctx);
         }
