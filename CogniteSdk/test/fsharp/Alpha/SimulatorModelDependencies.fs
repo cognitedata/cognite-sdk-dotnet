@@ -41,15 +41,12 @@ let ``Create simulator with model dependencies support and model revisions with 
                     )
                 ]
                 simToCreate
-        // test-dataset
-        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("prosper-simulator-test") ])
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
-        // empty.json for publicdata
-        // 3237317904039163 -> tests-dotnet.json in bluefield cognite-simulator-quality-check
-        let! testFileResRevision = writeClient.Files.RetrieveAsync([ 3237317904039163L ])
+        let! testFileResRevision = writeClient.Files.RetrieveAsync([ new Identity("empty.json") ])
         let testFileIdRevision = testFileResRevision |> Seq.head |> (fun f -> f.Id)
 
-        let! testFileResDependency = writeClient.Files.RetrieveAsync([ 1104203827922893L ])
+        let! testFileResDependency = writeClient.Files.RetrieveAsync([ new Identity("empty2.json") ])
         let testFileIdDependency = testFileResDependency |> Seq.head |> (fun f -> f.Id)
 
         let modelToCreate =
