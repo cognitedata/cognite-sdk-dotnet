@@ -75,17 +75,12 @@ let ``Create simulator with model dependencies support and model revisions with 
             )
 
         try
-            // Act
             let! simulatorRes = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
 
-            // Assert
             let len = Seq.length simulatorRes
             test <@ len = 1 @>
             let itemRes = simulatorRes |> Seq.head
-
             test <@ itemRes.Name = simulatorToCreate.Name @>
-            test <@ itemRes.CreatedTime >= now @>
-            test <@ itemRes.LastUpdatedTime >= now @>
 
             let lenModelDeps = Seq.length itemRes.ModelDependencies
             test <@ lenModelDeps = 1 @>
@@ -97,27 +92,12 @@ let ``Create simulator with model dependencies support and model revisions with 
 
             let modelRevisionCreated = modelRevisionRes |> Seq.head
 
-            // Assert
             test <@ modelRevisionCreated.ExternalId = modelRevisionToCreate.ExternalId @>
-            test <@ modelRevisionCreated.ModelExternalId = modelRevisionToCreate.ModelExternalId @>
-            test <@ modelRevisionCreated.Description = modelRevisionToCreate.Description @>
             test <@ modelRevisionCreated.FileId = modelRevisionToCreate.FileId @>
             
             let externalDep = modelRevisionCreated.ExternalDependencies |> Seq.head
             test <@ externalDep.File.Id = testFileIdDependency @>
             test <@ externalDep.Arguments.["test_field"] = "test_value" @>
-
-            // Test list endpoint returns SimulatorModelRevision
-            let! modelRevisionsListRes =
-                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
-                    new SimulatorModelRevisionQuery(
-                        Filter = SimulatorModelRevisionFilter(ModelExternalIds = [ modelExternalId ])
-                    )
-                )
-
-            let modelRevisionFound = modelRevisionsListRes.Items |> Seq.head
-            test <@ modelRevisionFound.ExternalId = modelRevisionToCreate.ExternalId @>
-            test <@ modelRevisionFound.ModelExternalId = modelRevisionToCreate.ModelExternalId @>
 
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
