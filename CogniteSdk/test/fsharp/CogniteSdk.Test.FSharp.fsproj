@@ -27,6 +27,7 @@
     <Compile Include="Alpha/SimulatorModels.fs" />
     <Compile Include="Alpha/SimulatorRoutines.fs" />
     <Compile Include="Alpha/SimulatorRuns.fs" />
+    <Compile Include="Alpha/SimulatorModelDependencies.fs" />
     <Compile Include="CoreDataModels/DataPoints.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
