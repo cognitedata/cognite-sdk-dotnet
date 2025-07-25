@@ -45,7 +45,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Represents a file dependency field for referencing a file in CDF.
     /// </summary>
-    public class SimulatorFileDependencyFileField
+    public class SimulatorFileDependencyReference
     {
         /// <summary>
         /// File id of the file dependency. This is used to reference a file in CDF.
@@ -61,7 +61,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Reference to a file in CDF.
         /// </summary>
-        public SimulatorFileDependencyFileField File { get; set; }
+        public SimulatorFileDependencyReference File { get; set; }
 
         /// <summary>
         /// Simulator-specific arguments for the file dependency. These are used to link the file 

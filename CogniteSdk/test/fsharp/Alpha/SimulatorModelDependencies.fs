@@ -68,7 +68,7 @@ let ``Create simulator with model dependencies support and model revisions with 
                 FileId = testFileIdRevision,
                 ExternalDependencies = [
                     SimulatorFileDependency(
-                        File = SimulatorFileDependencyFileField(Id = testFileIdDependency),
+                        File = SimulatorFileDependencyReference(Id = testFileIdDependency),
                         Arguments = Dictionary(dict [ "test_field", "test_value" ])
                     )
                 ]
