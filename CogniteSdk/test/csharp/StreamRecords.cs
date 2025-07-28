@@ -83,6 +83,8 @@ namespace Test.CSharp.Integration
             foreach (var templateType in allTemplateTypes)
             {
                 var streamId = $"dotnet-sdk-test-{templateType.ToString().ToLowerInvariant()}";
+                
+                // Always add to dictionary, even if creation fails
                 TestStreams[templateType] = streamId;
 
                 // Try to create the stream, ignore errors in case it already exists
@@ -101,22 +103,37 @@ namespace Test.CSharp.Integration
                         }
                     });
                 }
-                catch (ResponseException ex) when (ex.Code == 409) { }
+                catch (ResponseException ex) when (ex.Code == 409) 
+                { 
+                    // Stream already exists, which is fine
+                }
+                catch (ResponseException ex)
+                {
+                    // Log other errors but don't fail initialization
+                    // Tests will handle missing streams appropriately
+                    Console.WriteLine($"Warning: Failed to create test stream {streamId}: {ex.Message}");
+                }
             }
         }
 
         public override async Task DisposeAsync()
         {
             // Clean up all created test streams
-            foreach (var streamId in TestStreams.Values)
+            if (TestStreams != null)
             {
-                try
+                foreach (var streamId in TestStreams.Values)
                 {
-                    await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
-                }
-                catch (ResponseException)
-                {
-                    // Ignore errors during cleanup - stream might not exist or already be deleted
+                    if (!string.IsNullOrEmpty(streamId))
+                    {
+                        try
+                        {
+                            await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
+                        }
+                        catch (ResponseException)
+                        {
+                            // Ignore errors during cleanup - stream might not exist or already be deleted
+                        }
+                    }
                 }
             }
 
@@ -137,21 +154,32 @@ namespace Test.CSharp.Integration
             perTestUniqueInt = Interlocked.Increment(ref testCounter);
         }
 
-        [Fact]
+                [Fact]
         public async Task TestListRetrieveStreams()
         {
+            // Ensure TestStreams was initialized
+            Assert.NotNull(tester.TestStreams);
+            Assert.NotEmpty(tester.TestStreams);
+            
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
-
+            Assert.NotNull(streams);
+            
             // Verify all test streams exist and have correct template types (exercises all converter paths)
             foreach (var kvp in tester.TestStreams)
             {
                 var templateType = kvp.Key;
                 var streamId = kvp.Value;
-
+                
+                Assert.NotNull(streamId);
                 Assert.Contains(streams, s => s.ExternalId == streamId);
-
+                
                 var retrieved = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
+                Assert.NotNull(retrieved);
                 Assert.Equal(streamId, retrieved.ExternalId);
+                
+                // Check if Settings and Template are properly populated
+                Assert.NotNull(retrieved.Settings);
+                Assert.NotNull(retrieved.Settings.Template);
                 Assert.Equal(templateType, retrieved.Settings.Template.Name);
             }
         }
@@ -159,8 +187,13 @@ namespace Test.CSharp.Integration
         [Fact]
         public async Task TestIngestRecords()
         {
+            // Ensure TestStreams was initialized
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.MutableTestStream));
+            
             // Use MutableTestStream to exercise different converter path
             var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
+            Assert.NotNull(targetStream);
 
             // Create some records
             var req = new[] {
@@ -208,8 +241,13 @@ namespace Test.CSharp.Integration
         [Fact]
         public async Task TestRetrieveRecords()
         {
+            // Ensure TestStreams was initialized
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.ImmutableDataStaging));
+            
             // Use ImmutableDataStaging to exercise another converter path
             var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
+            Assert.NotNull(targetStream);
 
             // The stream records API is so eventually consistent that this test would take
             // way too long to run. Just test that we can send a request without failing.
