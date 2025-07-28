@@ -121,8 +121,6 @@ namespace Test.CSharp.Integration
                         try
                         {
                             await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
-                            // Add small delay to avoid overwhelming the API
-                            await Task.Delay(100);
                         }
                         catch (ResponseException)
                         {
@@ -131,7 +129,7 @@ namespace Test.CSharp.Integration
                     }
                 }
             }
-            
+
             try
             {
                 await base.DisposeAsync();
