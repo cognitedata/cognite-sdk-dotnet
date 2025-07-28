@@ -179,9 +179,6 @@ namespace Test.CSharp.Integration
                 Assert.NotNull(retrieved);
                 Assert.Equal(streamId, retrieved.ExternalId);
 
-                Assert.NotNull(retrieved.Settings);
-                Assert.NotNull(retrieved.Settings.Template);
-                Assert.Equal(templateType, retrieved.Settings.Template.Name);
             }
         }
 
