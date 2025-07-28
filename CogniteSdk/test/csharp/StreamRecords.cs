@@ -106,12 +106,6 @@ namespace Test.CSharp.Integration
                 {
                     // Stream already exists, which is fine
                 }
-                catch (ResponseException ex)
-                {
-                    // Log other errors but don't fail initialization
-                    // Tests will handle missing streams appropriately
-                    Console.WriteLine($"Warning: Failed to create test stream {streamId}: {ex.Message}");
-                }
             }
         }
 
@@ -163,10 +157,6 @@ namespace Test.CSharp.Integration
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
             Assert.NotNull(streams);
 
-            // Verify all test streams exist - this exercises converter paths through:
-            // 1. Stream creation (StreamWrite serialization -> Write method)
-            // 2. Stream retrieval (Stream deserialization -> Read method with alpha header)
-            // 3. Unit test (direct JSON round-trip for all enum values)
             foreach (var kvp in tester.TestStreams)
             {
                 var templateType = kvp.Key;
@@ -189,11 +179,9 @@ namespace Test.CSharp.Integration
             Assert.NotNull(tester.TestStreams);
             Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.MutableTestStream));
 
-            // Use MutableTestStream to exercise different converter path
             var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
             Assert.NotNull(targetStream);
 
-            // Create some records
             var req = new[] {
                 new StreamRecordWrite {
                     ExternalId = $"{tester.Prefix}test-record-1",
@@ -239,11 +227,9 @@ namespace Test.CSharp.Integration
         [Fact]
         public async Task TestRetrieveRecords()
         {
-            // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
             Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.ImmutableDataStaging));
 
-            // Use ImmutableDataStaging to exercise another converter path
             var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
             Assert.NotNull(targetStream);
 
