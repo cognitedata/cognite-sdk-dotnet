@@ -99,7 +99,7 @@ namespace Test.CSharp.Integration
             perTestUniqueInt = Interlocked.Increment(ref testCounter);
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestListRetrieveStreams()
         {
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
@@ -109,7 +109,7 @@ namespace Test.CSharp.Integration
             Assert.Equal(tester.TestStream, retrieved.ExternalId);
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestIngestRecords()
         {
             // Create some records
@@ -155,7 +155,7 @@ namespace Test.CSharp.Integration
             await tester.Write.Beta.StreamRecords.IngestAsync(tester.TestStream, req);
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestRetrieveRecords()
         {
             // The stream records API is so eventually consistent that this test would take
