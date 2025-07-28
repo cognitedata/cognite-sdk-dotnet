@@ -141,15 +141,15 @@ namespace Test.CSharp.Integration
         public async Task TestListRetrieveStreams()
         {
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
-            
+
             // Verify all test streams exist and have correct template types (exercises all converter paths)
             foreach (var kvp in tester.TestStreams)
             {
                 var templateType = kvp.Key;
                 var streamId = kvp.Value;
-                
+
                 Assert.Contains(streams, s => s.ExternalId == streamId);
-                
+
                 var retrieved = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
                 Assert.Equal(streamId, retrieved.ExternalId);
                 Assert.Equal(templateType, retrieved.Settings.Template.Name);
@@ -161,7 +161,7 @@ namespace Test.CSharp.Integration
         {
             // Use MutableTestStream to exercise different converter path
             var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
-            
+
             // Create some records
             var req = new[] {
                 new StreamRecordWrite {
@@ -210,7 +210,7 @@ namespace Test.CSharp.Integration
         {
             // Use ImmutableDataStaging to exercise another converter path
             var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
-            
+
             // The stream records API is so eventually consistent that this test would take
             // way too long to run. Just test that we can send a request without failing.
             var start = DateTimeOffset.UtcNow.AddMinutes(-1).ToUnixTimeMilliseconds();
@@ -235,7 +235,7 @@ namespace Test.CSharp.Integration
                 }
             );
         }
-        
+
     }
 
     /// <summary>
@@ -279,7 +279,7 @@ namespace Test.CSharp.Integration
 
                 // Deserialize back
                 var deserialized = JsonSerializer.Deserialize<StreamWrite>(json, Oryx.Cognite.Common.jsonOptions);
-                
+
                 // Verify the template type was correctly serialized/deserialized
                 Assert.Equal(templateType, deserialized.Settings.Template.Name);
                 Assert.Equal($"test-stream-{templateType}", deserialized.ExternalId);
