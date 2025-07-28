@@ -111,7 +111,7 @@ namespace Test.CSharp.Integration
 
         public override async Task DisposeAsync()
         {
-            // Clean up all created test streams
+            // Clean up all created test streams with throttling to avoid rate limits
             if (TestStreams != null)
             {
                 foreach (var streamId in TestStreams.Values)
@@ -121,6 +121,8 @@ namespace Test.CSharp.Integration
                         try
                         {
                             await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
+                            // Add small delay to avoid overwhelming the API
+                            await Task.Delay(100);
                         }
                         catch (ResponseException)
                         {
@@ -129,9 +131,15 @@ namespace Test.CSharp.Integration
                     }
                 }
             }
-
-            // Call base cleanup
-            await base.DisposeAsync();
+            
+            try
+            {
+                await base.DisposeAsync();
+            }
+            catch (ResponseException)
+            {
+                // Ignore other cleanup errors
+            }
         }
     }
 
