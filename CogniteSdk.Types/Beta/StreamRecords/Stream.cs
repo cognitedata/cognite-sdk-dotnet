@@ -21,6 +21,7 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Settings for the stream. Required field.
         /// </summary>
+        [JsonPropertyName("settings")]
         public StreamSettings Settings { get; set; }
     }
 
@@ -94,5 +95,19 @@ namespace CogniteSdk.Beta
         /// Time the stream was created, in milliseconds since epoch.
         /// </summary>
         public long CreatedTime { get; set; }
+
+        /// <summary>
+        /// Name of the template used for creating this stream.
+        /// Only present when using alpha cdf-version header.
+        /// </summary>
+        [JsonPropertyName("createdFromTemplate")]
+        public string CreatedFromTemplate { get; set; }
+
+        /// <summary>
+        /// Type of the stream (Immutable or Mutable).
+        /// Only present when using alpha cdf-version header.
+        /// </summary>
+        [JsonPropertyName("type")]
+        public string Type { get; set; }
     }
 }

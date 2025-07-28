@@ -84,14 +84,11 @@ namespace Test.CSharp.Integration
             {
                 var streamId = $"dotnet-sdk-test-{templateType.ToString().ToLowerInvariant()}";
 
-                // Always add to dictionary, even if creation fails
                 TestStreams[templateType] = streamId;
 
-                // Try to create the stream, ignore errors in case it already exists
-                // from a previous test run.
                 try
                 {
-                    await Write.Beta.StreamRecords.CreateStreamAsync(new StreamWrite
+                    var streamWrite = new StreamWrite
                     {
                         ExternalId = streamId,
                         Settings = new StreamSettings
@@ -101,7 +98,9 @@ namespace Test.CSharp.Integration
                                 Name = templateType
                             }
                         }
-                    });
+                    };
+
+                    await Write.Beta.StreamRecords.CreateStreamAsync(streamWrite);
                 }
                 catch (ResponseException ex) when (ex.Code == 409)
                 {
@@ -164,7 +163,10 @@ namespace Test.CSharp.Integration
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
             Assert.NotNull(streams);
 
-            // Verify all test streams exist and have correct template types (exercises all converter paths)
+            // Verify all test streams exist - this exercises converter paths through:
+            // 1. Stream creation (StreamWrite serialization -> Write method)
+            // 2. Stream retrieval (Stream deserialization -> Read method with alpha header)
+            // 3. Unit test (direct JSON round-trip for all enum values)
             foreach (var kvp in tester.TestStreams)
             {
                 var templateType = kvp.Key;
@@ -177,7 +179,6 @@ namespace Test.CSharp.Integration
                 Assert.NotNull(retrieved);
                 Assert.Equal(streamId, retrieved.ExternalId);
 
-                // Check if Settings and Template are properly populated
                 Assert.NotNull(retrieved.Settings);
                 Assert.NotNull(retrieved.Settings.Template);
                 Assert.Equal(templateType, retrieved.Settings.Template.Name);
