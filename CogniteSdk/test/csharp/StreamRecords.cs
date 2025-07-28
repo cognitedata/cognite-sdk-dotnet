@@ -11,6 +11,7 @@ using CogniteSdk.Beta;
 using CogniteSdk.DataModels;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Test.CSharp.Integration
 {
@@ -98,7 +99,7 @@ namespace Test.CSharp.Integration
             perTestUniqueInt = Interlocked.Increment(ref testCounter);
         }
 
-        [Fact]
+        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
         public async Task TestListRetrieveStreams()
         {
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
@@ -108,7 +109,7 @@ namespace Test.CSharp.Integration
             Assert.Equal(tester.TestStream, retrieved.ExternalId);
         }
 
-        [Fact]
+        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
         public async Task TestIngestRecords()
         {
             // Create some records
@@ -154,7 +155,7 @@ namespace Test.CSharp.Integration
             await tester.Write.Beta.StreamRecords.IngestAsync(tester.TestStream, req);
         }
 
-        [Fact]
+        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
         public async Task TestRetrieveRecords()
         {
             // The stream records API is so eventually consistent that this test would take
