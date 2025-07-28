@@ -83,7 +83,7 @@ namespace Test.CSharp.Integration
             foreach (var templateType in allTemplateTypes)
             {
                 var streamId = $"dotnet-sdk-test-{templateType.ToString().ToLowerInvariant()}";
-                
+
                 // Always add to dictionary, even if creation fails
                 TestStreams[templateType] = streamId;
 
@@ -103,8 +103,8 @@ namespace Test.CSharp.Integration
                         }
                     });
                 }
-                catch (ResponseException ex) when (ex.Code == 409) 
-                { 
+                catch (ResponseException ex) when (ex.Code == 409)
+                {
                     // Stream already exists, which is fine
                 }
                 catch (ResponseException ex)
@@ -154,29 +154,29 @@ namespace Test.CSharp.Integration
             perTestUniqueInt = Interlocked.Increment(ref testCounter);
         }
 
-                [Fact]
+        [Fact]
         public async Task TestListRetrieveStreams()
         {
             // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
             Assert.NotEmpty(tester.TestStreams);
-            
+
             var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
             Assert.NotNull(streams);
-            
+
             // Verify all test streams exist and have correct template types (exercises all converter paths)
             foreach (var kvp in tester.TestStreams)
             {
                 var templateType = kvp.Key;
                 var streamId = kvp.Value;
-                
+
                 Assert.NotNull(streamId);
                 Assert.Contains(streams, s => s.ExternalId == streamId);
-                
+
                 var retrieved = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
                 Assert.NotNull(retrieved);
                 Assert.Equal(streamId, retrieved.ExternalId);
-                
+
                 // Check if Settings and Template are properly populated
                 Assert.NotNull(retrieved.Settings);
                 Assert.NotNull(retrieved.Settings.Template);
@@ -190,7 +190,7 @@ namespace Test.CSharp.Integration
             // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
             Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.MutableTestStream));
-            
+
             // Use MutableTestStream to exercise different converter path
             var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
             Assert.NotNull(targetStream);
@@ -244,7 +244,7 @@ namespace Test.CSharp.Integration
             // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
             Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.ImmutableDataStaging));
-            
+
             // Use ImmutableDataStaging to exercise another converter path
             var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
             Assert.NotNull(targetStream);
