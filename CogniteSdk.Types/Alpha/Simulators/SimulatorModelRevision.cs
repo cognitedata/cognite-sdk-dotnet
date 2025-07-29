@@ -94,6 +94,11 @@ namespace CogniteSdk.Alpha
         public long LogId { get; set; }
 
         /// <summary>
+        /// List of external dependencies of the simulation model revision. Only used for the simulators that support models consisting of multiple files.
+        /// </summary>
+        public IEnumerable<SimulatorFileDependency> ExternalDependencies { get; set; }
+
+        /// <summary>
         /// The number of milliseconds since epoch.
         /// </summary>
         public long CreatedTime { get; set; }
