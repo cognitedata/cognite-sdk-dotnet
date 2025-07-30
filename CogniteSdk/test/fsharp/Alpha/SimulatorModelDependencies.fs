@@ -62,7 +62,7 @@ let ``Create simulator with model dependencies support and model revisions with 
         // Create model revision with external dependencies
         let modelRevisionToCreate =
             SimulatorModelRevisionCreate(
-                ExternalId = "test_model_revision_v1",
+                ExternalId = modelExternalId + "_v1",
                 ModelExternalId = modelExternalId,
                 Description = "test_model_revision_description",
                 FileId = testFileIdRevision,
