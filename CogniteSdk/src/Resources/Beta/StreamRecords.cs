@@ -97,7 +97,6 @@ namespace CogniteSdk.Resources.Beta
             return await RunAsync(req).ConfigureAwait(false);
         }
 
-        /* Unimplemented
         /// <summary>
         /// Delete a stream by its identifier.
         /// </summary>
@@ -113,7 +112,6 @@ namespace CogniteSdk.Resources.Beta
             var req = Oryx.Cognite.Beta.StreamRecords.deleteStream(stream, GetContext(token));
             await RunAsync(req).ConfigureAwait(false);
         }
-        */
 
         /// <summary>
         /// List all streams in the project.

@@ -64,12 +64,11 @@ module StreamRecords =
             return Seq.exactlyOne (ret.Items)
         }
 
-    // Unimplemented
-    // let deleteStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
-    //     source
-    //     |> withLogMessage "streamrecords:deletestream"
-    //     |> withAlphaHeader
-    //     |> deleteV10 (Url +/ stream)
+    let deleteStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<CogniteSdk.EmptyResponse> =
+        source
+        |> withLogMessage "streamrecords:deletestream"
+        |> withAlphaHeader
+        |> deleteV10 (Url +/ stream)
 
     let listStreams (source: HttpHandler<unit>) : HttpHandler<Stream seq> =
         http {

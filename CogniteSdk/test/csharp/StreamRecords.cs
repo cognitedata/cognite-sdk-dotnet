@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CogniteSdk;
@@ -21,6 +22,7 @@ namespace Test.CSharp.Integration
 
         public string TestSpace { get; private set; }
         public string TestStream { get; private set; }
+        public Dictionary<StreamTemplateName, string> TestStreams { get; private set; }
 
         public ContainerIdentifier TestContainer { get; private set; }
 
@@ -65,18 +67,77 @@ namespace Test.CSharp.Integration
             TestContainer = testContainerIdt;
 
             TestStream = "dotnet-sdk-test-stream";
+            TestStreams = new Dictionary<StreamTemplateName, string>();
 
-            // Try to create the stream, ignore errors. Streams cannot currently
-            // be deleted, and there is a limit on the count per project, so we can't create
-            // one per test run.
+            // Create test streams for all template types to exercise the converter
+            var allTemplateTypes = new[]
+            {
+                StreamTemplateName.ImmutableTestStream,
+                StreamTemplateName.ImmutableDataStaging,
+                StreamTemplateName.ImmutableNormalizedData,
+                StreamTemplateName.ImmutableArchive,
+                StreamTemplateName.MutableTestStream,
+                StreamTemplateName.MutableLiveData
+            };
+
+            foreach (var templateType in allTemplateTypes)
+            {
+                var streamId = $"dotnet-sdk-test-{templateType.ToString().ToLowerInvariant()}";
+
+                TestStreams[templateType] = streamId;
+
+                try
+                {
+                    var streamWrite = new StreamWrite
+                    {
+                        ExternalId = streamId,
+                        Settings = new StreamSettings
+                        {
+                            Template = new StreamTemplateSettings
+                            {
+                                Name = templateType
+                            }
+                        }
+                    };
+
+                    await Write.Beta.StreamRecords.CreateStreamAsync(streamWrite);
+                }
+                catch (ResponseException ex) when (ex.Code == 409)
+                {
+                    // Stream already exists, which is fine
+                }
+            }
+        }
+
+        public override async Task DisposeAsync()
+        {
+            // Clean up all created test streams with throttling to avoid rate limits
+            if (TestStreams != null)
+            {
+                foreach (var streamId in TestStreams.Values)
+                {
+                    if (!string.IsNullOrEmpty(streamId))
+                    {
+                        try
+                        {
+                            await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
+                        }
+                        catch (ResponseException)
+                        {
+                            // Ignore errors during cleanup - stream might not exist or already be deleted
+                        }
+                    }
+                }
+            }
+
             try
             {
-                await Write.Beta.StreamRecords.CreateStreamAsync(new StreamWrite
-                {
-                    ExternalId = TestStream
-                });
+                await base.DisposeAsync();
             }
-            catch (ResponseException ex) when (ex.Code == 409) { }
+            catch (ResponseException)
+            {
+                // Ignore other cleanup errors
+            }
         }
     }
 
@@ -92,20 +153,41 @@ namespace Test.CSharp.Integration
             perTestUniqueInt = Interlocked.Increment(ref testCounter);
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestListRetrieveStreams()
         {
-            var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
-            Assert.Contains(streams, s => s.ExternalId == tester.TestStream);
+            // Ensure TestStreams was initialized
+            Assert.NotNull(tester.TestStreams);
+            Assert.NotEmpty(tester.TestStreams);
 
-            var retrieved = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(tester.TestStream);
-            Assert.Equal(tester.TestStream, retrieved.ExternalId);
+            var streams = await tester.Write.Beta.StreamRecords.ListStreamsAsync();
+            Assert.NotNull(streams);
+
+            foreach (var kvp in tester.TestStreams)
+            {
+                var templateType = kvp.Key;
+                var streamId = kvp.Value;
+
+                Assert.NotNull(streamId);
+                Assert.Contains(streams, s => s.ExternalId == streamId);
+
+                var retrieved = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
+                Assert.NotNull(retrieved);
+                Assert.Equal(streamId, retrieved.ExternalId);
+
+            }
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestIngestRecords()
         {
-            // Create some records
+            // Ensure TestStreams was initialized
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.MutableTestStream));
+
+            var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
+            Assert.NotNull(targetStream);
+
             var req = new[] {
                 new StreamRecordWrite {
                     ExternalId = $"{tester.Prefix}test-record-1",
@@ -145,17 +227,23 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            await tester.Write.Beta.StreamRecords.IngestAsync(tester.TestStream, req);
+            await tester.Write.Beta.StreamRecords.IngestAsync(targetStream, req);
         }
 
-        [Fact(Skip = "Stream Records tests are disabled due to breaking changes in the API")]
+        [Fact]
         public async Task TestRetrieveRecords()
         {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.ImmutableDataStaging));
+
+            var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
+            Assert.NotNull(targetStream);
+
             // The stream records API is so eventually consistent that this test would take
             // way too long to run. Just test that we can send a request without failing.
             var start = DateTimeOffset.UtcNow.AddMinutes(-1).ToUnixTimeMilliseconds();
             await tester.Write.Beta.StreamRecords.RetrieveAsync<StandardInstanceData>(
-                tester.TestStream,
+                targetStream,
                 new StreamRecordsRetrieve
                 {
                     LastUpdatedTime = new LastUpdatedTimeFilter
@@ -175,5 +263,57 @@ namespace Test.CSharp.Integration
                 }
             );
         }
+
     }
+
+    /// <summary>
+    /// Unit tests for StreamTemplateNameConverter that don't require API access
+    /// </summary>
+    public class StreamTemplateNameConverterTest
+    {
+        [Fact]
+        public void TestStreamTemplateNameConverter_AllEnumValues()
+        {
+            // Test that all StreamTemplateName enum values can be serialized and deserialized correctly
+            // This ensures the converter handles all cases and improves coverage
+            var allTemplateTypes = new[]
+            {
+                StreamTemplateName.ImmutableTestStream,
+                StreamTemplateName.ImmutableDataStaging,
+                StreamTemplateName.ImmutableNormalizedData,
+                StreamTemplateName.ImmutableArchive,
+                StreamTemplateName.MutableTestStream,
+                StreamTemplateName.MutableLiveData
+            };
+
+            foreach (var templateType in allTemplateTypes)
+            {
+                // Create a StreamWrite with the template type
+                var streamWrite = new StreamWrite
+                {
+                    ExternalId = $"test-stream-{templateType}",
+                    Settings = new StreamSettings
+                    {
+                        Template = new StreamTemplateSettings
+                        {
+                            Name = templateType
+                        }
+                    }
+                };
+
+                // Serialize to JSON
+                var json = JsonSerializer.Serialize(streamWrite, Oryx.Cognite.Common.jsonOptions);
+                Assert.Contains($"\"{templateType}\"", json);
+
+                // Deserialize back
+                var deserialized = JsonSerializer.Deserialize<StreamWrite>(json, Oryx.Cognite.Common.jsonOptions);
+
+                // Verify the template type was correctly serialized/deserialized
+                Assert.Equal(templateType, deserialized.Settings.Template.Name);
+                Assert.Equal($"test-stream-{templateType}", deserialized.ExternalId);
+            }
+        }
+    }
+
+
 }
