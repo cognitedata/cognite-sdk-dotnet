@@ -1,4 +1,4 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Text.Json.Serialization;
@@ -21,7 +21,6 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Settings for the stream. Required field.
         /// </summary>
-        [JsonPropertyName("settings")]
         public StreamSettings Settings { get; set; }
     }
 
@@ -33,14 +32,13 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// Template settings for the stream.
         /// </summary>
-        [JsonPropertyName("template")]
         public StreamTemplateSettings Template { get; set; }
     }
 
     /// <summary>
     /// The name of the stream template.
     /// </summary>
-    [JsonConverter(typeof(StreamTemplateNameConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum StreamTemplateName
     {
         /// <summary>
@@ -82,8 +80,22 @@ namespace CogniteSdk.Beta
         /// <summary>
         /// The name of the stream template.
         /// </summary>
-        [JsonPropertyName("name")]
         public StreamTemplateName Name { get; set; }
+    }
+
+    /// <summary>
+    /// Type of stream, either Immutable or Mutable.
+    /// </summary>
+    public enum StreamType
+    {
+        /// <summary>
+        /// Immutable stream type.
+        /// </summary>
+        Immutable,
+        /// <summary>
+        /// Mutable stream type.
+        /// </summary>
+        Mutable
     }
 
     /// <summary>
@@ -100,14 +112,12 @@ namespace CogniteSdk.Beta
         /// Name of the template used for creating this stream.
         /// Only present when using alpha cdf-version header.
         /// </summary>
-        [JsonPropertyName("createdFromTemplate")]
         public string CreatedFromTemplate { get; set; }
 
         /// <summary>
         /// Type of the stream (Immutable or Mutable).
         /// Only present when using alpha cdf-version header.
         /// </summary>
-        [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public StreamType? Type { get; set; }
     }
 }

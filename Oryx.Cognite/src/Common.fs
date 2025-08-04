@@ -97,6 +97,4 @@ module Common =
         options.Converters.Add(InstanceDataConverter())
         // Simulators converters
         options.Converters.Add(SimulatorValueConverter())
-        // StreamRecords converters
-        options.Converters.Add(StreamTemplateNameConverter())
         options

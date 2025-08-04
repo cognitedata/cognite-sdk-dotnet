@@ -1,4 +1,4 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using CogniteSdk.DataModels;
