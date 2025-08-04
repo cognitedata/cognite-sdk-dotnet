@@ -86,6 +86,7 @@ namespace CogniteSdk.Beta
     /// <summary>
     /// Type of stream, either Immutable or Mutable.
     /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum StreamType
     {
         /// <summary>
