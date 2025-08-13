@@ -6,9 +6,9 @@ using System.Collections.Generic;
 namespace CogniteSdk.Alpha
 {
     /// <summary>
-    /// Defines model dependency fields for a simulator.
+    /// Defines model dependency field for a simulator.
     /// </summary>
-    public class SimulatorModelDependencyFields
+    public class SimulatorModelDependencyField
     {
         /// <summary>
         /// Name of the field
@@ -39,7 +39,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// List of simulator specific fields for the dependency. Used to link the file to a simulator object in the model.
         /// </summary>
-        public IEnumerable<SimulatorModelDependencyFields> Fields { get; set; }
+        public IEnumerable<SimulatorModelDependencyField> Fields { get; set; }
     }
 
     /// <summary>

@@ -32,7 +32,7 @@ let ``Create simulator with model dependencies support and model revisions with 
                     SimulatorModelDependency(
                         FileExtensionTypes = fileExtensionTypes,
                         Fields = [
-                            SimulatorModelDependencyFields(
+                            SimulatorModelDependencyField(
                                 Name = "test_field",
                                 Label = "Test Field",
                                 Info = "Test field for external deps"
