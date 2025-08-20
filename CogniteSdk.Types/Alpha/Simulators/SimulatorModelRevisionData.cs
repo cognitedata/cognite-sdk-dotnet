@@ -255,9 +255,9 @@ namespace CogniteSdk.Alpha
         public string ModelRevisionExternalId { get; set; }
 
         /// <summary>
-        /// Flowsheet of the model revision.
+        /// IEnumerable of simulator model revision data flowsheets
         /// </summary>
-        public SimulatorModelRevisionDataFlowsheet Flowsheet { get; set; }
+        public IEnumerable<SimulatorModelRevisionDataFlowsheet> Flowsheets { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.
