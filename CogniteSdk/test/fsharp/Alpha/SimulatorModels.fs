@@ -277,6 +277,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             test <@ modelRevisionUpdatedData.Info.ToString() = modelRevisionDataInfo.ToString() @>
 
             let updatedFlowsheet = modelRevisionUpdatedData.Flowsheets |> Seq.head
+            let flowsheetDataItem = flowsheetData |> Seq.head
 
             test
                 <@
@@ -284,7 +285,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                         [ "water"; "oil" ]
                 @>
 
-            test <@ updatedFlowsheet.ToString() = flowsheetData.ToString() @>
+            test <@ updatedFlowsheet.ToString() = flowsheetDataItem.ToString() @>
 
 
         finally
