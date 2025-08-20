@@ -11,9 +11,9 @@ namespace CogniteSdk.Alpha
     public class SimulatorModelRevisionDataUpdate
     {
         /// <summary>
-        /// Flowsheet of the model revision.
+        /// IEnumerable of simulator model revision data flowsheets.
         /// </summary>
-        public Update<SimulatorModelRevisionDataFlowsheet> Flowsheet { get; set; }
+        public Update<IEnumerable<SimulatorModelRevisionDataFlowsheet>> Flowsheets { get; set; }
 
         /// <summary>
         /// Additional simulator-specific information.

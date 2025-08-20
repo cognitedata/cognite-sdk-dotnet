@@ -195,7 +195,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             let modelRevisionDataInfo = Dictionary(dict [ "key1", "value1"; "key2", "value2" ])
 
             let flowsheetData =
-                SimulatorModelRevisionDataFlowsheet(
+                [|SimulatorModelRevisionDataFlowsheet(
                     Thermodynamics =
                         SimulatorModelRevisionDataThermodynamic(
                             Components = [ "water"; "oil" ],
@@ -231,14 +231,14 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                               TargetId = "test_object_2",
                               ConnectionType = SimulatorModelRevisionDataConnectionType.Energy
                           ) ]
-                )
+                )|]
 
             let dataUpdate =
                 new SimulatorModelRevisionDataUpdateItem(
                     ModelRevisionExternalId = modelRevisionCreated.ExternalId,
                     Update =
                         SimulatorModelRevisionDataUpdate(
-                            Flowsheet = UpdateNullable flowsheetData,
+                            Flowsheets = UpdateNullable flowsheetData,
                             Info = UpdateNullable modelRevisionDataInfo
                         )
                 )
@@ -276,13 +276,16 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             test <@ modelRevisionUpdatedData.Info.["key1"] = "value1" @>
             test <@ modelRevisionUpdatedData.Info.ToString() = modelRevisionDataInfo.ToString() @>
 
+            let updatedFlowsheet = modelRevisionUpdatedData.Flowsheets |> Seq.head
+            let flowsheetDataItem = flowsheetData |> Seq.head
+
             test
                 <@
-                    List.ofSeq modelRevisionUpdatedData.Flowsheet.Thermodynamics.Components = List.ofSeq
+                    List.ofSeq updatedFlowsheet.Thermodynamics.Components = List.ofSeq
                         [ "water"; "oil" ]
                 @>
 
-            test <@ modelRevisionUpdatedData.Flowsheet.ToString() = flowsheetData.ToString() @>
+            test <@ updatedFlowsheet.ToString() = flowsheetDataItem.ToString() @>
 
 
         finally
