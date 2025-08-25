@@ -11,34 +11,74 @@ open Common
 open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
+open System.Collections.Generic
 
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
+// Helper function to compare two sequences of items considering their string representations
+let (====) (seq1: IEnumerable<'T>) (seq2: IEnumerable<'T>) =
+    List.ofSeq (seq1 |> Seq.map string) = List.ofSeq (seq2 |> Seq.map string)
+
 [<Fact>]
 [<Trait("resource", "simulators")>]
 [<Trait("api", "simulators")>]
-let ``Create and delete simulators is Ok`` () =
+let ``Create, update and delete simulators is Ok`` () =
     task {
 
         let fileExtensionTypes = seq { "json" }
-        // Arrange
-        let itemToCreate =
-            testSimulatorCreate(simulatorExternalId)
-        // Act
-        let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+
+        let modelDependencies =
+            seq {
+                SimulatorModelDependency(
+                    FileExtensionTypes = seq { "json" },
+                    Fields = [ SimulatorModelDependencyField(Name = "cell", Label = "Cell", Info = "Cell number") ]
+                )
+
+            }
+        // Arrange & act
+        let itemToCreate = testSimulatorCreate simulatorExternalId
+        let! itemCreatedRes = writeClient.Alpha.Simulators.CreateAsync [ itemToCreate ]
+        let itemCreated = itemCreatedRes |> Seq.head
+
+        let itemToUpdate =
+            new SimulatorUpdateItem(
+                id = itemCreated.Id,
+                Update =
+                    SimulatorUpdate(
+                        Name = Update<string>(itemCreated.Name + "_upd"),
+                        FileExtensionTypes = new Update<IEnumerable<string>>(itemCreated.FileExtensionTypes),
+                        ModelTypes = Update<IEnumerable<SimulatorModelType>> itemCreated.ModelTypes,
+                        ModelDependencies = Update<IEnumerable<SimulatorModelDependency>> modelDependencies,
+                        StepFields = Update<IEnumerable<SimulatorStepField>> itemCreated.StepFields,
+                        UnitQuantities = Update<IEnumerable<SimulatorUnitQuantity>> itemCreated.UnitQuantities
+                    )
+            )
+
+        let! itemUpdateRes = writeClient.Alpha.Simulators.UpdateAsync [ itemToUpdate ]
         let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
 
         // Assert
-        let len = Seq.length res
+        let len = Seq.length itemCreatedRes
         test <@ len = 1 @>
-        let itemRes = res |> Seq.head
 
-        test <@ itemRes.Name = itemToCreate.Name @>
-        test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
-        test <@ itemRes.CreatedTime >= now @>
-        test <@ itemRes.LastUpdatedTime >= now @>
+        test <@ itemCreated.Name = itemToCreate.Name @>
+        test <@ itemCreated.FileExtensionTypes ==== fileExtensionTypes @>
+        test <@ itemCreated.CreatedTime >= now @>
+        test <@ itemCreated.LastUpdatedTime >= now @>
 
+        let itemUpdated = itemUpdateRes |> Seq.head
+        test <@ itemUpdated.Id = itemCreated.Id @>
+        test <@ itemUpdated.Name = itemToUpdate.Update.Name.Set @>
+
+        test <@ itemUpdated.ModelTypes ==== itemCreated.ModelTypes @>
+        test <@ itemUpdated.ModelDependencies ==== modelDependencies @>
+        test <@ itemUpdated.FileExtensionTypes ==== itemCreated.FileExtensionTypes @>
+        test <@ itemUpdated.StepFields ==== itemCreated.StepFields @>
+        test <@ itemUpdated.UnitQuantities ==== itemCreated.UnitQuantities @>
+
+        test <@ itemUpdated.CreatedTime = itemCreated.CreatedTime @>
+        test <@ itemUpdated.LastUpdatedTime > itemCreated.LastUpdatedTime @>
         ()
     }
 
@@ -70,7 +110,7 @@ let ``Create and update simulator integration is Ok`` () =
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
-        let simulatorToCreate = testSimulatorCreate(simulatorExternalId)
+        let simulatorToCreate = testSimulatorCreate (simulatorExternalId)
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
@@ -137,7 +177,8 @@ let ``Create and update simulator integration is Ok`` () =
 let ``List simulator integrations is Ok`` () =
     task {
         // Arrange
-        let query = SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active=true))
+        let query =
+            SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active = true))
 
         // Act
         let! res = writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
