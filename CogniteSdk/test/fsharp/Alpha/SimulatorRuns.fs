@@ -7,11 +7,11 @@ open Xunit
 open Swensen.Unquote
 
 open CogniteSdk.Alpha
-open Tests.Integration.Alpha.Common
 open CogniteSdk
+open Common
 
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``Create simulation runs by routine with data and callback is Ok`` () =
@@ -29,6 +29,7 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
                           Value = SimulatorValue.Create(50.1), // original value is 10 C
                           Unit = SimulationInputUnitOverride(Name = "F")
                       ) ],
+                LogSeverity = "Debug",
                 RunTime = now,
                 Queue = true
             )
@@ -47,16 +48,20 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
+        let! res = writeClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
         let simulationRun = res |> Seq.head
 
-        let! resData = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resData = writeClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
 
         callbackQuery.Id <- simulationRun.Id
-        let! callbackRes = azureDevClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
+        let! callbackRes = writeClient.Alpha.Simulators.SimulationRunCallbackAsync callbackQuery
         let simulationRunAfterCallback = callbackRes.Items |> Seq.head
 
-        let! resDataAfterCallback = azureDevClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+        let! resDataAfterCallback = writeClient.Alpha.Simulators.ListSimulationRunsDataAsync([ simulationRun.Id ])
+
+        let! resSimRunLogs = writeClient.Alpha.Simulators.RetrieveSimulatorLogsAsync(
+            [ new Identity(simulationRun.LogId.Value) ]
+        )
 
 
         // Assert
@@ -90,9 +95,14 @@ let ``Create simulation runs by routine with data and callback is Ok`` () =
         let item = item.Value
         test <@ item.Value = SimulatorValue.Create(100) @>
         test <@ item.Unit.Name = "F" @>
+
+        // Assert log 
+        test <@ resSimRunLogs |> Seq.length = 1 @>
+        let logItem = resSimRunLogs |> Seq.head
+        test <@ logItem.Severity = "Debug" @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``List simulation runs is Ok`` () =
@@ -105,7 +115,7 @@ let ``List simulation runs is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -122,7 +132,7 @@ let ``List simulation runs is Ok`` () =
         test <@ len > 0 @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``List simulation runs with external id filters is Ok`` () =
@@ -140,7 +150,7 @@ let ``List simulation runs with external id filters is Ok`` () =
             )
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(query)
+        let! res = writeClient.Alpha.Simulators.ListSimulationRunsAsync(query)
 
         let len = Seq.length res.Items
 
@@ -148,23 +158,23 @@ let ``List simulation runs with external id filters is Ok`` () =
         test <@ len = 0 @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulationRuns")>]
 [<Trait("api", "simulators")>]
 let ``Retrieve simulation runs is Ok`` () =
     task {
 
         // Arrange
-        let listQuery = SimulationRunQuery()
+        let listQuery: SimulationRunQuery = SimulationRunQuery()
 
-        let! listRes = azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+        let! listRes = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
 
         test <@ Seq.length listRes.Items > 0 @>
 
         let simulationRun = listRes.Items |> Seq.head
 
         // Act
-        let! res = azureDevClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
+        let! res = writeClient.Alpha.Simulators.RetrieveSimulationRunsAsync [ simulationRun.Id ]
         let simulationRunRetrieveRes = res |> Seq.head
 
         // Assert
@@ -172,14 +182,30 @@ let ``Retrieve simulation runs is Ok`` () =
         test <@ simulationRunRetrieveRes.Status = SimulationRunStatus.success @>
     }
 
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+
+[<Fact>]
+[<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
+let ``Retrieve simulation runs with cursor is Ok`` () =
+    task {
+
+        // Arrange
+        let listQuery: SimulationRunQuery = SimulationRunQuery(Limit = 1)
+
+        let! (listRes: IItemsWithCursor<SimulationRun>) = writeClient.Alpha.Simulators.ListSimulationRunsAsync(listQuery)
+
+        test <@ Seq.length listRes.Items > 0 @>
+        test <@ isNull listRes.NextCursor |> not @>
+    }
+
+[<Fact>]
 [<Trait("resource", "simulatorLogs")>]
 [<Trait("api", "simulators")>]
 let ``Update simulation log is Ok`` () =
     task {
         // Arrange
         let! listRunsRes =
-            azureDevClient.Alpha.Simulators.ListSimulationRunsAsync(
+            writeClient.Alpha.Simulators.ListSimulationRunsAsync(
                 new SimulationRunQuery(
                     Filter = new SimulationRunFilter(RoutineRevisionExternalIds = [ "ShowerMixerForTests-1" ]),
                     Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
@@ -207,8 +233,8 @@ let ``Update simulation log is Ok`` () =
             )
 
         // Act
-        let! _ = azureDevClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
-        let! retrieveLogRes = azureDevClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
+        let! _ = writeClient.Alpha.Simulators.UpdateSimulatorLogsAsync([ simulatorLogUpdateItem ])
+        let! retrieveLogRes = writeClient.Alpha.Simulators.RetrieveSimulatorLogsAsync([ new Identity(logId) ])
 
         // Assert
         test <@ Seq.length retrieveLogRes = 1 @>

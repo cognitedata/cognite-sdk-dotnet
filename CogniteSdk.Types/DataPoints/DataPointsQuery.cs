@@ -1,8 +1,9 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk.Types.Common;
 using System.Collections.Generic;
+using CogniteSdk.DataModels;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
@@ -70,6 +71,11 @@ namespace CogniteSdk
         /// The external ID provided by the client. Must be unique for the resource type.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
+        /// The instance ID provided by the client. Must be unique for the resource type.
+        /// </summary>
+        public InstanceIdentifier InstanceId { get; set; }
 
         /// <summary>
         /// To retrieve next page, insert the `nextCursor` from a previous response.

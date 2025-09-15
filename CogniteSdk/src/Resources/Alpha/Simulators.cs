@@ -1,18 +1,14 @@
-﻿// Copyright 2023 Cognite AS
+﻿// Copyright Cognite AS
 // SPDX-License-Identifier: Apache-2.0
-
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CogniteSdk.Alpha;
-
+using Microsoft.FSharp.Core;
 using Oryx;
 using Oryx.Cognite.Alpha;
-
-using Microsoft.FSharp.Core;
-using System.Linq;
 
 namespace CogniteSdk.Resources.Alpha
 {
@@ -46,7 +42,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="query">Simulation run filter query</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>All simulation runs in project</returns>
-        public async Task<IItemsWithoutCursor<SimulationRun>> ListSimulationRunsAsync(SimulationRunQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulationRun>> ListSimulationRunsAsync(SimulationRunQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulationRuns(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -151,7 +147,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator model query to filter.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorModel>> ListSimulatorModelsAsync(SimulatorModelQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorModel>> ListSimulatorModelsAsync(SimulatorModelQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorModels(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -213,7 +209,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator model revision query to filter.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorModelRevision>> ListSimulatorModelRevisionsAsync(SimulatorModelRevisionQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorModelRevision>> ListSimulatorModelRevisionsAsync(SimulatorModelRevisionQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorModelRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -247,12 +243,14 @@ namespace CogniteSdk.Resources.Alpha
             return await RunAsync(req).ConfigureAwait(false);
         }
 
+
+
         /// <summary>
         /// Asyncronously list simulator routines.
         /// </summary>
         /// <param name="query">The simulator routine query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorRoutine>> ListSimulatorRoutinesAsync(SimulatorRoutineQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorRoutines(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -308,7 +306,7 @@ namespace CogniteSdk.Resources.Alpha
         /// </summary>
         /// <param name="query">The simulator routine revisions query to retrieve.</param>
         /// <param name="token">Optional cancellation token</param>
-        public async Task<IItemsWithoutCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default)
+        public async Task<IItemsWithCursor<SimulatorRoutineRevision>> ListSimulatorRoutineRevisionsAsync(SimulatorRoutineRevisionQuery query, CancellationToken token = default)
         {
             var req = Simulators.listSimulatorRoutineRevisions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
@@ -329,6 +327,41 @@ namespace CogniteSdk.Resources.Alpha
 
             var req = Simulators.retrieveSimulatorRoutineRevisions<SimulatorRoutineRevision>(ids, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously updates simulator model revision data.
+        /// </summary>
+        /// <param name="items">The simulator model revision data items to update.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task<IItemsWithoutCursor<SimulatorModelRevisionData>> UpdateSimulatorModelRevisionDataAsync(IEnumerable<SimulatorModelRevisionDataUpdateItem> items, CancellationToken token = default)
+        {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            var req = Simulators.updateSimulatorModelRevisionData(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Asynchronously retrieves simulator model revision data.
+        /// </summary>
+        /// <param name="modelRevisionExternalId">The external id of the model revision to retrieve data for.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>The requested simulator model revision data</returns>
+        public async Task<SimulatorModelRevisionData> RetrieveSimulatorModelRevisionDataAsync(string modelRevisionExternalId, CancellationToken token = default)
+        {
+            if (string.IsNullOrEmpty(modelRevisionExternalId))
+            {
+                throw new ArgumentNullException(nameof(modelRevisionExternalId));
+            }
+
+            var request = new ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>
+            {
+                Items = new[] { new SimulatorModelRevisionDataRetrieve { ModelRevisionExternalId = modelRevisionExternalId } }
+            };
+
+            var req = Simulators.retrieveSimulatorModelRevisionData(request, GetContext(token));
+            var result = await RunAsync(req).ConfigureAwait(false);
+            return result.Items.FirstOrDefault();
         }
 
         /// <summary>

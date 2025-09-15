@@ -7,10 +7,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Logging;
-using Oryx;
+using CogniteSdk.DataModels.Core;
 using CogniteSdk.Resources;
+
+using Microsoft.Extensions.Logging;
 using Microsoft.FSharp.Core;
+
+using Oryx;
 using static Oryx.Cognite.HttpHandlerModule;
 
 namespace CogniteSdk
@@ -140,6 +143,16 @@ namespace CogniteSdk
         /// </summary>
         public FunctionResource Functions { get; }
 
+        /// Resource for the core data model.
+        /// </summary>
+        /// <value></value>
+        public CoreResource CoreDataModel { get; }
+
+        /// <summary>
+        /// Flexible data models
+        /// </summary>
+        public DataModelsResource DataModels { get; }
+
         /// <summary>
         /// Client for making requests to the API.
         /// </summary>
@@ -169,11 +182,15 @@ namespace CogniteSdk
             Annotations = new AnnotationsResource(authHandler, ctx);
             Units = new UnitsResource(authHandler, ctx);
             Functions = new FunctionResource(authHandler, ctx);
+            DataModels = new DataModelsResource(authHandler, ctx);
 
             // Beta features (experimental)
             Beta = new BetaResource(authHandler, ctx);
             // Alpha features (experimental)
             Alpha = new AlphaResource(authHandler, ctx);
+
+            // Core data model (experimental)
+            CoreDataModel = new CoreResource(this);
         }
 
         /// <summary>

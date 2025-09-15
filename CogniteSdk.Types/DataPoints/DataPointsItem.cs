@@ -1,9 +1,10 @@
 // Copyright 2020 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk.Types.Common;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using CogniteSdk.DataModels;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
 {
@@ -21,6 +22,11 @@ namespace CogniteSdk
         /// The external ID of the time series the data points belong to.
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
+        /// The instance ID of the time series the data points belong to.
+        /// </summary>
+        public InstanceIdentifier InstanceId { get; set; }
 
         /// <summary>
         /// Whether the time series is string valued or not.

@@ -1,14 +1,14 @@
 ﻿// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk;
-using CogniteSdk.Beta.DataModels;
-using CogniteSdk.Resources.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CogniteSdk;
+using CogniteSdk.DataModels;
+using CogniteSdk.Resources.DataModels;
 using Xunit;
 
 namespace Test.CSharp.Integration
@@ -32,7 +32,7 @@ namespace Test.CSharp.Integration
 
             var testSpace = new SpaceCreate { Space = TestSpace };
 
-            await Write.Beta.DataModels.UpsertSpaces(new[] { testSpace });
+            await Write.DataModels.UpsertSpaces(new[] { testSpace });
 
             var testContainer = new ContainerCreate
             {
@@ -91,8 +91,8 @@ namespace Test.CSharp.Integration
                 Version = "1"
             };
 
-            await Write.Beta.DataModels.UpsertContainers(new[] { testContainer });
-            await Write.Beta.DataModels.UpsertViews(new[] { testView });
+            await Write.DataModels.UpsertContainers(new[] { testContainer });
+            await Write.DataModels.UpsertViews(new[] { testView });
 
             TestContainer = testContainerIdt;
             TestView = new ViewIdentifier(TestSpace, "TestView", "1");
@@ -100,9 +100,9 @@ namespace Test.CSharp.Integration
 
         public override async Task DisposeAsync()
         {
-            if (TestContainer != null) await Write.Beta.DataModels.DeleteContainers(new[] { TestContainer.ContainerId() });
-            if (TestView != null) await Write.Beta.DataModels.DeleteViews(new[] { TestView.FDMExternalId() });
-            if (TestSpace != null) await Write.Beta.DataModels.DeleteSpaces(new[] { TestSpace });
+            if (TestContainer != null) await Write.DataModels.DeleteContainers(new[] { TestContainer.ContainerId() });
+            if (TestView != null) await Write.DataModels.DeleteViews(new[] { TestView.FDMExternalId() });
+            if (TestSpace != null) await Write.DataModels.DeleteSpaces(new[] { TestSpace });
         }
     }
     public class DataModelsTest : IClassFixture<DataModelsFixture>
@@ -120,25 +120,25 @@ namespace Test.CSharp.Integration
             var space = new SpaceCreate { Space = extid };
 
             // Create a space
-            var created = await tester.Write.Beta.DataModels.UpsertSpaces(new[] { space });
+            var created = await tester.Write.DataModels.UpsertSpaces(new[] { space });
             Assert.Single(created);
 
             try
             {
                 // Update space name
                 space.Name = "Test Space Updated";
-                var updated = await tester.Write.Beta.DataModels.UpsertSpaces(new[] { space });
+                var updated = await tester.Write.DataModels.UpsertSpaces(new[] { space });
                 Assert.Single(updated);
                 Assert.Equal("Test Space Updated", updated.First().Name);
 
                 // Retrieve space by id
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveSpaces(new[] { extid });
+                var retrieved = await tester.Write.DataModels.RetrieveSpaces(new[] { extid });
                 Assert.Single(retrieved);
             }
             finally
             {
                 // Delete space
-                var deleted = await tester.Write.Beta.DataModels.DeleteSpaces(new[] { extid });
+                var deleted = await tester.Write.DataModels.DeleteSpaces(new[] { extid });
                 Assert.Single(deleted);
             }
         }
@@ -172,13 +172,13 @@ namespace Test.CSharp.Integration
             var id = new FDMExternalId(extid, tester.TestSpace, "1");
 
             // Create a data model
-            var created = await tester.Write.Beta.DataModels.UpsertDataModels(new[] { model });
+            var created = await tester.Write.DataModels.UpsertDataModels(new[] { model });
             Assert.Single(created);
 
             try
             {
                 // Retrieve a data model
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveDataModels(new[] { id }, true);
+                var retrieved = await tester.Write.DataModels.RetrieveDataModels(new[] { id }, true);
                 Assert.Single(retrieved);
                 var retModel = retrieved.First();
                 Assert.Equal(2, retModel.Views.Count());
@@ -186,19 +186,19 @@ namespace Test.CSharp.Integration
 
                 // Update a data model
                 model.Description = "Test description";
-                var updated = await tester.Write.Beta.DataModels.UpsertDataModels(new[] { model });
+                var updated = await tester.Write.DataModels.UpsertDataModels(new[] { model });
                 Assert.Single(updated);
                 Assert.Equal("Test description", updated.First().Description);
             }
             finally
             {
                 // Delete the data model
-                var deleted = await tester.Write.Beta.DataModels.DeleteDataModels(new[]
+                var deleted = await tester.Write.DataModels.DeleteDataModels(new[]
                 {
                     id
                 });
                 // Delete the implicitly created view
-                await tester.Write.Beta.DataModels.DeleteViews(new[]
+                await tester.Write.DataModels.DeleteViews(new[]
                 {
                     new FDMExternalId("TestCreateInModel", tester.TestSpace, "1")
                 });
@@ -227,7 +227,7 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.UpsertViews(new[] { view });
+            var created = await tester.Write.DataModels.UpsertViews(new[] { view });
             Assert.Single(created);
 
             var id = new FDMExternalId(extid, tester.TestSpace, "1");
@@ -235,19 +235,19 @@ namespace Test.CSharp.Integration
             try
             {
                 // Retrieve a vuew
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveViews(new[] { id });
+                var retrieved = await tester.Write.DataModels.RetrieveViews(new[] { id });
                 Assert.Single(retrieved);
 
                 // Update a view
                 view.Description = "Test description";
-                var updated = await tester.Write.Beta.DataModels.UpsertViews(new[] { view });
+                var updated = await tester.Write.DataModels.UpsertViews(new[] { view });
                 Assert.Single(updated);
                 Assert.Equal("Test description", updated.First().Description);
             }
             finally
             {
                 // Delete the view
-                var deleted = await tester.Write.Beta.DataModels.DeleteViews(new[] { id });
+                var deleted = await tester.Write.DataModels.DeleteViews(new[] { id });
                 Assert.Single(deleted);
             }
         }
@@ -273,7 +273,7 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.UpsertContainers(new[] { container });
+            var created = await tester.Write.DataModels.UpsertContainers(new[] { container });
             Assert.Single(created);
 
             var id = new ContainerId(extid, tester.TestSpace);
@@ -281,19 +281,19 @@ namespace Test.CSharp.Integration
             try
             {
                 // Retrieve a container
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveContainers(new[] { id });
+                var retrieved = await tester.Write.DataModels.RetrieveContainers(new[] { id });
                 Assert.Single(retrieved);
 
                 // Update a container
                 container.Description = "Test description";
-                var updated = await tester.Write.Beta.DataModels.UpsertContainers(new[] { container });
+                var updated = await tester.Write.DataModels.UpsertContainers(new[] { container });
                 Assert.Single(updated);
                 Assert.Equal("Test description", updated.First().Description);
             }
             finally
             {
                 // Delete the container
-                var deleted = await tester.Write.Beta.DataModels.DeleteContainers(new[] { id });
+                var deleted = await tester.Write.DataModels.DeleteContainers(new[] { id });
                 Assert.Single(deleted);
             }
         }
@@ -342,17 +342,17 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            var created = await tester.Write.DataModels.UpsertInstances(req);
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node1"),
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node2")
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node1"),
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node2")
             };
 
             try
             {
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
+                var retrieved = await tester.Write.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
                 {
                     Sources = new[]
                     {
@@ -371,7 +371,7 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                var deleted = await tester.Write.Beta.DataModels.DeleteInstances(ids);
+                var deleted = await tester.Write.DataModels.DeleteInstances(ids);
                 Assert.Equal(2, deleted.Count());
             }
         }
@@ -428,17 +428,17 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            var created = await tester.Write.DataModels.UpsertInstances(req);
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge1"),
-                new InstanceIdentifier(InstanceType.edge, tester.TestSpace, "edge2")
+                new InstanceIdentifierWithType(InstanceType.edge, tester.TestSpace, "edge1"),
+                new InstanceIdentifierWithType(InstanceType.edge, tester.TestSpace, "edge2")
             };
 
             try
             {
-                var retrieved = await tester.Write.Beta.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
+                var retrieved = await tester.Write.DataModels.RetrieveInstances<StandardInstanceData>(new InstancesRetrieve
                 {
                     Sources = new[]
                     {
@@ -457,13 +457,13 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                var deleted = await tester.Write.Beta.DataModels.DeleteInstances(ids);
+                var deleted = await tester.Write.DataModels.DeleteInstances(ids);
                 Assert.Equal(2, deleted.Count());
-                var deletedNodes = await tester.Write.Beta.DataModels.DeleteInstances(new[]
+                var deletedNodes = await tester.Write.DataModels.DeleteInstances(new[]
                 {
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node3"),
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node4"),
-                    new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node5"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node3"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node4"),
+                    new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node5"),
                 });
                 Assert.Equal(3, deletedNodes.Count());
             }
@@ -575,12 +575,12 @@ namespace Test.CSharp.Integration
                 }
             };
 
-            var created = await tester.Write.Beta.DataModels.UpsertInstances(req);
+            var created = await tester.Write.DataModels.UpsertInstances(req);
             Assert.Equal(2, created.Count());
 
             var ids = new[] {
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node6"),
-                new InstanceIdentifier(InstanceType.node, tester.TestSpace, "node7")
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node6"),
+                new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node7")
             };
 
             var q = new Query
@@ -628,7 +628,7 @@ namespace Test.CSharp.Integration
 
             try
             {
-                var queryResult = await tester.Write.Beta.DataModels.QueryInstances<StandardInstanceData>(q);
+                var queryResult = await tester.Write.DataModels.QueryInstances<StandardInstanceData>(q);
 
                 Assert.Equal("res1", queryResult.Items.First().Key);
                 Assert.Single(queryResult.Items["res1"]);
@@ -638,7 +638,7 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                await tester.Write.Beta.DataModels.DeleteInstances(ids);
+                await tester.Write.DataModels.DeleteInstances(ids);
             }
 
         }
@@ -658,7 +658,7 @@ namespace Test.CSharp.Integration
                 }
             }, new UpsertOptions());
 
-            var retrieved = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+            var retrieved = await resource.RetrieveAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
@@ -668,13 +668,13 @@ namespace Test.CSharp.Integration
             Assert.Equal("test", node.Properties.Prop);
             Assert.Equal(123, node.Properties.IntProp);
 
-            await resource.DeleteAsync(new[] { new InstanceIdentifier {
+            await resource.DeleteAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
             }});
 
-            var retrieved2 = await resource.RetrieveAsync(new[] { new InstanceIdentifier {
+            var retrieved2 = await resource.RetrieveAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
@@ -694,7 +694,7 @@ namespace Test.CSharp.Integration
     {
         public override ViewIdentifier View { get; }
 
-        public TestResource(DataModelsFixture fixture) : base(fixture.Write.Beta.DataModels)
+        public TestResource(DataModelsFixture fixture) : base(fixture.Write.DataModels)
         {
             View = fixture.TestView;
         }

@@ -29,32 +29,6 @@ namespace CogniteSdk.Alpha
     }
 
     /// <summary>
-    /// A Simulator model boundary condition.
-    /// </summary>
-    public class SimulatorModelBoundaryCondition
-    {
-        /// <summary>
-        /// Key of the boundary condition.
-        /// </summary>
-        public string Key { get; set; }
-
-        /// <summary>
-        /// Name of the boundary condition.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Adress of the boundary condition.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// Time series external id of the boundary condition.
-        /// </summary>
-        public string TimeSeriesExternalId { get; set; }
-    }
-
-    /// <summary>
     /// A Simulator model revision resource.
     /// </summary>
     public class SimulatorModelRevision
@@ -115,19 +89,14 @@ namespace CogniteSdk.Alpha
         public int VersionNumber { get; set; }
 
         /// <summary>
-        /// Boundary conditions of the simulation model with target timeseries where the values are saved.
-        /// </summary>
-        public IEnumerable<SimulatorModelBoundaryCondition> BoundaryConditions { get; set; }
-
-        /// <summary>
-        /// Status of the boundary conditions of the simulation model.
-        /// </summary>
-        public SimulatorModelRevisionStatus BoundaryConditionsStatus { get; set; }
-
-        /// <summary>
         /// Log id of the model revision
         /// </summary>
         public long LogId { get; set; }
+
+        /// <summary>
+        /// List of external dependencies of the simulation model revision. Only used for the simulators that support models consisting of multiple files.
+        /// </summary>
+        public IEnumerable<SimulatorFileDependency> ExternalDependencies { get; set; }
 
         /// <summary>
         /// The number of milliseconds since epoch.

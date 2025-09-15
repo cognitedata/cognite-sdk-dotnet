@@ -47,17 +47,12 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulator model revision class.
     /// </summary>
-    public class SimulatorModelRevisionQuery
+    public class SimulatorModelRevisionQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on simulators model revisions.
         /// </summary>
         public SimulatorModelRevisionFilter Filter { get; set; }
-
-        /// <summary>
-        /// Limits the number of results to return.
-        /// </summary>
-        public int? Limit { get; set; }
 
         /// <summary>
         /// Sort order.

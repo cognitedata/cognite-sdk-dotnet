@@ -1,7 +1,7 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Beta
 {
@@ -16,6 +16,12 @@ namespace CogniteSdk.Beta
         /// Not applicable to filter based subscriptions.
         /// </summary>
         public UpdateEnumerable<string> TimeSeriesIds { get; set; }
+        /// <summary>
+        /// Add or remove time series instance IDs for this subscription.
+        /// 
+        /// Not applicable to filter based subscriptions.
+        /// </summary>
+        public UpdateEnumerable<InstanceIdentifier> InstanceIds { get; set; }
         /// <summary>
         /// Update subscription name.
         /// </summary>

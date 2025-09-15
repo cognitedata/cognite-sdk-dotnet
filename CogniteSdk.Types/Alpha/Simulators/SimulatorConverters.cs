@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -24,6 +25,32 @@ namespace CogniteSdk.Alpha
                     return SimulatorValue.Create(reader.GetString());
                 case JsonTokenType.Number:
                     return SimulatorValue.Create(reader.GetDouble());
+                case JsonTokenType.StartArray:
+                    var listStr = new List<string>();
+                    var listDbl = new List<double>();
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        switch (reader.TokenType)
+                        {
+                            case JsonTokenType.Number:
+                                listDbl.Add(reader.GetDouble());
+                                break;
+                            case JsonTokenType.String:
+                                listStr.Add(reader.GetString());
+                                break;
+                            default:
+                                throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
+                        }
+                    }
+                    if (listStr.Count > 0 && listDbl.Count > 0)
+                    {
+                        throw new JsonException("Unable to parse value of type: mixed array");
+                    }
+                    else if (listStr.Count > 0)
+                    {
+                        return SimulatorValue.Create(listStr);
+                    }
+                    return SimulatorValue.Create(listDbl);
                 default:
                     throw new JsonException($"Unable to parse value of type: {reader.TokenType}");
             }
@@ -46,6 +73,23 @@ namespace CogniteSdk.Alpha
                     break;
                 case SimulatorValue.Double d:
                     writer.WriteNumberValue(d.Value);
+                    break;
+                case SimulatorValue.DoubleArray doubleArr:
+                    writer.WriteStartArray();
+                    foreach (var val in doubleArr.Value)
+                    {
+                        writer.WriteNumberValue(val);
+
+                    }
+                    writer.WriteEndArray();
+                    break;
+                case SimulatorValue.StringArray stringArr:
+                    writer.WriteStartArray();
+                    foreach (var val in stringArr.Value)
+                    {
+                        writer.WriteStringValue(val);
+                    }
+                    writer.WriteEndArray();
                     break;
                 default:
                     throw new ArgumentException($"Unknown SimulatorValue: {value}");

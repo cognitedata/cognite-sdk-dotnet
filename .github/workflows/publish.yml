@@ -16,22 +16,22 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           fetch-depth: 0
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
-          dotnet-version: 6.0.200
-          
+          dotnet-version: 8.0.x
+
       - name: Get version
         id: get-version
         run: echo "version=$(cat version)" >> $GITHUB_OUTPUT
-        
+
       - name: Get branch
         id: get-branch
         run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
-        
+
       - name: Confirm release
         id: confirm-release
         run: echo "test=$(git tag --list 'v${{ steps.get-version.outputs.version }}' | wc -l | sed s/\ //g)" >> $GITHUB_OUTPUT
@@ -50,13 +50,13 @@ jobs:
       - name: Dotnet Pack
         run: dotnet pack -c release -p:PackageVersion=${{ steps.get-version.outputs.version }} -p:FileVersion=${{ steps.get-version.outputs.version }} -p:InformationalVersion=${{ steps.get-version.outputs.version }} --no-build --output nuget-packages -p:TargetsForTfmSpecificContentInPackage=
       # Sign the nuget package itself
-      
+
       - name: Package will be released
         if: ${{ steps.confirm-release.outputs.test == 0 }}
         run: echo "Will release nuget package"
 
       - name: Upload nuget packages
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ steps.get-branch.outputs.branch == 'master' && steps.confirm-release.outputs.test == 0 }}
         with:
           name: nuget-packages
@@ -64,19 +64,19 @@ jobs:
           retention-days: 1
 
   publish:
-    name: Create Release
+    name: Publish NuGet Packages
     runs-on: windows-latest
     environment: CD
     if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
     needs:
-     - build
+      - build
     steps:
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
         with:
-          dotnet-version: 6.0.200
+          dotnet-version: 8.0.x
       - name: Download nuget packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: nuget-packages
           path: nuget-packages/
@@ -88,20 +88,32 @@ jobs:
           CERTIFICATE_SHA1_HASH: ${{ secrets.CODE_SIGNING_CERT_SHA1_HASH }}
           CLIENT_CERTIFICATE: ${{ secrets.CODE_SIGNING_CLIENT_CERT }}
           CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CODE_SIGNING_CLIENT_CERT_PASSWORD }}
-        uses: cognitedata/code-sign-action/@v2
+          KEYPAIR_ALIAS: ${{ secrets.CODE_SIGNING_KEYPAIR_ALIAS }}
+        uses: cognitedata/code-sign-action/@5f2df722040f2a061476cf171f67ec6014382f2b # v3
         with:
           path-to-binary: 'nuget-packages/'
 
       - name: Push nuget packages
-        run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_TOKEN }} --skip-duplicate
         continue-on-error: false
 
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
+    needs:
+      - publish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+
       - name: Create Release
-        uses: actions/create-release@master
+        run: |
+          gh release create v${{ needs.build.outputs.version }} \
+            --title "Release v${{ needs.build.outputs.version }}" \
+            --notes "Automated release for version v${{ needs.build.outputs.version }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ needs.build.outputs.version }}
-          release_name: Release v${{ needs.build.outputs.version }}
-          draft: false
-          prerelease: false

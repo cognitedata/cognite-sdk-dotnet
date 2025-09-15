@@ -3,11 +3,12 @@
 
 using System.Globalization;
 using System.Text.Json.Serialization;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// Abstract error value. Will either be LongValue, DoubleValue or StringValue.
+    /// Abstract error value. Will either be LongValue, DoubleValue, StringValue or InstanceValue.
     /// </summary>
     [JsonConverter(typeof(MultiValue))]
     public abstract class MultiValue
@@ -56,6 +57,15 @@ namespace CogniteSdk
             return new MultiValue.Null();
         }
 
+        /// <summary>
+        /// Create an instanceId value.
+        /// </summary>
+        /// <param name="value">InstanceId value to use.</param>
+        /// <returns>New value.</returns>
+        public static MultiValue Create(InstanceIdentifier value)
+        {
+            return new MultiValue.InstanceId(value);
+        }
         /// <summary>
         /// Long (int64) error value
         /// </summary>
@@ -151,6 +161,32 @@ namespace CogniteSdk
             /// Return string representation of the string value, i.e the string itself.
             /// </summary>
             public override string ToString() => "null";
+        }
+
+        /// <summary>
+        /// Instance id error value.
+        /// </summary>
+        public sealed class InstanceId : MultiValue
+        {
+            /// <summary>
+            /// Initialize new instance id value.
+            /// </summary>
+            /// <param name="value">The value to set.</param>
+            public InstanceId(InstanceIdentifier value)
+            {
+                Type = MultiValueType.INSTANCE;
+                Value = value;
+            }
+
+            /// <summary>
+            /// The contained instance id value.
+            /// </summary>
+            public InstanceIdentifier Value { get; set; }
+
+            /// <summary>
+            /// Return string representation of the instance id value.
+            /// </summary>
+            public override string ToString() => Value.ToString();
         }
     }
 }

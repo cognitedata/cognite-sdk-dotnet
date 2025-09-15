@@ -1,4 +1,4 @@
-// Copyright 2024 Cognite AS
+// Copyright 2025 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -33,11 +33,11 @@ namespace CogniteSdk.Alpha
         public long FileId { get; set; }
 
         /// <summary>
-        /// Boundary conditions of the simulation model with target timeseries where the values are saved.
+        /// List of external dependencies of the simulation model revision. Only used for the simulators that support models consisting of multiple files.
         /// </summary>
-        public IEnumerable<SimulatorModelBoundaryCondition> BoundaryConditions { get; set; }
+        public IEnumerable<SimulatorFileDependency> ExternalDependencies { get; set; }
 
         /// <inheritdoc />
-        public override string ToString() => Stringable.ToString<SimulatorModelRevisionCreate>(this);
+        public override string ToString() => Stringable.ToString(this);
     }
 }

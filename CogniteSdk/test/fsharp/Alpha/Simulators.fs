@@ -11,44 +11,78 @@ open Common
 open CogniteSdk
 open CogniteSdk.Alpha
 open Tests.Integration.Alpha.Common
+open System.Collections.Generic
 
 let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let simulatorExternalId = $"test_sim_{now}"
 
-// [<Fact>]
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+// Helper function to compare two sequences of items considering their string representations
+let (====) (seq1: IEnumerable<'T>) (seq2: IEnumerable<'T>) =
+    List.ofSeq (seq1 |> Seq.map string) = List.ofSeq (seq2 |> Seq.map string)
+
+[<Fact>]
 [<Trait("resource", "simulators")>]
-let ``Create and delete simulators is Ok`` () =
+[<Trait("api", "simulators")>]
+let ``Create, update and delete simulators is Ok`` () =
     task {
 
         let fileExtensionTypes = seq { "json" }
-        // Arrange
-        let itemToCreate =
-            SimulatorCreate(
-                ExternalId = simulatorExternalId,
-                Name = "test_sim",
-                FileExtensionTypes = fileExtensionTypes
+
+        let modelDependencies =
+            seq {
+                SimulatorModelDependency(
+                    FileExtensionTypes = seq { "json" },
+                    Fields = [ SimulatorModelDependencyField(Name = "cell", Label = "Cell", Info = "Cell number") ]
+                )
+
+            }
+        // Arrange & act
+        let itemToCreate = testSimulatorCreate simulatorExternalId
+        let! itemCreatedRes = writeClient.Alpha.Simulators.CreateAsync [ itemToCreate ]
+        let itemCreated = itemCreatedRes |> Seq.head
+
+        let itemToUpdate =
+            new SimulatorUpdateItem(
+                id = itemCreated.Id,
+                Update =
+                    SimulatorUpdate(
+                        Name = Update<string>(itemCreated.Name + "_upd"),
+                        FileExtensionTypes = new Update<IEnumerable<string>>(itemCreated.FileExtensionTypes),
+                        ModelTypes = Update<IEnumerable<SimulatorModelType>> itemCreated.ModelTypes,
+                        ModelDependencies = Update<IEnumerable<SimulatorModelDependency>> modelDependencies,
+                        StepFields = Update<IEnumerable<SimulatorStepField>> itemCreated.StepFields,
+                        UnitQuantities = Update<IEnumerable<SimulatorUnitQuantity>> itemCreated.UnitQuantities
+                    )
             )
 
-        // Act
-        let! res = writeClient.Alpha.Simulators.CreateAsync([ itemToCreate ])
+        let! itemUpdateRes = writeClient.Alpha.Simulators.UpdateAsync [ itemToUpdate ]
         let! _ = writeClient.Alpha.Simulators.DeleteAsync [ new Identity(itemToCreate.ExternalId) ]
 
         // Assert
-        let len = Seq.length res
+        let len = Seq.length itemCreatedRes
         test <@ len = 1 @>
-        let itemRes = res |> Seq.head
 
-        test <@ itemRes.Name = itemToCreate.Name @>
-        test <@ (List.ofSeq itemRes.FileExtensionTypes) = (List.ofSeq fileExtensionTypes) @>
-        test <@ itemRes.CreatedTime >= now @>
-        test <@ itemRes.LastUpdatedTime >= now @>
+        test <@ itemCreated.Name = itemToCreate.Name @>
+        test <@ itemCreated.FileExtensionTypes ==== fileExtensionTypes @>
+        test <@ itemCreated.CreatedTime >= now @>
+        test <@ itemCreated.LastUpdatedTime >= now @>
 
+        let itemUpdated = itemUpdateRes |> Seq.head
+        test <@ itemUpdated.Id = itemCreated.Id @>
+        test <@ itemUpdated.Name = itemToUpdate.Update.Name.Set @>
+
+        test <@ itemUpdated.ModelTypes ==== itemCreated.ModelTypes @>
+        test <@ itemUpdated.ModelDependencies ==== modelDependencies @>
+        test <@ itemUpdated.FileExtensionTypes ==== itemCreated.FileExtensionTypes @>
+        test <@ itemUpdated.StepFields ==== itemCreated.StepFields @>
+        test <@ itemUpdated.UnitQuantities ==== itemCreated.UnitQuantities @>
+
+        test <@ itemUpdated.CreatedTime = itemCreated.CreatedTime @>
+        test <@ itemUpdated.LastUpdatedTime > itemCreated.LastUpdatedTime @>
         ()
     }
 
-// [<Fact>]
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
+[<Fact>]
 [<Trait("resource", "simulators")>]
 let ``List simulators is Ok`` () =
     task {
@@ -67,17 +101,16 @@ let ``List simulators is Ok`` () =
         test <@ res.Items |> Seq.forall (fun item -> item.Name <> null) @>
     }
 
-// [<Fact>]
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Fact>]
+[<Trait("resource", "simulatorIntegrations")>]
+[<Trait("api", "simulators")>]
 let ``Create and update simulator integration is Ok`` () =
     task {
         // Arrange
         let simulatorExternalId = $"test_sim_2_{now}"
         let integrationExternalId = $"test_integration_{now}"
 
-        let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
+        let simulatorToCreate = testSimulatorCreate (simulatorExternalId)
 
         let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
         let dataSet = dataSetRes |> Seq.head
@@ -105,9 +138,9 @@ let ``Create and update simulator integration is Ok`` () =
                     id = integrationCreated.Id,
                     Update =
                         SimulatorIntegrationUpdate(
-                            ConnectorStatus = Update<string>("test"),
+                            ConnectorStatus = Update<string>("RUNNING_SIMULATION"),
                             SimulatorVersion = Update<string>("2.3.4"),
-                            LicenseStatus = Update<string>("Good"),
+                            LicenseStatus = Update<string>("DISABLED"),
                             LicenseLastCheckedTime = Update<int64>(now),
                             ConnectorStatusUpdatedTime = Update<int64>(now)
                         )
@@ -129,7 +162,7 @@ let ``Create and update simulator integration is Ok`` () =
             test <@ integration.LicenseLastCheckedTime = Nullable() @>
             test <@ integration.ConnectorStatusUpdatedTime = Nullable() @>
 
-            test <@ integrationUpdated.ConnectorStatus = "test" @>
+            test <@ integrationUpdated.ConnectorStatus = "RUNNING_SIMULATION" @>
             test <@ integrationUpdated.SimulatorVersion = "2.3.4" @>
             test <@ integrationUpdated.ConnectorStatusUpdatedTime = Nullable now @>
             test <@ integrationUpdated.LicenseLastCheckedTime = Nullable now @>
@@ -138,13 +171,14 @@ let ``Create and update simulator integration is Ok`` () =
             |> ignore
     }
 
-// [<Fact>]
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulators")>]
+[<Fact>]
+[<Trait("resource", "simulatorIntegrations")>]
+[<Trait("api", "simulators")>]
 let ``List simulator integrations is Ok`` () =
     task {
         // Arrange
-        let query = SimulatorIntegrationQuery()
+        let query =
+            SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active = true))
 
         // Act
         let! res = writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(query)
@@ -153,210 +187,4 @@ let ``List simulator integrations is Ok`` () =
 
         // Assert
         test <@ len >= 0 @>
-    }
-
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulatorModels")>]
-let ``Create and list simulator models is Ok`` () =
-    task {
-        // Arrange
-        let simulatorExternalId = $"test_sim_3_{now}"
-        let modelExternalId = $"test_model_{now}"
-
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
-        let dataSet = dataSetRes |> Seq.head
-
-        let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
-
-        let modelToCreate =
-            SimulatorModelCreate(
-                ExternalId = modelExternalId,
-                SimulatorExternalId = simulatorExternalId,
-                Name = "test_model",
-                Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
-            )
-
-        try
-            // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
-
-            let! modelCreateRes = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-
-            let! modelsListRes =
-                azureDevClient.Alpha.Simulators.ListSimulatorModelsAsync(
-                    new SimulatorModelQuery(
-                        Filter = SimulatorModelFilter(SimulatorExternalIds = [ simulatorExternalId ])
-                    )
-                )
-
-            let! modelRetriveRes =
-                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelsAsync([ new Identity(modelExternalId) ])
-
-            let modelRetrieved = modelRetriveRes |> Seq.head
-
-            let modelCreated = modelCreateRes |> Seq.head
-
-            let foundCreatedModel =
-                modelsListRes.Items |> Seq.find (fun item -> item.ExternalId = modelExternalId)
-
-            let modelPatch =
-                new SimulatorModelUpdateItem(
-                    id = modelCreated.Id,
-                    Update =
-                        SimulatorModelUpdate(
-                            Description = Update<string>("test_model_description_updated"),
-                            Name = Update<string>("test_model_updated")
-                        )
-                )
-
-            let! modelUpdateRes = azureDevClient.Alpha.Simulators.UpdateSimulatorModelsAsync([ modelPatch ])
-            let updatedModel = modelUpdateRes |> Seq.head
-            let! _ = azureDevClient.Alpha.Simulators.DeleteSimulatorModelsAsync([ new Identity(modelExternalId) ])
-
-            // Assert
-            test <@ modelCreated.ExternalId = modelToCreate.ExternalId @>
-            test <@ modelCreated.SimulatorExternalId = modelToCreate.SimulatorExternalId @>
-            test <@ modelCreated.Name = modelToCreate.Name @>
-            test <@ modelCreated.Description = modelToCreate.Description @>
-            test <@ modelCreated.DataSetId = modelToCreate.DataSetId @>
-
-            test <@ foundCreatedModel.ExternalId = modelToCreate.ExternalId @>
-            test <@ foundCreatedModel.SimulatorExternalId = modelToCreate.SimulatorExternalId @>
-            test <@ foundCreatedModel.Name = modelToCreate.Name @>
-            test <@ foundCreatedModel.Description = modelToCreate.Description @>
-            test <@ foundCreatedModel.DataSetId = modelToCreate.DataSetId @>
-
-            test <@ modelRetrieved.ExternalId = modelToCreate.ExternalId @>
-
-            test <@ updatedModel.Description = modelPatch.Update.Description.Set @>
-            test <@ updatedModel.Name = modelPatch.Update.Name.Set @>
-        finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
-            |> ignore
-    }
-
-[<FactIf(envVar = "ENABLE_SIMULATORS_TESTS", skipReason = "Immature Simulator APIs")>]
-[<Trait("resource", "simulatorModels")>]
-let ``Create and list simulator model revisions is Ok`` () =
-    task {
-        // Arrange
-        let simulatorExternalId = $"test_sim_3_{now}"
-        let modelExternalId = $"test_model_{now}"
-
-        let simulatorToCreate =
-            SimulatorCreate(ExternalId = simulatorExternalId, Name = "test_sim", FileExtensionTypes = [ "json" ])
-
-
-        let! dataSetRes = azureDevClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
-        let dataSet = dataSetRes |> Seq.head
-
-        let fileToCreate =
-            FileCreate(
-                ExternalId = $"model_revision_file_{now}",
-                Name = "test_file_for_model_revision",
-                MimeType = "application/json",
-                Source = "test_source",
-                DataSetId = dataSet.Id
-            )
-
-        let! fileCreated = azureDevClient.Files.UploadAsync(fileToCreate)
-
-        let modelToCreate =
-            SimulatorModelCreate(
-                ExternalId = modelExternalId,
-                SimulatorExternalId = simulatorExternalId,
-                Name = "test_model",
-                Description = "test_model_description",
-                Labels = [ new CogniteExternalId("test_label") ],
-                DataSetId = dataSet.Id
-            )
-
-        let modelRevisionToCreate =
-            SimulatorModelRevisionCreate(
-                ExternalId = "test_model_revision",
-                ModelExternalId = modelExternalId,
-                Description = "test_model_revision_description",
-                FileId = fileCreated.Id
-            )
-
-        try
-            // Act
-            let! _ = azureDevClient.Alpha.Simulators.CreateAsync([ simulatorToCreate ])
-
-            let! _ = azureDevClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
-
-            let! modelRevisionRes =
-                azureDevClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
-
-            let! modelRevisionListRes =
-                azureDevClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
-                    new SimulatorModelRevisionQuery(
-                        Filter =
-                            SimulatorModelRevisionFilter(
-                                ModelExternalIds = [ modelExternalId ],
-                                CreatedTime = TimeRange(Min = now - 10000L, Max = now + 10000L),
-                                LastUpdatedTime = TimeRange(Min = 0L)
-                            ),
-                        Sort = [ new SimulatorSortItem(Property = "createdTime", Order = SimulatorSortOrder.desc) ]
-                    )
-                )
-
-            let! modelRevisionRetrieveRes =
-                azureDevClient.Alpha.Simulators.RetrieveSimulatorModelRevisionsAsync(
-                    [ new Identity(modelRevisionToCreate.ExternalId) ]
-                )
-
-            let modelRevisionRetrieved = modelRevisionRetrieveRes |> Seq.head
-
-            let modelRevisionFound =
-                modelRevisionListRes.Items
-                |> Seq.find (fun item -> item.ExternalId = modelRevisionToCreate.ExternalId)
-
-            let modelRevisionCreated = modelRevisionRes |> Seq.head
-
-            let modelRevisionPatch =
-                new SimulatorModelRevisionUpdateItem(
-                    id = modelRevisionCreated.Id,
-                    Update =
-                        SimulatorModelRevisionUpdate(
-                            BoundaryConditionsStatus = Update(SimulatorModelRevisionStatus.success),
-                            Status = Update(SimulatorModelRevisionStatus.failure),
-                            StatusMessage = Update<string>("test")
-                        )
-                )
-
-            let! modelRevisionUpdateRes =
-                azureDevClient.Alpha.Simulators.UpdateSimulatorModelRevisionsAsync([ modelRevisionPatch ])
-
-            let modelRevisionUpdated = modelRevisionUpdateRes |> Seq.head
-
-            // Assert
-            test <@ modelRevisionCreated.ExternalId = modelRevisionToCreate.ExternalId @>
-            test <@ modelRevisionCreated.ModelExternalId = modelRevisionToCreate.ModelExternalId @>
-            test <@ modelRevisionCreated.Description = modelRevisionToCreate.Description @>
-            test <@ modelRevisionCreated.Status = SimulatorModelRevisionStatus.unknown @>
-            test <@ modelRevisionCreated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.unknown @>
-            test <@ modelRevisionCreated.DataSetId = dataSet.Id @>
-            test <@ modelRevisionCreated.FileId = fileCreated.Id @>
-            test <@ modelRevisionCreated.VersionNumber = 1 @>
-            test <@ modelRevisionCreated.SimulatorExternalId = simulatorExternalId @>
-            test <@ isNull modelRevisionCreated.StatusMessage @>
-
-            test <@ modelRevisionFound.ExternalId = modelRevisionToCreate.ExternalId @>
-            test <@ modelRevisionRetrieved.ExternalId = modelRevisionToCreate.ExternalId @>
-
-            test <@ modelRevisionUpdated.Status = SimulatorModelRevisionStatus.failure @>
-            test <@ modelRevisionUpdated.BoundaryConditionsStatus = SimulatorModelRevisionStatus.success @>
-            test <@ modelRevisionUpdated.StatusMessage = "test" @>
-
-
-        finally
-            azureDevClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
-            |> ignore
-
-            azureDevClient.Files.DeleteAsync([ new Identity(fileToCreate.ExternalId) ])
-            |> ignore
     }

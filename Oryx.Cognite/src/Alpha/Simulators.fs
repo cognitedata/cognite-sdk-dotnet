@@ -40,7 +40,7 @@ module Simulators =
     let listSimulationRuns
         (query: SimulationRunQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulationRun>> =
+        : HttpHandler<ItemsWithCursor<SimulationRun>> =
         source
         |> withLogMessage "simulators:listSimulationRuns"
         |> withAlphaHeader
@@ -118,7 +118,7 @@ module Simulators =
     let listSimulatorModels
         (query: SimulatorModelQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulatorModel>> =
+        : HttpHandler<ItemsWithCursor<SimulatorModel>> =
         source
         |> withLogMessage "simulators:listSimulatorModels"
         |> withAlphaHeader
@@ -157,7 +157,7 @@ module Simulators =
     let listSimulatorModelRevisions
         (query: SimulatorModelRevisionQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevision>> =
+        : HttpHandler<ItemsWithCursor<SimulatorModelRevision>> =
         source
         |> withLogMessage "simulators:listSimulatorModelRevisions"
         |> withAlphaHeader
@@ -181,10 +181,41 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.update items modelRevisionsUrl
 
+    let updateSimulatorModelRevisionData
+        (items: SimulatorModelRevisionDataUpdateItem seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+
+        let updateUrl = modelRevisionsUrl +/ "data/update"
+
+        let request =
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>(Items = items)
+
+        source
+        |> withLogMessage "simulators:updateSimulatorModelRevisionData"
+        |> withAlphaHeader
+        |> postV10<
+            ItemsWithoutCursor<SimulatorModelRevisionDataUpdateItem>,
+            ItemsWithoutCursor<SimulatorModelRevisionData>
+            >
+            request
+            updateUrl
+
+
+
+    let retrieveSimulatorModelRevisionData
+        (request: ItemsWithoutCursor<SimulatorModelRevisionDataRetrieve>)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulatorModelRevisionData>> =
+        source
+        |> withLogMessage "simulators:retrieveSimulatorModelRevisionData"
+        |> withAlphaHeader
+        |> HttpHandler.list request (modelRevisionsUrl +/ "data")
+
     let listSimulatorRoutines
         (query: SimulatorRoutineQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulatorRoutine>> =
+        : HttpHandler<ItemsWithCursor<SimulatorRoutine>> =
         source
         |> withLogMessage "simulators:listSimulatorRoutines"
         |> withAlphaHeader
@@ -229,7 +260,7 @@ module Simulators =
     let listSimulatorRoutineRevisions
         (query: SimulatorRoutineRevisionQuery)
         (source: HttpHandler<unit>)
-        : HttpHandler<ItemsWithoutCursor<SimulatorRoutineRevision>> =
+        : HttpHandler<ItemsWithCursor<SimulatorRoutineRevision>> =
         source
         |> withLogMessage "simulators:listSimulatorRoutineRevisions"
         |> withAlphaHeader

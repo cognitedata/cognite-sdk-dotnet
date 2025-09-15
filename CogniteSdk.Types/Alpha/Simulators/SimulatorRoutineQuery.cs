@@ -8,7 +8,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulation Routine query class.
     /// </summary>
-    public class SimulatorRoutineQuery
+    public class SimulatorRoutineQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on simulators with strict matching.

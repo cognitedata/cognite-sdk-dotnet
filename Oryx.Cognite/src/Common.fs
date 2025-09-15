@@ -9,7 +9,10 @@ open System.Text.Json
 open CogniteSdk
 open CogniteSdk.Alpha
 open CogniteSdk.Beta
-open CogniteSdk.Beta.DataModels
+open CogniteSdk.DataModels
+open CogniteSdk.DataModels.Core
+
+open System.Text.Json.Serialization
 
 type ApiVersion =
     | V05
@@ -63,15 +66,18 @@ module Common =
             JsonSerializerOptions(
                 // Allow extra comma at the end of a list of JSON values in an object or array is allowed (and ignored)
                 AllowTrailingCommas = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             )
 
+        options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
+
         options.Converters.Add(MultiValueConverter())
+        options.Converters.Add(ObjectToTimeSeriesTypeConverter())
         options.Converters.Add(ObjectToDictionaryJsonConverter())
         options.Converters.Add(AclConverter())
         options.Converters.Add(TransformationSchemaConverter())
-        options.Converters.Add(FieldResolverConverter())
+        options.Converters.Add(StatusCodeConverter())
+        options.Converters.Add(StringOrIntConverter())
         // DMS converters
         options.Converters.Add(ViewDefinitionOrReferenceConverter())
         options.Converters.Add(ViewCreateOrReferenceConverter())

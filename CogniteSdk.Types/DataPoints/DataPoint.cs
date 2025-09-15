@@ -6,26 +6,6 @@ using CogniteSdk.Types.Common;
 namespace CogniteSdk
 {
     /// <summary>
-    /// A data point status code with code and/or corresponding symbol.
-    /// The default status code is Good (0)
-    /// </summary>
-    public class StatusCode
-    {
-        /// <summary>
-        /// The numeric status code of the data point.
-        /// </summary>
-        public long? Code { get; set; }
-        /// <summary>
-        /// The status name of the data point.
-        /// </summary>
-        public string Symbol { get; set; }
-
-        /// <inheritdoc />
-        public override string ToString() => Stringable.ToString(this);
-    }
-
-
-    /// <summary>
     /// The data point class for each individual data point.
     /// </summary>
     public class DataPoint

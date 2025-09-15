@@ -60,10 +60,7 @@ module HttpHandler =
         sprintf "api/%s/projects/%s%s" version project resource |> combine baseUrl
 
     let private fileVersion =
-        Assembly
-            .GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            .InformationalVersion
+        Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
 
     let withUrlBuilder urlBuilder (source: HttpHandler<unit>) : HttpHandler<unit> = source |> withUrlBuilder urlBuilder
 
@@ -216,6 +213,16 @@ module HttpHandler =
 
     let getV10<'TResult> (url: string) source =
         source |> withVersion V10 |> get<'TResult> url
+
+    let deleteV10<'TResult> (url: string) (source: HttpHandler<unit>) =
+        source
+        |> withVersion V10
+        |> DELETE
+        |> withResource url
+        |> fetch
+        |> withError decodeError
+        |> json<'TResult> jsonOptions
+        |> log
 
     let getV10Options<'TResult>
         (url: string)

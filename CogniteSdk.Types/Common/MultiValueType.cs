@@ -23,6 +23,9 @@ namespace CogniteSdk
         LONG,
         /// Null value
         [SuppressMessage("Naming", "CA1720: Identifiers should not contain type names", Justification = "By design.")]
-        NULL
+        NULL,
+        /// Instance value
+        [SuppressMessage("Naming", "CA1720: Identifiers should not contain type names", Justification = "By design.")]
+        INSTANCE
     }
 }

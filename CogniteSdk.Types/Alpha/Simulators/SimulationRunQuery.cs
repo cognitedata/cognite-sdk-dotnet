@@ -53,7 +53,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// The Simulation run query class.
     /// </summary>
-    public class SimulationRunQuery
+    public class SimulationRunQuery : CursorQueryBase
     {
         /// <summary>
         /// Filter on assets with strict matching.
@@ -64,11 +64,6 @@ namespace CogniteSdk.Alpha
         /// Sort order.
         /// </summary>
         public IEnumerable<SimulatorSortItem> Sort { get; set; }
-
-        /// <summary>
-        /// Limits the number of results to return.
-        /// </summary>
-        public int? Limit { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunQuery>(this);

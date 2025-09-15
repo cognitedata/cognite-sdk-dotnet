@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using CogniteSdk.Types.Common;
 
 namespace CogniteSdk.Alpha
 {
@@ -32,6 +33,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorModelType> ModelTypes { get; set; }
         /// <summary>
+        /// List of model dependencies supported by the simulator, includes the allowed fields and file extensions.
+        /// </summary>
+        public IEnumerable<SimulatorModelDependency> ModelDependencies { get; set; }
+        /// <summary>
         /// Supported calculation steps.
         /// </summary>
         public IEnumerable<SimulatorStepField> StepFields { get; set; }
@@ -47,6 +52,9 @@ namespace CogniteSdk.Alpha
         /// Updated time in milliseconds since Jan 1, 1970.
         /// </summary>
         public long LastUpdatedTime { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -66,6 +74,9 @@ namespace CogniteSdk.Alpha
         /// The collection of units for the quantity of measurement.
         /// </summary>
         public IEnumerable<SimulatorUnitEntry> Units { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -81,6 +92,9 @@ namespace CogniteSdk.Alpha
         /// The name of the unit. E.g. m, ft, etc.
         /// </summary>
         public string Name { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -96,6 +110,9 @@ namespace CogniteSdk.Alpha
         /// The fields of the step.
         /// </summary>
         public IEnumerable<SimulatorStepFieldParam> Fields { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -119,6 +136,9 @@ namespace CogniteSdk.Alpha
         /// The additional options for the parameter.
         /// </summary>
         public IEnumerable<SimulatorStepFieldOption> Options { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 
     /// <summary>
@@ -134,6 +154,9 @@ namespace CogniteSdk.Alpha
         /// The value of the step field option.
         /// </summary>
         public string Value { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
     /// <summary>
     /// Represents a model type in the simulator.
@@ -148,25 +171,8 @@ namespace CogniteSdk.Alpha
         /// The key of the model type.
         /// </summary>
         public string Key { get; set; }
-    }
-    /// <summary>
-    /// Represents a boundary condition in the simulator.
-    /// </summary>
-    public class SimulatorBoundaryCondition
-    {
-        /// <summary>
-        /// The name of the boundary condition.
-        /// </summary>
-        public string Name { get; set; }
 
-        /// <summary>
-        /// The address of the boundary condition.
-        /// </summary>
-        public string Address { get; set; }
-
-        /// <summary>
-        /// The key of the boundary condition.
-        /// </summary>
-        public string Key { get; set; }
+        /// <inheritdoc />
+        public override string ToString() => Stringable.ToString(this);
     }
 }

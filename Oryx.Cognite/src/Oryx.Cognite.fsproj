@@ -15,6 +15,7 @@
     <Compile Include="Common.fs" />
     <Compile Include="GZip.fs" />
     <Compile Include="Handler.fs" />
+    <Compile Include="DataModels.fs" />
     <Compile Include="3D.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="TimeSeries.fs" />
@@ -36,10 +37,10 @@
     <Compile Include="Functions.fs" />
     <Compile Include="Beta/Handler.fs" />
     <Compile Include="Beta/Subscriptions.fs" />
-    <Compile Include="Beta/TemplateGroups.fs" />
-    <Compile Include="Beta/DataModels.fs" />
+    <Compile Include="Beta/StreamRecords.fs" />
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/Simulators.fs" />
+    <Compile Include="Alpha/Integrations.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>

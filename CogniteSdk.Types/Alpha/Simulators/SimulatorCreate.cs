@@ -28,6 +28,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorModelType> ModelTypes { get; set; }
         /// <summary>
+        /// List of model dependencies supported by the simulator, includes the allowed fields and file extensions.
+        /// </summary>
+        public IEnumerable<SimulatorModelDependency> ModelDependencies { get; set; }
+        /// <summary>
         /// Supported calculation steps.
         /// </summary>
         public IEnumerable<SimulatorStepField> StepFields { get; set; }

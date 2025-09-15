@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-using CogniteSdk.Beta.DataModels;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk.Beta
 {
@@ -36,6 +36,11 @@ namespace CogniteSdk.Beta
         /// Not compatible with filter.
         /// </summary>
         public IEnumerable<string> TimeSeriesIds { get; set; }
+        /// <summary>
+        /// List of instance ids of time series that this subscription will listen to.
+        /// Not compatible with filter.
+        /// </summary>
+        public IEnumerable<InstanceIdentifier> InstanceIds { get; set; }
         /// <summary>
         /// A filter DSL (Domain Specific Language) to define advanced filter queries.
         /// 

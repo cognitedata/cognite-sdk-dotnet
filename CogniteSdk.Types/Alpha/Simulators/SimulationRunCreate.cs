@@ -74,6 +74,12 @@ namespace CogniteSdk.Alpha
         public long? RunTime { get; set; }
 
         /// <summary>
+        /// Override the minimum severity level for the simulation run logs.
+        /// If not set defaults to minimum severity specified in the connector logger configuration.
+        /// </summary>
+        public string LogSeverity { get; set; }
+
+        /// <summary>
         /// Queue the simulation run when connector is down
         /// </summary>
         public bool Queue { get; set; }

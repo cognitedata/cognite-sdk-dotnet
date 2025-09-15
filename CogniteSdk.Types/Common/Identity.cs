@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using CogniteSdk.DataModels;
 
 namespace CogniteSdk
 {
     /// <summary>
-    /// Identity class. Set either Id or ExternalId.
+    /// Identity class. Set either Id, ExternalId or InstanceId.
     /// </summary>
     public class Identity
     {
+        private InstanceIdentifier _instanceId;
         private long? _id;
         private string _externalId;
 
@@ -32,6 +34,15 @@ namespace CogniteSdk
         }
 
         /// <summary>
+        /// Creates an identity with externalId and space set.
+        /// </summary>
+        /// <param name="instanceId">Instance Identifier containing space and externalId</param>
+        public Identity(InstanceIdentifier instanceId)
+        {
+            InstanceId = instanceId;
+        }
+
+        /// <summary>
         /// Identity with internal id.
         /// </summary>
         public long? Id
@@ -42,6 +53,10 @@ namespace CogniteSdk
                 if (_externalId != null)
                 {
                     throw new ArgumentException($"Cannot set Id ({value}) when ExternalId ({_externalId}) is already set.");
+                }
+                if (_instanceId != null)
+                {
+                    throw new ArgumentException($"Cannot set Id ({value}) when InstanceId ({_instanceId}) is already set.");
                 }
 
                 _id = value;
@@ -60,11 +75,34 @@ namespace CogniteSdk
                 {
                     throw new ArgumentException($"Cannot set externalId ({value}) when Id ({_id}) is already set.");
                 }
+                if (_instanceId != null)
+                {
+                    throw new ArgumentException($"Cannot set externalId ({value}) when InstanceId ({_instanceId}) is already set.");
+                }
 
                 _externalId = value;
             }
         }
+        /// <summary>
+        /// Identity with instanceId
+        /// </summary>
+        public InstanceIdentifier InstanceId
+        {
+            get => _instanceId;
+            set
+            {
+                if (_id.HasValue)
+                {
+                    throw new ArgumentException($"Cannot set instanceId ({value}) when Id ({_id}) is already set.");
+                }
+                if (_externalId != null)
+                {
+                    throw new ArgumentException($"Cannot set instanceId ({value}) when ExternalId ({_externalId}) is already set.");
+                }
 
+                _instanceId = value ?? new InstanceIdentifier();
+            }
+        }
 
         /// <summary>
         /// Create new external Id.
@@ -86,6 +124,16 @@ namespace CogniteSdk
             return new Identity(internalId);
         }
 
+        /// <summary>
+        /// Create new instance Id.
+        /// </summary>
+        /// <param name="instanceId">Instance id value</param>
+        /// <returns>New instance Id.</returns>
+        public static Identity Create(InstanceIdentifier instanceId)
+        {
+            return new Identity(instanceId);
+        }
+
         /// <summary>Returns a string that represents the current object.</summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
@@ -94,10 +142,15 @@ namespace CogniteSdk
             {
                 return $"{{ Id = {Id} }}";
             }
-            else
+            else if (ExternalId != null)
             {
                 return $"{{ ExternalId = \"{ExternalId}\" }}";
             }
+            else
+            {
+                return InstanceId.ToString();
+            }
+
         }
 
         /// <summary>
@@ -122,7 +175,17 @@ namespace CogniteSdk
                 return Id == other.Id;
             }
 
-            return !other.Id.HasValue && ExternalId == other.ExternalId;
+            if (ExternalId != null)
+            {
+                return ExternalId == other.ExternalId;
+            }
+
+            if (InstanceId != null)
+            {
+                return InstanceId.Equals(other.InstanceId);
+            }
+
+            return !other.Id.HasValue && other.ExternalId == null && other.InstanceId == null;
         }
 
         /// <summary>
@@ -131,7 +194,18 @@ namespace CogniteSdk
         /// <returns>Hashcode representing this</returns>
         public override int GetHashCode()
         {
-            return Id.HasValue ? Id.GetHashCode() : ExternalId?.GetHashCode() ?? 0;
+            if (Id.HasValue)
+            {
+                return Id.GetHashCode();
+            }
+            else if (InstanceId != null)
+            {
+                return InstanceId.GetHashCode();
+            }
+            else
+            {
+                return ExternalId?.GetHashCode() ?? 0;
+            }
         }
     }
 }
