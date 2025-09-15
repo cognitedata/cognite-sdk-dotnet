@@ -139,6 +139,10 @@ namespace CogniteSdk
         public UnitsResource Units { get; }
 
         /// <summary>
+        /// Client functions methods.
+        /// </summary>
+        public FunctionResource Functions { get; }
+
         /// Resource for the core data model.
         /// </summary>
         /// <value></value>
@@ -177,6 +181,7 @@ namespace CogniteSdk
             Transformations = new TransformationsResource(authHandler, ctx);
             Annotations = new AnnotationsResource(authHandler, ctx);
             Units = new UnitsResource(authHandler, ctx);
+            Functions = new FunctionResource(authHandler, ctx);
             DataModels = new DataModelsResource(authHandler, ctx);
 
             // Beta features (experimental)
