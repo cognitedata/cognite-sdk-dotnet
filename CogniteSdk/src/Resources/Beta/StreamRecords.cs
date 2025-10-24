@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using CogniteSdk.Beta;
+using CogniteSdk.DataModels;
 using Microsoft.FSharp.Core;
 using Oryx;
 
@@ -38,6 +39,56 @@ namespace CogniteSdk.Resources.Beta
                 Items = records,
             }, GetContext(token));
             await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Upsert (create or update) records in the provided mutable stream.
+        /// </summary>
+        /// <param name="stream">Stream to upsert records into.</param>
+        /// <param name="records">Records to upsert.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task UpsertAsync(string stream, IEnumerable<StreamRecordWrite> records, CancellationToken token = default)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var req = Oryx.Cognite.Beta.StreamRecords.upsert(stream, new StreamRecordIngest
+            {
+                Items = records,
+            }, GetContext(token));
+            await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Delete records from the provided mutable stream.
+        /// </summary>
+        /// <param name="stream">Stream to delete records from.</param>
+        /// <param name="recordIds">Record identifiers to delete.</param>
+        /// <param name="token">Optional cancellation token</param>
+        public async Task DeleteRecordsAsync(string stream, IEnumerable<InstanceIdentifier> recordIds, CancellationToken token = default)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
+            var req = Oryx.Cognite.Beta.StreamRecords.delete(stream, new StreamRecordDelete
+            {
+                Items = recordIds,
+            }, GetContext(token));
+
+            // postV10 tries to parse the response body as JSON, but the delete endpoint returns an empty body.
+            // We catch and ignore the JsonException in this case.
+            try
+            {
+                await RunAsync(req).ConfigureAwait(false);
+            }
+            catch (System.Text.Json.JsonException ex) when (ex.Message.Contains("does not contain any JSON tokens"))
+            {
+                // Expected: The delete endpoint returns 204 No Content with an empty body.
+            }
         }
 
         /// <summary>
@@ -128,11 +179,16 @@ namespace CogniteSdk.Resources.Beta
         /// Retrieve a stream by its identifier.
         /// </summary>
         /// <param name="stream">Stream to retrieve</param>
+        /// <param name="includeStatistics">If true, usage statistics will be returned together with stream settings.</param>
         /// <param name="token">Optional cancellation token</param>
         /// <returns>Retrieved stream</returns>
-        public async Task<Stream> RetrieveStreamAsync(string stream, CancellationToken token = default)
+        public async Task<Stream> RetrieveStreamAsync(string stream, bool? includeStatistics = null, CancellationToken token = default)
         {
-            var req = Oryx.Cognite.Beta.StreamRecords.retrieveStream(stream, GetContext(token));
+            var includeStatsOption = includeStatistics.HasValue
+                ? FSharpOption<bool>.Some(includeStatistics.Value)
+                : FSharpOption<bool>.None;
+
+            var req = Oryx.Cognite.Beta.StreamRecords.retrieveStream(stream, includeStatsOption, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
     }

@@ -126,13 +126,13 @@ namespace CogniteSdk.Beta
     {
         /// <summary>
         /// List of containers and the properties that should be selected.
-        /// 
+        ///
         /// Optional, if this is left out all properties are returned.
         /// </summary>
         public IEnumerable<StreamRecordSource> Sources { get; set; }
         /// <summary>
         /// A filter Domain Specific Language (DSL) used to create advanced filter queries.
-        /// 
+        ///
         /// Note that some filter types are not supported, see API docs.
         /// </summary>
         public IDMSFilter Filter { get; set; }
@@ -145,9 +145,9 @@ namespace CogniteSdk.Beta
         /// </summary>
         public int? Limit { get; set; }
         /// <summary>
-        /// Initialize cursor. Required if `Cursor` is not set.
+        /// Initialize cursor with a time offset. Required if `Cursor` is not set.
         /// </summary>
-        public bool InitializeCursor { get; set; }
+        public string InitializeCursor { get; set; }
     }
 
     /// <summary>

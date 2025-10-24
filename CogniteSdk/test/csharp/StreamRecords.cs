@@ -22,7 +22,7 @@ namespace Test.CSharp.Integration
 
         public string TestSpace { get; private set; }
         public string TestStream { get; private set; }
-        public Dictionary<StreamTemplateName, string> TestStreams { get; private set; }
+        public Dictionary<string, string> TestStreams { get; private set; }
 
         public ContainerIdentifier TestContainer { get; private set; }
 
@@ -67,22 +67,18 @@ namespace Test.CSharp.Integration
             TestContainer = testContainerIdt;
 
             TestStream = "dotnet-sdk-test-stream";
-            TestStreams = new Dictionary<StreamTemplateName, string>();
+            TestStreams = new Dictionary<string, string>();
 
-            // Create test streams for all template types to exercise the converter
+            // Create test streams for all test stream templates
             var allTemplateTypes = new[]
             {
-                StreamTemplateName.ImmutableTestStream,
-                StreamTemplateName.ImmutableDataStaging,
-                StreamTemplateName.ImmutableNormalizedData,
-                StreamTemplateName.ImmutableArchive,
-                StreamTemplateName.MutableTestStream,
-                StreamTemplateName.MutableLiveData
+                "ImmutableTestStream",
+                "MutableTestStream",
             };
 
             foreach (var templateType in allTemplateTypes)
             {
-                var streamId = $"dotnet-sdk-test-{templateType.ToString().ToLowerInvariant()}";
+                var streamId = $"dotnet-sdk-test-{templateType.ToLowerInvariant()}";
 
                 TestStreams[templateType] = streamId;
 
@@ -183,9 +179,9 @@ namespace Test.CSharp.Integration
         {
             // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.MutableTestStream));
+            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
 
-            var targetStream = tester.TestStreams[StreamTemplateName.MutableTestStream];
+            var targetStream = tester.TestStreams["MutableTestStream"];
             Assert.NotNull(targetStream);
 
             var req = new[] {
@@ -234,9 +230,9 @@ namespace Test.CSharp.Integration
         public async Task TestRetrieveRecords()
         {
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey(StreamTemplateName.ImmutableDataStaging));
+            Assert.True(tester.TestStreams.ContainsKey("ImmutableTestStream"));
 
-            var targetStream = tester.TestStreams[StreamTemplateName.ImmutableDataStaging];
+            var targetStream = tester.TestStreams["ImmutableTestStream"];
             Assert.NotNull(targetStream);
 
             // The stream records API is so eventually consistent that this test would take
@@ -264,26 +260,192 @@ namespace Test.CSharp.Integration
             );
         }
 
+        [Fact]
+        public async Task TestUpsertRecords()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+
+            var targetStream = tester.TestStreams["MutableTestStream"];
+            Assert.NotNull(targetStream);
+
+            var recordId = $"{tester.Prefix}test-upsert-record-{perTestUniqueInt}";
+
+            // First upsert (create)
+            var createReq = new[] {
+                new StreamRecordWrite {
+                    ExternalId = recordId,
+                    Space = tester.TestSpace,
+                    Sources = new[] {
+                        new InstanceData<StandardInstanceWriteData>
+                        {
+                            Source = tester.TestContainer,
+                            Properties = new StandardInstanceWriteData
+                            {
+                                { "prop", new RawPropertyValue<string>("Initial value") },
+                                { "intProp", new RawPropertyValue<long>(100) }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await tester.Write.Beta.StreamRecords.UpsertAsync(targetStream, createReq);
+
+            // Second upsert (update)
+            var updateReq = new[] {
+                new StreamRecordWrite {
+                    ExternalId = recordId,
+                    Space = tester.TestSpace,
+                    Sources = new[] {
+                        new InstanceData<StandardInstanceWriteData>
+                        {
+                            Source = tester.TestContainer,
+                            Properties = new StandardInstanceWriteData
+                            {
+                                { "prop", new RawPropertyValue<string>("Updated value") },
+                                { "intProp", new RawPropertyValue<long>(200) }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await tester.Write.Beta.StreamRecords.UpsertAsync(targetStream, updateReq);
+        }
+
+        [Fact]
+        public async Task TestDeleteRecords()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+
+            var targetStream = tester.TestStreams["MutableTestStream"];
+            Assert.NotNull(targetStream);
+
+            var recordId = $"{tester.Prefix}test-delete-record-{perTestUniqueInt}";
+
+            // First create a record to delete
+            var createReq = new[] {
+                new StreamRecordWrite {
+                    ExternalId = recordId,
+                    Space = tester.TestSpace,
+                    Sources = new[] {
+                        new InstanceData<StandardInstanceWriteData>
+                        {
+                            Source = tester.TestContainer,
+                            Properties = new StandardInstanceWriteData
+                            {
+                                { "prop", new RawPropertyValue<string>("To be deleted") },
+                                { "intProp", new RawPropertyValue<long>(999) }
+                            }
+                        }
+                    }
+                }
+            };
+
+            await tester.Write.Beta.StreamRecords.UpsertAsync(targetStream, createReq);
+
+            // Now delete it
+            var deleteReq = new[] {
+                new InstanceIdentifier(tester.TestSpace, recordId)
+            };
+
+            await tester.Write.Beta.StreamRecords.DeleteRecordsAsync(targetStream, deleteReq);
+        }
+
+        [Fact]
+        public async Task TestSyncRecordsWithInitializeCursor()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+
+            var targetStream = tester.TestStreams["MutableTestStream"];
+            Assert.NotNull(targetStream);
+
+            var syncRequest = new StreamRecordsSync
+            {
+                InitializeCursor = "7d-ago",
+                Limit = 10,
+                Sources = new[] {
+                    new StreamRecordSource
+                    {
+                        Source = tester.TestContainer,
+                        Properties = new[] { "prop", "intProp" }
+                    }
+                }
+            };
+
+            var response = await tester.Write.Beta.StreamRecords.SyncAsync<StandardInstanceData>(
+                targetStream,
+                syncRequest
+            );
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.NextCursor);
+            Assert.NotNull(response.Items);
+
+            // Test second call with cursor from first response
+            var syncRequest2 = new StreamRecordsSync
+            {
+                Cursor = response.NextCursor,
+                Limit = 10
+            };
+
+            var response2 = await tester.Write.Beta.StreamRecords.SyncAsync<StandardInstanceData>(
+                targetStream,
+                syncRequest2
+            );
+
+            Assert.NotNull(response2);
+            Assert.NotNull(response2.NextCursor);
+        }
+
+        [Fact]
+        public async Task TestRetrieveStreamWithStatistics()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.NotEmpty(tester.TestStreams);
+
+            var streamId = tester.TestStreams.Values.First();
+
+            // Test with includeStatistics = false
+            var streamWithoutStats = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(
+                streamId,
+                includeStatistics: false
+            );
+            Assert.NotNull(streamWithoutStats);
+            Assert.Equal(streamId, streamWithoutStats.ExternalId);
+
+            // Test with includeStatistics = true
+            var streamWithStats = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(
+                streamId,
+                includeStatistics: true
+            );
+            Assert.NotNull(streamWithStats);
+            Assert.Equal(streamId, streamWithStats.ExternalId);
+
+            // Test without parameter (default behavior)
+            var streamDefault = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
+            Assert.NotNull(streamDefault);
+            Assert.Equal(streamId, streamDefault.ExternalId);
+        }
+
     }
 
     /// <summary>
-    /// Unit tests for StreamTemplateNameConverter that don't require API access
+    /// Unit tests for StreamTemplate serialization that don't require API access
     /// </summary>
-    public class StreamTemplateNameConverterTest
+    public class StreamTemplateSerializationTest
     {
         [Fact]
-        public void TestStreamTemplateNameConverter_AllEnumValues()
+        public void TestStreamTemplateString_AllTemplateValues()
         {
-            // Test that all StreamTemplateName enum values can be serialized and deserialized correctly
-            // This ensures the converter handles all cases and improves coverage
+            // Test that all stream template string values can be serialized and deserialized correctly
             var allTemplateTypes = new[]
             {
-                StreamTemplateName.ImmutableTestStream,
-                StreamTemplateName.ImmutableDataStaging,
-                StreamTemplateName.ImmutableNormalizedData,
-                StreamTemplateName.ImmutableArchive,
-                StreamTemplateName.MutableTestStream,
-                StreamTemplateName.MutableLiveData
+                "ImmutableTestStream",
+                "MutableTestStream",
             };
 
             foreach (var templateType in allTemplateTypes)
@@ -314,6 +476,4 @@ namespace Test.CSharp.Integration
             }
         }
     }
-
-
 }

@@ -36,51 +36,15 @@ namespace CogniteSdk.Beta
     }
 
     /// <summary>
-    /// The name of the stream template.
-    /// </summary>
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public enum StreamTemplateName
-    {
-        /// <summary>
-        /// Immutable test stream template
-        /// </summary>
-        ImmutableTestStream,
-
-        /// <summary>
-        /// Immutable data staging template
-        /// </summary>
-        ImmutableDataStaging,
-
-        /// <summary>
-        /// Immutable normalized data template
-        /// </summary>
-        ImmutableNormalizedData,
-
-        /// <summary>
-        /// Immutable archive template
-        /// </summary>
-        ImmutableArchive,
-
-        /// <summary>
-        /// Mutable test stream template
-        /// </summary>
-        MutableTestStream,
-
-        /// <summary>
-        /// Mutable live data template
-        /// </summary>
-        MutableLiveData
-    }
-
-    /// <summary>
     /// Template settings for a stream.
     /// </summary>
     public class StreamTemplateSettings
     {
         /// <summary>
         /// The name of the stream template.
+        /// Stream template names are dynamically defined per CDF project.
         /// </summary>
-        public StreamTemplateName Name { get; set; }
+        public string Name { get; set; }
     }
 
     /// <summary>
@@ -100,10 +64,93 @@ namespace CogniteSdk.Beta
     }
 
     /// <summary>
+    /// A stream limit with provisioned and consumed values.
+    /// </summary>
+    public class StreamLimit
+    {
+        /// <summary>
+        /// Amount of resource provisioned.
+        /// </summary>
+        public double Provisioned { get; set; }
+
+        /// <summary>
+        /// Amount of resource consumed.
+        /// </summary>
+        public double? Consumed { get; set; }
+    }
+
+    /// <summary>
+    /// Stream limit settings containing usage limits and statistics.
+    /// </summary>
+    public class StreamLimitSettings
+    {
+        /// <summary>
+        /// Maximum number of records that can be stored in the stream.
+        /// </summary>
+        public StreamLimit MaxRecordsTotal { get; set; }
+
+        /// <summary>
+        /// Maximum amount of data that can be stored in the stream, in gigabytes.
+        /// </summary>
+        public StreamLimit MaxGigaBytesTotal { get; set; }
+
+        /// <summary>
+        /// Maximum length of time that the lastUpdatedTime filter can retrieve records for, in ISO-8601 format.
+        /// This setting is only available for immutable streams.
+        /// </summary>
+        public string MaxFilteringInterval { get; set; }
+    }
+
+    /// <summary>
+    /// Stream lifecycle settings defining data retention policies.
+    /// </summary>
+    public class StreamLifecycleSettings
+    {
+        /// <summary>
+        /// Time for which records are kept in hot storage after creation, in ISO-8601 format.
+        /// This setting is available only for immutable streams.
+        /// </summary>
+        public string HotPhaseDuration { get; set; }
+
+        /// <summary>
+        /// ISO-8601 formatted time specifying how long to retain a record in this stream.
+        /// After this time passes, records are scheduled to be removed from the stream.
+        /// This setting is available only for immutable streams.
+        /// </summary>
+        public string DataDeletedAfter { get; set; }
+
+        /// <summary>
+        /// Time until the soft deleted stream will actually be deleted by the system, in an ISO-8601 compliant date-time format.
+        /// </summary>
+        public string RetainedAfterSoftDelete { get; set; }
+    }
+
+    /// <summary>
+    /// Stream response settings containing lifecycle and limit information.
+    /// </summary>
+    public class StreamResponseSettings
+    {
+        /// <summary>
+        /// Data lifecycle settings. These settings are populated from the stream creation template.
+        /// </summary>
+        public StreamLifecycleSettings Lifecycle { get; set; }
+
+        /// <summary>
+        /// Limits and usage information.
+        /// </summary>
+        public StreamLimitSettings Limits { get; set; }
+    }
+
+    /// <summary>
     /// A stream.
     /// </summary>
-    public class Stream : StreamWrite
+    public class Stream
     {
+        /// <summary>
+        /// Stream external ID. Must be unique within the project and a valid stream identifier.
+        /// </summary>
+        public string ExternalId { get; set; }
+
         /// <summary>
         /// Time the stream was created, in milliseconds since epoch.
         /// </summary>
@@ -120,5 +167,10 @@ namespace CogniteSdk.Beta
         /// Only present when using alpha cdf-version header.
         /// </summary>
         public StreamType? Type { get; set; }
+
+        /// <summary>
+        /// Stream settings containing lifecycle and limit information.
+        /// </summary>
+        public StreamResponseSettings Settings { get; set; }
     }
 }
