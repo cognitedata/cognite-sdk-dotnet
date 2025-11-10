@@ -292,3 +292,133 @@ let ``Create and list simulator model revisions along with revision data is Ok``
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
             |> ignore
     }
+
+[<Fact>]
+[<Trait("resource", "simulatorModels")>]
+[<Trait("api", "simulators")>]
+let ``List simulator model revisions with SimulatorExternalIds filter is Ok`` () =
+    task {
+        // Arrange
+        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+        let simulatorExternalId1 = $"test_sim_filter_1_{now}"
+        let simulatorExternalId2 = $"test_sim_filter_2_{now}"
+        let modelExternalId1 = $"test_model_filter_1_{now}"
+        let modelExternalId2 = $"test_model_filter_2_{now}"
+
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let dataSet = dataSetRes |> Seq.head
+
+        let! testFileRes = writeClient.Files.RetrieveAsync([ new Identity("empty.json") ])
+        let testFileId = testFileRes |> Seq.head |> (fun f -> f.Id)
+
+        let simulatorToCreate1 = testSimulatorCreate (simulatorExternalId1)
+        let simulatorToCreate2 = testSimulatorCreate (simulatorExternalId2)
+
+        let modelToCreate1 =
+            SimulatorModelCreate(
+                ExternalId = modelExternalId1,
+                SimulatorExternalId = simulatorExternalId1,
+                Name = "test_model_1",
+                Description = "test_model_1_description",
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
+            )
+
+        let modelToCreate2 =
+            SimulatorModelCreate(
+                ExternalId = modelExternalId2,
+                SimulatorExternalId = simulatorExternalId2,
+                Name = "test_model_2",
+                Description = "test_model_2_description",
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
+            )
+
+        let modelRevisionToCreate1 =
+            SimulatorModelRevisionCreate(
+                ExternalId = $"test_model_revision_1_{now}",
+                ModelExternalId = modelExternalId1,
+                Description = "test_model_revision_1_description",
+                FileId = testFileId
+            )
+
+        let modelRevisionToCreate2 =
+            SimulatorModelRevisionCreate(
+                ExternalId = $"test_model_revision_2_{now}",
+                ModelExternalId = modelExternalId2,
+                Description = "test_model_revision_2_description",
+                FileId = testFileId
+            )
+
+        try
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate1 ])
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ simulatorToCreate2 ])
+
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate1 ])
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate2 ])
+
+            let! _ =
+                writeClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate1 ])
+
+            let! _ =
+                writeClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate2 ])
+
+            let! modelRevisionListRes1 =
+                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                    new SimulatorModelRevisionQuery(
+                        Filter =
+                            SimulatorModelRevisionFilter(SimulatorExternalIds = [ simulatorExternalId1 ])
+                    )
+                )
+
+            let! modelRevisionListRes2 =
+                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                    new SimulatorModelRevisionQuery(
+                        Filter =
+                            SimulatorModelRevisionFilter(
+                                SimulatorExternalIds = [ simulatorExternalId1; simulatorExternalId2 ]
+                            )
+                    )
+                )
+
+            let! modelRevisionListRes3 =
+                writeClient.Alpha.Simulators.ListSimulatorModelRevisionsAsync(
+                    new SimulatorModelRevisionQuery(
+                        Filter =
+                            SimulatorModelRevisionFilter(
+                                SimulatorExternalIds = [ simulatorExternalId1 ],
+                                ModelExternalIds = [ modelExternalId1 ]
+                            )
+                    )
+                )
+
+            // Assert
+            let revisions1 = modelRevisionListRes1.Items |> Seq.toList
+
+            test <@ revisions1.Length = 1 @>
+            test <@ revisions1.[0].SimulatorExternalId = simulatorExternalId1 @>
+            test <@ revisions1.[0].ModelExternalId = modelExternalId1 @>
+
+            let revisions2 = modelRevisionListRes2.Items |> Seq.toList
+
+            test <@ revisions2.Length = 2 @>
+            
+            let revision1 = revisions2 |> List.find (fun r -> r.SimulatorExternalId = simulatorExternalId1)
+            let revision2 = revisions2 |> List.find (fun r -> r.SimulatorExternalId = simulatorExternalId2)
+            
+            test <@ revision1.ModelExternalId = modelExternalId1 @>
+            test <@ revision2.ModelExternalId = modelExternalId2 @>
+            
+            let revisions3 = modelRevisionListRes3.Items |> Seq.toList
+
+            test <@ revisions3.Length = 1 @>
+            test <@ revisions3.[0].SimulatorExternalId = simulatorExternalId1 @>
+            test <@ revisions3.[0].ModelExternalId = modelExternalId1 @>
+
+        finally
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId1) ])
+            |> ignore
+
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId2) ])
+            |> ignore
+    }
