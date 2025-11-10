@@ -69,6 +69,11 @@ namespace CogniteSdk.Alpha
     public class SimulatorModelRevisionFilter
     {
         /// <summary>
+        /// Filter on simulator external ids.
+        /// </summary>
+        public IEnumerable<string> SimulatorExternalIds { get; set; }
+
+        /// <summary>
         /// Filter on model external ids.
         /// </summary>
         public IEnumerable<string> ModelExternalIds { get; set; }

@@ -153,6 +153,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
                     new SimulatorModelRevisionQuery(
                         Filter =
                             SimulatorModelRevisionFilter(
+                                SimulatorExternalIds = [ simulatorExternalId ],
                                 ModelExternalIds = [ modelExternalId ],
                                 CreatedTime = TimeRange(Min = now - 10000L, Max = now + 10000L),
                                 LastUpdatedTime = TimeRange(Min = 0L)
