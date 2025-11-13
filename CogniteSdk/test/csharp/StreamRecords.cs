@@ -76,6 +76,24 @@ namespace Test.CSharp.Integration
                 "BasicLiveData",
             };
 
+            // Due to the very low limits on streams, we need to clean up first.
+            var streams = await Write.Beta.StreamRecords.ListStreamsAsync();
+            foreach (var existing in streams)
+            {
+                // Delete any test stream that is older than 10 minutes, to avoid issues if tests overlap.
+                if (existing.ExternalId.StartsWith("dotnet-sdk-test-") && existing.CreatedTime < DateTimeOffset.UtcNow.AddMinutes(-10).ToUnixTimeMilliseconds())
+                {
+                    try
+                    {
+                        await Write.Beta.StreamRecords.DeleteStreamAsync(existing.ExternalId);
+                    }
+                    catch (ResponseException)
+                    {
+                        // Ignore errors during cleanup - stream might not exist or already be deleted
+                    }
+                }
+            }
+
             foreach (var templateType in allTemplateTypes)
             {
                 var streamId = $"dotnet-sdk-test-{Prefix.ToLowerInvariant()}-{templateType.ToLowerInvariant()}";
