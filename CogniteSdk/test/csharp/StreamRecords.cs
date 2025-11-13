@@ -21,7 +21,6 @@ namespace Test.CSharp.Integration
         public Client Write => WriteClient;
 
         public string TestSpace { get; private set; }
-        public string TestStream { get; private set; }
         public Dictionary<string, string> TestStreams { get; private set; }
 
         public ContainerIdentifier TestContainer { get; private set; }
@@ -66,7 +65,6 @@ namespace Test.CSharp.Integration
             await Write.DataModels.UpsertContainers(new[] { testContainer });
             TestContainer = testContainerIdt;
 
-            TestStream = "dotnet-sdk-test-stream";
             TestStreams = new Dictionary<string, string>();
 
             // Create test streams for all test stream templates
@@ -80,8 +78,8 @@ namespace Test.CSharp.Integration
             var streams = await Write.Beta.StreamRecords.ListStreamsAsync();
             foreach (var existing in streams)
             {
-                // Delete any test stream that is older than 10 minutes, to avoid issues if tests overlap.
-                if (existing.ExternalId.StartsWith("dotnet-sdk-test-") && existing.CreatedTime < DateTimeOffset.UtcNow.AddMinutes(-10).ToUnixTimeMilliseconds())
+                // Delete any test stream that is older than 5 minutes, to avoid issues if tests overlap.
+                if (existing.CreatedTime < DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds())
                 {
                     try
                     {
