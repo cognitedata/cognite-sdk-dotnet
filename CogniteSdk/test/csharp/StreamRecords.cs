@@ -73,12 +73,12 @@ namespace Test.CSharp.Integration
             var allTemplateTypes = new[]
             {
                 "ImmutableTestStream",
-                "MutableTestStream",
+                "BasicLiveData",
             };
 
             foreach (var templateType in allTemplateTypes)
             {
-                var streamId = $"dotnet-sdk-test-{templateType.ToLowerInvariant()}";
+                var streamId = $"dotnet-sdk-test-{Prefix.ToLowerInvariant()}-{templateType.ToLowerInvariant()}";
 
                 TestStreams[templateType] = streamId;
 
@@ -179,9 +179,9 @@ namespace Test.CSharp.Integration
         {
             // Ensure TestStreams was initialized
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
 
-            var targetStream = tester.TestStreams["MutableTestStream"];
+            var targetStream = tester.TestStreams["BasicLiveData"];
             Assert.NotNull(targetStream);
 
             var req = new[] {
@@ -264,9 +264,9 @@ namespace Test.CSharp.Integration
         public async Task TestUpsertRecords()
         {
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
 
-            var targetStream = tester.TestStreams["MutableTestStream"];
+            var targetStream = tester.TestStreams["BasicLiveData"];
             Assert.NotNull(targetStream);
 
             var recordId = $"{tester.Prefix}test-upsert-record-{perTestUniqueInt}";
@@ -318,9 +318,9 @@ namespace Test.CSharp.Integration
         public async Task TestDeleteRecords()
         {
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
 
-            var targetStream = tester.TestStreams["MutableTestStream"];
+            var targetStream = tester.TestStreams["BasicLiveData"];
             Assert.NotNull(targetStream);
 
             var recordId = $"{tester.Prefix}test-delete-record-{perTestUniqueInt}";
@@ -358,9 +358,9 @@ namespace Test.CSharp.Integration
         public async Task TestSyncRecordsWithInitializeCursor()
         {
             Assert.NotNull(tester.TestStreams);
-            Assert.True(tester.TestStreams.ContainsKey("MutableTestStream"));
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
 
-            var targetStream = tester.TestStreams["MutableTestStream"];
+            var targetStream = tester.TestStreams["BasicLiveData"];
             Assert.NotNull(targetStream);
 
             var syncRequest = new StreamRecordsSync
@@ -445,7 +445,7 @@ namespace Test.CSharp.Integration
             var allTemplateTypes = new[]
             {
                 "ImmutableTestStream",
-                "MutableTestStream",
+                "BasicLiveData",
             };
 
             foreach (var templateType in allTemplateTypes)

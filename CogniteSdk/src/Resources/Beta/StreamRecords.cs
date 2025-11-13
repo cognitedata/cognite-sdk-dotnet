@@ -78,17 +78,7 @@ namespace CogniteSdk.Resources.Beta
             {
                 Items = recordIds,
             }, GetContext(token));
-
-            // postV10 tries to parse the response body as JSON, but the delete endpoint returns an empty body.
-            // We catch and ignore the JsonException in this case.
-            try
-            {
-                await RunAsync(req).ConfigureAwait(false);
-            }
-            catch (System.Text.Json.JsonException ex) when (ex.Message.Contains("does not contain any JSON tokens"))
-            {
-                // Expected: The delete endpoint returns 204 No Content with an empty body.
-            }
+            await RunAsync(req).ConfigureAwait(false);
         }
 
         /// <summary>

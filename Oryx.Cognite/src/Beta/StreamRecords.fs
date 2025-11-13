@@ -11,6 +11,8 @@ open CogniteSdk.Beta
 
 [<RequireQualifiedAccess>]
 module StreamRecords =
+    open Oryx.SystemTextJson
+
     [<Literal>]
     let Url = "/streams"
 
@@ -34,15 +36,18 @@ module StreamRecords =
         |> withAlphaHeader
         |> postV10 items (Url +/ stream +/ "records/upsert")
 
-    let delete
-        (stream: string)
-        (items: StreamRecordDelete)
-        (source: HttpHandler<unit>)
-        : HttpHandler<CogniteSdk.EmptyResponse> =
+    let delete (stream: string) (items: StreamRecordDelete) (source: HttpHandler<unit>) : HttpHandler<unit> =
         source
         |> withLogMessage "streamrecords:delete"
         |> withAlphaHeader
-        |> postV10 items (Url +/ stream +/ "records/delete")
+        |> POST
+        |> withVersion V10
+        |> withResource (Url +/ stream +/ "records/delete")
+        |> withContent (fun () -> new JsonPushStreamContent<StreamRecordDelete>(items, jsonOptions))
+        |> fetch
+        |> withError decodeError
+        |> ignoreResponse
+        |> log
 
     let retrieve<'T>
         (stream: string)
