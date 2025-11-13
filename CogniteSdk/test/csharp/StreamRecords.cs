@@ -37,10 +37,10 @@ namespace Test.CSharp.Integration
 
             var testContainer = new ContainerCreate
             {
-                ExternalId = "TestContainer",
+                ExternalId = "StreamTestContainer",
                 Space = TestSpace,
                 Name = "Test",
-                UsedFor = UsedFor.all,
+                UsedFor = UsedFor.record,
                 Properties = new Dictionary<string, ContainerPropertyDefinition>
                 {
                     { "prop", new ContainerPropertyDefinition
@@ -60,7 +60,7 @@ namespace Test.CSharp.Integration
                     }}
                 }
             };
-            var testContainerIdt = new ContainerIdentifier(TestSpace, "TestContainer");
+            var testContainerIdt = new ContainerIdentifier(TestSpace, "StreamTestContainer");
 
             await Write.DataModels.UpsertContainers(new[] { testContainer });
             TestContainer = testContainerIdt;
@@ -74,27 +74,9 @@ namespace Test.CSharp.Integration
                 "BasicLiveData",
             };
 
-            // Due to the very low limits on streams, we need to clean up first.
-            var streams = await Write.Beta.StreamRecords.ListStreamsAsync();
-            foreach (var existing in streams)
-            {
-                // Delete any test stream that is older than 5 minutes, to avoid issues if tests overlap.
-                if (existing.CreatedTime < DateTimeOffset.UtcNow.AddMinutes(-5).ToUnixTimeMilliseconds())
-                {
-                    try
-                    {
-                        await Write.Beta.StreamRecords.DeleteStreamAsync(existing.ExternalId);
-                    }
-                    catch (ResponseException)
-                    {
-                        // Ignore errors during cleanup - stream might not exist or already be deleted
-                    }
-                }
-            }
-
             foreach (var templateType in allTemplateTypes)
             {
-                var streamId = $"dotnet-sdk-test-{Prefix.ToLowerInvariant()}-{templateType.ToLowerInvariant()}";
+                var streamId = $"dotnet-sdk-test-stream-{templateType.ToLowerInvariant()}";
 
                 TestStreams[templateType] = streamId;
 
@@ -123,25 +105,6 @@ namespace Test.CSharp.Integration
 
         public override async Task DisposeAsync()
         {
-            // Clean up all created test streams with throttling to avoid rate limits
-            if (TestStreams != null)
-            {
-                foreach (var streamId in TestStreams.Values)
-                {
-                    if (!string.IsNullOrEmpty(streamId))
-                    {
-                        try
-                        {
-                            await Write.Beta.StreamRecords.DeleteStreamAsync(streamId);
-                        }
-                        catch (ResponseException)
-                        {
-                            // Ignore errors during cleanup - stream might not exist or already be deleted
-                        }
-                    }
-                }
-            }
-
             try
             {
                 await base.DisposeAsync();
