@@ -403,11 +403,13 @@ namespace Test.CSharp.Integration
             );
             Assert.NotNull(streamWithStats);
             Assert.Equal(streamId, streamWithStats.ExternalId);
+            Assert.NotNull(streamWithStats.Settings.Limits.MaxRecordsTotal.Consumed);
 
             // Test without parameter (default behavior)
             var streamDefault = await tester.Write.Beta.StreamRecords.RetrieveStreamAsync(streamId);
             Assert.NotNull(streamDefault);
             Assert.Equal(streamId, streamDefault.ExternalId);
+            Assert.Null(streamDefault.Settings.Limits.MaxRecordsTotal.Consumed);
         }
 
     }
