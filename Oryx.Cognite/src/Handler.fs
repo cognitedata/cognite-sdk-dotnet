@@ -262,6 +262,14 @@ module HttpHandler =
     let getWithQuery<'TResult> (query: IQueryParams) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
         getWithQueryOptions query url jsonOptions source
 
+    let ignoreResponse (source: HttpHandler<HttpContent>) : HttpHandler<unit> =
+        fun next ->
+            { new IHttpNext<HttpContent> with
+                member _.OnSuccessAsync(ctx, content: HttpContent) = next.OnSuccessAsync(ctx, ())
+                member _.OnErrorAsync(ctx, exn) = next.OnErrorAsync(ctx, exn)
+                member _.OnCancelAsync(ctx) = next.OnCancelAsync(ctx) }
+            |> source
+
     let post<'TContent, 'TResult>
         (content: 'TContent)
         (url: string)
