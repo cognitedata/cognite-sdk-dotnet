@@ -143,6 +143,7 @@ namespace CogniteSdk
         /// </summary>
         public FunctionResource Functions { get; }
 
+        /// <summary>
         /// Resource for the core data model.
         /// </summary>
         /// <value></value>
