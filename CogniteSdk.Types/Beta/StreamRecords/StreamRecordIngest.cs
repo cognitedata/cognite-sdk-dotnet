@@ -36,4 +36,11 @@ namespace CogniteSdk.Beta
     public class StreamRecordIngest : ItemsWithoutCursor<StreamRecordWrite>
     {
     }
+
+    /// <summary>
+    /// Delete request for records.
+    /// </summary>
+    public class StreamRecordDelete : ItemsWithoutCursor<InstanceIdentifier>
+    {
+    }
 }

@@ -268,17 +268,6 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asyncronously creates a simulation routine of predefined type.
-        /// </summary>
-        /// <param name="items">The simulator routine items to create.</param>
-        /// <param name="token">Optional cancellation token</param>
-        public async Task<IEnumerable<SimulatorRoutine>> CreateSimulatorRoutinesPredefinedAsync(IEnumerable<SimulatorRoutineCreateCommandPredefined> items, CancellationToken token = default)
-        {
-            var req = Simulators.createSimulatorRoutinesPredefined(items, GetContext(token));
-            return await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Asyncronously deletes simulator routines.
         /// </summary>
         /// <param name="items">The simulator routine items to delete.</param>

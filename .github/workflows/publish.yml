@@ -16,7 +16,7 @@ jobs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           fetch-depth: 0
       - name: Setup .NET Core
@@ -85,11 +85,11 @@ jobs:
         env:
           CERTIFICATE_HOST: ${{ secrets.CODE_SIGNING_CERT_HOST }}
           CERTIFICATE_HOST_API_KEY: ${{ secrets.CODE_SIGNING_CERT_HOST_API_KEY }}
-          CERTIFICATE_SHA1_HASH: ${{ secrets.CODE_SIGNING_CERT_SHA1_HASH }}
+          CERTIFICATE_FINGERPRINT: ${{ secrets.CODE_SIGNING_CERT_SHA256_HASH }}
           CLIENT_CERTIFICATE: ${{ secrets.CODE_SIGNING_CLIENT_CERT }}
           CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CODE_SIGNING_CLIENT_CERT_PASSWORD }}
           KEYPAIR_ALIAS: ${{ secrets.CODE_SIGNING_KEYPAIR_ALIAS }}
-        uses: cognitedata/code-sign-action/@5f2df722040f2a061476cf171f67ec6014382f2b # v3
+        uses: cognitedata/code-sign-action/@a29458b69495966f90920f07aeed5acfe03e1f45 # v5
         with:
           path-to-binary: 'nuget-packages/'
 
@@ -105,7 +105,7 @@ jobs:
       - publish
     steps:
       - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
 
       - name: Install GitHub CLI
         run: sudo apt-get install -y gh

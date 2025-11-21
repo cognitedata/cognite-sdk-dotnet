@@ -35,30 +35,4 @@ namespace CogniteSdk.Alpha
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
     }
-
-    /// <summary>
-    /// A Simulator routine to create of type predefined
-    /// </summary>
-
-    public class SimulatorRoutineCreateCommandPredefined
-    {
-        /// <summary>
-        /// External id provided by client. Must be unique within the project.
-        /// </summary>
-        public string ExternalId { get; set; }
-
-        /// <summary>
-        /// Model external id
-        /// </summary>
-        public string ModelExternalId { get; set; }
-
-        /// <summary>
-        /// Simulator Integratione external id.
-        /// </summary>
-        public string SimulatorIntegrationExternalId { get; set; }
-
-        /// <inheritdoc />
-        public override string ToString() => Stringable.ToString(this);
-    }
-
 }
