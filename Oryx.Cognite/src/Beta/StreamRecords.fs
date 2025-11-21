@@ -11,6 +11,8 @@ open CogniteSdk.Beta
 
 [<RequireQualifiedAccess>]
 module StreamRecords =
+    open Oryx.SystemTextJson
+
     [<Literal>]
     let Url = "/streams"
 
@@ -23,6 +25,29 @@ module StreamRecords =
         |> withLogMessage "streamrecords:ingest"
         |> withAlphaHeader
         |> postV10 items (Url +/ stream +/ "records")
+
+    let upsert
+        (stream: string)
+        (items: StreamRecordIngest)
+        (source: HttpHandler<unit>)
+        : HttpHandler<CogniteSdk.EmptyResponse> =
+        source
+        |> withLogMessage "streamrecords:upsert"
+        |> withAlphaHeader
+        |> postV10 items (Url +/ stream +/ "records/upsert")
+
+    let delete (stream: string) (items: StreamRecordDelete) (source: HttpHandler<unit>) : HttpHandler<unit> =
+        source
+        |> withLogMessage "streamrecords:delete"
+        |> withAlphaHeader
+        |> POST
+        |> withVersion V10
+        |> withResource (Url +/ stream +/ "records/delete")
+        |> withContent (fun () -> new JsonPushStreamContent<StreamRecordDelete>(items, jsonOptions))
+        |> fetch
+        |> withError decodeError
+        |> ignoreResponse
+        |> log
 
     let retrieve<'T>
         (stream: string)
@@ -82,8 +107,18 @@ module StreamRecords =
             return ret.Items
         }
 
-    let retrieveStream (stream: string) (source: HttpHandler<unit>) : HttpHandler<Stream> =
+    let retrieveStream
+        (stream: string)
+        (includeStatistics: bool option)
+        (source: HttpHandler<unit>)
+        : HttpHandler<Stream> =
+        let url =
+            match includeStatistics with
+            | Some true -> (Url +/ stream) + "?includeStatistics=true"
+            | Some false -> (Url +/ stream) + "?includeStatistics=false"
+            | None -> (Url +/ stream)
+
         source
         |> withLogMessage "streamrecords:retrievestream"
         |> withAlphaHeader
-        |> getV10 (Url +/ stream)
+        |> getV10 url

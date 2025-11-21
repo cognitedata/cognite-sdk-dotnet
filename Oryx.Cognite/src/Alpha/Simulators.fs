@@ -239,15 +239,6 @@ module Simulators =
         |> withAlphaHeader
         |> HttpHandler.create items routinesUrl
 
-    let createSimulatorRoutinesPredefined
-        (items: SimulatorRoutineCreateCommandPredefined seq)
-        (source: HttpHandler<unit>)
-        : HttpHandler<SimulatorRoutine seq> =
-        source
-        |> withLogMessage "simulators:createSimulatorRoutinesPredefined"
-        |> withAlphaHeader
-        |> HttpHandler.create items routinesUrl
-
     let createSimulatorRoutineRevisions
         (items: SimulatorRoutineRevisionCreate seq)
         (source: HttpHandler<unit>)

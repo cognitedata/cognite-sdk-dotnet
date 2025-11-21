@@ -23,7 +23,11 @@ namespace CogniteSdk.DataModels
         /// <summary>
         /// View applies to both nodes and edges.
         /// </summary>
-        all
+        all,
+        /// <summary>
+        /// Container applies to records only. Not applicable to views.
+        /// </summary>
+        record,
     }
     /// <summary>
     /// Possible directions of a connection
