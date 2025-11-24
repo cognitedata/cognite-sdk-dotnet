@@ -412,6 +412,103 @@ namespace Test.CSharp.Integration
             Assert.Null(streamDefault.Settings.Limits.MaxRecordsTotal.Consumed);
         }
 
+        [Fact]
+        public async Task TestDeleteStreamIdempotent()
+        {
+            var nonExistentStreamId = $"non-existent-stream-{Guid.NewGuid():N}";
+            await tester.Write.Beta.StreamRecords.DeleteStreamAsync(nonExistentStreamId);
+        }
+
+        [Fact]
+        public async Task TestAggregateRecords()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
+
+            var targetStream = tester.TestStreams["BasicLiveData"];
+            Assert.NotNull(targetStream);
+
+            var aggregateRequest = new StreamRecordsAggregate
+            {
+                Aggregates = new Dictionary<string, StreamRecordAggregateDefinition>
+                {
+                    {
+                        "my_count", new StreamRecordAggregateDefinition
+                        {
+                            Count = new StreamRecordPropertyAggregate
+                            {
+                                Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "intProp" }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var response = await tester.Write.Beta.StreamRecords.AggregateAsync(
+                targetStream,
+                aggregateRequest
+            );
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.Aggregates);
+            Assert.True(response.Aggregates.ContainsKey("my_count"));
+            Assert.NotNull(response.Aggregates["my_count"].Count);
+        }
+
+        [Fact]
+        public async Task ZTest_SyncRecordsWithStatus()
+        {
+            // Note: This test is named with "ZTest_" prefix to ensure it runs last,
+            // allowing it to pick up records ingested by other tests in this class.
+
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
+
+            var targetStream = tester.TestStreams["BasicLiveData"];
+            Assert.NotNull(targetStream);
+
+            var syncRequest = new StreamRecordsSync
+            {
+                InitializeCursor = "7d-ago",
+                Limit = 100,
+                Sources = new[] {
+                    new StreamRecordSource
+                    {
+                        Source = tester.TestContainer,
+                        Properties = new[] { "prop", "intProp" }
+                    }
+                }
+            };
+
+            var response = await tester.Write.Beta.StreamRecords.SyncAsync<StandardInstanceData>(
+                targetStream,
+                syncRequest
+            );
+
+            Assert.NotNull(response);
+            Assert.NotNull(response.Items);
+            Assert.NotNull(response.NextCursor);
+
+            // If there are items, verify that status is populated
+            foreach (var item in response.Items)
+            {
+                Assert.NotNull(item.Status);
+                // Status should be one of: created, updated, or deleted
+                Assert.True(
+                    item.Status == StreamRecordStatus.created ||
+                    item.Status == StreamRecordStatus.updated ||
+                    item.Status == StreamRecordStatus.deleted,
+                    $"Unexpected status value: {item.Status}"
+                );
+
+                // For deleted records (tombstones), Properties may be null
+                if (item.Status == StreamRecordStatus.deleted)
+                {
+                    // Properties are omitted for deleted records
+                }
+            }
+        }
+
     }
 
     /// <summary>

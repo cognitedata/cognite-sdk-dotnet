@@ -120,6 +120,28 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
+        /// Aggregate records from a stream.
+        /// </summary>
+        /// <param name="stream">Stream to aggregate records from.</param>
+        /// <param name="request">Aggregation request.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>Aggregation response.</returns>
+        public async Task<StreamRecordsAggregateResponse> AggregateAsync(string stream, StreamRecordsAggregate request, CancellationToken token = default)
+        {
+            if (stream is null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            var req = Oryx.Cognite.Beta.StreamRecords.aggregate(stream, request, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Create a new stream. A stream is a target for high volume data ingestion,
         /// with data shaped by the Data Modeling concepts.
         /// For beta we allow each project to create up to 10 streams.
