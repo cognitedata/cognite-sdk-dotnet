@@ -103,16 +103,11 @@ namespace Test.CSharp.Integration
             }
         }
 
-        public override async Task DisposeAsync()
+        public override Task DisposeAsync()
         {
-            try
-            {
-                await base.DisposeAsync();
-            }
-            catch (ResponseException)
-            {
-                // Ignore other cleanup errors
-            }
+            // Note: We don't call base.DisposeAsync() because we don't call base.InitializeAsync()
+            // The TestEvent is not used by StreamRecords tests
+            return Task.CompletedTask;
         }
     }
 
