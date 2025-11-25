@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -359,6 +360,19 @@ namespace CogniteSdk.Resources.Alpha
         public async Task<EmptyResponse> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CancellationToken token = default)
         {
             var req = Simulators.updateSimulatorLogs(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Updates simulator logs, applying Gzip compression at level <paramref name="compression"/>.
+        /// </summary>
+        /// <param name="items">The simulator log update items to apply</param>
+        /// <param name="compression">Compression level</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Empty response</returns>
+        public async Task<EmptyResponse> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CompressionLevel compression, CancellationToken token = default)
+        {
+            var req = Simulators.updateSimulatorLogsWithGzip(items, compression, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 

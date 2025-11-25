@@ -8,6 +8,7 @@ open Oryx.Cognite
 open Oryx.Cognite.Alpha
 
 open CogniteSdk.Alpha
+open System.IO.Compression
 
 [<RequireQualifiedAccess>]
 module Simulators =
@@ -276,6 +277,21 @@ module Simulators =
         |> withLogMessage "simulators:updateLogs"
         |> withAlphaHeader
         |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
+
+    let updateSimulatorLogsWithGzip
+        (items: UpdateItem<SimulatorLogUpdate> seq)
+        (compression: CompressionLevel)
+        (source: HttpHandler<unit>)
+        : HttpHandler<EmptyResponse> =
+        let content = ItemsWithoutCursor<_>(Items = items)
+
+        createGzipJson<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse> 
+            content 
+            compression 
+            (logsUrl +/ "/update")
+            (source
+             |> withLogMessage "simulators:updateLogsGzip" 
+             |> withAlphaHeader)
 
     let retrieveSimulatorLogs (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorLog seq> =
 
