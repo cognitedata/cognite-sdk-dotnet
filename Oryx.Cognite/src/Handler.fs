@@ -517,7 +517,7 @@ module HttpHandler =
         |> withError decodeError
         |> json jsonOptions
         |> log
-    
+
     let createGzipJson<'TContent, 'TResult>
         (content: 'TContent)
         (compression: CompressionLevel)

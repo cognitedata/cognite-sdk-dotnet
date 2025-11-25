@@ -40,8 +40,9 @@ module GZip =
                 use gzipStream = new GZipStream(stream, _compression, true)
                 do! JsonSerializer.SerializeAsync(gzipStream, _content, _options)
                 do! gzipStream.FlushAsync()
-            } :> _
-        
+            }
+            :> _
+
         override this.TryComputeLength(length: byref<int64>) : bool =
             length <- -1L
             false

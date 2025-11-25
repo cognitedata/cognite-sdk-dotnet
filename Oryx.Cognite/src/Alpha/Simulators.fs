@@ -285,13 +285,11 @@ module Simulators =
         : HttpHandler<EmptyResponse> =
         let content = ItemsWithoutCursor<_>(Items = items)
 
-        createGzipJson<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse> 
-            content 
-            compression 
+        createGzipJson<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse>
+            content
+            compression
             (logsUrl +/ "/update")
-            (source
-             |> withLogMessage "simulators:updateLogsGzip" 
-             |> withAlphaHeader)
+            (source |> withLogMessage "simulators:updateLogsGzip" |> withAlphaHeader)
 
     let retrieveSimulatorLogs (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorLog seq> =
 
