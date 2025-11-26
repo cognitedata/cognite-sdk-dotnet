@@ -6,6 +6,17 @@ using System.Text.Json.Serialization;
 namespace CogniteSdk.Beta
 {
     /// <summary>
+    /// Item identifying a stream to delete.
+    /// </summary>
+    public class StreamDeleteItem
+    {
+        /// <summary>
+        /// Stream external ID to delete.
+        /// </summary>
+        public string ExternalId { get; set; }
+    }
+
+    /// <summary>
     /// Request to create a stream.
     /// </summary>
     public class StreamWrite
@@ -158,15 +169,13 @@ namespace CogniteSdk.Beta
 
         /// <summary>
         /// Name of the template used for creating this stream.
-        /// Only present when using alpha cdf-version header.
         /// </summary>
         public string CreatedFromTemplate { get; set; }
 
         /// <summary>
         /// Type of the stream (Immutable or Mutable).
-        /// Only present when using alpha cdf-version header.
         /// </summary>
-        public StreamType? Type { get; set; }
+        public StreamType Type { get; set; }
 
         /// <summary>
         /// Stream settings containing lifecycle and limit information.
