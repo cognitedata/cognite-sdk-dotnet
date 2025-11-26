@@ -269,17 +269,6 @@ module Simulators =
 
     let updateSimulatorLogs
         (items: UpdateItem<SimulatorLogUpdate> seq)
-        (source: HttpHandler<unit>)
-        : HttpHandler<EmptyResponse> =
-        let content = ItemsWithoutCursor<_>(Items = items)
-
-        source
-        |> withLogMessage "simulators:updateLogs"
-        |> withAlphaHeader
-        |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
-
-    let updateSimulatorLogsWithGzip
-        (items: UpdateItem<SimulatorLogUpdate> seq)
         (compression: CompressionLevel)
         (source: HttpHandler<unit>)
         : HttpHandler<EmptyResponse> =

@@ -355,15 +355,6 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Asyncronously updates simulator logs.
-        /// </summary>
-        public async Task<EmptyResponse> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CancellationToken token = default)
-        {
-            var req = Simulators.updateSimulatorLogs(items, GetContext(token));
-            return await RunAsync(req).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Updates simulator logs, applying Gzip compression at level <paramref name="compression"/>.
         /// </summary>
         /// <param name="items">The simulator log update items to apply</param>
@@ -372,7 +363,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Empty response</returns>
         public async Task<EmptyResponse> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CompressionLevel compression, CancellationToken token = default)
         {
-            var req = Simulators.updateSimulatorLogsWithGzip(items, compression, GetContext(token));
+            var req = Simulators.updateSimulatorLogs(items, compression, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
 
