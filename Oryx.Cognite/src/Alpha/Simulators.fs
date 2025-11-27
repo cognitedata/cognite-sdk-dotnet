@@ -269,14 +269,13 @@ module Simulators =
 
     let updateSimulatorLogs
         (items: UpdateItem<SimulatorLogUpdate> seq)
-        (compression: CompressionLevel)
         (source: HttpHandler<unit>)
         : HttpHandler<EmptyResponse> =
         let content = ItemsWithoutCursor<_>(Items = items)
 
-        createGzipJson<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse>
+        postV10Gzip<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse>
             content
-            compression
+            CompressionLevel.Optimal
             (logsUrl +/ "/update")
             (source |> withLogMessage "simulators:updateLogsGzip" |> withAlphaHeader)
 

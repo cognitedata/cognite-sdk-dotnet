@@ -292,6 +292,22 @@ module HttpHandler =
         : HttpHandler<'TResult> =
         source |> withVersion V10 |> post<'TContent, 'TResult> content url
 
+    let postV10Gzip<'TContent, 'TResult>
+        (content: 'TContent)
+        (compression: CompressionLevel)
+        (url: string)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        source
+        |> POST
+        |> withVersion V10
+        |> withResource url
+        |> withContent (fun () -> new GZipJsonStreamContent<'TContent>(content, compression, jsonOptions) :> _)
+        |> fetch
+        |> withError decodeError
+        |> json jsonOptions
+        |> log
+
     let postWithQuery<'TContent, 'TResult>
         (content: 'TContent)
         (query: IQueryParams)
@@ -513,22 +529,6 @@ module HttpHandler =
         |> withVersion V10
         |> withResource url
         |> withContent (fun () -> new GZipProtobufStreamContent(content, compression) :> _)
-        |> fetch
-        |> withError decodeError
-        |> json jsonOptions
-        |> log
-
-    let createGzipJson<'TContent, 'TResult>
-        (content: 'TContent)
-        (compression: CompressionLevel)
-        (url: string)
-        (source: HttpHandler<unit>)
-        : HttpHandler<'TResult> =
-        source
-        |> POST
-        |> withVersion V10
-        |> withResource url
-        |> withContent (fun () -> new GZipJsonStreamContent<'TContent>(content, compression, jsonOptions) :> _)
         |> fetch
         |> withError decodeError
         |> json jsonOptions
