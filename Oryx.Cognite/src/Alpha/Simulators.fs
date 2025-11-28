@@ -55,12 +55,11 @@ module Simulators =
         let runCallbackUrl = runUrl +/ "callback"
         let request = ItemsWithoutCursor<SimulationRunCallbackItem>(Items = [ query ])
 
-        source
-        |> withLogMessage "simulators:simulationRunCallback"
-        |> withAlphaHeader
-        |> postV10<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
+        postV10Gzip<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
             request
+            CompressionLevel.Optimal
             runCallbackUrl
+            (source |> withLogMessage "simulators:simulationRunCallback" |> withAlphaHeader)
 
     let retrieveSimulationRuns (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulationRun seq> =
         source
