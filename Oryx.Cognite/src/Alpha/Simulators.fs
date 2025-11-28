@@ -8,6 +8,7 @@ open Oryx.Cognite
 open Oryx.Cognite.Alpha
 
 open CogniteSdk.Alpha
+open System.IO.Compression
 
 [<RequireQualifiedAccess>]
 module Simulators =
@@ -54,12 +55,11 @@ module Simulators =
         let runCallbackUrl = runUrl +/ "callback"
         let request = ItemsWithoutCursor<SimulationRunCallbackItem>(Items = [ query ])
 
-        source
-        |> withLogMessage "simulators:simulationRunCallback"
-        |> withAlphaHeader
-        |> postV10<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
+        postV10Gzip<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
             request
+            CompressionLevel.Optimal
             runCallbackUrl
+            (source |> withLogMessage "simulators:simulationRunCallback" |> withAlphaHeader)
 
     let retrieveSimulationRuns (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulationRun seq> =
         source
@@ -272,10 +272,11 @@ module Simulators =
         : HttpHandler<EmptyResponse> =
         let content = ItemsWithoutCursor<_>(Items = items)
 
-        source
-        |> withLogMessage "simulators:updateLogs"
-        |> withAlphaHeader
-        |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
+        postV10Gzip<ItemsWithoutCursor<UpdateItem<SimulatorLogUpdate>>, EmptyResponse>
+            content
+            CompressionLevel.Optimal
+            (logsUrl +/ "/update")
+            (source |> withLogMessage "simulators:updateLogsGzip" |> withAlphaHeader)
 
     let retrieveSimulatorLogs (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorLog seq> =
 

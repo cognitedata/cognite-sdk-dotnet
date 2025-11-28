@@ -356,6 +356,9 @@ namespace CogniteSdk.Resources.Alpha
         /// <summary>
         /// Asyncronously updates simulator logs.
         /// </summary>
+        /// <param name="items">The simulator log update items to apply</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Empty response</returns>
         public async Task<EmptyResponse> UpdateSimulatorLogsAsync(IEnumerable<UpdateItem<SimulatorLogUpdate>> items, CancellationToken token = default)
         {
             var req = Simulators.updateSimulatorLogs(items, GetContext(token));
