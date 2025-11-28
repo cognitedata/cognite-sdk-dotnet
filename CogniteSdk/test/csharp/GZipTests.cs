@@ -44,7 +44,18 @@ namespace Test.CSharp
             Assert.Equal("application/json", content.Headers.ContentType.MediaType);
             Assert.Contains("gzip", content.Headers.ContentEncoding);
 
+            Assert.True(compressedBytes.Length >= 2);
+            Assert.Equal(0x1f, compressedBytes[0]);
+            Assert.Equal(0x8b, compressedBytes[1]);
+
             Assert.True(compressedSize < uncompressedSize);
+
+            var compressedStream = await content.ReadAsStreamAsync();
+            var gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress);
+            var reader = new StreamReader(gzipStream, Encoding.UTF8);
+            var decompressedJson = await reader.ReadToEndAsync();
+
+            Assert.Equal(uncompressedJson, decompressedJson);
         }
 
     }
