@@ -50,9 +50,9 @@ namespace Test.CSharp
 
             Assert.True(compressedSize < uncompressedSize);
 
-            var compressedStream = await content.ReadAsStreamAsync();
-            var gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress);
-            var reader = new StreamReader(gzipStream, Encoding.UTF8);
+            await using var compressedStream = await content.ReadAsStreamAsync();
+            using var gzipStream = new GZipStream(compressedStream, CompressionMode.Decompress);
+            using var reader = new StreamReader(gzipStream, Encoding.UTF8);
             var decompressedJson = await reader.ReadToEndAsync();
 
             Assert.Equal(uncompressedJson, decompressedJson);
