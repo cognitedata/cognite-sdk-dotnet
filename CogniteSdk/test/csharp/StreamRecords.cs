@@ -425,15 +425,12 @@ namespace Test.CSharp.Integration
 
             var aggregateRequest = new StreamRecordsAggregate
             {
-                Aggregates = new Dictionary<string, StreamRecordAggregateDefinition>
+                Aggregates = new Dictionary<string, IStreamRecordAggregate>
                 {
                     {
-                        "my_count", new StreamRecordAggregateDefinition
+                        "my_count", new CountStreamRecordAggregate
                         {
-                            Count = new StreamRecordPropertyAggregate
-                            {
-                                Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "intProp" }
-                            }
+                            Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "intProp" }
                         }
                     }
                 }
@@ -447,15 +444,12 @@ namespace Test.CSharp.Integration
             Assert.NotNull(response);
             Assert.NotNull(response.Aggregates);
             Assert.True(response.Aggregates.ContainsKey("my_count"));
-            Assert.NotNull(response.Aggregates["my_count"].Count);
+            Assert.IsType<CountStreamRecordAggregateResult>(response.Aggregates["my_count"]);
         }
 
         [Fact]
-        public async Task ZTest_SyncRecordsWithStatus()
+        public async Task TestSyncRecordsWithStatus()
         {
-            // Note: This test is named with "ZTest_" prefix to ensure it runs last,
-            // allowing it to pick up records ingested by other tests in this class.
-
             Assert.NotNull(tester.TestStreams);
             Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
 
