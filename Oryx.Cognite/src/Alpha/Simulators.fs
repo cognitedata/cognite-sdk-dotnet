@@ -8,6 +8,7 @@ open Oryx.Cognite
 open Oryx.Cognite.Alpha
 
 open CogniteSdk.Alpha
+open System.IO.Compression
 
 [<RequireQualifiedAccess>]
 module Simulators =
@@ -57,9 +58,7 @@ module Simulators =
         source
         |> withLogMessage "simulators:simulationRunCallback"
         |> withAlphaHeader
-        |> postV10<ItemsWithoutCursor<SimulationRunCallbackItem>, ItemsWithoutCursor<SimulationRun>>
-            request
-            runCallbackUrl
+        |> postV10Gzip request CompressionLevel.Optimal runCallbackUrl
 
     let retrieveSimulationRuns (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulationRun seq> =
         source
@@ -275,7 +274,7 @@ module Simulators =
         source
         |> withLogMessage "simulators:updateLogs"
         |> withAlphaHeader
-        |> HttpHandler.postV10<_, EmptyResponse> content (logsUrl +/ "/update")
+        |> postV10Gzip content CompressionLevel.Optimal (logsUrl +/ "/update")
 
     let retrieveSimulatorLogs (ids: Identity seq) (source: HttpHandler<unit>) : HttpHandler<#SimulatorLog seq> =
 
