@@ -1,3 +1,4 @@
+using System.Text.Json;
 using CogniteSdk.Alpha;
 using Xunit;
 
@@ -6,9 +7,9 @@ namespace Test.CSharp
     public class SimulatorRoutineRevisionTests
     {
         [Fact]
-        public void TestLogicalCheckCreation()
+        public void TestLogicalCheckSerializationWithAllFields()
         {
-            var logicalCheck = new SimulatorRoutineRevisionLogicalCheck
+            var original = new SimulatorRoutineRevisionLogicalCheck
             {
                 Enabled = true,
                 TimeseriesExternalId = "timeseries-1",
@@ -17,62 +18,44 @@ namespace Test.CSharp
                 Value = 100.5
             };
 
-            Assert.True(logicalCheck.Enabled);
-            Assert.Equal("timeseries-1", logicalCheck.TimeseriesExternalId);
-            Assert.Equal("avg", logicalCheck.Aggregate);
-            Assert.Equal("gt", logicalCheck.Operator);
-            Assert.Equal(100.5, logicalCheck.Value);
+            var json = JsonSerializer.Serialize(original);
+            var deserialized = JsonSerializer.Deserialize<SimulatorRoutineRevisionLogicalCheck>(json);
+
+            Assert.NotNull(deserialized);
+            Assert.Equal(original.Enabled, deserialized.Enabled);
+            Assert.Equal(original.TimeseriesExternalId, deserialized.TimeseriesExternalId);
+            Assert.Equal(original.Aggregate, deserialized.Aggregate);
+            Assert.Equal(original.Operator, deserialized.Operator);
+            Assert.Equal(original.Value, deserialized.Value);
         }
 
         [Fact]
-        public void TestLogicalCheckDisabled()
+        public void TestLogicalCheckSerializationWithNullValue()
         {
-            var logicalCheck = new SimulatorRoutineRevisionLogicalCheck
+            var original = new SimulatorRoutineRevisionLogicalCheck
             {
-                Enabled = false
-            };
-
-            Assert.False(logicalCheck.Enabled);
-        }
-
-        [Fact]
-        public void TestLogicalCheckToString()
-        {
-            var logicalCheck = new SimulatorRoutineRevisionLogicalCheck
-            {
-                Enabled = true,
+                Enabled = false,
                 TimeseriesExternalId = "ts-123",
                 Aggregate = "max",
                 Operator = "lt",
-                Value = 50.0
+                Value = null
             };
 
-            var result = logicalCheck.ToString();
+            var json = JsonSerializer.Serialize(original);
+            var deserialized = JsonSerializer.Deserialize<SimulatorRoutineRevisionLogicalCheck>(json);
 
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
+            Assert.NotNull(deserialized);
+            Assert.Equal(original.Enabled, deserialized.Enabled);
+            Assert.Equal(original.TimeseriesExternalId, deserialized.TimeseriesExternalId);
+            Assert.Equal(original.Aggregate, deserialized.Aggregate);
+            Assert.Equal(original.Operator, deserialized.Operator);
+            Assert.Null(deserialized.Value);
         }
 
         [Fact]
-        public void TestLogicalCheckWithEmptyStrings()
+        public void TestSteadyStateDetectionSerializationWithAllFields()
         {
-            var logicalCheck = new SimulatorRoutineRevisionLogicalCheck
-            {
-                Enabled = true,
-                TimeseriesExternalId = "",
-                Aggregate = "",
-                Operator = ""
-            };
-
-            Assert.Equal("", logicalCheck.TimeseriesExternalId);
-            Assert.Equal("", logicalCheck.Aggregate);
-            Assert.Equal("", logicalCheck.Operator);
-        }
-
-        [Fact]
-        public void TestSteadyStateDetectionCreation()
-        {
-            var steadyState = new SimulatorRoutineRevisionSteadyStateDetection
+            var original = new SimulatorRoutineRevisionSteadyStateDetection
             {
                 Enabled = true,
                 TimeseriesExternalId = "timeseries-steady-1",
@@ -82,56 +65,41 @@ namespace Test.CSharp
                 SlopeThreshold = 0.01
             };
 
-            Assert.True(steadyState.Enabled);
-            Assert.Equal("timeseries-steady-1", steadyState.TimeseriesExternalId);
-            Assert.Equal("avg", steadyState.Aggregate);
-            Assert.Equal(10, steadyState.MinSectionSize);
-            Assert.Equal(0.05, steadyState.VarThreshold);
-            Assert.Equal(0.01, steadyState.SlopeThreshold);
+            var json = JsonSerializer.Serialize(original);
+            var deserialized = JsonSerializer.Deserialize<SimulatorRoutineRevisionSteadyStateDetection>(json);
+
+            Assert.NotNull(deserialized);
+            Assert.Equal(original.Enabled, deserialized.Enabled);
+            Assert.Equal(original.TimeseriesExternalId, deserialized.TimeseriesExternalId);
+            Assert.Equal(original.Aggregate, deserialized.Aggregate);
+            Assert.Equal(original.MinSectionSize, deserialized.MinSectionSize);
+            Assert.Equal(original.VarThreshold, deserialized.VarThreshold);
+            Assert.Equal(original.SlopeThreshold, deserialized.SlopeThreshold);
         }
 
         [Fact]
-        public void TestSteadyStateDetectionDisabled()
+        public void TestSteadyStateDetectionSerializationWithNullFields()
         {
-            var steadyState = new SimulatorRoutineRevisionSteadyStateDetection
-            {
-                Enabled = false
-            };
-
-            Assert.False(steadyState.Enabled);
-        }
-
-        [Fact]
-        public void TestSteadyStateDetectionToString()
-        {
-            var steadyState = new SimulatorRoutineRevisionSteadyStateDetection
-            {
-                Enabled = true,
-                TimeseriesExternalId = "ts-steady-456",
-                Aggregate = "min",
-                MinSectionSize = 5,
-                VarThreshold = 0.1,
-                SlopeThreshold = 0.02
-            };
-
-            var result = steadyState.ToString();
-
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-        }
-
-        [Fact]
-        public void TestSteadyStateDetectionWithEmptyStrings()
-        {
-            var steadyState = new SimulatorRoutineRevisionSteadyStateDetection
+            var original = new SimulatorRoutineRevisionSteadyStateDetection
             {
                 Enabled = false,
-                TimeseriesExternalId = "",
-                Aggregate = ""
+                TimeseriesExternalId = "ts-steady-456",
+                Aggregate = "min",
+                MinSectionSize = null,
+                VarThreshold = 0.1,
+                SlopeThreshold = null
             };
 
-            Assert.Equal("", steadyState.TimeseriesExternalId);
-            Assert.Equal("", steadyState.Aggregate);
+            var json = JsonSerializer.Serialize(original);
+            var deserialized = JsonSerializer.Deserialize<SimulatorRoutineRevisionSteadyStateDetection>(json);
+
+            Assert.NotNull(deserialized);
+            Assert.Equal(original.Enabled, deserialized.Enabled);
+            Assert.Equal(original.TimeseriesExternalId, deserialized.TimeseriesExternalId);
+            Assert.Equal(original.Aggregate, deserialized.Aggregate);
+            Assert.Null(deserialized.MinSectionSize);
+            Assert.Equal(original.VarThreshold, deserialized.VarThreshold);
+            Assert.Null(deserialized.SlopeThreshold);
         }
 
     }
