@@ -21,7 +21,7 @@ namespace Test.CSharp
             var json = "{\"Enabled\":true,\"TimeseriesExternalId\":\"timeseries-1\",\"Aggregate\":\"avg\",\"Operator\":\"gt\",\"Value\":100.5}";
 
             var deserialized = JsonSerializer.Deserialize<SimulatorRoutineRevisionLogicalCheck>(json);
-            
+
             Assert.NotNull(deserialized);
             Assert.Equal(expectedObject.Enabled, deserialized.Enabled);
             Assert.Equal(expectedObject.TimeseriesExternalId, deserialized.TimeseriesExternalId);
