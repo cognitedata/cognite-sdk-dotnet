@@ -65,6 +65,48 @@ namespace Test.CSharp
         }
 
         [Fact]
+        public void TestStringArrayNotEqualsDifferentContent()
+        {
+            var values1 = new List<string> { "value1", "value2" };
+            var values2 = new List<string> { "value1", "value3" };
+            var stringArray1 = new SimulatorValue.StringArray(values1);
+            var stringArray2 = new SimulatorValue.StringArray(values2);
+
+            Assert.False(stringArray1.Equals(stringArray2));
+        }
+
+        [Fact]
+        public void TestStringArrayNotEqualsDifferentLength()
+        {
+            var values1 = new List<string> { "value1", "value2", "value3" };
+            var values2 = new List<string> { "value1", "value2" };
+            var stringArray1 = new SimulatorValue.StringArray(values1);
+            var stringArray2 = new SimulatorValue.StringArray(values2);
+
+            Assert.False(stringArray1.Equals(stringArray2));
+        }
+
+        [Fact]
+        public void TestStringArrayNotEqualsNull()
+        {
+            var values = new List<string> { "value1", "value2" };
+            var stringArray = new SimulatorValue.StringArray(values);
+
+            Assert.False(stringArray.Equals(null));
+        }
+
+        [Fact]
+        public void TestStringArrayNotEqualsDifferentType()
+        {
+            var stringValues = new List<string> { "value1", "value2" };
+            var doubleValues = new List<double> { 1.0, 2.0 };
+            var stringArray = new SimulatorValue.StringArray(stringValues);
+            var doubleArray = new SimulatorValue.DoubleArray(doubleValues);
+
+            Assert.False(stringArray.Equals(doubleArray));
+        }
+
+        [Fact]
         public void TestStringArrayGetHashCode()
         {
             var values1 = new List<string> { "value1", "value2", "value3" };
@@ -147,6 +189,48 @@ namespace Test.CSharp
             var doubleArray2 = new SimulatorValue.DoubleArray(values2);
 
             Assert.True(doubleArray1.Equals(doubleArray2));
+        }
+
+        [Fact]
+        public void TestDoubleArrayNotEqualsDifferentContent()
+        {
+            var values1 = new List<double> { 1.1, 2.2 };
+            var values2 = new List<double> { 1.1, 3.3 };
+            var doubleArray1 = new SimulatorValue.DoubleArray(values1);
+            var doubleArray2 = new SimulatorValue.DoubleArray(values2);
+
+            Assert.False(doubleArray1.Equals(doubleArray2));
+        }
+
+        [Fact]
+        public void TestDoubleArrayNotEqualsDifferentLength()
+        {
+            var values1 = new List<double> { 1.1, 2.2, 3.3 };
+            var values2 = new List<double> { 1.1, 2.2 };
+            var doubleArray1 = new SimulatorValue.DoubleArray(values1);
+            var doubleArray2 = new SimulatorValue.DoubleArray(values2);
+
+            Assert.False(doubleArray1.Equals(doubleArray2));
+        }
+
+        [Fact]
+        public void TestDoubleArrayNotEqualsNull()
+        {
+            var values = new List<double> { 1.1, 2.2 };
+            var doubleArray = new SimulatorValue.DoubleArray(values);
+
+            Assert.False(doubleArray.Equals(null));
+        }
+
+        [Fact]
+        public void TestDoubleArrayNotEqualsDifferentType()
+        {
+            var doubleValues = new List<double> { 1.0, 2.0 };
+            var stringValues = new List<string> { "1", "2" };
+            var doubleArray = new SimulatorValue.DoubleArray(doubleValues);
+            var stringArray = new SimulatorValue.StringArray(stringValues);
+
+            Assert.False(doubleArray.Equals(stringArray));
         }
 
         [Fact]
