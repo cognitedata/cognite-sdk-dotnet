@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using CogniteSdk.Alpha;
 using Xunit;
 
@@ -16,7 +17,7 @@ namespace Test.CSharp
 
             Assert.NotNull(stringArray);
             Assert.Equal(SimulatorValueType.STRING_ARRAY, stringArray.Type);
-            Assert.Equal(values, stringArray.Value);
+            Assert.True(values.SequenceEqual(stringArray.Value));
         }
 
         [Fact]
@@ -143,7 +144,7 @@ namespace Test.CSharp
 
             Assert.NotNull(doubleArray);
             Assert.Equal(SimulatorValueType.DOUBLE_ARRAY, doubleArray.Type);
-            Assert.Equal(values, doubleArray.Value);
+            Assert.True(values.SequenceEqual(doubleArray.Value));
         }
 
         [Fact]
