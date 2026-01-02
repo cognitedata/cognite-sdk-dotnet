@@ -109,7 +109,7 @@ namespace CogniteSdk.Beta
         /// </summary>
         public LastUpdatedTimeFilter LastUpdatedTime { get; set; }
         /// <summary>
-        /// Maximum number of results to return. Default 10, max 10000.
+        /// Maximum number of results to return. Default 10, max 1000.
         /// </summary>
         public int? Limit { get; set; }
         /// <summary>
