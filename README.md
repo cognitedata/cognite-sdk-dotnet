@@ -1,7 +1,3 @@
-<a href="https://cognite.com/">
-    <img src="./cognite_logo.png" alt="Cognite logo" title="Cognite" align="right" height="80" />
-</a>
-
 # CogniteSdk for .NET
 
 ![Build and Test](https://github.com/cognitedata/cognite-sdk-dotnet/workflows/Build%20and%20Test/badge.svg)
