@@ -115,6 +115,6 @@ jobs:
         run: |
           gh release create v${{ needs.build.outputs.version }} \
             --title "Release v${{ needs.build.outputs.version }}" \
-            --notes "Automated release for version v${{ needs.build.outputs.version }}"
+            --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
