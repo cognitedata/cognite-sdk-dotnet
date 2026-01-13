@@ -8,6 +8,7 @@
     <Company>Cognite AS</Company>
     <Copyright>Cognite AS</Copyright>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <AssemblyOriginatorKeyFile>../../strong_name.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
   </PropertyGroup>
@@ -41,6 +42,7 @@
     <Compile Include="Alpha/Simulators.fs" />
     <Compile Include="Alpha/Integrations.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
