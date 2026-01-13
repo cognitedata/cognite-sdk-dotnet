@@ -1,8 +1,8 @@
 on:
   pull_request:
-    branches: [ master ]
+    branches: [master]
   push:
-    branches: [ master ]
+    branches: [master]
 
 name: Publish Release
 jobs:
@@ -91,7 +91,7 @@ jobs:
           KEYPAIR_ALIAS: ${{ secrets.CODE_SIGNING_KEYPAIR_ALIAS }}
         uses: cognitedata/code-sign-action/@a29458b69495966f90920f07aeed5acfe03e1f45 # v5
         with:
-          path-to-binary: 'nuget-packages/'
+          path-to-binary: "nuget-packages/"
 
       - name: Push nuget packages
         run: dotnet nuget push .\nuget-packages\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_TOKEN }} --skip-duplicate
@@ -102,6 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.branch == 'master' && needs.build.outputs.should-release == 0 }}
     needs:
+      - build
       - publish
     steps:
       - name: Checkout code
