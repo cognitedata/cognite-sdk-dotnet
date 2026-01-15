@@ -42,6 +42,7 @@ The SDK may be used from both C# and F#.
 ### Beta Resources
 - Subscriptions
 - Templates
+- Streams and Records
 
 ### Alpha Resources
 - Simulators
