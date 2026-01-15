@@ -221,10 +221,20 @@ namespace Test.CSharp.Integration
                         GreaterThan = new RawPropertyValue<long>(start),
                         LessThan = new RawPropertyValue<long>(start + 1000 * 60 * 5),
                     },
-                    Filter = new EqualsFilter
+                    Filter = new AndFilter
                     {
-                        Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "intProp" },
-                        Value = new RawPropertyValue<long>(perTestUniqueInt),
+                        And = new IDMSFilter[]
+                        {
+                            new HasDataFilter
+                            {
+                                HasData = new SourceIdentifier[] { tester.TestContainer }
+                            },
+                            new EqualsFilter
+                            {
+                                Property = new[] { tester.TestSpace, tester.TestContainer.ExternalId, "intProp" },
+                                Value = new RawPropertyValue<long>(perTestUniqueInt),
+                            }
+                        }
                     },
                     Limit = 123,
                     Sort = new[] { new StreamRecordsSort {
