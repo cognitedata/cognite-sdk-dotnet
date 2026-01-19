@@ -38,7 +38,7 @@ namespace CogniteSdk.DataModels
                 case "equals": filter = JsonSerializer.Deserialize<EqualsFilter>(ref reader, options); break;
                 case "exists": filter = JsonSerializer.Deserialize<ExistsFilter>(ref reader, options); break;
                 case "in": filter = JsonSerializer.Deserialize<InFilter>(ref reader, options); break;
-                case "hasData": filter = JsonSerializer.Deserialize<HasDataFilter>(ref reader, options); break;
+                case "hasData": filter = new HasDataFilter { HasData = JsonSerializer.Deserialize<IEnumerable<SourceIdentifier>>(ref reader, options) }; break;
                 case "matchAll": filter = JsonSerializer.Deserialize<MatchAllFilter>(ref reader, options); break;
                 case "prefix": filter = JsonSerializer.Deserialize<PrefixFilter>(ref reader, options); break;
                 case "range": filter = JsonSerializer.Deserialize<RangeFilter>(ref reader, options); break;
@@ -172,14 +172,14 @@ namespace CogniteSdk.DataModels
     }
 
     /// <summary>
-    /// Filter for specifying that a node must have values from all the given models.
+    /// Filter for matching instances/records that have data in the specified views or containers.
     /// </summary>
-    public class HasDataFilter : IDMSFilter
+    public class HasDataFilter : IDMSFilter, ICompositeDMSFilter
     {
         /// <summary>
-        /// List of models.
+        /// List of source references (views or containers) that the instance/record must have data from.
         /// </summary>
-        public IEnumerable<SourceIdentifier> Models { get; set; }
+        public IEnumerable<SourceIdentifier> HasData { get; set; }
     }
 
     /// <summary>
