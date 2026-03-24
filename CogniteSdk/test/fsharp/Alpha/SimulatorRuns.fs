@@ -9,6 +9,7 @@ open Swensen.Unquote
 open CogniteSdk.Alpha
 open CogniteSdk
 open Common
+open Tests.Integration.Alpha.Common
 
 
 [<Fact>]
@@ -242,4 +243,59 @@ let ``Update simulation log is Ok`` () =
         test <@ logEntry.Data |> Seq.length >= 1 @>
         let lastLogEntryData = logEntry.Data |> Seq.last
         test <@ lastLogEntryData.Message = simulatorLogUpdateData.Message @>
+    }
+
+[<FactIf(envVar = "ENABLE_LOAD_BALANCER_TESTS", skipReason = "Load balancer feature flag not enabled")>]
+[<Trait("resource", "simulationRuns")>]
+[<Trait("api", "simulators")>]
+let ``Poll simulation runs assigns queued run to connector is Ok`` () =
+    task {
+        // Arrange
+        let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+
+        let! integrationsRes =
+            writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(
+                SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active = true))
+            )
+
+        test <@ Seq.length integrationsRes.Items > 0 @>
+        let integration = integrationsRes.Items |> Seq.head
+
+        let itemToCreate =
+            SimulationRunCreate(
+                RoutineExternalId = "ShowerMixerForTests",
+                RunType = SimulationRunType.external,
+                RunTime = now
+            )
+
+        // Act
+        let! createRes = writeClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
+        let simulationRun = createRes |> Seq.head
+
+        test <@ simulationRun.Status = SimulationRunStatus.queued @>
+
+        let pollItem =
+            SimulationRunPollItem(SimulatorIntegrationExternalId = integration.ExternalId, Limit = 10)
+
+        let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
+
+        // Assert
+        test <@ Seq.length pollRes.Items >= 1 @>
+
+        let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
+        test <@ assignedRun.IsSome @>
+
+        let assigned = assignedRun.Value
+        test <@ assigned.Status = SimulationRunStatus.ready @>
+        test <@ assigned.SimulatorIntegrationExternalId = integration.ExternalId @>
+
+        let callbackItem =
+            SimulationRunCallbackItem(
+                Id = simulationRun.Id,
+                Status = SimulationRunStatus.failure,
+                StatusMessage = "Integration test cleanup"
+            )
+
+        let! _ = writeClient.Alpha.Simulators.SimulationRunCallbackAsync(callbackItem)
+        ()
     }

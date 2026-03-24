@@ -13,6 +13,10 @@ namespace CogniteSdk.Alpha
     public enum SimulationRunStatus
     {
         /// <summary>
+        /// queued
+        /// </summary>
+        queued,
+        /// <summary>
         /// ready
         /// </summary>
         ready,
