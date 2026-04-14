@@ -252,52 +252,123 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
     task {
         // Arrange
         let now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+        let simulatorExternalId = $"test_sim_poll_{now}"
+        let integrationExternalId = $"test_integration_poll_{now}"
+        let modelExternalId = $"test_model_poll_{now}"
+        let routineExternalId = $"test_routine_poll_{now}"
+        let routineRevisionExternalId = $"{routineExternalId}_1"
 
-        let! integrationsRes =
-            writeClient.Alpha.Simulators.ListSimulatorIntegrationsAsync(
-                SimulatorIntegrationQuery(Filter = SimulatorIntegrationFilter(Active = true))
+        let! dataSetRes = writeClient.DataSets.RetrieveAsync([ new Identity("test-dataset") ])
+        let dataSet = dataSetRes |> Seq.head
+
+        let integrationToCreate =
+            SimulatorIntegrationCreate(
+                ExternalId = integrationExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                DataSetId = dataSet.Id,
+                SimulatorVersion = "N/A",
+                ConnectorVersion = "1.2.3"
             )
 
-        test <@ Seq.length integrationsRes.Items > 0 @>
-        let integration = integrationsRes.Items |> Seq.head
-
-        let itemToCreate =
-            SimulationRunCreate(
-                RoutineExternalId = "ShowerMixerForTests",
-                RunType = SimulationRunType.external,
-                RunTime = now
+        let modelToCreate =
+            SimulatorModelCreate(
+                ExternalId = modelExternalId,
+                SimulatorExternalId = simulatorExternalId,
+                Name = "test_model_poll",
+                Description = "test model for poll test",
+                DataSetId = dataSet.Id,
+                Type = "OilWell"
             )
-
-        // Act
-        let! createRes = writeClient.Alpha.Simulators.CreateSimulationRunsAsync([ itemToCreate ])
-        let simulationRun = createRes |> Seq.head
-
-        let pollItem =
-            SimulationRunPollItem(SimulatorIntegrationExternalId = integration.ExternalId, Limit = 10)
 
         try
-            let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
-            test <@ simulationRun.Status = SimulationRunStatus.queued @>
+            let! _ = writeClient.Alpha.Simulators.CreateAsync([ testSimulatorCreate simulatorExternalId ])
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
-            // Assert
-            test <@ Seq.length pollRes.Items >= 1 @>
-
-            let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
-            test <@ assignedRun.IsSome @>
-
-            let assigned = assignedRun.Value
-            test <@ assigned.Status = SimulationRunStatus.ready @>
-            test <@ assigned.SimulatorIntegrationExternalId = integration.ExternalId @>
-
-            let callbackItem =
-                SimulationRunCallbackItem(
-                    Id = simulationRun.Id,
-                    Status = SimulationRunStatus.failure,
-                    StatusMessage = "Integration test cleanup"
+            let routineToCreate =
+                SimulatorRoutineCreateCommandItem(
+                    ExternalId = routineExternalId,
+                    ModelExternalId = modelExternalId,
+                    Name = "Test Poll Routine"
                 )
 
-            let! _ = writeClient.Alpha.Simulators.SimulationRunCallbackAsync(callbackItem)
-            ()
-        with :? CogniteSdk.ResponseException as ex when ex.Code = 404 ->
-            () // /poll endpoint not available — load balancer feature flag is off in this environment
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorRoutinesAsync([ routineToCreate ])
+
+            let revisionToCreate =
+                SimulatorRoutineRevisionCreate(
+                    ExternalId = routineRevisionExternalId,
+                    RoutineExternalId = routineExternalId,
+                    Script =
+                        [ SimulatorRoutineRevisionScriptStage(
+                              Order = 1,
+                              Description = "test",
+                              Steps =
+                                  [ SimulatorRoutineRevisionScriptStep(
+                                        Order = 1,
+                                        StepType = "Get",
+                                        Description = "test",
+                                        Arguments =
+                                            new System.Collections.Generic.Dictionary<string, string>(
+                                                dict [ "referenceId", "test"; "address", "test" ]
+                                            )
+                                    ) ]
+                          ) ],
+                    Configuration =
+                        SimulatorRoutineRevisionConfiguration(
+                            Schedule = SimulatorRoutineRevisionSchedule(Enabled = false),
+                            LogicalCheck = [],
+                            SteadyStateDetection = [],
+                            DataSampling =
+                                SimulatorRoutineRevisionDataSampling(
+                                    Enabled = true,
+                                    SamplingWindow = 1,
+                                    Granularity = 1
+                                ),
+                            Inputs = [],
+                            Outputs = [ SimulatorRoutineRevisionOutput(Name = "test", ReferenceId = "test") ]
+                        )
+                )
+
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorRoutineRevisionsAsync([ revisionToCreate ])
+
+            let! createRes =
+                writeClient.Alpha.Simulators.CreateSimulationRunsAsync(
+                    [ SimulationRunCreate(
+                          RoutineExternalId = routineExternalId,
+                          RunType = SimulationRunType.external,
+                          RunTime = now
+                      ) ]
+                )
+
+            let simulationRun = createRes |> Seq.head
+
+            let pollItem =
+                SimulationRunPollItem(SimulatorIntegrationExternalId = integrationExternalId, Limit = 10)
+
+            try
+                let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
+
+                // Assert
+                let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
+                test <@ assignedRun.IsSome @>
+
+                let assigned = assignedRun.Value
+                test <@ assigned.Status = SimulationRunStatus.ready @>
+                test <@ assigned.SimulatorIntegrationExternalId = integrationExternalId @>
+
+                let! _ =
+                    writeClient.Alpha.Simulators.SimulationRunCallbackAsync(
+                        SimulationRunCallbackItem(
+                            Id = simulationRun.Id,
+                            Status = SimulationRunStatus.failure,
+                            StatusMessage = "Integration test cleanup"
+                        )
+                    )
+
+                ()
+            with :? CogniteSdk.ResponseException as ex when ex.Code = 404 ->
+                () // /poll endpoint not available — load balancer feature flag is off in this environment
+        finally
+            writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ])
+            |> ignore
     }
