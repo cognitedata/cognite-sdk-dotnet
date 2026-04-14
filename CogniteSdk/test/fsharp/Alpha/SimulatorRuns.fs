@@ -349,6 +349,7 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
                 let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
 
                 // Assert
+                test <@ simulationRun.Status = SimulationRunStatus.queued @>
                 let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
                 test <@ assignedRun.IsSome @>
 
