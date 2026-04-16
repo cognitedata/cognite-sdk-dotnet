@@ -285,6 +285,19 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
             let! _ = writeClient.Alpha.Simulators.CreateSimulatorIntegrationAsync([ integrationToCreate ])
             let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelsAsync([ modelToCreate ])
 
+            let! testFileRes = writeClient.Files.RetrieveAsync([ new Identity("empty.json") ])
+            let testFileId = testFileRes |> Seq.head |> (fun f -> f.Id)
+
+            let modelRevisionToCreate =
+                SimulatorModelRevisionCreate(
+                    ExternalId = $"test_model_revision_poll_{now}",
+                    ModelExternalId = modelExternalId,
+                    Description = "test model revision for poll test",
+                    FileId = testFileId
+                )
+
+            let! _ = writeClient.Alpha.Simulators.CreateSimulatorModelRevisionsAsync([ modelRevisionToCreate ])
+
             let routineToCreate =
                 SimulatorRoutineCreateCommandItem(
                     ExternalId = routineExternalId,
@@ -336,7 +349,8 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
                     [ SimulationRunCreate(
                           RoutineExternalId = routineExternalId,
                           RunType = SimulationRunType.external,
-                          RunTime = now
+                          RunTime = now,
+                          Queue = true
                       ) ]
                 )
 
