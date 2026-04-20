@@ -382,8 +382,8 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
                     )
 
                 ()
-            with :? CogniteSdk.ResponseException as ex when ex.Code = 404 ->
-                () // /poll endpoint not available — load balancer feature flag is off in this environment
+            with :? CogniteSdk.ResponseException as ex when ex.Code = 409 ->
+                ()
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ]).GetAwaiter().GetResult()
             |> ignore
