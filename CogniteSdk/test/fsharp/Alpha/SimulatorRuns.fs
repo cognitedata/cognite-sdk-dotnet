@@ -376,7 +376,8 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
                         SimulationRunCallbackItem(
                             Id = simulationRun.Id,
                             Status = SimulationRunStatus.failure,
-                            StatusMessage = "Integration test cleanup"
+                            StatusMessage = "Integration test cleanup",
+                            SimulatorIntegrationExternalId = integrationExternalId
                         )
                     )
 

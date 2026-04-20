@@ -87,7 +87,6 @@ module Simulators =
 
         source
         |> withLogMessage "simulators:pollSimulationRuns"
-        |> withAlphaHeader
         |> postV10<ItemsWithoutCursor<SimulationRunPollItem>, ItemsWithoutCursor<SimulationRun>> request pollUrl
 
     let listSimulatorIntegrations
