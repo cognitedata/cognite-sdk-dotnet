@@ -105,6 +105,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Simulation runs assigned to the simulator integration</returns>
         public async Task<IItemsWithoutCursor<SimulationRun>> PollSimulationRunsAsync(IEnumerable<SimulationRunPollItem> items, CancellationToken token = default)
         {
+            if (items is null) throw new ArgumentNullException(nameof(items));
             var req = Simulators.pollSimulationRuns(items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
