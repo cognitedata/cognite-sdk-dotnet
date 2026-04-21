@@ -359,31 +359,27 @@ let ``Poll simulation runs assigns queued run to connector is Ok`` () =
             let pollItem =
                 SimulationRunPollItem(SimulatorIntegrationExternalId = integrationExternalId, Limit = 10)
 
-            try
-                let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
+            let! pollRes = writeClient.Alpha.Simulators.PollSimulationRunsAsync([ pollItem ])
 
-                // Assert
-                test <@ simulationRun.Status = SimulationRunStatus.queued @>
-                let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
-                test <@ assignedRun.IsSome @>
+            // Assert
+            test <@ simulationRun.Status = SimulationRunStatus.queued @>
+            let assignedRun = pollRes.Items |> Seq.tryFind (fun r -> r.Id = simulationRun.Id)
+            test <@ assignedRun.IsSome @>
 
-                let assigned = assignedRun.Value
-                test <@ assigned.Status = SimulationRunStatus.ready @>
-                test <@ assigned.SimulatorIntegrationExternalId = integrationExternalId @>
+            let assigned = assignedRun.Value
+            test <@ assigned.Status = SimulationRunStatus.ready @>
+            test <@ assigned.SimulatorIntegrationExternalId = integrationExternalId @>
 
-                let! _ =
-                    writeClient.Alpha.Simulators.SimulationRunCallbackAsync(
-                        SimulationRunCallbackItem(
-                            Id = simulationRun.Id,
-                            Status = SimulationRunStatus.failure,
-                            StatusMessage = "Integration test cleanup",
-                            SimulatorIntegrationExternalId = integrationExternalId
-                        )
+            let! _ =
+                writeClient.Alpha.Simulators.SimulationRunCallbackAsync(
+                    SimulationRunCallbackItem(
+                        Id = simulationRun.Id,
+                        Status = SimulationRunStatus.failure,
+                        StatusMessage = "Integration test cleanup",
+                        SimulatorIntegrationExternalId = integrationExternalId
                     )
-
-                ()
-            with :? CogniteSdk.ResponseException as ex when ex.Code = 409 ->
-                ()
+                )
+            ()
         finally
             writeClient.Alpha.Simulators.DeleteAsync([ new Identity(simulatorExternalId) ]).GetAwaiter().GetResult()
             |> ignore

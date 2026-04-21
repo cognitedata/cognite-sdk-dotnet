@@ -1,8 +1,6 @@
 // Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-#nullable enable
-
 using System.Collections.Generic;
 using CogniteSdk.Types.Common;
 
@@ -26,7 +24,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// A new simulation run status message to set
         /// </summary>
-        public string? StatusMessage { get; set; }
+        public string StatusMessage { get; set; }
 
         /// <summary>
         /// Simulation time in milliseconds. This is the timestamp used for indexing inputs and outputs of the simulation.
@@ -36,17 +34,17 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// The simulation run inputs
         /// </summary>
-        public IEnumerable<SimulatorValueItem>? Inputs { get; set; }
+        public IEnumerable<SimulatorValueItem> Inputs { get; set; }
 
         /// <summary>
         /// The simulation run outputs
         /// </summary>
-        public IEnumerable<SimulatorValueItem>? Outputs { get; set; }
+        public IEnumerable<SimulatorValueItem> Outputs { get; set; }
 
         /// <summary>
         /// The simulator integration external id.
         /// </summary>
-        public string? SimulatorIntegrationExternalId { get; set; }
+        public string SimulatorIntegrationExternalId { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunCallbackItem>(this);
