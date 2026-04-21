@@ -19,6 +19,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         unknown,
         /// <summary>
+        /// Parsing
+        /// </summary>
+        parsing,
+        /// <summary>
         /// Success
         /// </summary>
         success,
@@ -26,10 +30,6 @@ namespace CogniteSdk.Alpha
         /// Failure
         /// </summary>
         failure,
-        /// <summary>
-        /// Parsing
-        /// </summary>
-        parsing
     }
 
     /// <summary>
