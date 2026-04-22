@@ -98,7 +98,7 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
-        /// Poll for simulation runs and atomically assign them to the calling simulator integration.
+        /// Poll for simulation runs and automatically assign them to the calling simulator integration.
         /// </summary>
         /// <param name="items">Poll request items</param>
         /// <param name="token">Optional cancellation token</param>
