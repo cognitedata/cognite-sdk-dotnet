@@ -98,6 +98,19 @@ namespace CogniteSdk.Resources.Alpha
         }
 
         /// <summary>
+        /// Poll for simulation runs and automatically assign them to the calling simulator integration.
+        /// </summary>
+        /// <param name="items">Poll request items</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Simulation runs assigned to the simulator integration</returns>
+        public async Task<IItemsWithoutCursor<SimulationRun>> PollSimulationRunsAsync(IEnumerable<SimulationRunPollItem> items, CancellationToken token = default)
+        {
+            if (items is null) throw new ArgumentNullException(nameof(items));
+            var req = Simulators.pollSimulationRuns(items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Asynchronously retrieves information about multiple simulator integrations. A maximum of 1000
         /// </summary>
         /// <param name="query">The simulator integration query to retrieve.</param>
