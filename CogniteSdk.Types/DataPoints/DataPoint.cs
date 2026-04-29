@@ -1,6 +1,7 @@
-// Copyright 2020 Cognite AS
+// Copyright 2020-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Text.Json.Serialization;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -18,6 +19,7 @@ namespace CogniteSdk
         /// <summary>
         /// The data value.
         /// </summary>
+        [JsonConverter(typeof(MultiValueConverter))]
         public MultiValue Value { get; set; }
 
         /// <summary>
@@ -32,6 +34,12 @@ namespace CogniteSdk
         /// Only one of code and symbol is required. If both are defined, they must match.
         /// </summary>
         public StatusCode Status { get; set; }
+
+        /// <summary>
+        /// When true, the numeric or string value is explicitly null.
+        /// </summary>
+        [JsonPropertyName("nullValue")]
+        public bool? NullValue { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString(this);
