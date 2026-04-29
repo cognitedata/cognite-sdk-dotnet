@@ -45,8 +45,13 @@ namespace Test.CSharp.Integration.Beta
             var stateSetXid = "valve_states_" + Guid.NewGuid().ToString("N");
             var tsXid = "valve_001_state_" + Guid.NewGuid().ToString("N");
 
+            // State sets and state time series are private beta — both the
+            // instance upserts and the data point operations need to go
+            // through the beta surface so the `cdf-version: beta` header is
+            // attached to every request.
+
             // Create the state set
-            await _fx.Write.DataModels.UpsertInstances(new InstanceWriteRequest
+            await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
             {
                 Replace = true,
                 Items = new BaseInstanceWrite[]
@@ -75,7 +80,7 @@ namespace Test.CSharp.Integration.Beta
             });
 
             // Create the state time series
-            await _fx.Write.DataModels.UpsertInstances(new InstanceWriteRequest
+            await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
             {
                 Replace = true,
                 Items = new BaseInstanceWrite[]

@@ -31,6 +31,11 @@ namespace CogniteSdk.Resources
         public DataPointsResource DataPoints { get; }
 
         /// <summary>
+        /// Beta data modeling operations
+        /// </summary>
+        public DataModelsResource DataModels { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -40,6 +45,7 @@ namespace CogniteSdk.Resources
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
             StreamRecords = new StreamRecordsResource(authHandler, ctx);
             DataPoints = new DataPointsResource(authHandler, ctx);
+            DataModels = new DataModelsResource(authHandler, ctx);
         }
     }
 }
