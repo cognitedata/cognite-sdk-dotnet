@@ -36,6 +36,7 @@
     <Compile Include="Transformations.fs" />
     <Compile Include="Units.fs" />
     <Compile Include="Beta/Handler.fs" />
+    <Compile Include="Beta/DataPoints.fs" />
     <Compile Include="Beta/Subscriptions.fs" />
     <Compile Include="Beta/StreamRecords.fs" />
     <Compile Include="Alpha/Handler.fs" />
