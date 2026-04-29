@@ -8,6 +8,10 @@ using CogniteSdk.Resources.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
 
+// Avoid name collision with the non-beta resources
+using BetaDataPointsResource = CogniteSdk.Resources.Beta.DataPointsResource;
+using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
+
 namespace CogniteSdk.Resources
 {
     /// <summary>
@@ -28,12 +32,12 @@ namespace CogniteSdk.Resources
         /// <summary>
         /// Beta time series data points
         /// </summary>
-        public DataPointsResource DataPoints { get; }
+        public BetaDataPointsResource DataPoints { get; }
 
         /// <summary>
         /// Beta data modeling operations
         /// </summary>
-        public DataModelsResource DataModels { get; }
+        public BetaDataModelsResource DataModels { get; }
 
         /// <summary>
         /// Will only be instantiated by the client.
@@ -44,8 +48,8 @@ namespace CogniteSdk.Resources
         {
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
             StreamRecords = new StreamRecordsResource(authHandler, ctx);
-            DataPoints = new DataPointsResource(authHandler, ctx);
-            DataModels = new DataModelsResource(authHandler, ctx);
+            DataPoints = new BetaDataPointsResource(authHandler, ctx);
+            DataModels = new BetaDataModelsResource(authHandler, ctx);
         }
     }
 }
