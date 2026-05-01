@@ -25,12 +25,12 @@ module DataPoints =
         |> withBetaHeader
         |> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
 
-    /// Retrieves aggregate data points using the beta API
-    let listAggregates (query: DataPointsQuery) (source: HttpHandler<unit>) : HttpHandler<DataPointListResponse> =
+    /// Retrieves the latest data point using the beta API
+    let latest (query: DataPointsLatestQuery) (source: HttpHandler<unit>) : HttpHandler<DataPointListResponse> =
         source
-        |> withLogMessage "Beta:DataPoints:listAggregates"
+        |> withLogMessage "Beta:DataPoints:latest"
         |> withBetaHeader
-        |> listProtobuf query Url DataPointListResponse.Parser.ParseFrom
+        |> postProtobuf query (Url +/ "latest") DataPointListResponse.Parser.ParseFrom
 
     /// Insert data points using the beta API
     let create (items: DataPointInsertionRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =

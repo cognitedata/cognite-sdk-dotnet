@@ -45,62 +45,64 @@ namespace Test.CSharp.Integration.Beta
             var stateSetXid = "valve_states_" + Guid.NewGuid().ToString("N");
             var tsXid = "valve_001_state_" + Guid.NewGuid().ToString("N");
 
-            // Create the state set
-            await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
-            {
-                Replace = true,
-                Items = new BaseInstanceWrite[]
-                {
-                    new NodeWrite
-                    {
-                        Space = space,
-                        ExternalId = stateSetXid,
-                        Sources = new InstanceData[] { new InstanceData<object>
-                        {
-                            Source = StateSetView,
-                            Properties = new
-                            {
-                                name = "Valve Position States",
-                                description = "Standard position states for industrial valves",
-                                states = new[]
-                                {
-                                    new { numericValue = 0, stringValue = "CLOSED" },
-                                    new { numericValue = 1, stringValue = "OPEN" },
-                                    new { numericValue = 2, stringValue = "TRANSITIONING" }
-                                }
-                            }
-                        }}
-                    }
-                }
-            });
-
-            // Create the state time series
-            await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
-            {
-                Replace = true,
-                Items = new BaseInstanceWrite[]
-                {
-                    new NodeWrite
-                    {
-                        Space = space,
-                        ExternalId = tsXid,
-                        Sources = new InstanceData[] { new InstanceData<object>
-                        {
-                            Source = TimeSeriesView,
-                            Properties = new
-                            {
-                                name = "Valve 001 Position",
-                                description = "Integration test state time series",
-                                type = "state",
-                                stateSet = new { space, externalId = stateSetXid }
-                            }
-                        }}
-                    }
-                }
-            });
+            var createdIds = new System.Collections.Generic.List<InstanceIdentifierWithType>();
 
             try
             {
+                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
+                {
+                    Replace = true,
+                    Items = new BaseInstanceWrite[]
+                    {
+                        new NodeWrite
+                        {
+                            Space = space,
+                            ExternalId = stateSetXid,
+                            Sources = new InstanceData[] { new InstanceData<object>
+                            {
+                                Source = StateSetView,
+                                Properties = new
+                                {
+                                    name = "Valve Position States",
+                                    description = "Standard position states for industrial valves",
+                                    states = new[]
+                                    {
+                                        new { numericValue = 0, stringValue = "CLOSED" },
+                                        new { numericValue = 1, stringValue = "OPEN" },
+                                        new { numericValue = 2, stringValue = "TRANSITIONING" }
+                                    }
+                                }
+                            }}
+                        }
+                    }
+                });
+                createdIds.Add(new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid)));
+
+                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
+                {
+                    Replace = true,
+                    Items = new BaseInstanceWrite[]
+                    {
+                        new NodeWrite
+                        {
+                            Space = space,
+                            ExternalId = tsXid,
+                            Sources = new InstanceData[] { new InstanceData<object>
+                            {
+                                Source = TimeSeriesView,
+                                Properties = new
+                                {
+                                    name = "Valve 001 Position",
+                                    description = "Integration test state time series",
+                                    type = "state",
+                                    stateSet = new { space, externalId = stateSetXid }
+                                }
+                            }}
+                        }
+                    }
+                });
+                createdIds.Add(new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid)));
+
                 // Ingest some state datapoints
                 var datapoints = new StateDatapoints();
                 datapoints.Datapoints.Add(new StateDatapoint { Timestamp = 1609459200000L, NumericValue = 0L, StringValue = "CLOSED" });
@@ -153,14 +155,25 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Equal(1L, open.StateTransitions);
                 Assert.Equal(3600000L, open.StateDuration);
                 Assert.True(closed.StateDuration > 0L);
+
+                // Latest data point should return the most recent state with both numeric and string values populated
+                var latest = (await _fx.Write.Beta.DataPoints.LatestAsync(new DataPointsLatestQuery
+                {
+                    Items = new[] { IdentityWithBefore.Create(new InstanceIdentifier(space, tsXid)) }
+                })).Items.First();
+
+                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, latest.DatapointTypeCase);
+                var latestPoint = latest.StateDatapoints.Datapoints.Single();
+                Assert.Equal(1609466400000L, latestPoint.Timestamp);
+                Assert.Equal(0L, latestPoint.NumericValue);
+                Assert.Equal("CLOSED", latestPoint.StringValue);
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[]
+                if (createdIds.Count > 0)
                 {
-                    new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid)),
-                    new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid))
-                });
+                    await _fx.Write.DataModels.DeleteInstances(createdIds);
+                }
             }
         }
     }

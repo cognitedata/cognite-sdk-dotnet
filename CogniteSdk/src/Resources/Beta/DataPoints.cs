@@ -42,6 +42,22 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
+        /// Retrieve the latest data points using the beta API
+        /// </summary>
+        /// <param name="query">The latest query.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        public async Task<DataPointListResponse> LatestAsync(DataPointsLatestQuery query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.Beta.DataPoints.latest(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Insert data points using the beta API
         /// </summary>
         /// <param name="points">Data points to insert.</param>
