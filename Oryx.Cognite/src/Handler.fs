@@ -485,15 +485,13 @@ module HttpHandler =
     let inline delete<'T, 'TNext, 'TResult> (content: 'T) (url: string) source : HttpHandler<'TNext> =
         source |> postV10 content (url +/ "delete")
 
-    /// List content using protocol buffers
-    let listProtobuf<'TSource, 'TResult>
+    /// POST a JSON request body and parse the protobuf response
+    let postProtobuf<'TSource, 'TResult>
         (content: 'TSource)
         (url: string)
         (parser: IO.Stream -> 'TResult)
         (source: HttpHandler<unit>)
         : HttpHandler<'TResult> =
-        let url = url +/ "list"
-
         source
         |> POST
         |> withCompletion HttpCompletionOption.ResponseHeadersRead
@@ -505,6 +503,15 @@ module HttpHandler =
         |> withError decodeError
         |> protobuf parser
         |> log
+
+    /// List content using protocol buffers (POST to `<url>/list`)
+    let listProtobuf<'TSource, 'TResult>
+        (content: 'TSource)
+        (url: string)
+        (parser: IO.Stream -> 'TResult)
+        (source: HttpHandler<unit>)
+        : HttpHandler<'TResult> =
+        source |> postProtobuf content (url +/ "list") parser
 
     /// Create content using protocol buffers
     let createProtobuf<'TResult> (content: IMessage) (url: string) (source: HttpHandler<unit>) : HttpHandler<'TResult> =
