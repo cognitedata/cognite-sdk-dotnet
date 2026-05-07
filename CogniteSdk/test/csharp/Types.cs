@@ -32,6 +32,8 @@ namespace Test.CSharp
             Assert.Equal(viewA.GetHashCode(), view_duplicate.GetHashCode());
             Assert.NotEqual(viewA.GetHashCode(), viewAA.GetHashCode());
             Assert.NotEqual(viewA.GetHashCode(), new ViewIdentifier().GetHashCode());
+
+            Assert.Equal("a.b.c", viewA.ToString());
         }
     }
 }
