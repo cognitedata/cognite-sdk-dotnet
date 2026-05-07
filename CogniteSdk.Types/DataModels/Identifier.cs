@@ -83,7 +83,7 @@ namespace CogniteSdk.DataModels
                 return false;
             }
             if (ReferenceEquals(this, item)) return true;
-            return this.GetHashCode() == item.GetHashCode();
+            return Space == item.Space && ExternalId == item.ExternalId && Version == item.Version;
         }
         /// <inheritdoc/>
         public override int GetHashCode()
