@@ -18,14 +18,23 @@ namespace CogniteSdk.Resources.DataModels
         public abstract ViewIdentifier View { get; }
 
         private readonly DataModelsResource _resource;
+        private HashSet<ViewIdentifier> _allowedViewIdentifiers { get; }
 
         /// <summary>
         /// Create a new data model resource. The data models resource must be passed.
         /// </summary>
         /// <param name="resource"></param>
-        public BaseDataModelResource(DataModelsResource resource)
+        /// <param name="allowedViewIdentifiers">View Identifiers this resource is allowed to query for in addition to the default view.</param>
+        public BaseDataModelResource(DataModelsResource resource, HashSet<ViewIdentifier> allowedViewIdentifiers = null)
         {
             _resource = resource;
+            _allowedViewIdentifiers = allowedViewIdentifiers ?? new HashSet<ViewIdentifier>();
+        }
+
+        private bool _viewIsAllowed(ViewIdentifier view) => View.Equals(view) || _allowedViewIdentifiers.Contains(view);
+        private void _assertViewIsAllowed(ViewIdentifier view)
+        {
+            if (!_viewIsAllowed(view)) throw new InvalidOperationException($"Resource does not allow use of non-default view {view}");
         }
 
         /// <summary>
@@ -88,14 +97,14 @@ namespace CogniteSdk.Resources.DataModels
             }, token);
         }
 
-        private T GetFromNestedDicts(Dictionary<string, Dictionary<string, T>> properties)
+        private static T2 GetFromNestedDicts<T2>(Dictionary<string, Dictionary<string, T2>> properties, ViewIdentifier view)
         {
-            if (!properties.TryGetValue(View.Space, out var bySource))
+            if (!properties.TryGetValue(view.Space, out var bySource))
             {
                 return default;
             }
 
-            if (!bySource.TryGetValue($"{View.ExternalId}/{View.Version}", out var v))
+            if (!bySource.TryGetValue($"{view.ExternalId}/{view.Version}", out var v))
             {
                 return default;
             }
@@ -111,16 +120,35 @@ namespace CogniteSdk.Resources.DataModels
         /// <returns>Retrieved instances.</returns>
         public async Task<IEnumerable<SourcedInstance<T>>> RetrieveAsync(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
-            var results = await _resource.RetrieveInstances<Dictionary<string, Dictionary<string, T>>>(new InstancesRetrieve
+            return await _retrieveAsync<T>(ids, View, token);
+        }
+
+        /// <summary>
+        /// Retrieve a list of instances by ID with a specific view.
+        /// </summary>
+        /// <param name="ids">IDs to retrieve.</param>
+        /// <param name="viewIdentifier">Custom view identifier</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Retrieved instances.</returns>
+        /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
+        public async Task<IEnumerable<SourcedInstance<T2>>> RetrieveAsync<T2>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token = default)
+        {
+            _assertViewIsAllowed(viewIdentifier);
+            return await _retrieveAsync<T2>(ids, viewIdentifier, token);
+        }
+
+        private async Task<IEnumerable<SourcedInstance<T2>>> _retrieveAsync<T2>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token)
+        {
+            var results = await _resource.RetrieveInstances<Dictionary<string, Dictionary<string, T2>>>(new InstancesRetrieve
             {
                 Items = ids,
                 Sources = new[] {
                     new InstanceSource {
-                        Source = View
+                        Source = viewIdentifier
                     }
                 }
             }, token);
-            return FromRaw(results.Items);
+            return FromRaw(results.Items, viewIdentifier);
         }
 
         /// <summary>
@@ -134,13 +162,13 @@ namespace CogniteSdk.Resources.DataModels
             return await _resource.DeleteInstances(ids, token);
         }
 
-        private IEnumerable<SourcedInstance<T>> FromRaw(IEnumerable<BaseInstance<Dictionary<string, Dictionary<string, T>>>> items)
+        private static IEnumerable<SourcedInstance<T2>> FromRaw<T2>(IEnumerable<BaseInstance<Dictionary<string, Dictionary<string, T2>>>> items, ViewIdentifier view)
         {
             return items.Select(r =>
             {
-                if (r is Edge<Dictionary<string, Dictionary<string, T>>> edge)
+                if (r is Edge<Dictionary<string, Dictionary<string, T2>>> edge)
                 {
-                    return (SourcedInstance<T>)new SourcedEdge<T>
+                    return (SourcedInstance<T2>)new SourcedEdge<T2>
                     {
                         Space = r.Space,
                         ExternalId = r.ExternalId,
@@ -148,7 +176,7 @@ namespace CogniteSdk.Resources.DataModels
                         Version = r.Version,
                         StartNode = edge.StartNode,
                         EndNode = edge.EndNode,
-                        Properties = GetFromNestedDicts(r.Properties),
+                        Properties = GetFromNestedDicts(r.Properties, view),
                         CreatedTime = r.CreatedTime,
                         LastUpdatedTime = r.LastUpdatedTime,
                         DeletedTime = r.DeletedTime
@@ -156,13 +184,13 @@ namespace CogniteSdk.Resources.DataModels
                 }
                 else
                 {
-                    return new SourcedNode<T>
+                    return new SourcedNode<T2>
                     {
                         Space = r.Space,
                         ExternalId = r.ExternalId,
                         Type = r.Type,
                         Version = r.Version,
-                        Properties = GetFromNestedDicts(r.Properties),
+                        Properties = GetFromNestedDicts(r.Properties, view),
                         CreatedTime = r.CreatedTime,
                         LastUpdatedTime = r.LastUpdatedTime,
                         DeletedTime = r.DeletedTime
@@ -179,11 +207,30 @@ namespace CogniteSdk.Resources.DataModels
         /// <returns>Filtered items with optional cursor.</returns>
         public async Task<ItemsWithCursor<SourcedInstance<T>>> FilterAsync(SourcedInstanceFilter filter, CancellationToken token = default)
         {
-            var res = await _resource.FilterInstances<Dictionary<string, Dictionary<string, T>>>(new InstancesFilter
+            return await _filterAsync<T>(filter, View, token);
+        }
+
+        /// <summary>
+        /// Filter instances with a specific view. 
+        /// </summary>
+        /// <param name="filter">Filter</param>
+        /// <param name="viewIdentifier">Custom view identifier</param>
+        /// <param name="token">Cancellation token</param>
+        /// <returns>Filtered items with optional cursor.</returns>
+        /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
+        public async Task<ItemsWithCursor<SourcedInstance<T2>>> FilterAsync<T2>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token = default)
+        {
+            _assertViewIsAllowed(viewIdentifier);
+            return await _filterAsync<T2>(filter, viewIdentifier, token);
+        }
+
+        private async Task<ItemsWithCursor<SourcedInstance<T2>>> _filterAsync<T2>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token)
+        {
+            var res = await _resource.FilterInstances<Dictionary<string, Dictionary<string, T2>>>(new InstancesFilter
             {
                 Sources = new[] {
                     new InstanceSource {
-                        Source = View
+                        Source = viewIdentifier
                     }
                 },
                 InstanceType = filter.InstanceType,
@@ -192,9 +239,9 @@ namespace CogniteSdk.Resources.DataModels
                 Cursor = filter.Cursor,
             }, token);
 
-            return new ItemsWithCursor<SourcedInstance<T>>
+            return new ItemsWithCursor<SourcedInstance<T2>>
             {
-                Items = FromRaw(res.Items),
+                Items = FromRaw(res.Items, viewIdentifier),
                 NextCursor = res.NextCursor
             };
         }
@@ -218,7 +265,7 @@ namespace CogniteSdk.Resources.DataModels
                 View = View,
             }, token);
 
-            return FromRaw(res.Items);
+            return FromRaw(res.Items, View);
         }
     }
 }

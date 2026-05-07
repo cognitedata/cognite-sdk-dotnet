@@ -1,7 +1,6 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -26,15 +25,15 @@ namespace CogniteSdk.DataModels
         /// <summary>
         /// Reference type
         /// </summary>
-        public PropertySourceType Type { get; set; }
+        public PropertySourceType Type { get; protected set; }
         /// <summary>
         /// Id of the space that the view or container belongs to
         /// </summary>
-        public string Space { get; set; }
+        public string Space { get; protected set; }
         /// <summary>
         /// External ID of the view or container
         /// </summary>
-        public string ExternalId { get; set; }
+        public string ExternalId { get; protected set; }
     }
     /// <summary>
     /// Identifier for a flexible data models view.
@@ -44,7 +43,7 @@ namespace CogniteSdk.DataModels
         /// <summary>
         /// Version of the view.
         /// </summary>
-        public string Version { get; set; }
+        public string Version { get; protected set; }
 
         /// <summary>
         /// Base constructor
@@ -75,6 +74,25 @@ namespace CogniteSdk.DataModels
         {
             return new FDMExternalId(ExternalId, Space, Version);
         }
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) {
+            var item = obj as ViewIdentifier;
+            if (item == null)
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, item)) return true;
+            return this.GetHashCode() == item.GetHashCode();
+        }
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            return (Space, ExternalId, Version).GetHashCode();
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Space}.{ExternalId}.{Version}";
     }
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CogniteSdk.DataModels;
 using CogniteSdk.DataModels.Core;
 
@@ -9,15 +10,20 @@ namespace CogniteSdk.Resources.DataModels
     /// <typeparam name="T"></typeparam>
     public class CoreEquipmentResource<T> : BaseDataModelResource<T> where T : CogniteEquipment
     {
+        /// <summary>
+        /// Default view 
+        /// </summary>
+        public static ViewIdentifier DefaultView = new ViewIdentifier("cdf_cdm", "CogniteEquipment", "v1");
         /// <inheritdoc />
         public override ViewIdentifier View { get; }
 
         /// <inheritdoc />
         public CoreEquipmentResource(
             DataModelsResource resource,
-            ViewIdentifier view) : base(resource)
+            ViewIdentifier view,
+            HashSet<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
         {
-            View = view ?? new ViewIdentifier("cdf_cdm", "CogniteEquipment", "v1");
+            View = view ?? DefaultView;
         }
     }
 }
