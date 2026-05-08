@@ -674,9 +674,9 @@ namespace Test.CSharp.Integration
                 Space = tester.TestSpace,
                 ExternalId = "node9"
             }}, CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView);
-            Assert.Empty(retrieved);
+            Assert.Empty(retrieveAlternativeView);
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteTimeSeriesBase>(new[] { new InstanceIdentifierWithType {
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteAssetBase>(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
