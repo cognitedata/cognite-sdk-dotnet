@@ -78,6 +78,17 @@ module Simulators =
         |> withAlphaHeader
         |> postV10<ItemsWithoutCursor<SimulationRunId>, ItemsWithoutCursor<SimulationRunData>> request dataUrl
 
+    let pollSimulationRuns
+        (items: SimulationRunPollItem seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithoutCursor<SimulationRun>> =
+        let pollUrl = runsUrl +/ "poll"
+        let request = ItemsWithoutCursor<SimulationRunPollItem>(Items = items)
+
+        source
+        |> withLogMessage "simulators:pollSimulationRuns"
+        |> postV10<ItemsWithoutCursor<SimulationRunPollItem>, ItemsWithoutCursor<SimulationRun>> request pollUrl
+
     let listSimulatorIntegrations
         (query: SimulatorIntegrationQuery)
         (source: HttpHandler<unit>)
