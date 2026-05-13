@@ -26,15 +26,15 @@ namespace CogniteSdk.DataModels
         /// <summary>
         /// Reference type
         /// </summary>
-        public PropertySourceType Type { get; protected set; }
+        public PropertySourceType Type { get; set; }
         /// <summary>
         /// Id of the space that the view or container belongs to
         /// </summary>
-        public string Space { get; protected set; }
+        public string Space { get; set; }
         /// <summary>
         /// External ID of the view or container
         /// </summary>
-        public string ExternalId { get; protected set; }
+        public string ExternalId { get; set; }
     }
     /// <summary>
     /// Identifier for a flexible data models view.
@@ -44,7 +44,7 @@ namespace CogniteSdk.DataModels
         /// <summary>
         /// Version of the view.
         /// </summary>
-        public string Version { get; protected set; }
+        public string Version { get; set; }
 
         /// <summary>
         /// Base constructor
@@ -80,6 +80,12 @@ namespace CogniteSdk.DataModels
         public override string ToString() => $"{Space}.{ExternalId}.{Version}";
 
         /// <summary>
+        /// Clone object
+        /// </summary>
+        /// <returns></returns>
+        public ViewIdentifier Clone() => (ViewIdentifier)MemberwiseClone();
+
+        /// <summary>
         /// Value Type Equality Comparer
         /// </summary>
         public static ViewIdentifierEqualityComparer ValueTypeEqualityComparer = new ViewIdentifierEqualityComparer();
@@ -91,11 +97,9 @@ namespace CogniteSdk.DataModels
         {
             /// <inheritdoc/>
             public bool Equals(ViewIdentifier x, ViewIdentifier y) {
-                var xx = x ?? new ViewIdentifier();
-                var yy = y ?? new ViewIdentifier();
-
+                if (x == null || y == null) return ReferenceEquals(x, y);
                 if (ReferenceEquals(x, y)) return true;
-                return xx.Space == yy.Space && xx.ExternalId == yy.ExternalId && xx.Version == yy.Version;
+                return x.Space == y.Space && x.ExternalId == y.ExternalId && x.Version == y.Version;
             }
             /// <inheritdoc/>
             public int GetHashCode(ViewIdentifier obj)

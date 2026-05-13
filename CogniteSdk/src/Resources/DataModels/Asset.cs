@@ -23,7 +23,7 @@ namespace CogniteSdk.Resources.DataModels
             ViewIdentifier view,
             IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
         {
-            View = view ?? DefaultView;
+            View = view?.Clone() ?? DefaultView;
         }
     }
 }

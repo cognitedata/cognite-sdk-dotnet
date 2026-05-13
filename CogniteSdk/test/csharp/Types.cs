@@ -22,7 +22,7 @@ namespace Test.CSharp
             Assert.False(ViewIdentifier.ValueTypeEqualityComparer.Equals(viewA, null));
             Assert.False(ViewIdentifier.ValueTypeEqualityComparer.Equals(null, viewA));
             Assert.Equal((ViewIdentifier)null, null, ViewIdentifier.ValueTypeEqualityComparer);
-            Assert.True(ViewIdentifier.ValueTypeEqualityComparer.Equals(null, new ViewIdentifier()));
+            Assert.False(ViewIdentifier.ValueTypeEqualityComparer.Equals(null, new ViewIdentifier()));
 
             var hashset = new HashSet<ViewIdentifier>([viewA, view_duplicate, viewAA, viewBB, viewCC], ViewIdentifier.ValueTypeEqualityComparer);
             Assert.Equal(4, hashset.Count);

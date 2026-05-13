@@ -647,7 +647,8 @@ namespace Test.CSharp.Integration
         [Fact]
         public async Task TestCustomResource()
         {
-            var resource = new TestResource(tester, new HashSet<ViewIdentifier>() { CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView });
+            var alternativeView = CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView.Clone();
+            var resource = new TestResource(tester, new HashSet<ViewIdentifier>() { alternativeView });
             await resource.UpsertAsync(new[] {
                 new SourcedNodeWrite<TestItem> {
                     ExternalId = "node9",
@@ -673,8 +674,15 @@ namespace Test.CSharp.Integration
                 InstanceType = InstanceType.node,
                 Space = tester.TestSpace,
                 ExternalId = "node9"
-            }}, CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView);
+            }}, alternativeView);
             Assert.Empty(retrieveAlternativeView);
+
+            alternativeView.ExternalId = "other_external_id";
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteAssetBase>(new[] { new InstanceIdentifierWithType {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }}, alternativeView));
 
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteAssetBase>(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
