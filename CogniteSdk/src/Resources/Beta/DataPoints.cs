@@ -41,6 +41,10 @@ namespace CogniteSdk.Resources.Beta
             return await RunAsync(req).ConfigureAwait(false);
         }
 
+        // TODO: beta LatestAsync returns the raw protobuf DataPointListResponse, while the
+        // production DataPoints.LatestAsync returns a JSON-deserialized type. When this beta
+        // surface is promoted to production, the two return types will need to be reconciled
+        // (either by keeping both methods or via a major SDK release).
         /// <summary>
         /// Retrieve the latest data points using the beta API
         /// </summary>
