@@ -19,6 +19,7 @@ namespace Test.CSharp
             Assert.NotEqual(viewA, viewAA);
             Assert.NotEqual(viewA, viewBB);
             Assert.NotEqual(viewA, viewCC);
+            Assert.False(viewA.Equals(null));
             Assert.False(viewA == null);
             Assert.False(null == viewA);
             Assert.False(new ViewIdentifier() == null);
