@@ -24,7 +24,7 @@ namespace CogniteSdk.Resources.DataModels
             DataModelsResource resource,
             DataPointsResource dpResource,
             ViewIdentifier view,
-            HashSet<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
+            IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
         {
             _dpResource = dpResource;
             View = view ?? DefaultView;

@@ -14,25 +14,25 @@ namespace Test.CSharp
             var viewAA = new ViewIdentifier("aa", "b", "c");
             var viewBB = new ViewIdentifier("a", "bb", "c");
             var viewCC = new ViewIdentifier("a", "b", "cc");
-            Assert.Equal(viewA, view_duplicate);
+            Assert.Equal(viewA, view_duplicate, ViewIdentifier.ValueTypeEqualityComparer);
             Assert.False(ReferenceEquals(viewA, view_duplicate));
-            Assert.NotEqual(viewA, viewAA);
-            Assert.NotEqual(viewA, viewBB);
-            Assert.NotEqual(viewA, viewCC);
-            Assert.False(viewA.Equals(null));
-            Assert.False(viewA == null);
-            Assert.False(null == viewA);
-            Assert.False(new ViewIdentifier() == null);
+            Assert.NotEqual(viewA, viewAA, ViewIdentifier.ValueTypeEqualityComparer);
+            Assert.NotEqual(viewA, viewBB, ViewIdentifier.ValueTypeEqualityComparer);
+            Assert.NotEqual(viewA, viewCC, ViewIdentifier.ValueTypeEqualityComparer);
+            Assert.False(ViewIdentifier.ValueTypeEqualityComparer.Equals(viewA, null));
+            Assert.False(ViewIdentifier.ValueTypeEqualityComparer.Equals(null, viewA));
+            Assert.Equal((ViewIdentifier)null, null, ViewIdentifier.ValueTypeEqualityComparer);
+            Assert.True(ViewIdentifier.ValueTypeEqualityComparer.Equals(null, new ViewIdentifier()));
 
-            var hashset = new HashSet<ViewIdentifier>([viewA, view_duplicate, viewAA, viewBB, viewCC]);
+            var hashset = new HashSet<ViewIdentifier>([viewA, view_duplicate, viewAA, viewBB, viewCC], ViewIdentifier.ValueTypeEqualityComparer);
             Assert.Equal(4, hashset.Count);
             Assert.Contains(viewAA, hashset);
             Assert.Contains(viewBB, hashset);
             Assert.Contains(viewCC, hashset);
             Assert.Contains(viewA, hashset);
-            Assert.Equal(viewA.GetHashCode(), view_duplicate.GetHashCode());
-            Assert.NotEqual(viewA.GetHashCode(), viewAA.GetHashCode());
-            Assert.NotEqual(viewA.GetHashCode(), new ViewIdentifier().GetHashCode());
+            Assert.Equal(ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(viewA), ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(view_duplicate));
+            Assert.NotEqual(ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(viewA), ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(viewAA));
+            Assert.NotEqual(ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(viewA), ViewIdentifier.ValueTypeEqualityComparer.GetHashCode(new ViewIdentifier()));
 
             Assert.Equal("a.b.c", viewA.ToString());
         }

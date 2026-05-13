@@ -23,7 +23,7 @@ namespace CogniteSdk.DataModels.Core
         /// <returns>Core data model time series resource.</returns>
         public CoreTimeSeriesResource<T> TimeSeries<T>(
             ViewIdentifier view = null,
-            HashSet<ViewIdentifier> allowedViewIdentifiers = null) where T : CogniteTimeSeriesBase
+            IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) where T : CogniteTimeSeriesBase
         {
             return new CoreTimeSeriesResource<T>(_client.DataModels, _client.DataPoints, view, allowedViewIdentifiers);
         }

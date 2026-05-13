@@ -708,7 +708,7 @@ namespace Test.CSharp.Integration
     {
         public override ViewIdentifier View { get; }
 
-        public TestResource(DataModelsFixture fixture, HashSet<ViewIdentifier> allowedViewIdentifiers = null) : base(fixture.Write.DataModels, allowedViewIdentifiers)
+        public TestResource(DataModelsFixture fixture, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(fixture.Write.DataModels, allowedViewIdentifiers)
         {
             View = fixture.TestView;
         }

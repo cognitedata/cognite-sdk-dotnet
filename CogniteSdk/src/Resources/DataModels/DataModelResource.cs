@@ -25,13 +25,13 @@ namespace CogniteSdk.Resources.DataModels
         /// </summary>
         /// <param name="resource"></param>
         /// <param name="allowedViewIdentifiers">View Identifiers this resource is allowed to query for in addition to the default view.</param>
-        public BaseDataModelResource(DataModelsResource resource, HashSet<ViewIdentifier> allowedViewIdentifiers = null)
+        public BaseDataModelResource(DataModelsResource resource, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null)
         {
             _resource = resource;
-            _allowedViewIdentifiers = allowedViewIdentifiers ?? new HashSet<ViewIdentifier>();
+            _allowedViewIdentifiers = new HashSet<ViewIdentifier>(allowedViewIdentifiers ?? new List<ViewIdentifier>(), ViewIdentifier.ValueTypeEqualityComparer);
         }
 
-        private bool _viewIsAllowed(ViewIdentifier view) => View.Equals(view) || _allowedViewIdentifiers.Contains(view);
+        private bool _viewIsAllowed(ViewIdentifier view) => ViewIdentifier.ValueTypeEqualityComparer.Equals(view, View) || _allowedViewIdentifiers.Contains(view);
         private void _assertViewIsAllowed(ViewIdentifier view)
         {
             if (!_viewIsAllowed(view)) throw new InvalidOperationException($"Resource does not allow use of non-default view {view}");

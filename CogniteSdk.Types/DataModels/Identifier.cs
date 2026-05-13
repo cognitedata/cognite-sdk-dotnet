@@ -1,6 +1,7 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -76,23 +77,33 @@ namespace CogniteSdk.DataModels
         }
 
         /// <inheritdoc/>
-        public override bool Equals(object obj) {
-            var item = obj as ViewIdentifier;
-            if (item == null)
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, item)) return true;
-            return Space == item.Space && ExternalId == item.ExternalId && Version == item.Version;
-        }
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return (Space, ExternalId, Version).GetHashCode();
-        }
-
-        /// <inheritdoc/>
         public override string ToString() => $"{Space}.{ExternalId}.{Version}";
+
+        /// <summary>
+        /// Value Type Equality Comparer
+        /// </summary>
+        public static ViewIdentifierEqualityComparer ValueTypeEqualityComparer = new ViewIdentifierEqualityComparer();
+
+        /// <summary>
+        /// Value Type Equality Comparer
+        /// </summary>
+        public class ViewIdentifierEqualityComparer : IEqualityComparer<ViewIdentifier>
+        {
+            /// <inheritdoc/>
+            public bool Equals(ViewIdentifier x, ViewIdentifier y) {
+                var xx = x ?? new ViewIdentifier();
+                var yy = y ?? new ViewIdentifier();
+
+                if (ReferenceEquals(x, y)) return true;
+                return xx.Space == yy.Space && xx.ExternalId == yy.ExternalId && xx.Version == yy.Version;
+            }
+            /// <inheritdoc/>
+            public int GetHashCode(ViewIdentifier obj)
+            {
+                var _obj = obj ?? new ViewIdentifier();
+                return (_obj.Space, _obj.ExternalId, _obj.Version).GetHashCode();
+            }
+        }
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ namespace CogniteSdk.Resources.DataModels
         public CoreAssetResource(
             DataModelsResource resource,
             ViewIdentifier view,
-            HashSet<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
+            IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
         {
             View = view ?? DefaultView;
         }
