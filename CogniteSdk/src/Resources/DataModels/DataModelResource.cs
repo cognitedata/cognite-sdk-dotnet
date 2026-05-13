@@ -28,7 +28,7 @@ namespace CogniteSdk.Resources.DataModels
         public BaseDataModelResource(DataModelsResource resource, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null)
         {
             _resource = resource;
-            _allowedViewIdentifiers = new HashSet<ViewIdentifier>((allowedViewIdentifiers ?? new List<ViewIdentifier>()).Select(x => x.Clone()), ViewIdentifier.ValueTypeEqualityComparer);
+            _allowedViewIdentifiers = new HashSet<ViewIdentifier>((allowedViewIdentifiers ?? Enumerable.Empty<ViewIdentifier>()).Select(x => x.Clone()), ViewIdentifier.ValueTypeEqualityComparer);
         }
 
         private bool _viewIsAllowed(ViewIdentifier view) => ViewIdentifier.ValueTypeEqualityComparer.Equals(view, View) || _allowedViewIdentifiers.Contains(view);

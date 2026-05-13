@@ -104,8 +104,8 @@ namespace CogniteSdk.DataModels
             /// <inheritdoc/>
             public int GetHashCode(ViewIdentifier obj)
             {
-                var _obj = obj ?? new ViewIdentifier();
-                return (_obj.Space, _obj.ExternalId, _obj.Version).GetHashCode();
+                if (obj == null) return 0;
+                return (obj.Space, obj.ExternalId, obj.Version).GetHashCode();
             }
         }
     }
