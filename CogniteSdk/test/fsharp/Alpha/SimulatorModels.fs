@@ -131,7 +131,7 @@ let ``Create and list simulator model revisions along with revision data is Ok``
 
         let modelRevisionToCreate =
             SimulatorModelRevisionCreate(
-                ExternalId = "test_model_revision",
+                ExternalId = $"test_model_revision_{now}",
                 ModelExternalId = modelExternalId,
                 Description = "test_model_revision_description",
                 FileId = testFileId
