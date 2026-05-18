@@ -7,7 +7,7 @@ namespace Test.CSharp
     public class TypesTests
     {
         [Fact]
-        public void TestViewIdentifierCustomOpertators()
+        public void TestViewIdentifierCustomOperators()
         {
             var viewA = new ViewIdentifier("a", "b", "c");
             var view_duplicate = new ViewIdentifier("a", "b", "c");

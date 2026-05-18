@@ -31,10 +31,10 @@ namespace CogniteSdk.Resources.DataModels
             _allowedViewIdentifiers = new HashSet<ViewIdentifier>((allowedViewIdentifiers ?? Enumerable.Empty<ViewIdentifier>()).Select(x => x.Clone()), ViewIdentifier.ValueTypeEqualityComparer);
         }
 
-        private bool _viewIsAllowed(ViewIdentifier view) => ViewIdentifier.ValueTypeEqualityComparer.Equals(view, View) || _allowedViewIdentifiers.Contains(view);
-        private void _assertViewIsAllowed(ViewIdentifier view)
+        private bool ViewIsAllowed(ViewIdentifier view) => ViewIdentifier.ValueTypeEqualityComparer.Equals(view, View) || _allowedViewIdentifiers.Contains(view);
+        private void AssertViewIsAllowed(ViewIdentifier view)
         {
-            if (!_viewIsAllowed(view)) throw new InvalidOperationException($"Resource does not allow use of non-default view {view}");
+            if (!ViewIsAllowed(view)) throw new InvalidOperationException($"Resource does not allow use of non-default view {view}");
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
         public async Task<IEnumerable<SourcedInstance<T2>>> RetrieveAsync<T2>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
-            _assertViewIsAllowed(viewIdentifier);
+            AssertViewIsAllowed(viewIdentifier);
             return await _retrieveAsync<T2>(ids, viewIdentifier, token);
         }
 
@@ -220,7 +220,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
         public async Task<ItemsWithCursor<SourcedInstance<T2>>> FilterAsync<T2>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
-            _assertViewIsAllowed(viewIdentifier);
+            AssertViewIsAllowed(viewIdentifier);
             return await _filterAsync<T2>(filter, viewIdentifier, token);
         }
 
