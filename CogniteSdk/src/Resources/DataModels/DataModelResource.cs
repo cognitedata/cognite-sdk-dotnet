@@ -97,7 +97,7 @@ namespace CogniteSdk.Resources.DataModels
             }, token);
         }
 
-        private static T2 GetFromNestedDicts<T2>(Dictionary<string, Dictionary<string, T2>> properties, ViewIdentifier view)
+        private static TResult GetFromNestedDicts<TResult>(Dictionary<string, Dictionary<string, TResult>> properties, ViewIdentifier view)
         {
             if (!properties.TryGetValue(view.Space, out var bySource))
             {
@@ -131,15 +131,15 @@ namespace CogniteSdk.Resources.DataModels
         /// <param name="token">Cancellation token</param>
         /// <returns>Retrieved instances.</returns>
         /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
-        public async Task<IEnumerable<SourcedInstance<T2>>> RetrieveAsync<T2>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token = default)
+        public async Task<IEnumerable<SourcedInstance<TResult>>> RetrieveAsync<TResult>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
             AssertViewIsAllowed(viewIdentifier);
-            return await _retrieveAsync<T2>(ids, viewIdentifier, token);
+            return await _retrieveAsync<TResult>(ids, viewIdentifier, token);
         }
 
-        private async Task<IEnumerable<SourcedInstance<T2>>> _retrieveAsync<T2>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token)
+        private async Task<IEnumerable<SourcedInstance<TResult>>> _retrieveAsync<TResult>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token)
         {
-            var results = await _resource.RetrieveInstances<Dictionary<string, Dictionary<string, T2>>>(new InstancesRetrieve
+            var results = await _resource.RetrieveInstances<Dictionary<string, Dictionary<string, TResult>>>(new InstancesRetrieve
             {
                 Items = ids,
                 Sources = new[] {
@@ -162,13 +162,13 @@ namespace CogniteSdk.Resources.DataModels
             return await _resource.DeleteInstances(ids, token);
         }
 
-        private static IEnumerable<SourcedInstance<T2>> FromRaw<T2>(IEnumerable<BaseInstance<Dictionary<string, Dictionary<string, T2>>>> items, ViewIdentifier view)
+        private static IEnumerable<SourcedInstance<TResult>> FromRaw<TResult>(IEnumerable<BaseInstance<Dictionary<string, Dictionary<string, TResult>>>> items, ViewIdentifier view)
         {
             return items.Select(r =>
             {
-                if (r is Edge<Dictionary<string, Dictionary<string, T2>>> edge)
+                if (r is Edge<Dictionary<string, Dictionary<string, TResult>>> edge)
                 {
-                    return (SourcedInstance<T2>)new SourcedEdge<T2>
+                    return (SourcedInstance<TResult>)new SourcedEdge<TResult>
                     {
                         Space = r.Space,
                         ExternalId = r.ExternalId,
@@ -184,7 +184,7 @@ namespace CogniteSdk.Resources.DataModels
                 }
                 else
                 {
-                    return new SourcedNode<T2>
+                    return new SourcedNode<TResult>
                     {
                         Space = r.Space,
                         ExternalId = r.ExternalId,
@@ -218,15 +218,15 @@ namespace CogniteSdk.Resources.DataModels
         /// <param name="token">Cancellation token</param>
         /// <returns>Filtered items with optional cursor.</returns>
         /// <exception cref="InvalidOperationException">Throws if viewIdentifier was not defined on DataModelResource creation, and is not the default view.</exception>
-        public async Task<ItemsWithCursor<SourcedInstance<T2>>> FilterAsync<T2>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token = default)
+        public async Task<ItemsWithCursor<SourcedInstance<TResult>>> FilterAsync<TResult>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
             AssertViewIsAllowed(viewIdentifier);
-            return await _filterAsync<T2>(filter, viewIdentifier, token);
+            return await _filterAsync<TResult>(filter, viewIdentifier, token);
         }
 
-        private async Task<ItemsWithCursor<SourcedInstance<T2>>> _filterAsync<T2>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token)
+        private async Task<ItemsWithCursor<SourcedInstance<TResult>>> _filterAsync<TResult>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token)
         {
-            var res = await _resource.FilterInstances<Dictionary<string, Dictionary<string, T2>>>(new InstancesFilter
+            var res = await _resource.FilterInstances<Dictionary<string, Dictionary<string, TResult>>>(new InstancesFilter
             {
                 Sources = new[] {
                     new InstanceSource {
@@ -239,7 +239,7 @@ namespace CogniteSdk.Resources.DataModels
                 Cursor = filter.Cursor,
             }, token);
 
-            return new ItemsWithCursor<SourcedInstance<T2>>
+            return new ItemsWithCursor<SourcedInstance<TResult>>
             {
                 Items = FromRaw(res.Items, viewIdentifier),
                 NextCursor = res.NextCursor
