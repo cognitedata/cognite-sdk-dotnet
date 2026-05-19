@@ -41,6 +41,10 @@ namespace CogniteSdk.Alpha
         /// </summary>
         public IEnumerable<SimulatorValueItem> Outputs { get; set; }
 
+        /// <summary>
+        /// The simulator integration external id.
+        /// </summary>
+        public string SimulatorIntegrationExternalId { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<SimulationRunCallbackItem>(this);

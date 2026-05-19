@@ -244,7 +244,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
     // Arrange
     let query =
         TimeSeriesSearch(
-            Filter = TimeSeriesFilter(ExternalIdPrefix = "pi:1636"),
+            Filter = TimeSeriesFilter(ExternalIdPrefix = "VAL_23"),
             Limit = Nullable 10
         )
 
@@ -256,7 +256,7 @@ let ``Search timeseries on ExternalIdPrefix is Ok`` () = task {
 
     // Assert
     test <@ len > 1 @>
-    test <@ Seq.forall (fun (e: string) -> e.StartsWith("pi:1636")) externalIds @>
+    test <@ Seq.forall (fun (e: string) -> e.StartsWith("VAL_23")) externalIds @>
 }
 
 [<Fact>]
@@ -451,7 +451,7 @@ let ``Synthetic Query is Ok`` () = task {
     let query =
         TimeSeriesSyntheticQuery(
             Items = [
-                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='pi:160627'} + 1", Limit = Nullable 10)
+                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='VAL_23-PDT-92501:X.Value'} + 1", Limit = Nullable 10)
             ]
         )
 
@@ -472,7 +472,7 @@ let ``Synthetic Query with Error is Ok`` () = task {
     let query =
         TimeSeriesSyntheticQuery(
             Items = [
-                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='pi:160627'} / 0", Limit = Nullable 5)
+                TimeSeriesSyntheticQueryItem(Expression="ts{externalId='VAL_23-PDT-92501:X.Value'} / 0", Limit = Nullable 5)
             ]
         )
 
