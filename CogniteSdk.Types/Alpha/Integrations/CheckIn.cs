@@ -107,6 +107,14 @@ namespace CogniteSdk.Alpha
         /// Time the error ended. Set this equal to `StartTime` if the error is instantaneous.
         /// </summary>
         public long? EndTime { get; set; }
+        /// <summary>
+        /// Optional error type, used to categorize errors.
+        /// </summary>
+        public string Type { get; set; }
+        /// <summary>
+        /// Config revision active when this error was reported.
+        /// </summary>
+        public int? ConfigRevision { get; set; }
     }
 
     /// <summary>
