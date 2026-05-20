@@ -1,9 +1,10 @@
-// Copyright 2020 Cognite AS
+// Copyright 2020-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using CogniteSdk.DataModels;
+using CogniteSdk.DataModels.Core;
 using CogniteSdk.Types.Common;
 
 namespace CogniteSdk
@@ -56,6 +57,12 @@ namespace CogniteSdk
         /// when the next data point is after the end of the interval. Increase start/end to fetch more data.
         /// </summary>
         public string NextCursor { get; set; }
+
+        /// <summary>
+        /// Type of the time series (numeric, string, or state).
+        /// </summary>
+        [JsonPropertyName("type")]
+        public TimeSeriesType? Type { get; set; }
 
         /// <summary>
         /// The list of data points.

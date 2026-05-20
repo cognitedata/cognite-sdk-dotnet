@@ -25,21 +25,23 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CiJkYXRhX3BvaW50X2luc2VydGlvbl9yZXF1ZXN0LnByb3RvEh9jb20uY29n",
-            "bml0ZS52MS50aW1lc2VyaWVzLnByb3RvGhFkYXRhX3BvaW50cy5wcm90byLH",
-            "AgoWRGF0YVBvaW50SW5zZXJ0aW9uSXRlbRIMCgJpZBgBIAEoA0gAEhQKCmV4",
+            "bml0ZS52MS50aW1lc2VyaWVzLnByb3RvGhFkYXRhX3BvaW50cy5wcm90byKU",
+            "AwoWRGF0YVBvaW50SW5zZXJ0aW9uSXRlbRIMCgJpZBgBIAEoA0gAEhQKCmV4",
             "dGVybmFsSWQYAiABKAlIABJBCgppbnN0YW5jZUlkGAUgASgLMisuY29tLmNv",
             "Z25pdGUudjEudGltZXNlcmllcy5wcm90by5JbnN0YW5jZUlkSAASTwoRbnVt",
             "ZXJpY0RhdGFwb2ludHMYAyABKAsyMi5jb20uY29nbml0ZS52MS50aW1lc2Vy",
             "aWVzLnByb3RvLk51bWVyaWNEYXRhcG9pbnRzSAESTQoQc3RyaW5nRGF0YXBv",
             "aW50cxgEIAEoCzIxLmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8u",
-            "U3RyaW5nRGF0YXBvaW50c0gBQhUKE3RpbWVTZXJpZXNSZWZlcmVuY2VCDwoN",
-            "ZGF0YXBvaW50VHlwZSJjChlEYXRhUG9pbnRJbnNlcnRpb25SZXF1ZXN0EkYK",
-            "BWl0ZW1zGAEgAygLMjcuY29tLmNvZ25pdGUudjEudGltZXNlcmllcy5wcm90",
-            "by5EYXRhUG9pbnRJbnNlcnRpb25JdGVtQgJQAWIGcHJvdG8z"));
+            "U3RyaW5nRGF0YXBvaW50c0gBEksKD3N0YXRlRGF0YXBvaW50cxgGIAEoCzIw",
+            "LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uU3RhdGVEYXRhcG9p",
+            "bnRzSAFCFQoTdGltZVNlcmllc1JlZmVyZW5jZUIPCg1kYXRhcG9pbnRUeXBl",
+            "ImMKGURhdGFQb2ludEluc2VydGlvblJlcXVlc3QSRgoFaXRlbXMYASADKAsy",
+            "Ny5jb20uY29nbml0ZS52MS50aW1lc2VyaWVzLnByb3RvLkRhdGFQb2ludElu",
+            "c2VydGlvbkl0ZW1CAlABYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Com.Cognite.V1.Timeseries.Proto.DataPointsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "NumericDatapoints", "StringDatapoints" }, new[]{ "TimeSeriesReference", "DatapointType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "NumericDatapoints", "StringDatapoints", "StateDatapoints" }, new[]{ "TimeSeriesReference", "DatapointType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequest), global::Com.Cognite.V1.Timeseries.Proto.DataPointInsertionRequest.Parser, new[]{ "Items" }, null, null, null, null)
           }));
     }
@@ -100,6 +102,9 @@ namespace Com.Cognite.V1.Timeseries.Proto {
           break;
         case DatapointTypeOneofCase.StringDatapoints:
           StringDatapoints = other.StringDatapoints.Clone();
+          break;
+        case DatapointTypeOneofCase.StateDatapoints:
+          StateDatapoints = other.StateDatapoints.Clone();
           break;
       }
 
@@ -200,6 +205,18 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
     }
 
+    /// <summary>Field number for the "stateDatapoints" field.</summary>
+    public const int StateDatapointsFieldNumber = 6;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints StateDatapoints {
+      get { return datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints) datapointType_ : null; }
+      set {
+        datapointType_ = value;
+        datapointTypeCase_ = value == null ? DatapointTypeOneofCase.None : DatapointTypeOneofCase.StateDatapoints;
+      }
+    }
+
     private object timeSeriesReference_;
     /// <summary>Enum of possible cases for the "timeSeriesReference" oneof.</summary>
     public enum TimeSeriesReferenceOneofCase {
@@ -228,6 +245,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       None = 0,
       NumericDatapoints = 3,
       StringDatapoints = 4,
+      StateDatapoints = 6,
     }
     private DatapointTypeOneofCase datapointTypeCase_ = DatapointTypeOneofCase.None;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -263,6 +281,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       if (!object.Equals(InstanceId, other.InstanceId)) return false;
       if (!object.Equals(NumericDatapoints, other.NumericDatapoints)) return false;
       if (!object.Equals(StringDatapoints, other.StringDatapoints)) return false;
+      if (!object.Equals(StateDatapoints, other.StateDatapoints)) return false;
       if (TimeSeriesReferenceCase != other.TimeSeriesReferenceCase) return false;
       if (DatapointTypeCase != other.DatapointTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -277,6 +296,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       if (timeSeriesReferenceCase_ == TimeSeriesReferenceOneofCase.InstanceId) hash ^= InstanceId.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) hash ^= NumericDatapoints.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) hash ^= StringDatapoints.GetHashCode();
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) hash ^= StateDatapoints.GetHashCode();
       hash ^= (int) timeSeriesReferenceCase_;
       hash ^= (int) datapointTypeCase_;
       if (_unknownFields != null) {
@@ -317,6 +337,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(42);
         output.WriteMessage(InstanceId);
       }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
+        output.WriteRawTag(50);
+        output.WriteMessage(StateDatapoints);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -347,6 +371,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(42);
         output.WriteMessage(InstanceId);
       }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
+        output.WriteRawTag(50);
+        output.WriteMessage(StateDatapoints);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -371,6 +399,9 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
       if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(StringDatapoints);
+      }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(StateDatapoints);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -412,6 +443,12 @@ namespace Com.Cognite.V1.Timeseries.Proto {
           }
           StringDatapoints.MergeFrom(other.StringDatapoints);
           break;
+        case DatapointTypeOneofCase.StateDatapoints:
+          if (StateDatapoints == null) {
+            StateDatapoints = new global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints();
+          }
+          StateDatapoints.MergeFrom(other.StateDatapoints);
+          break;
       }
 
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
@@ -425,7 +462,11 @@ namespace Com.Cognite.V1.Timeseries.Proto {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -464,6 +505,15 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             InstanceId = subBuilder;
             break;
           }
+          case 50: {
+            global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
+              subBuilder.MergeFrom(StateDatapoints);
+            }
+            input.ReadMessage(subBuilder);
+            StateDatapoints = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -475,7 +525,11 @@ namespace Com.Cognite.V1.Timeseries.Proto {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
@@ -512,6 +566,15 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             }
             input.ReadMessage(subBuilder);
             InstanceId = subBuilder;
+            break;
+          }
+          case 50: {
+            global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StateDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
+              subBuilder.MergeFrom(StateDatapoints);
+            }
+            input.ReadMessage(subBuilder);
+            StateDatapoints = subBuilder;
             break;
           }
         }
@@ -666,7 +729,11 @@ namespace Com.Cognite.V1.Timeseries.Proto {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -685,7 +752,11 @@ namespace Com.Cognite.V1.Timeseries.Proto {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;

@@ -1,4 +1,4 @@
-// Copyright 2024 Cognite AS
+// Copyright 2024-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -65,6 +65,10 @@ namespace CogniteSdk.DataModels.Core
         /// Time series containing numeric values.
         /// </summary>
         Numeric,
+        /// <summary>
+        /// Time series containing state values (numeric and/or string state).
+        /// </summary>
+        State,
     }
 
     /// <summary>
@@ -94,8 +98,10 @@ namespace CogniteSdk.DataModels.Core
                     return TimeSeriesType.Numeric;
                 case "string":
                     return TimeSeriesType.String;
+                case "state":
+                    return TimeSeriesType.State;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(CogniteTimeSeriesBase.Type), "TimeSeries type can either be numeric or string");
+                    throw new ArgumentOutOfRangeException(nameof(CogniteTimeSeriesBase.Type), "TimeSeries type must be numeric, string, or state");
             }
         }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 Cognite AS
+// Copyright 2020-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using CogniteSdk.Types.Common;
@@ -100,6 +100,16 @@ namespace CogniteSdk
         /// Measured in milliseconds. Equivalent to duration that the previous data point is bad and in range.
         /// </summary>
         public int DurationBad { get; set; }
+
+        /// <summary>
+        /// The maximum numeric datapoint in the aggregate period (when requested).
+        /// </summary>
+        public DataPoint MaxDatapoint { get; set; }
+
+        /// <summary>
+        /// The minimum numeric datapoint in the aggregate period (when requested).
+        /// </summary>
+        public DataPoint MinDatapoint { get; set; }
 
         /// <inheritdoc />
         public override string ToString() => Stringable.ToString<DataPointAggregate>(this);

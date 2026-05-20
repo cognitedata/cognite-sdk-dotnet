@@ -18,6 +18,15 @@ module DataPointAggregateType =
         | DiscreteVariance
         | ContinuousVariance
         | TotalVariation
+        | CountGood
+        | CountUncertain
+        | CountBad
+        | DurationGood
+        | DurationUncertain
+        | DurationBad
+        | StateCount
+        | StateTransitions
+        | StateDuration
 
         override x.ToString() =
             match x with
@@ -31,6 +40,15 @@ module DataPointAggregateType =
             | DiscreteVariance -> "discreteVariance"
             | ContinuousVariance -> "continuousVariance"
             | TotalVariation -> "totalVariation"
+            | CountGood -> "countGood"
+            | CountUncertain -> "countUncertain"
+            | CountBad -> "countBad"
+            | DurationGood -> "durationGood"
+            | DurationUncertain -> "durationUncertain"
+            | DurationBad -> "durationBad"
+            | StateCount -> "stateCount"
+            | StateTransitions -> "stateTransitions"
+            | StateDuration -> "stateDuration"
 
     /// all known aggregate types
     let knownAggregates =
@@ -43,7 +61,16 @@ module DataPointAggregateType =
           StepInterpolation
           DiscreteVariance
           ContinuousVariance
-          TotalVariation ]
+          TotalVariation
+          CountGood
+          CountUncertain
+          CountBad
+          DurationGood
+          DurationUncertain
+          DurationBad
+          StateCount
+          StateTransitions
+          StateDuration ]
 
 open DataPointAggregateType
 
