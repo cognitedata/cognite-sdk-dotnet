@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CogniteSdk.DataModels;
 using CogniteSdk.DataModels.Core;
 
@@ -9,6 +10,10 @@ namespace CogniteSdk.Resources.DataModels
     /// <typeparam name="T"></typeparam>
     public class CoreTimeSeriesResource<T> : BaseDataModelResource<T> where T : CogniteTimeSeriesBase
     {
+        /// <summary>
+        /// Default view 
+        /// </summary>
+        public static ViewIdentifier DefaultView = new ViewIdentifier("cdf_cdm", "CogniteTimeSeries", "v1");
         /// <inheritdoc />
         public override ViewIdentifier View { get; }
 
@@ -18,10 +23,11 @@ namespace CogniteSdk.Resources.DataModels
         public CoreTimeSeriesResource(
             DataModelsResource resource,
             DataPointsResource dpResource,
-            ViewIdentifier view) : base(resource)
+            ViewIdentifier view,
+            IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(resource, allowedViewIdentifiers)
         {
             _dpResource = dpResource;
-            View = view ?? new ViewIdentifier("cdf_cdm", "CogniteTimeSeries", "v1");
+            View = view?.Clone() ?? DefaultView;
         }
     }
 }

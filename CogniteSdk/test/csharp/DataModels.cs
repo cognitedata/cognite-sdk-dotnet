@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using CogniteSdk;
 using CogniteSdk.DataModels;
+using CogniteSdk.DataModels.Core;
 using CogniteSdk.Resources.DataModels;
 using Xunit;
 
@@ -646,7 +647,8 @@ namespace Test.CSharp.Integration
         [Fact]
         public async Task TestCustomResource()
         {
-            var resource = new TestResource(tester);
+            var alternativeView = CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView.Clone();
+            var resource = new TestResource(tester, new List<ViewIdentifier>() { alternativeView });
             await resource.UpsertAsync(new[] {
                 new SourcedNodeWrite<TestItem> {
                     ExternalId = "node9",
@@ -667,6 +669,36 @@ namespace Test.CSharp.Integration
             var node = retrieved.First();
             Assert.Equal("test", node.Properties.Prop);
             Assert.Equal(123, node.Properties.IntProp);
+
+            retrieved = await resource.RetrieveAsync<TestItem>(new[] { new InstanceIdentifierWithType {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }}, resource.View);
+            Assert.Single(retrieved);
+            node = retrieved.First();
+            Assert.Equal("test", node.Properties.Prop);
+            Assert.Equal(123, node.Properties.IntProp);
+
+            var retrieveAlternativeView = await resource.RetrieveAsync<CogniteTimeSeriesBase>(new[] { new InstanceIdentifierWithType {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }}, alternativeView);
+            Assert.Empty(retrieveAlternativeView);
+
+            alternativeView.ExternalId = "other_external_id";
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteAssetBase>(new[] { new InstanceIdentifierWithType {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }}, alternativeView));
+
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await resource.RetrieveAsync<CogniteAssetBase>(new[] { new InstanceIdentifierWithType {
+                InstanceType = InstanceType.node,
+                Space = tester.TestSpace,
+                ExternalId = "node9"
+            }}, CoreAssetResource<CogniteAssetBase>.DefaultView));
 
             await resource.DeleteAsync(new[] { new InstanceIdentifierWithType {
                 InstanceType = InstanceType.node,
@@ -694,7 +726,7 @@ namespace Test.CSharp.Integration
     {
         public override ViewIdentifier View { get; }
 
-        public TestResource(DataModelsFixture fixture) : base(fixture.Write.DataModels)
+        public TestResource(DataModelsFixture fixture, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) : base(fixture.Write.DataModels, allowedViewIdentifiers)
         {
             View = fixture.TestView;
         }

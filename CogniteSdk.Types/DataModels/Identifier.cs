@@ -1,7 +1,7 @@
 ﻿// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -74,6 +74,39 @@ namespace CogniteSdk.DataModels
         public FDMExternalId FDMExternalId()
         {
             return new FDMExternalId(ExternalId, Space, Version);
+        }
+
+        /// <inheritdoc/>
+        public override string ToString() => $"{Space}.{ExternalId}.{Version}";
+
+        /// <summary>
+        /// Clone object
+        /// </summary>
+        /// <returns></returns>
+        public ViewIdentifier Clone() => (ViewIdentifier)MemberwiseClone();
+
+        /// <summary>
+        /// Value Type Equality Comparer
+        /// </summary>
+        public static ViewIdentifierEqualityComparer ValueTypeEqualityComparer = new ViewIdentifierEqualityComparer();
+
+        /// <summary>
+        /// Value Type Equality Comparer
+        /// </summary>
+        public class ViewIdentifierEqualityComparer : IEqualityComparer<ViewIdentifier>
+        {
+            /// <inheritdoc/>
+            public bool Equals(ViewIdentifier x, ViewIdentifier y) {
+                if (x == null || y == null) return ReferenceEquals(x, y);
+                if (ReferenceEquals(x, y)) return true;
+                return x.Space == y.Space && x.ExternalId == y.ExternalId && x.Version == y.Version;
+            }
+            /// <inheritdoc/>
+            public int GetHashCode(ViewIdentifier obj)
+            {
+                if (obj == null) return 0;
+                return (obj.Space, obj.ExternalId, obj.Version).GetHashCode();
+            }
         }
     }
 
