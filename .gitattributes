@@ -3,3 +3,8 @@
 # Mark auto-generated files
 paket.lock linguist-generated=true
 .paket/* linguist-generated=true
+
+# protoc-generated C# bindings (see CogniteSdk.Protobuf/README.md)
+CogniteSdk.Protobuf/DataPoints.cs linguist-generated=true
+CogniteSdk.Protobuf/DataPointInsertionRequest.cs linguist-generated=true
+CogniteSdk.Protobuf/DataPointListResponse.cs linguist-generated=true

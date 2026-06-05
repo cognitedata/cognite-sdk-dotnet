@@ -1,4 +1,4 @@
-// Copyright 2020 Cognite AS
+// Copyright 2020-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -14,6 +14,9 @@ namespace CogniteSdk
     /// </summary>
     public class MultiValueConverter : JsonConverter<MultiValue>
     {
+        /// <inheritdoc />
+        public override bool HandleNull => true;
+
         /// <summary>
         /// Creates MultiValue values from the JSON input.
         /// </summary>

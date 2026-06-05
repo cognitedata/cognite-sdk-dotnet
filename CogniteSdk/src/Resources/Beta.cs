@@ -1,4 +1,4 @@
-// Copyright 2020 Cognite AS
+// Copyright 2020-2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using CogniteSdk.Resources.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
+
+// Avoid name collision with the non-beta resources
+using BetaDataPointsResource = CogniteSdk.Resources.Beta.DataPointsResource;
+using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
 
 namespace CogniteSdk.Resources
 {
@@ -26,6 +30,16 @@ namespace CogniteSdk.Resources
         public StreamRecordsResource StreamRecords { get; }
 
         /// <summary>
+        /// Beta time series data points
+        /// </summary>
+        public BetaDataPointsResource DataPoints { get; }
+
+        /// <summary>
+        /// Beta data modeling operations
+        /// </summary>
+        public BetaDataModelsResource DataModels { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -34,6 +48,8 @@ namespace CogniteSdk.Resources
         {
             Subscriptions = new SubscriptionsResource(authHandler, ctx);
             StreamRecords = new StreamRecordsResource(authHandler, ctx);
+            DataPoints = new BetaDataPointsResource(authHandler, ctx);
+            DataModels = new BetaDataModelsResource(authHandler, ctx);
         }
     }
 }
