@@ -29,6 +29,21 @@ namespace CogniteSdk.DataModels.Core
         }
 
         /// <summary>
+        /// Resource for core data model state sets, describing the possible states of state time series.
+        /// </summary>
+        /// <param name="view">ID of the view to write to. Defaults to the CogniteStateSet view in
+        /// the core data model.</param>
+        /// <param name="allowedViewIdentifiers">View Identifiers this resource is allowed to query for in addition to the default view.</param>
+        /// <typeparam name="T">State set type.</typeparam>
+        /// <returns>Core data model state set resource.</returns>
+        public CoreStateSetResource<T> StateSets<T>(
+            ViewIdentifier view = null,
+            IEnumerable<ViewIdentifier> allowedViewIdentifiers = null) where T : CogniteStateSet
+        {
+            return new CoreStateSetResource<T>(_client.DataModels, view, allowedViewIdentifiers);
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="client">CDF Client</param>
