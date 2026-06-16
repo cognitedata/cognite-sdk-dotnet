@@ -29,3 +29,14 @@ module DataModels =
 
             return ret.Items
         }
+
+    /// Retrieve instances by id using the beta API
+    let retrieveInstances<'T>
+        (request: InstancesRetrieve)
+        (source: HttpHandler<unit>)
+        : HttpHandler<InstancesRetrieveResponse<'T>> =
+        source
+        |> withLogMessage "Beta:models:instances:retrieve"
+        |> withBetaHeader
+        |> withCompletion HttpCompletionOption.ResponseHeadersRead
+        |> postV10 request (instancesUrl +/ "byids")

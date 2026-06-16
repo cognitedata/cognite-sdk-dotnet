@@ -188,12 +188,12 @@ namespace Test.CSharp.Integration.Beta
             var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
             var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
 
-            var stateSets = _fx.Write.CoreDataModel.StateSets<CogniteStateSet>();
+            var stateSets = _fx.Write.Beta.StateSets;
             var timeSeries = _fx.Write.CoreDataModel.TimeSeries<CogniteTimeSeriesBase>();
 
             try
             {
-                // Upsert a state set using the strongly-typed core data model resource.
+                // Upsert a state set using the beta state set resource.
                 await stateSets.UpsertAsync(new[]
                 {
                     new SourcedNodeWrite<CogniteStateSet>
@@ -212,7 +212,7 @@ namespace Test.CSharp.Integration.Beta
                             }
                         }
                     }
-                }, new UpsertOptions());
+                });
 
                 // Upsert a state time series referencing the state set via the typed StateSet property.
                 await timeSeries.UpsertAsync(new[]
@@ -232,7 +232,7 @@ namespace Test.CSharp.Integration.Beta
                 }, new UpsertOptions());
 
                 // Retrieve the state set and assert its states round-trip.
-                var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                var retrievedStateSet = (await stateSets.GetAsync(new[] { stateSetId })).Single().Properties;
                 Assert.Equal("Valve Position States", retrievedStateSet.Name);
                 var states = retrievedStateSet.States.ToList();
                 Assert.Equal(3, states.Count);
