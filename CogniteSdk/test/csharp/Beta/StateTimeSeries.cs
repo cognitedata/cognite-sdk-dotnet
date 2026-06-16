@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CogniteSdk;
@@ -189,7 +190,6 @@ namespace Test.CSharp.Integration.Beta
             var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
 
             var stateSets = _fx.Write.Beta.StateSets;
-            var timeSeries = _fx.Write.CoreDataModel.TimeSeries<CogniteTimeSeriesBase>();
 
             try
             {
@@ -215,21 +215,33 @@ namespace Test.CSharp.Integration.Beta
                 });
 
                 // Upsert a state time series referencing the state set via the typed StateSet property.
-                await timeSeries.UpsertAsync(new[]
+                // State time series are only available in beta, so this must go through the beta API.
+                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
                 {
-                    new SourcedNodeWrite<CogniteTimeSeriesBase>
+                    Replace = true,
+                    Items = new BaseInstanceWrite[]
                     {
-                        Space = space,
-                        ExternalId = tsXid,
-                        Properties = new CogniteTimeSeriesBase
+                        new NodeWrite
                         {
-                            Name = "Valve 001 Position",
-                            Description = "Typed state time series round-trip test",
-                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                            Space = space,
+                            ExternalId = tsXid,
+                            Sources = new InstanceData[]
+                            {
+                                new InstanceData<CogniteTimeSeriesBase>
+                                {
+                                    Source = TimeSeriesView,
+                                    Properties = new CogniteTimeSeriesBase
+                                    {
+                                        Name = "Valve 001 Position",
+                                        Description = "Typed state time series round-trip test",
+                                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                                    }
+                                }
+                            }
                         }
                     }
-                }, new UpsertOptions());
+                });
 
                 // Retrieve the state set and assert its states round-trip.
                 var retrievedStateSet = (await stateSets.GetAsync(new[] { stateSetId })).Single().Properties;
@@ -240,8 +252,14 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
                 Assert.Contains(states, s => s.NumericValue == 2 && s.StringValue == "TRANSITIONING");
 
-                // Retrieve the time series and assert the StateSet direct relation round-trips.
-                var retrievedTs = (await timeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
+                // Retrieve the time series via beta and assert the StateSet direct relation round-trips.
+                var tsResponse = await _fx.Write.Beta.DataModels.RetrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(
+                    new InstancesRetrieve
+                    {
+                        Items = new[] { tsId },
+                        Sources = new[] { new InstanceSource { Source = TimeSeriesView } }
+                    });
+                var retrievedTs = tsResponse.Items.Single().Properties[TimeSeriesView.Space][$"{TimeSeriesView.ExternalId}/{TimeSeriesView.Version}"];
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
