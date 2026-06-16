@@ -43,6 +43,12 @@ namespace CogniteSdk.DataModels.Core
         /// </summary>
         public IEnumerable<DirectRelationIdentifier> Equipment { get; set; }
 
+        /// <summary>
+        /// Direct relation to the <c>CogniteStateSet</c> describing the possible states for this
+        /// time series. Only relevant when <see cref="Type"/> is <see cref="TimeSeriesType.State"/>.
+        /// </summary>
+        public DirectRelationIdentifier StateSet { get; set; }
+
 
         /// <summary>
         /// Empty constructor.
