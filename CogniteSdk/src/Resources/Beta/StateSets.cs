@@ -83,7 +83,7 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>The retrieved state set instances.</returns>
-        public async Task<IEnumerable<SourcedNode<CogniteStateSet>>> GetAsync(
+        public async Task<IEnumerable<SourcedNode<CogniteStateSet>>> RetrieveAsync(
             IEnumerable<InstanceIdentifierWithType> ids,
             CancellationToken token = default)
         {
@@ -110,8 +110,22 @@ namespace CogniteSdk.Resources.Beta
                 CreatedTime = r.CreatedTime,
                 LastUpdatedTime = r.LastUpdatedTime,
                 DeletedTime = r.DeletedTime,
-                Properties = r.Properties[View.Space][$"{View.ExternalId}/{View.Version}"]
+                Properties = GetFromNestedDicts(r.Properties)
             }).ToList();
+        }
+
+        private static CogniteStateSet GetFromNestedDicts(Dictionary<string, Dictionary<string, CogniteStateSet>> properties)
+        {
+            if (!properties.TryGetValue(View.Space, out var bySource))
+            {
+                return default;
+            }
+
+            if (!bySource.TryGetValue($"{View.ExternalId}/{View.Version}", out var v))
+            {
+                return default;
+            }
+            return v;
         }
     }
 }

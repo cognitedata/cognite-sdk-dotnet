@@ -244,7 +244,7 @@ namespace Test.CSharp.Integration.Beta
                 });
 
                 // Retrieve the state set and assert its states round-trip.
-                var retrievedStateSet = (await stateSets.GetAsync(new[] { stateSetId })).Single().Properties;
+                var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
                 Assert.Equal("Valve Position States", retrievedStateSet.Name);
                 var states = retrievedStateSet.States.ToList();
                 Assert.Equal(3, states.Count);
