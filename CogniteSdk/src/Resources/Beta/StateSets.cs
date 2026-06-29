@@ -116,7 +116,7 @@ namespace CogniteSdk.Resources.Beta
 
         private static CogniteStateSet GetFromNestedDicts(Dictionary<string, Dictionary<string, CogniteStateSet>> properties)
         {
-            if (!properties.TryGetValue(View.Space, out var bySource))
+            if (properties is null || !properties.TryGetValue(View.Space, out var bySource))
             {
                 return default;
             }
