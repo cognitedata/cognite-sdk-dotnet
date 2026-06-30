@@ -166,5 +166,64 @@ namespace CogniteSdk.Resources.Alpha
             var req = Integrations.listErrors(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Create new triggered actions for the given integration.
+        /// </summary>
+        /// <param name="integration">External ID of the integration to create actions for.</param>
+        /// <param name="items">Actions to create.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Created actions.</returns>
+        public async Task<IEnumerable<IntegrationAction>> CreateActionsAsync(string integration, IEnumerable<CreateAction> items, CancellationToken token = default)
+        {
+            var req = Integrations.createActions(integration, items, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve actions by external IDs.
+        /// </summary>
+        /// <param name="ids">External IDs of the actions to retrieve.</param>
+        /// <param name="ignoreUnknownIds">Whether to ignore unknown IDs.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved actions.</returns>
+        public async Task<IEnumerable<IntegrationAction>> RetrieveActionsAsync(IEnumerable<string> ids, bool ignoreUnknownIds, CancellationToken token = default)
+        {
+            var req = Integrations.retrieveActions(new ActionsRetrieve
+            {
+                Items = ids.Select(id => new CogniteExternalId(id)).ToList(),
+                IgnoreUnknownIds = ignoreUnknownIds
+            }, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// List actions with optional filtering.
+        /// </summary>
+        /// <param name="query">Query parameters for filtering and pagination.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>List of actions with optional cursor for pagination.</returns>
+        public async Task<ItemsWithCursor<IntegrationAction>> ListActionsAsync(ActionsQuery query, CancellationToken token = default)
+        {
+            var req = Integrations.listActions(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Cancel a list of actions by external ID.
+        /// </summary>
+        /// <param name="ids">External IDs of the actions to cancel.</param>
+        /// <param name="ignoreUnknownIds">Whether to ignore unknown IDs.</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Cancelled actions.</returns>
+        public async Task<IEnumerable<IntegrationAction>> CancelActionsAsync(IEnumerable<string> ids, bool ignoreUnknownIds, CancellationToken token = default)
+        {
+            var req = Integrations.cancelActions(new CancelActionsRequest
+            {
+                Items = ids.Select(id => new CogniteExternalId(id)).ToList(),
+                IgnoreUnknownIds = ignoreUnknownIds
+            }, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
     }
 }
