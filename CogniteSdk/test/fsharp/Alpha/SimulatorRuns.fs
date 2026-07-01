@@ -1,3 +1,4 @@
+[<Xunit.Collection("simulators")>]
 module Tests.Integration.SimulatorRuns
 
 open System
