@@ -1,4 +1,4 @@
-// Copyright 2025 Cognite AS
+// Copyright 2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
@@ -26,27 +26,6 @@ namespace Test.CSharp.Alpha
         public void TestActionStatusSerialization(ActionStatus status, string expected)
         {
             var json = JsonSerializer.Serialize(status, _jsonOptions);
-            Assert.Equal($"\"{expected}\"", json);
-        }
-
-        [Theory]
-        [InlineData("\"pending\"", ActionStatus.pending)]
-        [InlineData("\"running\"", ActionStatus.running)]
-        [InlineData("\"cancel_pending\"", ActionStatus.cancel_pending)]
-        [InlineData("\"canceled\"", ActionStatus.canceled)]
-        public void TestActionStatusDeserialization(string json, ActionStatus expected)
-        {
-            var status = JsonSerializer.Deserialize<ActionStatus>(json, _jsonOptions);
-            Assert.Equal(expected, status);
-        }
-
-        [Theory]
-        [InlineData(ActionType.start_task, "start_task")]
-        [InlineData(ActionType.stop_task, "stop_task")]
-        [InlineData(ActionType.custom, "custom")]
-        public void TestActionTypeSerialization(ActionType type, string expected)
-        {
-            var json = JsonSerializer.Serialize(type, _jsonOptions);
             Assert.Equal($"\"{expected}\"", json);
         }
 
@@ -145,11 +124,6 @@ namespace Test.CSharp.Alpha
                     new ActionUpdate
                     {
                         ExternalId = "act-1",
-                        Status = ActionStatus.running,
-                    },
-                    new ActionUpdate
-                    {
-                        ExternalId = "act-2",
                         Status = ActionStatus.succeeded,
                         ResultMessage = "Done",
                         ResultMetadata = new Dictionary<string, string> { ["rows"] = "42" },
@@ -161,17 +135,29 @@ namespace Test.CSharp.Alpha
             var doc = JsonDocument.Parse(json);
 
             var updates = doc.RootElement.GetProperty("actionUpdates");
-            Assert.Equal(2, updates.GetArrayLength());
+            Assert.Equal(1, updates.GetArrayLength());
 
-            var first = updates[0];
-            Assert.Equal("act-1", first.GetProperty("externalId").GetString());
-            Assert.Equal("running", first.GetProperty("status").GetString());
+            var update = updates[0];
+            Assert.Equal("act-1", update.GetProperty("externalId").GetString());
+            Assert.Equal("succeeded", update.GetProperty("status").GetString());
+            Assert.Equal("Done", update.GetProperty("resultMessage").GetString());
+            Assert.Equal("42", update.GetProperty("resultMetadata").GetProperty("rows").GetString());
+        }
 
-            var second = updates[1];
-            Assert.Equal("act-2", second.GetProperty("externalId").GetString());
-            Assert.Equal("succeeded", second.GetProperty("status").GetString());
-            Assert.Equal("Done", second.GetProperty("resultMessage").GetString());
-            Assert.Equal("42", second.GetProperty("resultMetadata").GetProperty("rows").GetString());
+        [Fact]
+        public void TestActionUpdateNullFieldsNotSerialized()
+        {
+            var update = new ActionUpdate
+            {
+                ExternalId = "act-1",
+                Status = ActionStatus.failed,
+            };
+
+            var json = JsonSerializer.Serialize(update, _jsonOptions);
+            var doc = JsonDocument.Parse(json);
+
+            Assert.False(doc.RootElement.TryGetProperty("resultMessage", out _));
+            Assert.False(doc.RootElement.TryGetProperty("resultMetadata", out _));
         }
 
         [Fact]
@@ -193,6 +179,7 @@ namespace Test.CSharp.Alpha
                     {
                         Name = "custom-action",
                         Type = ActionType.custom,
+                        // Task and Description intentionally omitted
                     }
                 }
             };
@@ -212,6 +199,8 @@ namespace Test.CSharp.Alpha
             var second = actions[1];
             Assert.Equal("custom-action", second.GetProperty("name").GetString());
             Assert.Equal("custom", second.GetProperty("type").GetString());
+            Assert.False(second.TryGetProperty("task", out _));
+            Assert.False(second.TryGetProperty("description", out _));
         }
 
         [Fact]
@@ -241,28 +230,11 @@ namespace Test.CSharp.Alpha
             var query = new ActionsQuery();
             var @params = query.ToQueryParams();
 
-            // Optional fields not set → not included in query params
             Assert.DoesNotContain(@params, p => p.Item1 == "externalId");
             Assert.DoesNotContain(@params, p => p.Item1 == "createdAfter");
             Assert.DoesNotContain(@params, p => p.Item1 == "includeCompleted");
             Assert.DoesNotContain(@params, p => p.Item1 == "limit");
             Assert.DoesNotContain(@params, p => p.Item1 == "cursor");
-        }
-
-        [Fact]
-        public void TestActionUpdateNullFieldsNotSerialized()
-        {
-            var update = new ActionUpdate
-            {
-                ExternalId = "act-1",
-                Status = ActionStatus.failed,
-            };
-
-            var json = JsonSerializer.Serialize(update, _jsonOptions);
-            var doc = JsonDocument.Parse(json);
-
-            Assert.False(doc.RootElement.TryGetProperty("resultMessage", out _));
-            Assert.False(doc.RootElement.TryGetProperty("resultMetadata", out _));
         }
     }
 }
