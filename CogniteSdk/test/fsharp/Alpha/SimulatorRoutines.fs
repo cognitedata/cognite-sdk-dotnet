@@ -1,4 +1,3 @@
-[<Xunit.Collection("simulators")>]
 module Tests.Integration.SimulatorRoutines
 
 open System
