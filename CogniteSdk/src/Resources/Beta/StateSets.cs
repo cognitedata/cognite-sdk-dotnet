@@ -116,11 +116,8 @@ namespace CogniteSdk.Resources.Beta
 
         private static CogniteStateSet GetFromNestedDicts(Dictionary<string, Dictionary<string, CogniteStateSet>> properties)
         {
-<<<<<<< HEAD
+
             if (properties is null || !properties.TryGetValue(View.Space, out var bySource))
-=======
-            if (!properties.TryGetValue(View.Space, out var bySource))
->>>>>>> 53b7794 (Address review comments on state set resource)
             {
                 return default;
             }
