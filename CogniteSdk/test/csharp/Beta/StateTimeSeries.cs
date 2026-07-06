@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CogniteSdk;
 using CogniteSdk.DataModels;
+using CogniteSdk.DataModels.Core;
 using Com.Cognite.V1.Timeseries.Proto;
 using Xunit;
 
@@ -174,6 +176,98 @@ namespace Test.CSharp.Integration.Beta
                 {
                     await _fx.Write.DataModels.DeleteInstances(createdIds);
                 }
+            }
+        }
+
+        [Fact]
+        public async Task UpsertAndRetrieveStateSetAndTimeSeriesTyped()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "valve_states_typed_" + Guid.NewGuid().ToString("N");
+            var tsXid = "valve_001_state_typed_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            var stateSets = _fx.Write.Beta.StateSets;
+
+            try
+            {
+                // Upsert a state set using the beta state set resource.
+                await stateSets.UpsertAsync(new[]
+                {
+                    new SourcedNodeWrite<CogniteStateSet>
+                    {
+                        Space = space,
+                        ExternalId = stateSetXid,
+                        Properties = new CogniteStateSet
+                        {
+                            Name = "Valve Position States",
+                            Description = "Standard position states for industrial valves",
+                            States = new[]
+                            {
+                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                                new CogniteState { NumericValue = 1, StringValue = "OPEN" },
+                                new CogniteState { NumericValue = 2, StringValue = "TRANSITIONING" }
+                            }
+                        }
+                    }
+                });
+
+                // Upsert a state time series referencing the state set via the typed StateSet property.
+                // State time series are only available in beta, so this must go through the beta API.
+                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
+                {
+                    Replace = true,
+                    Items = new BaseInstanceWrite[]
+                    {
+                        new NodeWrite
+                        {
+                            Space = space,
+                            ExternalId = tsXid,
+                            Sources = new InstanceData[]
+                            {
+                                new InstanceData<CogniteTimeSeriesBase>
+                                {
+                                    Source = TimeSeriesView,
+                                    Properties = new CogniteTimeSeriesBase
+                                    {
+                                        Name = "Valve 001 Position",
+                                        Description = "Typed state time series round-trip test",
+                                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Retrieve the state set and assert its states round-trip.
+                var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                Assert.Equal("Valve Position States", retrievedStateSet.Name);
+                var states = retrievedStateSet.States.ToList();
+                Assert.Equal(3, states.Count);
+                Assert.Contains(states, s => s.NumericValue == 0 && s.StringValue == "CLOSED");
+                Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
+                Assert.Contains(states, s => s.NumericValue == 2 && s.StringValue == "TRANSITIONING");
+
+                // Retrieve the time series via beta and assert the StateSet direct relation round-trips.
+                var tsResponse = await _fx.Write.Beta.DataModels.RetrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(
+                    new InstancesRetrieve
+                    {
+                        Items = new[] { tsId },
+                        Sources = new[] { new InstanceSource { Source = TimeSeriesView } }
+                    });
+                var retrievedTs = tsResponse.Items.Single().Properties[TimeSeriesView.Space][$"{TimeSeriesView.ExternalId}/{TimeSeriesView.Version}"];
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
+                Assert.NotNull(retrievedTs.StateSet);
+                Assert.Equal(space, retrievedTs.StateSet.Space);
+                Assert.Equal(stateSetXid, retrievedTs.StateSet.ExternalId);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
             }
         }
     }
