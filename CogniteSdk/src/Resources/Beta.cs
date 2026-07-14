@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 using CogniteSdk.Resources.Beta;
 using Microsoft.FSharp.Core;
 using Oryx;
-
+using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
 // Avoid name collision with the non-beta resources
 using BetaDataPointsResource = CogniteSdk.Resources.Beta.DataPointsResource;
-using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
 
 namespace CogniteSdk.Resources
 {

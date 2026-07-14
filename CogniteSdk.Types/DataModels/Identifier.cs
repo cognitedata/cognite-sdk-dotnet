@@ -96,7 +96,8 @@ namespace CogniteSdk.DataModels
         public class ViewIdentifierEqualityComparer : IEqualityComparer<ViewIdentifier>
         {
             /// <inheritdoc/>
-            public bool Equals(ViewIdentifier x, ViewIdentifier y) {
+            public bool Equals(ViewIdentifier x, ViewIdentifier y)
+            {
                 if (x == null || y == null) return ReferenceEquals(x, y);
                 if (ReferenceEquals(x, y)) return true;
                 return x.Space == y.Space && x.ExternalId == y.ExternalId && x.Version == y.Version;
