@@ -99,17 +99,7 @@ namespace CogniteSdk.Resources.DataModels
 
         private static TResult GetFromNestedDicts<TResult>(Dictionary<string, Dictionary<string, TResult>> properties, ViewIdentifier view)
         {
-            if (!properties.TryGetValue(view.Space, out var bySource))
-            {
-                return default;
-            }
-
-            if (!bySource.TryGetValue($"{view.ExternalId}/{view.Version}", out var v))
-            {
-                return default;
-            }
-            return v;
-
+            return DMHelpers.GetFromNestedDicts(properties, view);
         }
 
         /// <summary>

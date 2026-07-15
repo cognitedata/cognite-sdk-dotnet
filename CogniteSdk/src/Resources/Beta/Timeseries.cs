@@ -111,22 +111,8 @@ namespace CogniteSdk.Resources.Beta
                 CreatedTime = r.CreatedTime,
                 LastUpdatedTime = r.LastUpdatedTime,
                 DeletedTime = r.DeletedTime,
-                Properties = GetFromNestedDicts(r.Properties)
+                Properties = DMHelpers.GetFromNestedDicts(r.Properties, View)
             }).ToList();
-        }
-
-        private static CogniteTimeSeriesBase GetFromNestedDicts(Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>> properties)
-        {
-            if (properties is null || !properties.TryGetValue(View.Space, out var bySource))
-            {
-                return default;
-            }
-
-            if (!bySource.TryGetValue($"{View.ExternalId}/{View.Version}", out var v))
-            {
-                return default;
-            }
-            return v;
         }
     }
 }
