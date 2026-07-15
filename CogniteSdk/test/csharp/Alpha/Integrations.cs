@@ -204,6 +204,41 @@ namespace Test.CSharp.Alpha
         }
 
         [Fact]
+        public void TestActionsCreateQueryToQueryParams()
+        {
+            var query = new ActionsCreateQuery("my-integration");
+            var @params = query.ToQueryParams();
+            Assert.Single(@params);
+            Assert.Contains(("externalId", "my-integration"), @params);
+        }
+
+        [Fact]
+        public void TestCreateActionSerialization()
+        {
+            var action = new CreateAction
+            {
+                ExternalId = "act-1",
+                ActionName = "start-task",
+                CallMetadata = new Dictionary<string, string> { ["key"] = "value" },
+            };
+            var json = JsonSerializer.Serialize(action, _jsonOptions);
+            var doc = JsonDocument.Parse(json);
+            Assert.Equal("act-1", doc.RootElement.GetProperty("externalId").GetString());
+            Assert.Equal("start-task", doc.RootElement.GetProperty("actionName").GetString());
+            Assert.Equal("value", doc.RootElement.GetProperty("callMetadata").GetProperty("key").GetString());
+        }
+
+        [Theory]
+        [InlineData(ActionType.start_task, "start_task")]
+        [InlineData(ActionType.stop_task, "stop_task")]
+        [InlineData(ActionType.custom, "custom")]
+        public void TestActionTypeSerialization(ActionType type, string expected)
+        {
+            var json = JsonSerializer.Serialize(type, _jsonOptions);
+            Assert.Equal($"\"{expected}\"", json);
+        }
+
+        [Fact]
         public void TestActionsQueryToQueryParams_AllFields()
         {
             var query = new ActionsQuery

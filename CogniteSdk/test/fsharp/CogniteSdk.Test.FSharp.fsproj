@@ -23,6 +23,7 @@
     <Compile Include="Groups.fs" />
     <Compile Include="Units.fs" />
     <Compile Include="Alpha/Common.fs" />
+    <Compile Include="Alpha/Integrations.fs" />
     <Compile Include="Alpha/Simulators.fs" />
     <Compile Include="Alpha/SimulatorModels.fs" />
     <Compile Include="Alpha/SimulatorRoutines.fs" />
