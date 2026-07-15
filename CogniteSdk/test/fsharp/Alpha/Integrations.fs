@@ -6,13 +6,14 @@ open Xunit
 open Swensen.Unquote
 open CogniteSdk.Alpha
 open Tests.Integration.Common
+open Tests.Integration.Alpha.Common
 
 let private now = DateTimeOffset.Now.ToUnixTimeMilliseconds()
 let private integrationExternalId = $"test_integration_{now}"
 let private actionExternalId = $"test_action_{now}"
 let private actionName = "test-action"
 
-[<Fact>]
+[<FactIf(envVar = "ENABLE_INTEGRATIONS_TESTS", skipReason = "Integrations API not enabled in this environment")>]
 [<Trait("resource", "integrations")>]
 let ``Create integration with actions, retrieve, list and cancel is Ok`` () =
     task {
