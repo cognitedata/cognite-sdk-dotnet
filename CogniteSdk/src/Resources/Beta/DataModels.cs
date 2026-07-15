@@ -40,5 +40,23 @@ namespace CogniteSdk.Resources.Beta
             var req = Oryx.Cognite.Beta.DataModels.upsertInstances(request, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Retrieve a list of instances by id using the beta API
+        /// </summary>
+        /// <typeparam name="T">Type of instance data to retrieve</typeparam>
+        /// <param name="query">Instances query</param>
+        /// <param name="token">Optional cancellation token</param>
+        /// <returns>Retrieved instances</returns>
+        public async Task<InstancesRetrieveResponse<T>> RetrieveInstances<T>(InstancesRetrieve query, CancellationToken token = default)
+        {
+            if (query is null)
+            {
+                throw new ArgumentNullException(nameof(query));
+            }
+
+            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<T>(query, GetContext(token));
+            return await RunAsync(req).ConfigureAwait(false);
+        }
     }
 }

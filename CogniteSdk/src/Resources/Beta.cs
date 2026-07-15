@@ -40,6 +40,11 @@ namespace CogniteSdk.Resources
         public BetaDataModelsResource DataModels { get; }
 
         /// <summary>
+        /// Core data model state sets, describing the possible states of state time series.
+        /// </summary>
+        public StateSetsResource StateSets { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -50,6 +55,7 @@ namespace CogniteSdk.Resources
             StreamRecords = new StreamRecordsResource(authHandler, ctx);
             DataPoints = new BetaDataPointsResource(authHandler, ctx);
             DataModels = new BetaDataModelsResource(authHandler, ctx);
+            StateSets = new StateSetsResource(authHandler, ctx);
         }
     }
 }
