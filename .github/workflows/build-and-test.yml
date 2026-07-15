@@ -48,8 +48,7 @@ jobs:
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.lcov
+          file: ./coverage.lcov
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
-          skip_validation: true
