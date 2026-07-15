@@ -11,6 +11,7 @@ using Oryx;
 // Avoid name collision with the non-beta resources
 using BetaDataPointsResource = CogniteSdk.Resources.Beta.DataPointsResource;
 using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
+using BetaTimeSeriesResource = CogniteSdk.Resources.Beta.TimeSeriesResource;
 
 namespace CogniteSdk.Resources
 {
@@ -45,6 +46,11 @@ namespace CogniteSdk.Resources
         public StateSetsResource StateSets { get; }
 
         /// <summary>
+        /// Beta time series operations
+        /// </summary>
+        public BetaTimeSeriesResource TimeSeries { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -56,6 +62,7 @@ namespace CogniteSdk.Resources
             DataPoints = new BetaDataPointsResource(authHandler, ctx);
             DataModels = new BetaDataModelsResource(authHandler, ctx);
             StateSets = new StateSetsResource(authHandler, ctx);
+            TimeSeries = new BetaTimeSeriesResource(authHandler, ctx);
         }
     }
 }

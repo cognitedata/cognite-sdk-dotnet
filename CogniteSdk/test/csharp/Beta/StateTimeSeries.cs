@@ -214,34 +214,24 @@ namespace Test.CSharp.Integration.Beta
                     }
                 });
 
-                // Upsert a state time series referencing the state set via the typed StateSet property.
-                // State time series are only available in beta, so this must go through the beta API.
-                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
+                // Upsert a state time series referencing the state set via the typed StateSet property,
+                // using the beta time series resource. State time series are only available in beta,
+                // so this must go through the beta API.
+                await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
                 {
-                    Replace = true,
-                    Items = new BaseInstanceWrite[]
+                    new SourcedNodeWrite<CogniteTimeSeriesBase>
                     {
-                        new NodeWrite
+                        Space = space,
+                        ExternalId = tsXid,
+                        Properties = new CogniteTimeSeriesBase
                         {
-                            Space = space,
-                            ExternalId = tsXid,
-                            Sources = new InstanceData[]
-                            {
-                                new InstanceData<CogniteTimeSeriesBase>
-                                {
-                                    Source = TimeSeriesView,
-                                    Properties = new CogniteTimeSeriesBase
-                                    {
-                                        Name = "Valve 001 Position",
-                                        Description = "Typed state time series round-trip test",
-                                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
-                                    }
-                                }
-                            }
+                            Name = "Valve 001 Position",
+                            Description = "Typed state time series round-trip test",
+                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
                         }
                     }
-                });
+                }, new UpsertOptions { Replace = true });
 
                 // Retrieve the state set and assert its states round-trip.
                 var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
@@ -252,18 +242,92 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
                 Assert.Contains(states, s => s.NumericValue == 2 && s.StringValue == "TRANSITIONING");
 
-                // Retrieve the time series via beta and assert the StateSet direct relation round-trips.
-                var tsResponse = await _fx.Write.Beta.DataModels.RetrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(
-                    new InstancesRetrieve
-                    {
-                        Items = new[] { tsId },
-                        Sources = new[] { new InstanceSource { Source = TimeSeriesView } }
-                    });
-                var retrievedTs = tsResponse.Items.Single().Properties[TimeSeriesView.Space][$"{TimeSeriesView.ExternalId}/{TimeSeriesView.Version}"];
+                // Retrieve the time series via the beta time series resource and assert the StateSet
+                // direct relation round-trips.
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
                 Assert.Equal(stateSetXid, retrievedTs.StateSet.ExternalId);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
+
+        [Fact]
+        public async Task CreateStateSetStateTimeSeriesAndAddDatapoints()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "pump_states_" + Guid.NewGuid().ToString("N");
+            var tsXid = "pump_001_state_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                // Create a state set using the beta state set resource.
+                await _fx.Write.Beta.StateSets.UpsertAsync(new[]
+                {
+                    new SourcedNodeWrite<CogniteStateSet>
+                    {
+                        Space = space,
+                        ExternalId = stateSetXid,
+                        Properties = new CogniteStateSet
+                        {
+                            Name = "Pump Run States",
+                            States = new[]
+                            {
+                                new CogniteState { NumericValue = 0, StringValue = "STOPPED" },
+                                new CogniteState { NumericValue = 1, StringValue = "RUNNING" }
+                            }
+                        }
+                    }
+                });
+
+                // Create a state time series referencing the state set using the beta time series resource.
+                // State time series are only available through the data modeling (DMS) API.
+                await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
+                {
+                    new SourcedNodeWrite<CogniteTimeSeriesBase>
+                    {
+                        Space = space,
+                        ExternalId = tsXid,
+                        Properties = new CogniteTimeSeriesBase
+                        {
+                            Name = "Pump 001 State",
+                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                        }
+                    }
+                }, new UpsertOptions { Replace = true });
+
+                // Add a state data point to the new time series.
+                var datapoints = new StateDatapoints();
+                datapoints.Datapoints.Add(new StateDatapoint { Timestamp = 1609459200000L, NumericValue = 1L, StringValue = "RUNNING" });
+
+                var insertion = new DataPointInsertionRequest();
+                insertion.Items.Add(new DataPointInsertionItem
+                {
+                    InstanceId = new InstanceId { Space = space, ExternalId = tsXid },
+                    StateDatapoints = datapoints
+                });
+
+                await _fx.Write.Beta.DataPoints.CreateAsync(insertion);
+
+                // Verify the data point was added correctly.
+                var latest = (await _fx.Write.Beta.DataPoints.LatestAsync(new DataPointsLatestQuery
+                {
+                    Items = new[] { IdentityWithBefore.Create(new InstanceIdentifier(space, tsXid)) }
+                })).Items.First();
+
+                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, latest.DatapointTypeCase);
+                var latestPoint = latest.StateDatapoints.Datapoints.Single();
+                Assert.Equal(1609459200000L, latestPoint.Timestamp);
+                Assert.Equal(1L, latestPoint.NumericValue);
+                Assert.Equal("RUNNING", latestPoint.StringValue);
             }
             finally
             {
