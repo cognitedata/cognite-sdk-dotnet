@@ -282,5 +282,51 @@ namespace Test.CSharp.Integration.Beta
                 await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
             }
         }
+        [Fact]
+        public async Task UpsertStateSetAndTimeSeriesWithNoStates()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "empty_states_" + Guid.NewGuid().ToString("N");
+            var tsXid = "empty_states_ts_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Empty State Set",
+                    states: Array.Empty<CogniteState>(),
+                    tsName: "Empty States Time Series",
+                    stateSetDescription: "State set intentionally created with no states",
+                    tsDescription: "Time series referencing an empty state set");
+
+                // Retrieve the state set and verify it round-trips with no states.
+                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                Assert.Equal("Empty State Set", retrievedStateSet.Name);
+                Assert.True(retrievedStateSet.States == null || !retrievedStateSet.States.Any());
+
+                // Retrieve the time series and verify the direct relation to the (empty) state set.
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
+                Assert.NotNull(retrievedTs.StateSet);
+                Assert.Equal(space, retrievedTs.StateSet.Space);
+                Assert.Equal(stateSetXid, retrievedTs.StateSet.ExternalId);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
+
+        [Fact]
+        public async Task UpsertWithEmptyListThrows()
+        {
+            await Assert.ThrowsAnyAsync<Exception>(() =>
+                _fx.Write.Beta.StateSets.UpsertAsync(Array.Empty<SourcedNodeWrite<CogniteStateSet>>()));
+            await Assert.ThrowsAnyAsync<Exception>(() =>
+                _fx.Write.Beta.TimeSeries.UpsertAsync(Array.Empty<SourcedNodeWrite<CogniteTimeSeriesBase>>()));
+        }
     }
 }
