@@ -46,7 +46,7 @@ namespace CogniteSdk.Resources.Beta
         {
             if (items is null)
             {
-                throw new ArgumentNullException(nameof(items));
+                return Enumerable.Empty<SlimInstance>();
             }
 
             var opts = options ?? new UpsertOptions();
@@ -90,7 +90,7 @@ namespace CogniteSdk.Resources.Beta
         {
             if (ids is null)
             {
-                throw new ArgumentNullException(nameof(ids));
+                return Enumerable.Empty<SourcedNode<CogniteTimeSeriesBase>>();
             }
 
             var request = new InstancesRetrieve

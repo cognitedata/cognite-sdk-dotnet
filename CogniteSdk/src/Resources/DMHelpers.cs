@@ -25,7 +25,7 @@ namespace CogniteSdk.Resources
             }
             if (bySource == null)
             {
-                System.Diagnostics.Trace.TraceWarning("Source was null when extracting nested view properties {prop}", view);
+                System.Diagnostics.Trace.TraceWarning("Source was null when extracting nested view properties {view}");
                 return default;
             }
 
