@@ -321,12 +321,12 @@ namespace Test.CSharp.Integration.Beta
         }
 
         [Fact]
-        public async Task UpsertWithEmptyListThrows()
+        public async Task UpsertWithNullThrows()
         {
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.StateSets.UpsertAsync(Array.Empty<SourcedNodeWrite<CogniteStateSet>>()));
+                _fx.Write.Beta.StateSets.UpsertAsync(null));
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.TimeSeries.UpsertAsync(Array.Empty<SourcedNodeWrite<CogniteTimeSeriesBase>>()));
+                _fx.Write.Beta.TimeSeries.UpsertAsync(null));
         }
     }
 }
