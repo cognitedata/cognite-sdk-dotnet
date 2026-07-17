@@ -97,21 +97,6 @@ namespace CogniteSdk.Resources.DataModels
             }, token);
         }
 
-        private static TResult GetFromNestedDicts<TResult>(Dictionary<string, Dictionary<string, TResult>> properties, ViewIdentifier view)
-        {
-            if (!properties.TryGetValue(view.Space, out var bySource))
-            {
-                return default;
-            }
-
-            if (!bySource.TryGetValue($"{view.ExternalId}/{view.Version}", out var v))
-            {
-                return default;
-            }
-            return v;
-
-        }
-
         /// <summary>
         /// Retrieve a list of instances by ID.
         /// </summary>
@@ -176,7 +161,7 @@ namespace CogniteSdk.Resources.DataModels
                         Version = r.Version,
                         StartNode = edge.StartNode,
                         EndNode = edge.EndNode,
-                        Properties = GetFromNestedDicts(r.Properties, view),
+                        Properties = DMHelpers.GetFromNestedDicts(r.Properties, view),
                         CreatedTime = r.CreatedTime,
                         LastUpdatedTime = r.LastUpdatedTime,
                         DeletedTime = r.DeletedTime
@@ -190,7 +175,7 @@ namespace CogniteSdk.Resources.DataModels
                         ExternalId = r.ExternalId,
                         Type = r.Type,
                         Version = r.Version,
-                        Properties = GetFromNestedDicts(r.Properties, view),
+                        Properties = DMHelpers.GetFromNestedDicts(r.Properties, view),
                         CreatedTime = r.CreatedTime,
                         LastUpdatedTime = r.LastUpdatedTime,
                         DeletedTime = r.DeletedTime

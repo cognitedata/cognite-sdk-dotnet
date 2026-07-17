@@ -14,32 +14,33 @@ using Oryx;
 namespace CogniteSdk.Resources.Beta
 {
     /// <summary>
-    /// Resource for core data model state sets, describing the possible states of state time series.
-    /// State sets are currently a beta feature.
+    /// Resource for core data model time series.
     /// </summary>
-    public class StateSetsResource : Resource
+    public class TimeSeriesResource : Resource
     {
         /// <summary>
-        /// View backing state sets in the core data model.
+        /// View backing time series in the core data model.
         /// </summary>
-        public static readonly ViewIdentifier View = new ViewIdentifier("cdf_cdm", "CogniteStateSet", "v1");
+        public static readonly ViewIdentifier View = new ViewIdentifier("cdf_cdm", "CogniteTimeSeries", "v1");
 
         /// <summary>
-        /// Constructor
+        /// Will only be instantiated by the client
         /// </summary>
-        public StateSetsResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
+        /// <param name="authHandler">Authentication handler.</param>
+        /// <param name="ctx">The HTTP context to use for the request.</param>
+        internal TimeSeriesResource(Func<CancellationToken, Task<string>> authHandler, FSharpFunc<IHttpNext<Unit>, Task<Unit>> ctx) : base(authHandler, ctx)
         {
         }
 
         /// <summary>
-        /// Create or update a list of state sets.
+        /// Create or update a list of time series.
         /// </summary>
-        /// <param name="items">State sets to upsert.</param>
+        /// <param name="items">Time series to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>The upserted state set instances.</returns>
+        /// <returns>The upserted time series instances.</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertAsync(
-            IEnumerable<SourcedNodeWrite<CogniteStateSet>> items,
+            IEnumerable<SourcedNodeWrite<CogniteTimeSeriesBase>> items,
             UpsertOptions options = null,
             CancellationToken token = default)
         {
@@ -64,7 +65,7 @@ namespace CogniteSdk.Resources.Beta
                     Type = item.Type,
                     Sources = new[]
                     {
-                        new InstanceData<CogniteStateSet>
+                        new InstanceData<CogniteTimeSeriesBase>
                         {
                             Properties = item.Properties,
                             Source = View
@@ -78,12 +79,12 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
-        /// Retrieve a list of state sets by instance ID.
+        /// Retrieve a list of time series by instance ID.
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
-        /// <returns>The retrieved state set instances.</returns>
-        public async Task<IEnumerable<SourcedNode<CogniteStateSet>>> RetrieveAsync(
+        /// <returns>The retrieved time series instances.</returns>
+        public async Task<IEnumerable<SourcedNode<CogniteTimeSeriesBase>>> RetrieveAsync(
             IEnumerable<InstanceIdentifierWithType> ids,
             CancellationToken token = default)
         {
@@ -98,10 +99,10 @@ namespace CogniteSdk.Resources.Beta
                 Sources = new[] { new InstanceSource { Source = View } }
             };
 
-            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, CogniteStateSet>>>(request, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(request, GetContext(token));
             var results = await RunAsync(req).ConfigureAwait(false);
 
-            return results.Items.Select(r => new SourcedNode<CogniteStateSet>
+            return results.Items.Select(r => new SourcedNode<CogniteTimeSeriesBase>
             {
                 Space = r.Space,
                 ExternalId = r.ExternalId,
