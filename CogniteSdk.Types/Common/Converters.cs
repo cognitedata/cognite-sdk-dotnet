@@ -55,6 +55,10 @@ namespace CogniteSdk
 
             switch (value)
             {
+                case null:
+                case MultiValue.Null _:
+                    writer.WriteNullValue();
+                    break;
                 case MultiValue.String s:
                     writer.WriteStringValue(s.Value);
                     break;
@@ -63,9 +67,6 @@ namespace CogniteSdk
                     break;
                 case MultiValue.Long l:
                     writer.WriteNumberValue(l.Value);
-                    break;
-                case MultiValue.Null n:
-                    writer.WriteNullValue();
                     break;
                 default:
                     throw new ArgumentException($"Unknown MultiValue: {value}");
