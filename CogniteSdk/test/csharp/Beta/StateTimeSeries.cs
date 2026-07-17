@@ -328,5 +328,60 @@ namespace Test.CSharp.Integration.Beta
             await Assert.ThrowsAnyAsync<Exception>(() =>
                 _fx.Write.Beta.TimeSeries.UpsertAsync(null));
         }
+
+        [Fact]
+        public async Task UpsertStateSetAndTimeSeriesWithNullProperties()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "null_props_states_" + Guid.NewGuid().ToString("N");
+            var tsXid = "null_props_ts_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                // Upsert a state set with null Properties.
+                await _fx.Write.Beta.StateSets.UpsertAsync(new[]
+                {
+                    new SourcedNodeWrite<CogniteStateSet>
+                    {
+                        Space = space,
+                        ExternalId = stateSetXid,
+                        Properties = null
+                    }
+                });
+
+                // Upsert a state time series with null Properties.
+                await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
+                {
+                    new SourcedNodeWrite<CogniteTimeSeriesBase>
+                    {
+                        Space = space,
+                        ExternalId = tsXid,
+                        Properties = null
+                    }
+                }, new UpsertOptions { Replace = true });
+
+                // Retrieve both and verify they exist with default/null property values.
+                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single();
+                Assert.Equal(stateSetXid, retrievedStateSet.ExternalId);
+                Assert.True(retrievedStateSet.Properties == null
+                    || (retrievedStateSet.Properties.Name == null
+                        && retrievedStateSet.Properties.Description == null
+                        && (retrievedStateSet.Properties.States == null || !retrievedStateSet.Properties.States.Any())));
+
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single();
+                Assert.Equal(tsXid, retrievedTs.ExternalId);
+                Assert.True(retrievedTs.Properties == null
+                    || (retrievedTs.Properties.Name == null
+                        && retrievedTs.Properties.Description == null
+                        && retrievedTs.Properties.StateSet == null));
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
     }
 }
