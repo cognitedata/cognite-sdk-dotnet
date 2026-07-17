@@ -167,7 +167,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Filter actions belonging to a specific integration.
         /// </summary>
-        public string ExternalId { get; set; }
+        public string Integration { get; set; }
         /// <summary>
         /// Only return actions created after this time (milliseconds since epoch).
         /// </summary>
@@ -182,7 +182,7 @@ namespace CogniteSdk.Alpha
         public override List<(string, string)> ToQueryParams()
         {
             var qs = base.ToQueryParams();
-            if (ExternalId != null) qs.Add(("externalId", ExternalId));
+            if (Integration != null) qs.Add(("externalId", Integration));
             if (CreatedAfter.HasValue) qs.Add(("createdAfter", CreatedAfter.Value.ToString()));
             if (IncludeCompleted.HasValue) qs.Add(("includeCompleted", IncludeCompleted.Value.ToString().ToLower()));
             return qs;

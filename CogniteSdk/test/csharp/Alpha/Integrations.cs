@@ -243,7 +243,7 @@ namespace Test.CSharp.Alpha
         {
             var query = new ActionsQuery
             {
-                ExternalId = "my-integration",
+                Integration = "my-integration",
                 CreatedAfter = 1700000000000L,
                 IncludeCompleted = false,
                 Limit = 50,

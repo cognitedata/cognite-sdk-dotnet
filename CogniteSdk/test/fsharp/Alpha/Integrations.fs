@@ -61,7 +61,7 @@ let ``Create integration with actions, retrieve, list and cancel is Ok`` () =
             // List actions for the integration
             let! listed =
                 writeClient.Alpha.Integrations.ListActionsAsync(
-                    ActionsQuery(ExternalId = integrationExternalId, IncludeCompleted = true)
+                    ActionsQuery(Integration = integrationExternalId, IncludeCompleted = true)
                 )
 
             test <@ Seq.length listed.Items >= 1 @>

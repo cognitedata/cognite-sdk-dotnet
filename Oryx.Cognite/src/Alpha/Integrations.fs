@@ -129,22 +129,12 @@ module Integrations =
         (items: CreateAction seq)
         (source: HttpHandler<unit>)
         : HttpHandler<IntegrationAction seq> =
-        http {
-            let content = ItemsWithoutCursor(Items = items)
-            let query = ActionsCreateQuery(integration)
+        let query = ActionsCreateQuery(integration)
 
-            let! res =
-                source
-                |> withLogMessage "integrations:createactions"
-                |> withAlphaHeader
-                |> postWithQuery<ItemsWithoutCursor<CreateAction>, ItemsWithoutCursor<IntegrationAction>>
-                    content
-                    query
-                    actionsUrl
-                    jsonOptions
-
-            return res.Items
-        }
+        source
+        |> withLogMessage "integrations:createactions"
+        |> withAlphaHeader
+        |> createWithQuery items query actionsUrl
 
     let retrieveActions (items: ActionsRetrieve) (source: HttpHandler<unit>) : HttpHandler<IntegrationAction seq> =
         http {
