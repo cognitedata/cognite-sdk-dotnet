@@ -33,9 +33,6 @@ namespace Test.CSharp.Integration.Beta
 
     public class StateTimeSeriesTests : IClassFixture<StateTimeSeriesFixture>
     {
-        private static readonly ViewIdentifier StateSetView = new("cdf_cdm", "CogniteStateSet", "v1");
-        private static readonly ViewIdentifier TimeSeriesView = new("cdf_cdm", "CogniteTimeSeries", "v1");
-
         private readonly StateTimeSeriesFixture _fx;
 
         public StateTimeSeriesTests(StateTimeSeriesFixture fx) => _fx = fx;
@@ -47,63 +44,23 @@ namespace Test.CSharp.Integration.Beta
             var stateSetXid = "valve_states_" + Guid.NewGuid().ToString("N");
             var tsXid = "valve_001_state_" + Guid.NewGuid().ToString("N");
 
-            var createdIds = new System.Collections.Generic.List<InstanceIdentifierWithType>();
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
 
             try
             {
-                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
-                {
-                    Replace = true,
-                    Items = new BaseInstanceWrite[]
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Valve Position States",
+                    states: new[]
                     {
-                        new NodeWrite
-                        {
-                            Space = space,
-                            ExternalId = stateSetXid,
-                            Sources = new InstanceData[] { new InstanceData<object>
-                            {
-                                Source = StateSetView,
-                                Properties = new
-                                {
-                                    name = "Valve Position States",
-                                    description = "Standard position states for industrial valves",
-                                    states = new[]
-                                    {
-                                        new { numericValue = 0, stringValue = "CLOSED" },
-                                        new { numericValue = 1, stringValue = "OPEN" },
-                                        new { numericValue = 2, stringValue = "TRANSITIONING" }
-                                    }
-                                }
-                            }}
-                        }
-                    }
-                });
-                createdIds.Add(new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid)));
-
-                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
-                {
-                    Replace = true,
-                    Items = new BaseInstanceWrite[]
-                    {
-                        new NodeWrite
-                        {
-                            Space = space,
-                            ExternalId = tsXid,
-                            Sources = new InstanceData[] { new InstanceData<object>
-                            {
-                                Source = TimeSeriesView,
-                                Properties = new
-                                {
-                                    name = "Valve 001 Position",
-                                    description = "Integration test state time series",
-                                    type = "state",
-                                    stateSet = new { space, externalId = stateSetXid }
-                                }
-                            }}
-                        }
-                    }
-                });
-                createdIds.Add(new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid)));
+                        new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                        new CogniteState { NumericValue = 1, StringValue = "OPEN" },
+                        new CogniteState { NumericValue = 2, StringValue = "TRANSITIONING" }
+                    },
+                    tsName: "Valve 001 Position",
+                    stateSetDescription: "Standard position states for industrial valves",
+                    tsDescription: "Integration test state time series");
 
                 // Ingest some state datapoints
                 var datapoints = new StateDatapoints();
@@ -172,11 +129,55 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                if (createdIds.Count > 0)
-                {
-                    await _fx.Write.DataModels.DeleteInstances(createdIds);
-                }
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
             }
+        }
+
+        /// <summary>
+        /// Upsert a state set and a state time series referencing it, using the beta state set and
+        /// time series resources. Shared setup for tests that need a ready-to-use state set/time series pair.
+        /// </summary>
+        private async Task UpsertStateSetAndStateTimeSeries(
+            string space,
+            string stateSetXid,
+            string tsXid,
+            string stateSetName,
+            IEnumerable<CogniteState> states,
+            string tsName,
+            string stateSetDescription = null,
+            string tsDescription = null)
+        {
+            await _fx.Write.Beta.StateSets.UpsertAsync(new[]
+            {
+                new SourcedNodeWrite<CogniteStateSet>
+                {
+                    Space = space,
+                    ExternalId = stateSetXid,
+                    Properties = new CogniteStateSet
+                    {
+                        Name = stateSetName,
+                        Description = stateSetDescription,
+                        States = states
+                    }
+                }
+            });
+
+            // State time series are only available in beta, so this must go through the beta API.
+            await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
+            {
+                new SourcedNodeWrite<CogniteTimeSeriesBase>
+                {
+                    Space = space,
+                    ExternalId = tsXid,
+                    Properties = new CogniteTimeSeriesBase
+                    {
+                        Name = tsName,
+                        Description = tsDescription,
+                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                    }
+                }
+            }, new UpsertOptions { Replace = true });
         }
 
         [Fact]
@@ -193,55 +194,18 @@ namespace Test.CSharp.Integration.Beta
 
             try
             {
-                // Upsert a state set using the beta state set resource.
-                await stateSets.UpsertAsync(new[]
-                {
-                    new SourcedNodeWrite<CogniteStateSet>
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Valve Position States",
+                    states: new[]
                     {
-                        Space = space,
-                        ExternalId = stateSetXid,
-                        Properties = new CogniteStateSet
-                        {
-                            Name = "Valve Position States",
-                            Description = "Standard position states for industrial valves",
-                            States = new[]
-                            {
-                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
-                                new CogniteState { NumericValue = 1, StringValue = "OPEN" },
-                                new CogniteState { NumericValue = 2, StringValue = "TRANSITIONING" }
-                            }
-                        }
-                    }
-                });
-
-                // Upsert a state time series referencing the state set via the typed StateSet property.
-                // State time series are only available in beta, so this must go through the beta API.
-                await _fx.Write.Beta.DataModels.UpsertInstances(new InstanceWriteRequest
-                {
-                    Replace = true,
-                    Items = new BaseInstanceWrite[]
-                    {
-                        new NodeWrite
-                        {
-                            Space = space,
-                            ExternalId = tsXid,
-                            Sources = new InstanceData[]
-                            {
-                                new InstanceData<CogniteTimeSeriesBase>
-                                {
-                                    Source = TimeSeriesView,
-                                    Properties = new CogniteTimeSeriesBase
-                                    {
-                                        Name = "Valve 001 Position",
-                                        Description = "Typed state time series round-trip test",
-                                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+                        new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                        new CogniteState { NumericValue = 1, StringValue = "OPEN" },
+                        new CogniteState { NumericValue = 2, StringValue = "TRANSITIONING" }
+                    },
+                    tsName: "Valve 001 Position",
+                    stateSetDescription: "Standard position states for industrial valves",
+                    tsDescription: "Typed state time series round-trip test");
 
                 // Retrieve the state set and assert its states round-trip.
                 var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
@@ -252,14 +216,9 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
                 Assert.Contains(states, s => s.NumericValue == 2 && s.StringValue == "TRANSITIONING");
 
-                // Retrieve the time series via beta and assert the StateSet direct relation round-trips.
-                var tsResponse = await _fx.Write.Beta.DataModels.RetrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(
-                    new InstancesRetrieve
-                    {
-                        Items = new[] { tsId },
-                        Sources = new[] { new InstanceSource { Source = TimeSeriesView } }
-                    });
-                var retrievedTs = tsResponse.Items.Single().Properties[TimeSeriesView.Space][$"{TimeSeriesView.ExternalId}/{TimeSeriesView.Version}"];
+                // Retrieve the time series via the beta time series resource and assert the StateSet
+                // direct relation round-trips.
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
@@ -269,6 +228,105 @@ namespace Test.CSharp.Integration.Beta
             {
                 await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
             }
+        }
+
+        [Fact]
+        public async Task CreateStateSetStateTimeSeriesAndAddDatapoints()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "pump_states_" + Guid.NewGuid().ToString("N");
+            var tsXid = "pump_001_state_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Pump Run States",
+                    states: new[]
+                    {
+                        new CogniteState { NumericValue = 0, StringValue = "STOPPED" },
+                        new CogniteState { NumericValue = 1, StringValue = "RUNNING" }
+                    },
+                    tsName: "Pump 001 State");
+
+                // Add a state data point to the new time series.
+                var datapoints = new StateDatapoints();
+                datapoints.Datapoints.Add(new StateDatapoint { Timestamp = 1609459200000L, NumericValue = 1L, StringValue = "RUNNING" });
+
+                var insertion = new DataPointInsertionRequest();
+                insertion.Items.Add(new DataPointInsertionItem
+                {
+                    InstanceId = new InstanceId { Space = space, ExternalId = tsXid },
+                    StateDatapoints = datapoints
+                });
+
+                await _fx.Write.Beta.DataPoints.CreateAsync(insertion);
+
+                // Verify the data point was added correctly.
+                var latest = (await _fx.Write.Beta.DataPoints.LatestAsync(new DataPointsLatestQuery
+                {
+                    Items = new[] { IdentityWithBefore.Create(new InstanceIdentifier(space, tsXid)) }
+                })).Items.First();
+
+                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, latest.DatapointTypeCase);
+                var latestPoint = latest.StateDatapoints.Datapoints.Single();
+                Assert.Equal(1609459200000L, latestPoint.Timestamp);
+                Assert.Equal(1L, latestPoint.NumericValue);
+                Assert.Equal("RUNNING", latestPoint.StringValue);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
+        [Fact]
+        public async Task UpsertStateSetAndTimeSeriesWithNoStates()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "empty_states_" + Guid.NewGuid().ToString("N");
+            var tsXid = "empty_states_ts_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Empty State Set",
+                    states: Array.Empty<CogniteState>(),
+                    tsName: "Empty States Time Series",
+                    stateSetDescription: "State set intentionally created with no states",
+                    tsDescription: "Time series referencing an empty state set");
+
+                // Retrieve the state set and verify it round-trips with no states.
+                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                Assert.Equal("Empty State Set", retrievedStateSet.Name);
+                Assert.True(retrievedStateSet.States == null || !retrievedStateSet.States.Any());
+
+                // Retrieve the time series and verify the direct relation to the (empty) state set.
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
+                Assert.NotNull(retrievedTs.StateSet);
+                Assert.Equal(space, retrievedTs.StateSet.Space);
+                Assert.Equal(stateSetXid, retrievedTs.StateSet.ExternalId);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
+
+        [Fact]
+        public async Task UpsertWithNullThrows()
+        {
+            await Assert.ThrowsAnyAsync<Exception>(() =>
+                _fx.Write.Beta.StateSets.UpsertAsync(null));
+            await Assert.ThrowsAnyAsync<Exception>(() =>
+                _fx.Write.Beta.TimeSeries.UpsertAsync(null));
         }
     }
 }
