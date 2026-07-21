@@ -10,10 +10,6 @@ using Oryx;
 using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
 // Avoid name collision with the non-beta resources
 using BetaDataPointsResource = CogniteSdk.Resources.Beta.DataPointsResource;
-<<<<<<< HEAD
-using BetaDataModelsResource = CogniteSdk.Resources.Beta.DataModelsResource;
-=======
->>>>>>> 4a79513 (Add generic wrappers for state sets and timeseries functions)
 using BetaTimeSeriesResource = CogniteSdk.Resources.Beta.TimeSeriesResource;
 
 namespace CogniteSdk.Resources
