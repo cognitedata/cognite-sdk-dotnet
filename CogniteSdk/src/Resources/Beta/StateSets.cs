@@ -118,6 +118,10 @@ namespace CogniteSdk.Resources.Beta
             var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, T>>>(request, GetContext(token));
             var results = await RunAsync(req).ConfigureAwait(false);
 
+            if (results?.Items == null)
+            {
+                return Enumerable.Empty<SourcedNode<T>>();
+            }
             return results.Items.Select(r => new SourcedNode<T>
             {
                 Space = r.Space,
