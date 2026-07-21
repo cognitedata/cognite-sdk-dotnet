@@ -38,11 +38,12 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="items">Time series to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of time series properties to upsert, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The upserted time series instances.</returns>
-        public async Task<IEnumerable<SlimInstance>> UpsertAsync(
-            IEnumerable<SourcedNodeWrite<CogniteTimeSeriesBase>> items,
+        public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
+            IEnumerable<SourcedNodeWrite<T>> items,
             UpsertOptions options = null,
-            CancellationToken token = default)
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
             if (items is null)
             {
@@ -65,7 +66,7 @@ namespace CogniteSdk.Resources.Beta
                     Type = item.Type,
                     Sources = new[]
                     {
-                        new InstanceData<CogniteTimeSeriesBase>
+                        new InstanceData<T>
                         {
                             Properties = item.Properties,
                             Source = View
@@ -79,14 +80,30 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
+        /// Create or update a list of time series.
+        /// </summary>
+        /// <param name="items">Time series to upsert.</param>
+        /// <param name="options">Optional upsert options.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The upserted time series instances.</returns>
+        public async Task<IEnumerable<SlimInstance>> UpsertAsync(
+            IEnumerable<SourcedNodeWrite<CogniteTimeSeriesBase>> items,
+            UpsertOptions options = null,
+            CancellationToken token = default)
+        {
+            return await UpsertAsync<CogniteTimeSeriesBase>(items, options, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Retrieve a list of time series by instance ID.
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of time series properties to return, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The retrieved time series instances.</returns>
-        public async Task<IEnumerable<SourcedNode<CogniteTimeSeriesBase>>> RetrieveAsync(
+        public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(
             IEnumerable<InstanceIdentifierWithType> ids,
-            CancellationToken token = default)
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
             if (ids is null)
             {
@@ -99,10 +116,14 @@ namespace CogniteSdk.Resources.Beta
                 Sources = new[] { new InstanceSource { Source = View } }
             };
 
-            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, CogniteTimeSeriesBase>>>(request, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, T>>>(request, GetContext(token));
             var results = await RunAsync(req).ConfigureAwait(false);
 
-            return results.Items.Select(r => new SourcedNode<CogniteTimeSeriesBase>
+            if (results?.Items == null)
+            {
+                return Enumerable.Empty<SourcedNode<T>>();
+            }
+            return results.Items.Select(r => new SourcedNode<T>
             {
                 Space = r.Space,
                 ExternalId = r.ExternalId,
@@ -113,6 +134,19 @@ namespace CogniteSdk.Resources.Beta
                 DeletedTime = r.DeletedTime,
                 Properties = DMHelpers.GetFromNestedDicts(r.Properties, View)
             }).ToList();
+        }
+
+        /// <summary>
+        /// Retrieve a list of time series by instance ID.
+        /// </summary>
+        /// <param name="ids">Instance IDs to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The retrieved time series instances.</returns>
+        public async Task<IEnumerable<SourcedNode<CogniteTimeSeriesBase>>> RetrieveAsync(
+            IEnumerable<InstanceIdentifierWithType> ids,
+            CancellationToken token = default)
+        {
+            return await RetrieveAsync<CogniteTimeSeriesBase>(ids, token).ConfigureAwait(false);
         }
     }
 }
