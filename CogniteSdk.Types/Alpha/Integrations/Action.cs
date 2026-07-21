@@ -203,7 +203,7 @@ namespace CogniteSdk.Alpha
         /// <param name="integrationExternalId">Integration external ID to include as a query parameter.</param>
         public ActionsCreateQuery(string integrationExternalId)
         {
-            _integrationExternalId = integrationExternalId;
+            _integrationExternalId = integrationExternalId ?? throw new System.ArgumentNullException(nameof(integrationExternalId));
         }
 
         /// <inheritdoc />

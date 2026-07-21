@@ -176,6 +176,8 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Created actions.</returns>
         public async Task<IEnumerable<IntegrationAction>> CreateActionsAsync(string integration, IEnumerable<CreateAction> items, CancellationToken token = default)
         {
+            if (integration is null) throw new ArgumentNullException(nameof(integration));
+            if (items is null) throw new ArgumentNullException(nameof(items));
             var req = Integrations.createActions(integration, items, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
@@ -189,6 +191,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Retrieved actions.</returns>
         public async Task<IEnumerable<IntegrationAction>> RetrieveActionsAsync(IEnumerable<string> ids, bool ignoreUnknownIds, CancellationToken token = default)
         {
+            if (ids is null) throw new ArgumentNullException(nameof(ids));
             var req = Integrations.retrieveActions(new ActionsRetrieve
             {
                 Items = ids.Select(id => new CogniteExternalId(id)).ToList(),
@@ -205,6 +208,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>List of actions with optional cursor for pagination.</returns>
         public async Task<ItemsWithCursor<IntegrationAction>> ListActionsAsync(ActionsQuery query, CancellationToken token = default)
         {
+            if (query is null) throw new ArgumentNullException(nameof(query));
             var req = Integrations.listActions(query, GetContext(token));
             return await RunAsync(req).ConfigureAwait(false);
         }
@@ -218,6 +222,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <returns>Cancelled actions.</returns>
         public async Task<IEnumerable<IntegrationAction>> CancelActionsAsync(IEnumerable<string> ids, bool ignoreUnknownIds, CancellationToken token = default)
         {
+            if (ids is null) throw new ArgumentNullException(nameof(ids));
             var req = Integrations.cancelActions(new CancelActionsRequest
             {
                 Items = ids.Select(id => new CogniteExternalId(id)).ToList(),
