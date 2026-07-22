@@ -1,6 +1,7 @@
 // Copyright 2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -203,7 +204,7 @@ namespace CogniteSdk.Alpha
         /// <param name="integrationExternalId">Integration external ID to include as a query parameter.</param>
         public ActionsCreateQuery(string integrationExternalId)
         {
-            _integrationExternalId = integrationExternalId ?? throw new System.ArgumentNullException(nameof(integrationExternalId));
+            _integrationExternalId = integrationExternalId ?? throw new ArgumentNullException(nameof(integrationExternalId));
         }
 
         /// <inheritdoc />
