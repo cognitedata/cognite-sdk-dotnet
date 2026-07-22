@@ -120,7 +120,7 @@ namespace CogniteSdk.Alpha
     /// <summary>
     /// Request sent to integrations to report liveness of the extractor and receive any notifications
     /// it needs to consider.
-    /// 
+    ///
     /// All fields except `ExternalId` are optional, and an empty checkin still has the semantic
     /// meaning of reporting that the extractor is alive.
     /// </summary>
@@ -138,6 +138,11 @@ namespace CogniteSdk.Alpha
         /// Errors and warnings.
         /// </summary>
         public IEnumerable<ErrorWithTask> Errors { get; set; }
+        /// <summary>
+        /// Status updates for actions that are currently being executed or have completed.
+        /// The extractor should report these to transition pending actions through their lifecycle.
+        /// </summary>
+        public IEnumerable<ActionUpdate> ActionUpdates { get; set; }
     }
 
     /// <summary>
@@ -154,6 +159,12 @@ namespace CogniteSdk.Alpha
         /// to decide to restart with a new remote configuration file.
         /// </summary>
         public int? LastConfigRevision { get; set; }
+        /// <summary>
+        /// Actions that are pending execution by the extractor.
+        /// The extractor should pick these up, execute them, and report results via
+        /// <see cref="CheckInRequest.ActionUpdates"/> in subsequent check-ins.
+        /// </summary>
+        public IEnumerable<IntegrationAction> PendingActions { get; set; }
     }
 
     /// <summary>
@@ -184,5 +195,10 @@ namespace CogniteSdk.Alpha
         /// API defaults to current time when it is stored in CDF.
         /// </summary>
         public long? Timestamp { get; set; }
+        /// <summary>
+        /// Available actions this extractor can handle. The API uses these to validate
+        /// that triggered actions reference known action names.
+        /// </summary>
+        public IEnumerable<AvailableActionWrite> AvailableActions { get; set; }
     }
 }

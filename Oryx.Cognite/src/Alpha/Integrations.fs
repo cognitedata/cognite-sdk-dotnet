@@ -121,3 +121,48 @@ module Integrations =
         |> withLogMessage "integrations:update"
         |> withAlphaHeader
         |> update items Url
+
+    let private actionsUrl = Url +/ "actions"
+
+    let createActions
+        (integration: string)
+        (items: CreateAction seq)
+        (source: HttpHandler<unit>)
+        : HttpHandler<IntegrationAction seq> =
+        let query = ActionsCreateQuery(integration)
+
+        source
+        |> withLogMessage "integrations:createactions"
+        |> withAlphaHeader
+        |> createWithQuery items query actionsUrl
+
+    let retrieveActions (items: ActionsRetrieve) (source: HttpHandler<unit>) : HttpHandler<IntegrationAction seq> =
+        http {
+            let! res =
+                source
+                |> withLogMessage "integrations:retrieveactions"
+                |> withAlphaHeader
+                |> postV10<ActionsRetrieve, ItemsWithoutCursor<IntegrationAction>> items (actionsUrl +/ "byids")
+
+            return res.Items
+        }
+
+    let listActions
+        (query: ActionsQuery)
+        (source: HttpHandler<unit>)
+        : HttpHandler<ItemsWithCursor<IntegrationAction>> =
+        source
+        |> withLogMessage "integrations:listactions"
+        |> withAlphaHeader
+        |> getWithQuery query actionsUrl
+
+    let cancelActions (items: CancelActionsRequest) (source: HttpHandler<unit>) : HttpHandler<IntegrationAction seq> =
+        http {
+            let! res =
+                source
+                |> withLogMessage "integrations:cancelactions"
+                |> withAlphaHeader
+                |> postV10<CancelActionsRequest, ItemsWithoutCursor<IntegrationAction>> items (actionsUrl +/ "cancel")
+
+            return res.Items
+        }
