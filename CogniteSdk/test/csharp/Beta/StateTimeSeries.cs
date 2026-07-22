@@ -328,5 +328,92 @@ namespace Test.CSharp.Integration.Beta
             await Assert.ThrowsAnyAsync<Exception>(() =>
                 _fx.Write.Beta.TimeSeries.UpsertAsync(null));
         }
+
+        [Fact]
+        public async Task UpsertAndRetrieveStateSetAndTimeSeriesWithGenericCustomType()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "valve_states_generic_" + Guid.NewGuid().ToString("N");
+            var tsXid = "valve_001_state_generic_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                // Exercise the generic UpsertAsync<T> overloads directly, using custom subtypes
+                // of CogniteStateSet / CogniteTimeSeriesBase instead of the base types.
+                await _fx.Write.Beta.StateSets.UpsertAsync<CustomStateSet>(new[]
+                {
+                    new SourcedNodeWrite<CustomStateSet>
+                    {
+                        Space = space,
+                        ExternalId = stateSetXid,
+                        Properties = new CustomStateSet
+                        {
+                            Name = "Valve Position States (generic)",
+                            States = new[]
+                            {
+                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                                new CogniteState { NumericValue = 1, StringValue = "OPEN" }
+                            }
+                        }
+                    }
+                });
+
+                await _fx.Write.Beta.TimeSeries.UpsertAsync<CustomTimeSeries>(new[]
+                {
+                    new SourcedNodeWrite<CustomTimeSeries>
+                    {
+                        Space = space,
+                        ExternalId = tsXid,
+                        Properties = new CustomTimeSeries
+                        {
+                            Name = "Valve 001 Position (generic)",
+                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                        }
+                    }
+                }, new UpsertOptions { Replace = true });
+
+                // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
+                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync<CustomStateSet>(new[] { stateSetId })).Single();
+                Assert.IsType<CustomStateSet>(retrievedStateSet.Properties);
+                Assert.Equal("Valve Position States (generic)", retrievedStateSet.Properties.Name);
+                var states = retrievedStateSet.Properties.States.ToList();
+                Assert.Equal(2, states.Count);
+                Assert.Contains(states, s => s.NumericValue == 0 && s.StringValue == "CLOSED");
+                Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
+
+                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId })).Single();
+                Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
+                Assert.NotNull(retrievedTs.Properties.StateSet);
+                Assert.Equal(space, retrievedTs.Properties.StateSet.Space);
+                Assert.Equal(stateSetXid, retrievedTs.Properties.StateSet.ExternalId);
+            }
+            finally
+            {
+                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+            }
+        }
+    }
+
+    /// <summary>
+    /// Custom subtype of <see cref="CogniteStateSet"/> used to verify that the generic
+    /// UpsertAsync/RetrieveAsync overloads on <see cref="CogniteSdk.Resources.Beta.StateSetsResource"/>
+    /// work with types other than the base <see cref="CogniteStateSet"/>.
+    /// </summary>
+    internal class CustomStateSet : CogniteStateSet
+    {
+    }
+
+    /// <summary>
+    /// Custom subtype of <see cref="CogniteTimeSeriesBase"/> used to verify that the generic
+    /// UpsertAsync/RetrieveAsync overloads on <see cref="CogniteSdk.Resources.Beta.TimeSeriesResource"/>
+    /// work with types other than the base <see cref="CogniteTimeSeriesBase"/>.
+    /// </summary>
+    internal class CustomTimeSeries : CogniteTimeSeriesBase
+    {
     }
 }

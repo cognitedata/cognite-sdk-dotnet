@@ -37,11 +37,12 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="items">State sets to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of state set properties to upsert, e.g CogniteStateSet or a custom subtype.</typeparam>
         /// <returns>The upserted state set instances.</returns>
-        public async Task<IEnumerable<SlimInstance>> UpsertAsync(
-            IEnumerable<SourcedNodeWrite<CogniteStateSet>> items,
+        public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
+            IEnumerable<SourcedNodeWrite<T>> items,
             UpsertOptions options = null,
-            CancellationToken token = default)
+            CancellationToken token = default) where T : CogniteStateSet
         {
             if (items is null)
             {
@@ -64,7 +65,7 @@ namespace CogniteSdk.Resources.Beta
                     Type = item.Type,
                     Sources = new[]
                     {
-                        new InstanceData<CogniteStateSet>
+                        new InstanceData<T>
                         {
                             Properties = item.Properties,
                             Source = View
@@ -78,14 +79,30 @@ namespace CogniteSdk.Resources.Beta
         }
 
         /// <summary>
+        /// Create or update a list of state sets.
+        /// </summary>
+        /// <param name="items">State sets to upsert.</param>
+        /// <param name="options">Optional upsert options.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The upserted state set instances.</returns>
+        public async Task<IEnumerable<SlimInstance>> UpsertAsync(
+            IEnumerable<SourcedNodeWrite<CogniteStateSet>> items,
+            UpsertOptions options = null,
+            CancellationToken token = default)
+        {
+            return await UpsertAsync<CogniteStateSet>(items, options, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Retrieve a list of state sets by instance ID.
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <typeparam name="T">Type of state set properties to return, e.g CogniteStateSet or a custom subtype.</typeparam>
         /// <returns>The retrieved state set instances.</returns>
-        public async Task<IEnumerable<SourcedNode<CogniteStateSet>>> RetrieveAsync(
+        public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(
             IEnumerable<InstanceIdentifierWithType> ids,
-            CancellationToken token = default)
+            CancellationToken token = default) where T : CogniteStateSet
         {
             if (ids is null)
             {
@@ -98,10 +115,14 @@ namespace CogniteSdk.Resources.Beta
                 Sources = new[] { new InstanceSource { Source = View } }
             };
 
-            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, CogniteStateSet>>>(request, GetContext(token));
+            var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, T>>>(request, GetContext(token));
             var results = await RunAsync(req).ConfigureAwait(false);
 
-            return results.Items.Select(r => new SourcedNode<CogniteStateSet>
+            if (results?.Items == null)
+            {
+                return Enumerable.Empty<SourcedNode<T>>();
+            }
+            return results.Items.Select(r => new SourcedNode<T>
             {
                 Space = r.Space,
                 ExternalId = r.ExternalId,
@@ -112,6 +133,19 @@ namespace CogniteSdk.Resources.Beta
                 DeletedTime = r.DeletedTime,
                 Properties = DMHelpers.GetFromNestedDicts(r.Properties, View)
             }).ToList();
+        }
+
+        /// <summary>
+        /// Retrieve a list of state sets by instance ID.
+        /// </summary>
+        /// <param name="ids">Instance IDs to retrieve.</param>
+        /// <param name="token">Optional cancellation token.</param>
+        /// <returns>The retrieved state set instances.</returns>
+        public async Task<IEnumerable<SourcedNode<CogniteStateSet>>> RetrieveAsync(
+            IEnumerable<InstanceIdentifierWithType> ids,
+            CancellationToken token = default)
+        {
+            return await RetrieveAsync<CogniteStateSet>(ids, token).ConfigureAwait(false);
         }
     }
 }
