@@ -79,7 +79,7 @@ namespace CogniteSdk.Alpha
         /// <see cref="ActionStatus.running"/>, <see cref="ActionStatus.failed"/>,
         /// <see cref="ActionStatus.succeeded"/>, or <see cref="ActionStatus.canceled"/>.
         /// </summary>
-        public ActionStatus Status { get; set; }
+        public ActionStatus? Status { get; set; }
         /// <summary>
         /// Human-readable message describing the result or reason for the status.
         /// </summary>
@@ -182,7 +182,7 @@ namespace CogniteSdk.Alpha
         public override List<(string, string)> ToQueryParams()
         {
             var qs = base.ToQueryParams();
-            if (Integration != null) qs.Add(("externalId", Integration));
+            if (Integration != null) qs.Add(("integration", Integration));
             if (CreatedAfter.HasValue) qs.Add(("createdAfter", CreatedAfter.Value.ToString()));
             if (IncludeCompleted.HasValue) qs.Add(("includeCompleted", IncludeCompleted.Value ? "true" : "false"));
             return qs;

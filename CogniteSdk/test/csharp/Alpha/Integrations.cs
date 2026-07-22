@@ -252,7 +252,7 @@ namespace Test.CSharp.Alpha
 
             var @params = query.ToQueryParams();
 
-            Assert.Contains(("externalId", "my-integration"), @params);
+            Assert.Contains(("integration", "my-integration"), @params);
             Assert.Contains(("createdAfter", "1700000000000"), @params);
             Assert.Contains(("includeCompleted", "false"), @params);
             Assert.Contains(("limit", "50"), @params);
@@ -265,7 +265,7 @@ namespace Test.CSharp.Alpha
             var query = new ActionsQuery();
             var @params = query.ToQueryParams();
 
-            Assert.DoesNotContain(@params, p => p.Item1 == "externalId");
+            Assert.DoesNotContain(@params, p => p.Item1 == "integration");
             Assert.DoesNotContain(@params, p => p.Item1 == "createdAfter");
             Assert.DoesNotContain(@params, p => p.Item1 == "includeCompleted");
             Assert.DoesNotContain(@params, p => p.Item1 == "limit");
