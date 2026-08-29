@@ -91,15 +91,24 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Equal(3, raw.StateDatapoints.Datapoints.Count);
 
                 // Aggregate query
-                var agg = (await _fx.Write.Beta.DataPoints.ListAsync(new DataPointsQuery
+                var aggregateQuery = new DataPointsQuery
                 {
                     Start = "1609459200000",
                     End = "1609545600000",
                     Granularity = "1d",
                     Aggregates = new[] { "stateCount", "stateTransitions", "stateDuration" },
                     Items = item
-                })).Items.First();
+                };
 
+                DataPointListItem agg = null;
+                for (var attempt = 0; attempt < 10; attempt++)
+                {
+                    agg = (await _fx.Write.Beta.DataPoints.ListAsync(aggregateQuery)).Items.FirstOrDefault();
+                    if (agg?.DatapointTypeCase == DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints) break;
+                    await Task.Delay(1000);
+                }
+
+                Assert.NotNull(agg);
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints, agg.DatapointTypeCase);
                 var stateAggregates = agg.AggregateDatapoints.Datapoints.First().StateAggregates;
                 Assert.NotEmpty(stateAggregates);
