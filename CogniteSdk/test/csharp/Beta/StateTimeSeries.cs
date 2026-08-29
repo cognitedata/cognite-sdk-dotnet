@@ -37,7 +37,7 @@ namespace Test.CSharp.Integration.Beta
 
         public StateTimeSeriesTests(StateTimeSeriesFixture fx) => _fx = fx;
 
-        [Fact(Skip = "State time series aggregate queries return empty responses in the CI project")]
+        [Fact]
         public async Task UpsertStateSetIngestAndQueryDatapoints()
         {
             var space = _fx.TestSpace;
@@ -77,14 +77,21 @@ namespace Test.CSharp.Integration.Beta
 
                 await _fx.Write.Beta.DataPoints.CreateAsync(insertion);
 
-                var item = new[] { new DataPointsQueryItem { InstanceId = new InstanceIdentifier(space, tsXid) } };
+                var instanceId = new InstanceIdentifier(space, tsXid);
 
                 // Raw query
                 var raw = (await _fx.Write.Beta.DataPoints.ListAsync(new DataPointsQuery
                 {
-                    Start = "1609459200000",
-                    End = "1609545600000",
-                    Items = item
+                    Items = new[]
+                    {
+                        new DataPointsQueryItem
+                        {
+                            InstanceId = instanceId,
+                            Start = "1609459200000",
+                            End = "1609545600000",
+                            Limit = 10
+                        }
+                    }
                 })).Items.First();
 
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, raw.DatapointTypeCase);
@@ -93,11 +100,22 @@ namespace Test.CSharp.Integration.Beta
                 // Aggregate query
                 var agg = (await _fx.Write.Beta.DataPoints.ListAsync(new DataPointsQuery
                 {
-                    Start = "1609459200000",
-                    End = "1609545600000",
-                    Granularity = "1d",
-                    Aggregates = new[] { "stateCount", "stateTransitions", "stateDuration" },
-                    Items = item
+                    Items = new[]
+                    {
+                        new DataPointsQueryItem
+                        {
+                            InstanceId = instanceId,
+                            Start = "1609459200000",
+                            End = "1609545600000",
+                            Granularity = "1d",
+                            Aggregates = new[]
+                            {
+                                "count", "countGood", "countUncertain",
+                                "stateCount", "stateTransitions", "stateDuration"
+                            },
+                            TreatUncertainAsBad = false
+                        }
+                    }
                 })).Items.First();
 
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints, agg.DatapointTypeCase);
@@ -118,7 +136,7 @@ namespace Test.CSharp.Integration.Beta
                 // Latest data point should return the most recent state with both numeric and string values populated
                 var latest = (await _fx.Write.Beta.DataPoints.LatestAsync(new DataPointsLatestQuery
                 {
-                    Items = new[] { IdentityWithBefore.Create(new InstanceIdentifier(space, tsXid)) }
+                    Items = new[] { IdentityWithBefore.Create(instanceId) }
                 })).Items.First();
 
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, latest.DatapointTypeCase);
