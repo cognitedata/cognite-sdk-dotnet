@@ -62,6 +62,9 @@ namespace Test.CSharp.Integration.Beta
                     stateSetDescription: "Standard position states for industrial valves",
                     tsDescription: "Integration test state time series");
 
+                // Wait for the time series metadata to propagate before ingesting datapoints.
+                await Task.Delay(1000);
+
                 // Ingest some state datapoints
                 var datapoints = new StateDatapoints();
                 datapoints.Datapoints.Add(new StateDatapoint { Timestamp = 1609459200000L, NumericValue = 0L, StringValue = "CLOSED" });
