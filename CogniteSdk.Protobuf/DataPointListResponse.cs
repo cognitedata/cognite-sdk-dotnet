@@ -25,7 +25,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Ch5kYXRhX3BvaW50X2xpc3RfcmVzcG9uc2UucHJvdG8SH2NvbS5jb2duaXRl",
-            "LnYxLnRpbWVzZXJpZXMucHJvdG8aEWRhdGFfcG9pbnRzLnByb3RvIuIEChFE",
+            "LnYxLnRpbWVzZXJpZXMucHJvdG8aEWRhdGFfcG9pbnRzLnByb3RvIsEFChFE",
             "YXRhUG9pbnRMaXN0SXRlbRIKCgJpZBgBIAEoAxISCgpleHRlcm5hbElkGAIg",
             "ASgJEj8KCmluc3RhbmNlSWQYCyABKAsyKy5jb20uY29nbml0ZS52MS50aW1l",
             "c2VyaWVzLnByb3RvLkluc3RhbmNlSWQSEAoIaXNTdHJpbmcYBiABKAgSDgoG",
@@ -37,18 +37,20 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             "YXRhcG9pbnRzGAQgASgLMjEuY29tLmNvZ25pdGUudjEudGltZXNlcmllcy5w",
             "cm90by5TdHJpbmdEYXRhcG9pbnRzSAASUwoTYWdncmVnYXRlRGF0YXBvaW50",
             "cxgFIAEoCzI0LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uQWdn",
-            "cmVnYXRlRGF0YXBvaW50c0gAEksKD3N0YXRlRGF0YXBvaW50cxgNIAEoCzIw",
-            "LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uU3RhdGVEYXRhcG9p",
-            "bnRzSABCDwoNZGF0YXBvaW50VHlwZSJaChVEYXRhUG9pbnRMaXN0UmVzcG9u",
-            "c2USQQoFaXRlbXMYASADKAsyMi5jb20uY29nbml0ZS52MS50aW1lc2VyaWVz",
-            "LnByb3RvLkRhdGFQb2ludExpc3RJdGVtKoUBCg5UaW1lU2VyaWVzVHlwZRIf",
-            "ChtUSU1FU0VSSUVTX1RZUEVfVU5TUEVDSUZJRUQQABIbChdUSU1FU0VSSUVT",
-            "X1RZUEVfTlVNRVJJQxABEhoKFlRJTUVTRVJJRVNfVFlQRV9TVFJJTkcQAhIZ",
-            "ChVUSU1FU0VSSUVTX1RZUEVfU1RBVEUQA0ICUAFiBnByb3RvMw=="));
+            "cmVnYXRlRGF0YXBvaW50c0gAEl0KGHN0YXRlQWdncmVnYXRlRGF0YXBvaW50",
+            "cxgPIAEoCzI5LmNvbS5jb2duaXRlLnYxLnRpbWVzZXJpZXMucHJvdG8uU3Rh",
+            "dGVBZ2dyZWdhdGVEYXRhcG9pbnRzSAASSwoPc3RhdGVEYXRhcG9pbnRzGA0g",
+            "ASgLMjAuY29tLmNvZ25pdGUudjEudGltZXNlcmllcy5wcm90by5TdGF0ZURh",
+            "dGFwb2ludHNIAEIPCg1kYXRhcG9pbnRUeXBlIloKFURhdGFQb2ludExpc3RS",
+            "ZXNwb25zZRJBCgVpdGVtcxgBIAMoCzIyLmNvbS5jb2duaXRlLnYxLnRpbWVz",
+            "ZXJpZXMucHJvdG8uRGF0YVBvaW50TGlzdEl0ZW0qhQEKDlRpbWVTZXJpZXNU",
+            "eXBlEh8KG1RJTUVTRVJJRVNfVFlQRV9VTlNQRUNJRklFRBAAEhsKF1RJTUVT",
+            "RVJJRVNfVFlQRV9OVU1FUklDEAESGgoWVElNRVNFUklFU19UWVBFX1NUUklO",
+            "RxACEhkKFVRJTUVTRVJJRVNfVFlQRV9TVEFURRADQgJQAWIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Com.Cognite.V1.Timeseries.Proto.DataPointsReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Com.Cognite.V1.Timeseries.Proto.TimeSeriesType), }, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "IsString", "IsStep", "Unit", "NextCursor", "UnitExternalId", "Type", "NumericDatapoints", "StringDatapoints", "AggregateDatapoints", "StateDatapoints" }, new[]{ "DatapointType" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem), global::Com.Cognite.V1.Timeseries.Proto.DataPointListItem.Parser, new[]{ "Id", "ExternalId", "InstanceId", "IsString", "IsStep", "Unit", "NextCursor", "UnitExternalId", "Type", "NumericDatapoints", "StringDatapoints", "AggregateDatapoints", "StateAggregateDatapoints", "StateDatapoints" }, new[]{ "DatapointType" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Com.Cognite.V1.Timeseries.Proto.DataPointListResponse), global::Com.Cognite.V1.Timeseries.Proto.DataPointListResponse.Parser, new[]{ "Items" }, null, null, null, null)
           }));
     }
@@ -119,6 +121,9 @@ namespace Com.Cognite.V1.Timeseries.Proto {
           break;
         case DatapointTypeOneofCase.AggregateDatapoints:
           AggregateDatapoints = other.AggregateDatapoints.Clone();
+          break;
+        case DatapointTypeOneofCase.StateAggregateDatapoints:
+          StateAggregateDatapoints = other.StateAggregateDatapoints.Clone();
           break;
         case DatapointTypeOneofCase.StateDatapoints:
           StateDatapoints = other.StateDatapoints.Clone();
@@ -278,6 +283,18 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
     }
 
+    /// <summary>Field number for the "stateAggregateDatapoints" field.</summary>
+    public const int StateAggregateDatapointsFieldNumber = 15;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints StateAggregateDatapoints {
+      get { return datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints ? (global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints) datapointType_ : null; }
+      set {
+        datapointType_ = value;
+        datapointTypeCase_ = value == null ? DatapointTypeOneofCase.None : DatapointTypeOneofCase.StateAggregateDatapoints;
+      }
+    }
+
     /// <summary>Field number for the "stateDatapoints" field.</summary>
     public const int StateDatapointsFieldNumber = 13;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -297,6 +314,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       NumericDatapoints = 3,
       StringDatapoints = 4,
       AggregateDatapoints = 5,
+      StateAggregateDatapoints = 15,
       StateDatapoints = 13,
     }
     private DatapointTypeOneofCase datapointTypeCase_ = DatapointTypeOneofCase.None;
@@ -340,6 +358,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       if (!object.Equals(NumericDatapoints, other.NumericDatapoints)) return false;
       if (!object.Equals(StringDatapoints, other.StringDatapoints)) return false;
       if (!object.Equals(AggregateDatapoints, other.AggregateDatapoints)) return false;
+      if (!object.Equals(StateAggregateDatapoints, other.StateAggregateDatapoints)) return false;
       if (!object.Equals(StateDatapoints, other.StateDatapoints)) return false;
       if (DatapointTypeCase != other.DatapointTypeCase) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -361,6 +380,7 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       if (datapointTypeCase_ == DatapointTypeOneofCase.NumericDatapoints) hash ^= NumericDatapoints.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.StringDatapoints) hash ^= StringDatapoints.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.AggregateDatapoints) hash ^= AggregateDatapoints.GetHashCode();
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) hash ^= StateAggregateDatapoints.GetHashCode();
       if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) hash ^= StateDatapoints.GetHashCode();
       hash ^= (int) datapointTypeCase_;
       if (_unknownFields != null) {
@@ -433,6 +453,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(106);
         output.WriteMessage(StateDatapoints);
       }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) {
+        output.WriteRawTag(122);
+        output.WriteMessage(StateAggregateDatapoints);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -495,6 +519,10 @@ namespace Com.Cognite.V1.Timeseries.Proto {
         output.WriteRawTag(106);
         output.WriteMessage(StateDatapoints);
       }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) {
+        output.WriteRawTag(122);
+        output.WriteMessage(StateAggregateDatapoints);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -540,6 +568,9 @@ namespace Com.Cognite.V1.Timeseries.Proto {
       }
       if (datapointTypeCase_ == DatapointTypeOneofCase.AggregateDatapoints) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(AggregateDatapoints);
+      }
+      if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(StateAggregateDatapoints);
       }
       if (datapointTypeCase_ == DatapointTypeOneofCase.StateDatapoints) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(StateDatapoints);
@@ -604,6 +635,12 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             AggregateDatapoints = new global::Com.Cognite.V1.Timeseries.Proto.AggregateDatapoints();
           }
           AggregateDatapoints.MergeFrom(other.AggregateDatapoints);
+          break;
+        case DatapointTypeOneofCase.StateAggregateDatapoints:
+          if (StateAggregateDatapoints == null) {
+            StateAggregateDatapoints = new global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints();
+          }
+          StateAggregateDatapoints.MergeFrom(other.StateAggregateDatapoints);
           break;
         case DatapointTypeOneofCase.StateDatapoints:
           if (StateDatapoints == null) {
@@ -707,6 +744,15 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             StateDatapoints = subBuilder;
             break;
           }
+          case 122: {
+            global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) {
+              subBuilder.MergeFrom(StateAggregateDatapoints);
+            }
+            input.ReadMessage(subBuilder);
+            StateAggregateDatapoints = subBuilder;
+            break;
+          }
         }
       }
     #endif
@@ -799,6 +845,15 @@ namespace Com.Cognite.V1.Timeseries.Proto {
             }
             input.ReadMessage(subBuilder);
             StateDatapoints = subBuilder;
+            break;
+          }
+          case 122: {
+            global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints subBuilder = new global::Com.Cognite.V1.Timeseries.Proto.StateAggregateDatapoints();
+            if (datapointTypeCase_ == DatapointTypeOneofCase.StateAggregateDatapoints) {
+              subBuilder.MergeFrom(StateAggregateDatapoints);
+            }
+            input.ReadMessage(subBuilder);
+            StateAggregateDatapoints = subBuilder;
             break;
           }
         }

@@ -118,8 +118,13 @@ namespace Test.CSharp.Integration.Beta
                     }
                 })).Items.First();
 
-                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints, agg.DatapointTypeCase);
-                var stateAggregates = agg.AggregateDatapoints.Datapoints.First().StateAggregates;
+                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateAggregateDatapoints, agg.DatapointTypeCase);
+                var aggregateDatapoint = agg.StateAggregateDatapoints.Datapoints.Single();
+                Assert.Equal(3D, aggregateDatapoint.Count);
+                Assert.Equal(3D, aggregateDatapoint.CountGood);
+                Assert.Equal(0D, aggregateDatapoint.CountUncertain);
+
+                var stateAggregates = aggregateDatapoint.StateAggregates;
                 Assert.NotEmpty(stateAggregates);
 
                 var closed = stateAggregates.Single(s => s.NumericValue == 0L);
