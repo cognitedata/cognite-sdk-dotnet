@@ -1,7 +1,10 @@
-﻿// Copyright 2023 Cognite AS
+// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CogniteSdk.DataModels
 {
@@ -51,6 +54,66 @@ namespace CogniteSdk.DataModels
         /// Included properties and expected edges, indexed by a unique space-local identifier.
         /// </summary>
         public Dictionary<string, ICreateViewProperty> Properties { get; set; }
+    }
+
+    /// <summary>
+    /// JsonConverter for ViewCreate and its subtypes (such as RecordViewCreate)
+    /// </summary>
+    public class ViewCreateConverter : JsonConverterFactory
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert == typeof(ViewCreate);
+        }
+
+        /// <inheritdoc />
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var innerOptions = new JsonSerializerOptions(options);
+            for (int i = innerOptions.Converters.Count - 1; i >= 0; i--)
+            {
+                if (innerOptions.Converters[i] is ViewCreateConverter)
+                    innerOptions.Converters.RemoveAt(i);
+            }
+            return new ViewCreateJsonConverter(innerOptions);
+        }
+
+        private sealed class ViewCreateJsonConverter : JsonConverter<ViewCreate>
+        {
+            private readonly JsonSerializerOptions _innerOptions;
+
+            public ViewCreateJsonConverter(JsonSerializerOptions innerOptions)
+            {
+                _innerOptions = innerOptions;
+            }
+
+            public override ViewCreate Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                using var doc = JsonDocument.ParseValue(ref reader);
+                var root = doc.RootElement;
+
+                if (root.ValueKind != JsonValueKind.Object)
+                    throw new JsonException("Expected JSON object for ViewCreate");
+
+                if (root.TryGetProperty("type", out var typeProp) && typeProp.GetString() == "view"
+                    && !root.TryGetProperty("properties", out _))
+                    throw new JsonException("JSON object represents a ViewIdentifier reference, not a ViewCreate");
+
+                bool isRecordView = root.TryGetProperty("streamId", out _);
+
+                var rawText = root.GetRawText();
+                if (isRecordView)
+                    return JsonSerializer.Deserialize<RecordViewCreate>(rawText, _innerOptions);
+                else
+                    return JsonSerializer.Deserialize<ViewCreate>(rawText, _innerOptions);
+            }
+
+            public override void Write(Utf8JsonWriter writer, ViewCreate value, JsonSerializerOptions options)
+            {
+                JsonSerializer.Serialize(writer, value, value.GetType(), _innerOptions);
+            }
+        }
     }
 
     /// <summary>

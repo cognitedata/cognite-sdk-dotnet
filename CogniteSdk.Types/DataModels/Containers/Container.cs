@@ -31,6 +31,10 @@ namespace CogniteSdk.DataModels
         /// </summary>
         public UsedFor UsedFor { get; set; }
         /// <summary>
+        /// Whether this is a global container.
+        /// </summary>
+        public bool IsGlobal { get; set; }
+        /// <summary>
         /// Properties indexed by a local unique identifier.
         /// </summary>
         public Dictionary<string, ContainerPropertyDefinition> Properties { get; set; }

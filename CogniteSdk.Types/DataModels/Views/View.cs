@@ -1,7 +1,9 @@
-﻿// Copyright 2022 Cognite AS
+// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.DataModels
@@ -13,19 +15,19 @@ namespace CogniteSdk.DataModels
     public enum UsedFor
     {
         /// <summary>
-        /// View applies to nodes only
+        /// Applies to nodes only
         /// </summary>
         node,
         /// <summary>
-        /// View applies to edges only
+        /// Applies to edges only
         /// </summary>
         edge,
         /// <summary>
-        /// View applies to both nodes and edges.
+        /// Applies to both nodes and edges, but not records
         /// </summary>
         all,
         /// <summary>
-        /// Container applies to records only. Not applicable to views.
+        /// Applies to records only
         /// </summary>
         record,
     }
@@ -102,13 +104,90 @@ namespace CogniteSdk.DataModels
         /// </summary>
         public bool Writable { get; set; }
         /// <summary>
-        /// Should this view apply to nodes, edges, or both.
+        /// Does the view support query operations?
+        /// </summary>
+        public bool Queryable { get; set; }
+        /// <summary>
+        /// Whether this view applies to nodes, edges, both nodes and edges, or records.
         /// </summary>
         public UsedFor UsedFor { get; set; }
+        /// <summary>
+        /// Is this a global view.
+        /// </summary>
+        public bool IsGlobal { get; set; }
+        /// <summary>
+        /// List of containers with properties mapped by this view.
+        /// </summary>
+        public IEnumerable<ContainerIdentifier> MappedContainers { get; set; }
         /// <summary>
         /// List of properties and relations included in this view.
         /// </summary>
         public Dictionary<string, IViewProperty> Properties { get; set; }
+    }
+
+    /// <summary>
+    /// JsonConverter for View and its subtypes (such as RecordView)
+    /// </summary>
+    public class ViewConverter : JsonConverterFactory
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert == typeof(View);
+        }
+
+        /// <inheritdoc />
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            var innerOptions = new JsonSerializerOptions(options);
+            for (int i = innerOptions.Converters.Count - 1; i >= 0; i--)
+            {
+                if (innerOptions.Converters[i] is ViewConverter)
+                    innerOptions.Converters.RemoveAt(i);
+            }
+            return new ViewJsonConverter(innerOptions);
+        }
+
+        private sealed class ViewJsonConverter : JsonConverter<View>
+        {
+            private readonly JsonSerializerOptions _innerOptions;
+
+            public ViewJsonConverter(JsonSerializerOptions innerOptions)
+            {
+                _innerOptions = innerOptions;
+            }
+
+            public override View Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                using var doc = JsonDocument.ParseValue(ref reader);
+                var root = doc.RootElement;
+
+                if (root.ValueKind != JsonValueKind.Object)
+                    throw new JsonException("Expected JSON object for View");
+
+                if (root.TryGetProperty("type", out var typeProp) && typeProp.GetString() == "view"
+                    && !root.TryGetProperty("properties", out _)
+                    && !root.TryGetProperty("createdTime", out _))
+                    throw new JsonException("JSON object represents a ViewIdentifier reference, not a full View definition");
+
+                bool isRecordView = false;
+                if (root.TryGetProperty("usedFor", out var usedForProp) && usedForProp.GetString() == "record")
+                    isRecordView = true;
+                else if (root.TryGetProperty("streamId", out _))
+                    isRecordView = true;
+
+                var rawText = root.GetRawText();
+                if (isRecordView)
+                    return JsonSerializer.Deserialize<RecordView>(rawText, _innerOptions);
+                else
+                    return JsonSerializer.Deserialize<View>(rawText, _innerOptions);
+            }
+
+            public override void Write(Utf8JsonWriter writer, View value, JsonSerializerOptions options)
+            {
+                JsonSerializer.Serialize(writer, value, value.GetType(), _innerOptions);
+            }
+        }
     }
 
     /// <summary>
