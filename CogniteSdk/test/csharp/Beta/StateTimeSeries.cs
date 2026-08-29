@@ -152,7 +152,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
             }
         }
 
@@ -249,7 +249,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
             }
         }
 
@@ -302,7 +302,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
             }
         }
         [Fact]
@@ -339,7 +339,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
             }
         }
 
@@ -417,7 +417,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CogniteSdk;
+using CogniteSdk.DataModels;
 
 using Xunit;
 
@@ -94,6 +95,26 @@ namespace Test.CSharp.Integration
         public virtual async Task DisposeAsync()
         {
             await WriteClient.Events.DeleteAsync(new EventDelete { IgnoreUnknownIds = true, Items = new[] { Identity.Create("TestEvent") } });
+        }
+
+        public async Task<IEnumerable<InstanceIdentifierWithType>> DeleteInstancesWithRetryAsync(
+            IEnumerable<InstanceIdentifierWithType> ids)
+        {
+            var instanceIds = ids.ToArray();
+
+            for (var attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    return await WriteClient.DataModels.DeleteInstances(instanceIds);
+                }
+                catch (ResponseException ex) when (
+                    attempt < 5 &&
+                    ex.Message.Contains("concurrent instance_delete requests", StringComparison.Ordinal))
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(attempt));
+                }
+            }
         }
     }
 
