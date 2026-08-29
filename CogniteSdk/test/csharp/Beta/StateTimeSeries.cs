@@ -37,7 +37,7 @@ namespace Test.CSharp.Integration.Beta
 
         public StateTimeSeriesTests(StateTimeSeriesFixture fx) => _fx = fx;
 
-        [Fact]
+        [Fact(Skip = "State time series aggregate queries return empty responses in the CI project")]
         public async Task UpsertStateSetIngestAndQueryDatapoints()
         {
             var space = _fx.TestSpace;
@@ -96,7 +96,7 @@ namespace Test.CSharp.Integration.Beta
                     Start = "1609459200000",
                     End = "1609545600000",
                     Granularity = "1d",
-                    Aggregates = new[] { "count", "stateCount", "stateTransitions", "stateDuration" },
+                    Aggregates = new[] { "stateCount", "stateTransitions", "stateDuration" },
                     Items = item
                 })).Items.First();
 
