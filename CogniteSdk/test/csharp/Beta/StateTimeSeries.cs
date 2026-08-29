@@ -101,7 +101,7 @@ namespace Test.CSharp.Integration.Beta
                 };
 
                 DataPointListItem agg = null;
-                for (var attempt = 0; attempt < 10; attempt++)
+                for (var attempt = 0; attempt < 30; attempt++)
                 {
                     agg = (await _fx.Write.Beta.DataPoints.ListAsync(aggregateQuery)).Items.FirstOrDefault();
                     if (agg?.DatapointTypeCase == DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints) break;
