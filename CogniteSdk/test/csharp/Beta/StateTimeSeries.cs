@@ -37,27 +37,6 @@ namespace Test.CSharp.Integration.Beta
 
         public StateTimeSeriesTests(StateTimeSeriesFixture fx) => _fx = fx;
 
-        private static async Task<T> RetrieveSingleWithRetryAsync<T>(Func<Task<IEnumerable<T>>> retrieve)
-        {
-            T[] items = null;
-
-            for (var attempt = 1; attempt <= 5; attempt++)
-            {
-                items = (await retrieve()).ToArray();
-                if (items.Length > 0)
-                {
-                    return items.Single();
-                }
-
-                if (attempt < 5)
-                {
-                    await Task.Delay(TimeSpan.FromSeconds(attempt));
-                }
-            }
-
-            return items.Single();
-        }
-
         [Fact]
         public async Task UpsertStateSetIngestAndQueryDatapoints()
         {
@@ -173,7 +152,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -252,8 +231,8 @@ namespace Test.CSharp.Integration.Beta
                     tsDescription: "Typed state time series round-trip test");
 
                 // Retrieve the state set and assert its states round-trip.
-                var retrievedStateSet = (await RetrieveSingleWithRetryAsync(
-                    () => stateSets.RetrieveAsync(new[] { stateSetId }))).Properties;
+                var retrievedStateSet = (await Retry.RunAsync(
+                    async () => (await stateSets.RetrieveAsync(new[] { stateSetId })).Single())).Properties;
                 Assert.Equal("Valve Position States", retrievedStateSet.Name);
                 var states = retrievedStateSet.States.ToList();
                 Assert.Equal(3, states.Count);
@@ -263,8 +242,8 @@ namespace Test.CSharp.Integration.Beta
 
                 // Retrieve the time series via the beta time series resource and assert the StateSet
                 // direct relation round-trips.
-                var retrievedTs = (await RetrieveSingleWithRetryAsync(
-                    () => _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId }))).Properties;
+                var retrievedTs = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single())).Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
@@ -272,7 +251,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -325,7 +304,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
         [Fact]
@@ -349,14 +328,14 @@ namespace Test.CSharp.Integration.Beta
                     tsDescription: "Time series referencing an empty state set");
 
                 // Retrieve the state set and verify it round-trips with no states.
-                var retrievedStateSet = (await RetrieveSingleWithRetryAsync(
-                    () => _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId }))).Properties;
+                var retrievedStateSet = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single())).Properties;
                 Assert.Equal("Empty State Set", retrievedStateSet.Name);
                 Assert.True(retrievedStateSet.States == null || !retrievedStateSet.States.Any());
 
                 // Retrieve the time series and verify the direct relation to the (empty) state set.
-                var retrievedTs = (await RetrieveSingleWithRetryAsync(
-                    () => _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId }))).Properties;
+                var retrievedTs = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single())).Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
@@ -364,7 +343,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -425,8 +404,8 @@ namespace Test.CSharp.Integration.Beta
                 }, new UpsertOptions { Replace = true });
 
                 // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
-                var retrievedStateSet = await RetrieveSingleWithRetryAsync(
-                    () => _fx.Write.Beta.StateSets.RetrieveAsync<CustomStateSet>(new[] { stateSetId }));
+                var retrievedStateSet = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.StateSets.RetrieveAsync<CustomStateSet>(new[] { stateSetId })).Single());
                 Assert.IsType<CustomStateSet>(retrievedStateSet.Properties);
                 Assert.Equal("Valve Position States (generic)", retrievedStateSet.Properties.Name);
                 var states = retrievedStateSet.Properties.States.ToList();
@@ -434,8 +413,8 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 0 && s.StringValue == "CLOSED");
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
 
-                var retrievedTs = await RetrieveSingleWithRetryAsync(
-                    () => _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId }));
+                var retrievedTs = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId })).Single());
                 Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
                 Assert.NotNull(retrievedTs.Properties.StateSet);
@@ -444,7 +423,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.DeleteInstancesWithRetryAsync(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
     }
