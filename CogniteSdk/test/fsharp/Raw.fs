@@ -146,13 +146,22 @@ let ``Create and delete database is Ok`` () = task {
     let name = Guid.NewGuid().ToString().[..31]
 
     // Act
-    let! createRes = writeClient.Raw.CreateDatabasesAsync [name]
-    let! res = writeClient.Raw.ListDatabasesAsync()
-    let! deleteRes = writeClient.Raw.DeleteDatabasesAsync([name])
+    let! _ = writeClient.Raw.CreateDatabasesAsync [name]
+    let mutable exists = false
+    let mutable cursor = null
+    let mutable hasMore = true
+
+    while not exists && hasMore do
+        let query = RawDatabaseQuery(Cursor = cursor)
+        let! databases = writeClient.Raw.ListDatabasesAsync query
+        exists <- databases.Items |> Seq.exists (fun database -> database.Name = name)
+        cursor <- databases.NextCursor
+        hasMore <- not (String.IsNullOrEmpty cursor)
+
+    let! _ = writeClient.Raw.DeleteDatabasesAsync([name])
 
     // Assert
-    test <@ Seq.length res.Items > 0 @>
-    test <@ res.Items |> Seq.exists (fun dto -> dto.Name = name) @>
+    test <@ exists @>
 }
 
 [<Trait("resource", "raw")>]

@@ -77,14 +77,21 @@ namespace Test.CSharp.Integration.Beta
 
                 await _fx.Write.Beta.DataPoints.CreateAsync(insertion);
 
-                var item = new[] { new DataPointsQueryItem { InstanceId = new InstanceIdentifier(space, tsXid) } };
+                var instanceId = new InstanceIdentifier(space, tsXid);
 
                 // Raw query
                 var raw = (await _fx.Write.Beta.DataPoints.ListAsync(new DataPointsQuery
                 {
-                    Start = "1609459200000",
-                    End = "1609545600000",
-                    Items = item
+                    Items = new[]
+                    {
+                        new DataPointsQueryItem
+                        {
+                            InstanceId = instanceId,
+                            Start = "1609459200000",
+                            End = "1609545600000",
+                            Limit = 10
+                        }
+                    }
                 })).Items.First();
 
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, raw.DatapointTypeCase);
@@ -93,15 +100,31 @@ namespace Test.CSharp.Integration.Beta
                 // Aggregate query
                 var agg = (await _fx.Write.Beta.DataPoints.ListAsync(new DataPointsQuery
                 {
-                    Start = "1609459200000",
-                    End = "1609545600000",
-                    Granularity = "1d",
-                    Aggregates = new[] { "stateCount", "stateTransitions", "stateDuration" },
-                    Items = item
+                    Items = new[]
+                    {
+                        new DataPointsQueryItem
+                        {
+                            InstanceId = instanceId,
+                            Start = "1609459200000",
+                            End = "1609545600000",
+                            Granularity = "1d",
+                            Aggregates = new[]
+                            {
+                                "count", "countGood", "countUncertain",
+                                "stateCount", "stateTransitions", "stateDuration"
+                            },
+                            TreatUncertainAsBad = false
+                        }
+                    }
                 })).Items.First();
 
-                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.AggregateDatapoints, agg.DatapointTypeCase);
-                var stateAggregates = agg.AggregateDatapoints.Datapoints.First().StateAggregates;
+                Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateAggregateDatapoints, agg.DatapointTypeCase);
+                var aggregateDatapoint = agg.StateAggregateDatapoints.Datapoints.Single();
+                Assert.Equal(3D, aggregateDatapoint.Count);
+                Assert.Equal(3D, aggregateDatapoint.CountGood);
+                Assert.Equal(0D, aggregateDatapoint.CountUncertain);
+
+                var stateAggregates = aggregateDatapoint.StateAggregates;
                 Assert.NotEmpty(stateAggregates);
 
                 var closed = stateAggregates.Single(s => s.NumericValue == 0L);
@@ -118,7 +141,7 @@ namespace Test.CSharp.Integration.Beta
                 // Latest data point should return the most recent state with both numeric and string values populated
                 var latest = (await _fx.Write.Beta.DataPoints.LatestAsync(new DataPointsLatestQuery
                 {
-                    Items = new[] { IdentityWithBefore.Create(new InstanceIdentifier(space, tsXid)) }
+                    Items = new[] { IdentityWithBefore.Create(instanceId) }
                 })).Items.First();
 
                 Assert.Equal(DataPointListItem.DatapointTypeOneofCase.StateDatapoints, latest.DatapointTypeCase);
@@ -129,7 +152,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -208,7 +231,8 @@ namespace Test.CSharp.Integration.Beta
                     tsDescription: "Typed state time series round-trip test");
 
                 // Retrieve the state set and assert its states round-trip.
-                var retrievedStateSet = (await stateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                var retrievedStateSet = (await Retry.RunAsync(
+                    async () => (await stateSets.RetrieveAsync(new[] { stateSetId })).Single())).Properties;
                 Assert.Equal("Valve Position States", retrievedStateSet.Name);
                 var states = retrievedStateSet.States.ToList();
                 Assert.Equal(3, states.Count);
@@ -218,7 +242,8 @@ namespace Test.CSharp.Integration.Beta
 
                 // Retrieve the time series via the beta time series resource and assert the StateSet
                 // direct relation round-trips.
-                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
+                var retrievedTs = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single())).Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
@@ -226,7 +251,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -279,7 +304,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
         [Fact]
@@ -303,12 +328,14 @@ namespace Test.CSharp.Integration.Beta
                     tsDescription: "Time series referencing an empty state set");
 
                 // Retrieve the state set and verify it round-trips with no states.
-                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single().Properties;
+                var retrievedStateSet = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.StateSets.RetrieveAsync(new[] { stateSetId })).Single())).Properties;
                 Assert.Equal("Empty State Set", retrievedStateSet.Name);
                 Assert.True(retrievedStateSet.States == null || !retrievedStateSet.States.Any());
 
                 // Retrieve the time series and verify the direct relation to the (empty) state set.
-                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single().Properties;
+                var retrievedTs = (await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single())).Properties;
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Type);
                 Assert.NotNull(retrievedTs.StateSet);
                 Assert.Equal(space, retrievedTs.StateSet.Space);
@@ -316,7 +343,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
 
@@ -377,7 +404,8 @@ namespace Test.CSharp.Integration.Beta
                 }, new UpsertOptions { Replace = true });
 
                 // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
-                var retrievedStateSet = (await _fx.Write.Beta.StateSets.RetrieveAsync<CustomStateSet>(new[] { stateSetId })).Single();
+                var retrievedStateSet = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.StateSets.RetrieveAsync<CustomStateSet>(new[] { stateSetId })).Single());
                 Assert.IsType<CustomStateSet>(retrievedStateSet.Properties);
                 Assert.Equal("Valve Position States (generic)", retrievedStateSet.Properties.Name);
                 var states = retrievedStateSet.Properties.States.ToList();
@@ -385,7 +413,8 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 0 && s.StringValue == "CLOSED");
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
 
-                var retrievedTs = (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId })).Single();
+                var retrievedTs = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId })).Single());
                 Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
                 Assert.NotNull(retrievedTs.Properties.StateSet);
@@ -394,7 +423,7 @@ namespace Test.CSharp.Integration.Beta
             }
             finally
             {
-                await _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId });
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
             }
         }
     }
