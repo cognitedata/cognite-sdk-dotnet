@@ -34,6 +34,19 @@ namespace CogniteSdk.Resources.Beta
 
         /// <summary>
         /// Create or update a list of time series.
+        /// Deprecated: Use <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, UpsertOptions, CancellationToken, ViewIdentifier)"/>
+        /// or <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, UpsertOptions, CancellationToken)"/> instead.
+        /// </summary>
+        public Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
+            IEnumerable<SourcedNodeWrite<T>> items,
+            UpsertOptions options = null,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
+        {
+            return UpsertAsync<T>(items, options, token, null);
+        }
+
+        /// <summary>
+        /// Create or update a list of time series.
         /// </summary>
         /// <param name="items">Time series to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
@@ -46,13 +59,17 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>The upserted time series instances.</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
             IEnumerable<SourcedNodeWrite<T>> items,
-            UpsertOptions options = null,
-            CancellationToken token = default,
-            ViewIdentifier view = null) where T : CogniteTimeSeriesBase
+            UpsertOptions options,
+            CancellationToken token,
+            ViewIdentifier view) where T : CogniteTimeSeriesBase
         {
             if (items is null)
             {
                 throw new ArgumentNullException(nameof(items));
+            }
+            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            {
+                throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
 
             var targetView = view ?? View;
@@ -102,6 +119,17 @@ namespace CogniteSdk.Resources.Beta
 
         /// <summary>
         /// Retrieve a list of time series by instance ID.
+        /// Deprecated: Use <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, CancellationToken, ViewIdentifier)"/>
+        /// or <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, CancellationToken)"/> instead.
+        /// </summary>
+        public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(IEnumerable<InstanceIdentifierWithType> ids,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
+        {
+            return await RetrieveAsync<T>(ids, token, null).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve a list of time series by instance ID.
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
@@ -118,6 +146,10 @@ namespace CogniteSdk.Resources.Beta
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
+            }
+            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            {
+                throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
 
             var targetView = view ?? View;
