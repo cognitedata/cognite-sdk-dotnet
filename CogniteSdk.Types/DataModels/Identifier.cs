@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Cognite AS
+// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
@@ -35,6 +35,25 @@ namespace CogniteSdk.DataModels
         /// External ID of the view or container
         /// </summary>
         public string ExternalId { get; set; }
+
+        /// <summary>
+        /// The segment identifying this source in a fully qualified property reference:
+        /// the container external ID, or "viewExternalId/version" for a view.
+        /// </summary>
+        /// <returns>Source segment of a property reference.</returns>
+        public abstract string SourceSegment();
+
+        /// <summary>
+        /// Build a fully qualified property reference, [space, source, property], for use in
+        /// filters, aggregates and target units. For containers the source segment is the
+        /// container external ID, for views it is "viewExternalId/version".
+        /// </summary>
+        /// <param name="property">Identifier of the property inside the container or view.</param>
+        /// <returns>Property reference as [space, source, property].</returns>
+        public string[] PropertyReference(string property)
+        {
+            return new[] { Space, SourceSegment(), property };
+        }
     }
     /// <summary>
     /// Identifier for a flexible data models view.
@@ -75,6 +94,9 @@ namespace CogniteSdk.DataModels
         {
             return new FDMExternalId(ExternalId, Space, Version);
         }
+
+        /// <inheritdoc />
+        public override string SourceSegment() => $"{ExternalId}/{Version}";
 
         /// <inheritdoc/>
         public override string ToString() => $"{Space}.{ExternalId}.{Version}";
@@ -143,6 +165,9 @@ namespace CogniteSdk.DataModels
         {
             return new ContainerId(ExternalId, Space);
         }
+
+        /// <inheritdoc />
+        public override string SourceSegment() => ExternalId;
     }
 
     /// <summary>
