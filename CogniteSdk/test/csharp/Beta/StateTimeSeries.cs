@@ -170,7 +170,7 @@ namespace Test.CSharp.Integration.Beta
             string stateSetDescription = null,
             string tsDescription = null)
         {
-            await _fx.Write.Beta.StateSets.UpsertAsync(new[]
+            await _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(new[]
             {
                 new SourcedNodeWrite<CogniteStateSet>
                 {
@@ -186,7 +186,7 @@ namespace Test.CSharp.Integration.Beta
             });
 
             // State time series are only available in beta, so this must go through the beta API.
-            await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
+            await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
             {
                 new SourcedNodeWrite<CogniteTimeSeriesBase>
                 {
@@ -351,9 +351,9 @@ namespace Test.CSharp.Integration.Beta
         public async Task UpsertWithNullThrows()
         {
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.StateSets.UpsertAsync(null));
+                _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(null));
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.TimeSeries.UpsertAsync(null));
+                _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(null));
         }
 
         [Fact]
