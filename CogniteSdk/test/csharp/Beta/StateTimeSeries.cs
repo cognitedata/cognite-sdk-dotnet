@@ -500,7 +500,7 @@ namespace Test.CSharp.Integration.Beta
             finally
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
-                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") } ); }
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") }); }
                 catch { /* best-effort */ }
             }
         }
@@ -559,7 +559,7 @@ namespace Test.CSharp.Integration.Beta
             finally
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
-                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") } ); }
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") }); }
                 catch { /* best-effort */ }
             }
         }
