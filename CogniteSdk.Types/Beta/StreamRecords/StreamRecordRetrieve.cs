@@ -13,11 +13,16 @@ namespace CogniteSdk.Beta
     public class StreamRecordSource
     {
         /// <summary>
-        /// Container reference.
+        /// Reference to a container or a record view (a view with <see cref="UsedFor.record"/>).
+        ///
+        /// Selecting through a view restricts the result to records that have data in all of the
+        /// containers mapped by the view, and the view's embedded filter (if any) is applied in
+        /// addition to the request filter.
         /// </summary>
-        public ContainerIdentifier Source { get; set; }
+        public SourceIdentifier Source { get; set; }
         /// <summary>
-        /// List of properties to retrieve.
+        /// List of properties to retrieve. Use "*" to return all properties.
+        /// For a view source these are the view's property names.
         /// </summary>
         public IEnumerable<string> Properties { get; set; }
     }
@@ -74,7 +79,8 @@ namespace CogniteSdk.Beta
     public class StreamRecordsSort
     {
         /// <summary>
-        /// Property you want to sort on.
+        /// Property you want to sort on. Format: [space, container, property], or a top level
+        /// property such as ["lastUpdatedTime"].
         /// </summary>
         public IEnumerable<string> Property { get; set; }
         /// <summary>
@@ -93,7 +99,7 @@ namespace CogniteSdk.Beta
         /// </summary>
         public string Stream { get; set; }
         /// <summary>
-        /// List of containers and the properties that should be selected.
+        /// List of containers or record views and the properties that should be selected.
         /// 
         /// Optional, if this is left out all properties are returned.
         /// </summary>
@@ -116,6 +122,12 @@ namespace CogniteSdk.Beta
         /// Ordered list of sorting specifications.
         /// </summary>
         public IEnumerable<StreamRecordsSort> Sort { get; set; }
+        /// <summary>
+        /// Properties to convert to another unit, or a unit system to convert all convertible
+        /// properties to. Note that unit conversion applies to property values in the request
+        /// filter as well as to the response.
+        /// </summary>
+        public StreamRecordTargetUnits TargetUnits { get; set; }
     }
 
 
@@ -125,7 +137,7 @@ namespace CogniteSdk.Beta
     public class StreamRecordsSync
     {
         /// <summary>
-        /// List of containers and the properties that should be selected.
+        /// List of containers or record views and the properties that should be selected.
         ///
         /// Optional, if this is left out all properties are returned.
         /// </summary>
@@ -148,6 +160,12 @@ namespace CogniteSdk.Beta
         /// Initialize cursor with a time offset. Required if `Cursor` is not set.
         /// </summary>
         public string InitializeCursor { get; set; }
+        /// <summary>
+        /// Properties to convert to another unit, or a unit system to convert all convertible
+        /// properties to. Note that unit conversion applies to property values in the request
+        /// filter as well as to the response.
+        /// </summary>
+        public StreamRecordTargetUnits TargetUnits { get; set; }
     }
 
     /// <summary>

@@ -27,6 +27,13 @@ namespace CogniteSdk.Beta
         /// A dictionary of requested aggregates with client defined names/identifiers.
         /// </summary>
         public Dictionary<string, IStreamRecordAggregate> Aggregates { get; set; }
+
+        /// <summary>
+        /// Properties to convert to another unit, or a unit system to convert all convertible
+        /// properties to. Note that unit conversion applies to property values in the request
+        /// filter as well as to the response.
+        /// </summary>
+        public StreamRecordTargetUnits TargetUnits { get; set; }
     }
 
     /// <summary>
@@ -41,7 +48,8 @@ namespace CogniteSdk.Beta
     public class AvgStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to aggregate on. Format: [space, container, property].
+        /// Property to aggregate on. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// </summary>
         public IEnumerable<string> Property { get; set; }
     }
@@ -52,7 +60,8 @@ namespace CogniteSdk.Beta
     public class CountStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to aggregate on. Format: [space, container, property].
+        /// Property to aggregate on. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// Optional - if not specified, counts all records.
         /// </summary>
         public IEnumerable<string> Property { get; set; }
@@ -64,7 +73,8 @@ namespace CogniteSdk.Beta
     public class MinStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to aggregate on. Format: [space, container, property].
+        /// Property to aggregate on. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// Also supports ["createdTime"] and ["lastUpdatedTime"] top-level properties.
         /// </summary>
         public IEnumerable<string> Property { get; set; }
@@ -76,7 +86,8 @@ namespace CogniteSdk.Beta
     public class MaxStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to aggregate on. Format: [space, container, property].
+        /// Property to aggregate on. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// Also supports ["createdTime"] and ["lastUpdatedTime"] top-level properties.
         /// </summary>
         public IEnumerable<string> Property { get; set; }
@@ -88,7 +99,8 @@ namespace CogniteSdk.Beta
     public class SumStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to aggregate on. Format: [space, container, property].
+        /// Property to aggregate on. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// </summary>
         public IEnumerable<string> Property { get; set; }
     }
@@ -99,7 +111,8 @@ namespace CogniteSdk.Beta
     public class UniqueValuesStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to group by. Format: [space, container, property].
+        /// Property to group by. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// Also supports ["space"] top-level property.
         /// </summary>
         public IEnumerable<string> Property { get; set; }
@@ -121,7 +134,8 @@ namespace CogniteSdk.Beta
     public class NumberHistogramStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to create histogram for. Format: [space, container, property].
+        /// Property to create histogram for. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// </summary>
         public IEnumerable<string> Property { get; set; }
 
@@ -163,7 +177,8 @@ namespace CogniteSdk.Beta
     public class TimeHistogramStreamRecordAggregate : IStreamRecordAggregate
     {
         /// <summary>
-        /// Property to create histogram for. Format: [space, container, property].
+        /// Property to create histogram for. Format: [space, container, property], or [space, "viewExternalId/version", property]
+        /// to address the property through a record view (see <see cref="SourceIdentifier.PropertyReference(string)"/>).
         /// Also supports ["createdTime"] and ["lastUpdatedTime"] top-level properties.
         /// </summary>
         public IEnumerable<string> Property { get; set; }
