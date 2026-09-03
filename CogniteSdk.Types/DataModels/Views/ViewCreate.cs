@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Cognite AS
+// Copyright 2023 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
@@ -51,6 +51,11 @@ namespace CogniteSdk.DataModels
         /// Included properties and expected edges, indexed by a unique space-local identifier.
         /// </summary>
         public Dictionary<string, ICreateViewProperty> Properties { get; set; }
+        /// <summary>
+        /// External IDs of the record streams this view targets.
+        /// Only present on record views (<see cref="UsedFor.record"/>), and required when creating one.
+        /// </summary>
+        public IEnumerable<string> StreamId { get; set; }
     }
 
     /// <summary>

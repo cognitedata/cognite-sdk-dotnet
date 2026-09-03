@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Cognite AS
+// Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
 using System.Collections.Generic;
@@ -13,19 +13,19 @@ namespace CogniteSdk.DataModels
     public enum UsedFor
     {
         /// <summary>
-        /// View applies to nodes only
+        /// Applies to nodes only
         /// </summary>
         node,
         /// <summary>
-        /// View applies to edges only
+        /// Applies to edges only
         /// </summary>
         edge,
         /// <summary>
-        /// View applies to both nodes and edges.
+        /// Applies to both nodes and edges, but not records
         /// </summary>
         all,
         /// <summary>
-        /// Container applies to records only. Not applicable to views.
+        /// Applies to records only
         /// </summary>
         record,
     }
@@ -102,13 +102,30 @@ namespace CogniteSdk.DataModels
         /// </summary>
         public bool Writable { get; set; }
         /// <summary>
-        /// Should this view apply to nodes, edges, or both.
+        /// Does the view support query operations?
+        /// </summary>
+        public bool Queryable { get; set; }
+        /// <summary>
+        /// Whether this view applies to nodes, edges, both nodes and edges, or records.
         /// </summary>
         public UsedFor UsedFor { get; set; }
+        /// <summary>
+        /// Is this a global view.
+        /// </summary>
+        public bool IsGlobal { get; set; }
+        /// <summary>
+        /// List of containers with properties mapped by this view.
+        /// </summary>
+        public IEnumerable<ContainerIdentifier> MappedContainers { get; set; }
         /// <summary>
         /// List of properties and relations included in this view.
         /// </summary>
         public Dictionary<string, IViewProperty> Properties { get; set; }
+        /// <summary>
+        /// External IDs of the record streams this view targets.
+        /// Only present on record views (<see cref="UsedFor.record"/>), and required when creating one.
+        /// </summary>
+        public IEnumerable<string> StreamId { get; set; }
     }
 
     /// <summary>
