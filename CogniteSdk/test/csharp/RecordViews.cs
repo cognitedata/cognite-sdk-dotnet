@@ -26,12 +26,14 @@ namespace Test.CSharp
             };
 
             var json = JsonSerializer.Serialize(viewCreate, _options);
-            var deserialized = JsonSerializer.Deserialize<ViewCreate>(json, _options);
+            Assert.DoesNotContain("streamId", json);
 
-            var view = Assert.IsType<ViewCreate>(deserialized);
+            var view = JsonSerializer.Deserialize<ViewCreate>(json, _options);
+            Assert.NotNull(view);
             Assert.Equal("my_view", view.ExternalId);
             Assert.Equal("my_space", view.Space);
             Assert.Equal("v1", view.Version);
+            Assert.Null(view.StreamId);
         }
 
         [Fact]
@@ -48,18 +50,20 @@ namespace Test.CSharp
             };
 
             var json = JsonSerializer.Serialize(view, _options);
-            var deserialized = JsonSerializer.Deserialize<View>(json, _options);
+            Assert.DoesNotContain("streamId", json);
 
-            var regularView = Assert.IsType<View>(deserialized);
+            var regularView = JsonSerializer.Deserialize<View>(json, _options);
+            Assert.NotNull(regularView);
             Assert.Equal("my_view", regularView.ExternalId);
             Assert.True(regularView.Queryable);
             Assert.Equal(UsedFor.node, regularView.UsedFor);
+            Assert.Null(regularView.StreamId);
         }
 
         [Fact]
         public void TestRecordViewCreateSerializationAndDeserialization()
         {
-            var recordViewCreate = new RecordViewCreate
+            var recordViewCreate = new ViewCreate
             {
                 ExternalId = "my_record_view",
                 Space = "my_space",
@@ -88,7 +92,7 @@ namespace Test.CSharp
             };
 
             // Serialize
-            var json = JsonSerializer.Serialize<ViewCreate>(recordViewCreate, _options);
+            var json = JsonSerializer.Serialize(recordViewCreate, _options);
             Assert.Contains("\"streamId\":[\"test_stream_1\"]", json);
             Assert.Contains("\"externalId\":\"my_record_view\"", json);
             Assert.Contains("\"space\":\"my_space\"", json);
@@ -98,10 +102,9 @@ namespace Test.CSharp
                 new[] { recordViewCreate }, _options);
             Assert.Contains("\"streamId\":[\"test_stream_1\"]", collectionJson);
 
-            // Deserialize back as ViewCreate
-            var deserialized = JsonSerializer.Deserialize<ViewCreate>(json, _options);
-            Assert.NotNull(deserialized);
-            var rv = Assert.IsType<RecordViewCreate>(deserialized);
+            // Deserialize back
+            var rv = JsonSerializer.Deserialize<ViewCreate>(json, _options);
+            Assert.NotNull(rv);
             Assert.Equal("my_record_view", rv.ExternalId);
             Assert.Equal("my_space", rv.Space);
             Assert.Equal("v1", rv.Version);
@@ -153,9 +156,8 @@ namespace Test.CSharp
                 }
             }";
 
-            var view = JsonSerializer.Deserialize<View>(json, _options);
-            Assert.NotNull(view);
-            var recordView = Assert.IsType<RecordView>(view);
+            var recordView = JsonSerializer.Deserialize<View>(json, _options);
+            Assert.NotNull(recordView);
             Assert.Equal("test_record_view", recordView.ExternalId);
             Assert.Equal("test_space", recordView.Space);
             Assert.Equal("v1", recordView.Version);
@@ -192,7 +194,7 @@ namespace Test.CSharp
         }
 
         [Fact]
-        public void TestPolymorphicViewsCollection()
+        public void TestMixedViewsCollectionDeserialization()
         {
             var regularViewJson = @"{
                 ""externalId"": ""normal_view"",
@@ -223,16 +225,15 @@ namespace Test.CSharp
             Assert.NotNull(views);
             Assert.Equal(2, views.Count);
 
-            // First should be normal View (not RecordView)
-            Assert.False(views[0] is RecordView);
+            // Regular view has no stream
             Assert.Equal("normal_view", views[0].ExternalId);
             Assert.Equal(UsedFor.node, views[0].UsedFor);
+            Assert.Null(views[0].StreamId);
 
-            // Second should be RecordView
-            var rv = Assert.IsType<RecordView>(views[1]);
-            Assert.Equal("record_view", rv.ExternalId);
-            Assert.Equal(UsedFor.record, rv.UsedFor);
-            Assert.Equal("stream_1", Assert.Single(rv.StreamId));
+            // Record view carries its stream
+            Assert.Equal("record_view", views[1].ExternalId);
+            Assert.Equal(UsedFor.record, views[1].UsedFor);
+            Assert.Equal("stream_1", Assert.Single(views[1].StreamId));
         }
 
         [Fact]

@@ -79,8 +79,6 @@ module Common =
         options.Converters.Add(StatusCodeConverter())
         options.Converters.Add(StringOrIntConverter())
         // DMS converters
-        options.Converters.Add(ViewConverter())
-        options.Converters.Add(ViewCreateConverter())
         options.Converters.Add(ViewDefinitionOrReferenceConverter())
         options.Converters.Add(ViewCreateOrReferenceConverter())
         options.Converters.Add(DmsFilterConverter())

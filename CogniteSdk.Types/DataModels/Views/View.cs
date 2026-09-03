@@ -1,9 +1,7 @@
 // Copyright 2022 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace CogniteSdk.DataModels
@@ -123,71 +121,11 @@ namespace CogniteSdk.DataModels
         /// List of properties and relations included in this view.
         /// </summary>
         public Dictionary<string, IViewProperty> Properties { get; set; }
-    }
-
-    /// <summary>
-    /// JsonConverter for View and its subtypes (such as RecordView)
-    /// </summary>
-    public class ViewConverter : JsonConverterFactory
-    {
-        /// <inheritdoc />
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(View);
-        }
-
-        /// <inheritdoc />
-        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        {
-            var innerOptions = new JsonSerializerOptions(options);
-            for (int i = innerOptions.Converters.Count - 1; i >= 0; i--)
-            {
-                if (innerOptions.Converters[i] is ViewConverter)
-                    innerOptions.Converters.RemoveAt(i);
-            }
-            return new ViewJsonConverter(innerOptions);
-        }
-
-        private sealed class ViewJsonConverter : JsonConverter<View>
-        {
-            private readonly JsonSerializerOptions _innerOptions;
-
-            public ViewJsonConverter(JsonSerializerOptions innerOptions)
-            {
-                _innerOptions = innerOptions;
-            }
-
-            public override View Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                using var doc = JsonDocument.ParseValue(ref reader);
-                var root = doc.RootElement;
-
-                if (root.ValueKind != JsonValueKind.Object)
-                    throw new JsonException("Expected JSON object for View");
-
-                if (root.TryGetProperty("type", out var typeProp) && typeProp.GetString() == "view"
-                    && !root.TryGetProperty("properties", out _)
-                    && !root.TryGetProperty("createdTime", out _))
-                    throw new JsonException("JSON object represents a ViewIdentifier reference, not a full View definition");
-
-                bool isRecordView = false;
-                if (root.TryGetProperty("usedFor", out var usedForProp) && usedForProp.GetString() == "record")
-                    isRecordView = true;
-                else if (root.TryGetProperty("streamId", out _))
-                    isRecordView = true;
-
-                var rawText = root.GetRawText();
-                if (isRecordView)
-                    return JsonSerializer.Deserialize<RecordView>(rawText, _innerOptions);
-                else
-                    return JsonSerializer.Deserialize<View>(rawText, _innerOptions);
-            }
-
-            public override void Write(Utf8JsonWriter writer, View value, JsonSerializerOptions options)
-            {
-                JsonSerializer.Serialize(writer, value, value.GetType(), _innerOptions);
-            }
-        }
+        /// <summary>
+        /// External IDs of the record streams this view targets.
+        /// Only present on record views (<see cref="UsedFor.record"/>), and required when creating one.
+        /// </summary>
+        public IEnumerable<string> StreamId { get; set; }
     }
 
     /// <summary>
