@@ -92,15 +92,22 @@ namespace Test.CSharp
             };
 
             // Serialize
+            const string expectedJson =
+                @"{""externalId"":""my_record_view"",""space"":""my_space"",""name"":""My Record View"","
+                + @"""description"":""A test record view"","
+                + @"""filter"":{""equals"":{""property"":[""my_space"",""my_container"",""my_prop""],""value"":""test_value""}},"
+                + @"""version"":""v1"","
+                + @"""properties"":{""my_prop"":{""description"":""Property Description"",""name"":""Property Name"","
+                + @"""container"":{""type"":""container"",""space"":""my_space"",""externalId"":""my_container""},"
+                + @"""containerPropertyIdentifier"":""my_prop""}},"
+                + @"""streamId"":[""test_stream_1""]}";
+
             var json = JsonSerializer.Serialize(recordViewCreate, _options);
-            Assert.Contains("\"streamId\":[\"test_stream_1\"]", json);
-            Assert.Contains("\"externalId\":\"my_record_view\"", json);
-            Assert.Contains("\"space\":\"my_space\"", json);
-            Assert.Contains("\"version\":\"v1\"", json);
+            Assert.Equal(expectedJson, json);
 
             var collectionJson = JsonSerializer.Serialize<IEnumerable<ViewCreate>>(
                 new[] { recordViewCreate }, _options);
-            Assert.Contains("\"streamId\":[\"test_stream_1\"]", collectionJson);
+            Assert.Equal($"[{expectedJson}]", collectionJson);
 
             // Deserialize back
             var rv = JsonSerializer.Deserialize<ViewCreate>(json, _options);
