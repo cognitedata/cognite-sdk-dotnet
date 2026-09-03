@@ -372,7 +372,7 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                var deleted = await tester.Write.DataModels.DeleteInstances(ids);
+                var deleted = await Retry.RunAsync(() => tester.Write.DataModels.DeleteInstances(ids));
                 Assert.Equal(2, deleted.Count());
             }
         }
@@ -458,14 +458,14 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                var deleted = await tester.Write.DataModels.DeleteInstances(ids);
+                var deleted = await Retry.RunAsync(() => tester.Write.DataModels.DeleteInstances(ids));
                 Assert.Equal(2, deleted.Count());
-                var deletedNodes = await tester.Write.DataModels.DeleteInstances(new[]
+                var deletedNodes = await Retry.RunAsync(() => tester.Write.DataModels.DeleteInstances(new[]
                 {
                     new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node3"),
                     new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node4"),
                     new InstanceIdentifierWithType(InstanceType.node, tester.TestSpace, "node5"),
-                });
+                }));
                 Assert.Equal(3, deletedNodes.Count());
             }
         }
@@ -639,7 +639,7 @@ namespace Test.CSharp.Integration
             }
             finally
             {
-                await tester.Write.DataModels.DeleteInstances(ids);
+                await Retry.RunAsync(() => tester.Write.DataModels.DeleteInstances(ids));
             }
 
         }
