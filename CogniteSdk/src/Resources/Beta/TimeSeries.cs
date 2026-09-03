@@ -38,18 +38,24 @@ namespace CogniteSdk.Resources.Beta
         /// <param name="items">Time series to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <param name="view">Optional view to write to. Defaults to the core time series
+        /// <see cref="View"/>. Pass a view that extends the core time series view (which implements
+        /// the core time series container) to write a subtype of <typeparamref name="T"/> carrying
+        /// additional properties, e.g. an extractor time series.</param>
         /// <typeparam name="T">Type of time series properties to upsert, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The upserted time series instances.</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
             IEnumerable<SourcedNodeWrite<T>> items,
             UpsertOptions options = null,
-            CancellationToken token = default) where T : CogniteTimeSeriesBase
+            CancellationToken token = default,
+            ViewIdentifier view = null) where T : CogniteTimeSeriesBase
         {
             if (items is null)
             {
                 throw new ArgumentNullException(nameof(items));
             }
 
+            var targetView = view ?? View;
             var opts = options ?? new UpsertOptions();
             var request = new InstanceWriteRequest
             {
@@ -69,7 +75,7 @@ namespace CogniteSdk.Resources.Beta
                         new InstanceData<T>
                         {
                             Properties = item.Properties,
-                            Source = View
+                            Source = targetView
                         }
                     }
                 }).ToList()
@@ -99,21 +105,26 @@ namespace CogniteSdk.Resources.Beta
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <param name="view">Optional view to read from. Defaults to the core time series
+        /// <see cref="View"/>. Pass a view that extends the core time series view to read a subtype
+        /// of <typeparamref name="T"/> carrying additional properties, e.g. an extractor time series.</param>
         /// <typeparam name="T">Type of time series properties to return, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The retrieved time series instances.</returns>
         public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(
             IEnumerable<InstanceIdentifierWithType> ids,
-            CancellationToken token = default) where T : CogniteTimeSeriesBase
+            CancellationToken token = default,
+            ViewIdentifier view = null) where T : CogniteTimeSeriesBase
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
 
+            var targetView = view ?? View;
             var request = new InstancesRetrieve
             {
                 Items = ids,
-                Sources = new[] { new InstanceSource { Source = View } }
+                Sources = new[] { new InstanceSource { Source = targetView } }
             };
 
             var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, T>>>(request, GetContext(token));
@@ -132,7 +143,7 @@ namespace CogniteSdk.Resources.Beta
                 CreatedTime = r.CreatedTime,
                 LastUpdatedTime = r.LastUpdatedTime,
                 DeletedTime = r.DeletedTime,
-                Properties = DMHelpers.GetFromNestedDicts(r.Properties, View)
+                Properties = DMHelpers.GetFromNestedDicts(r.Properties, targetView)
             }).ToList();
         }
 
