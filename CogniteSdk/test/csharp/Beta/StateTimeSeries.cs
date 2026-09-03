@@ -463,13 +463,13 @@ namespace Test.CSharp.Integration.Beta
                 var customView = new ViewIdentifier(space, customViewExternalId, "v1");
                 await _fx.Write.DataModels.UpsertViews(new[]
                 {
-                    new ViewWrite
+                    new ViewCreate
                     {
                         Space = space,
                         ExternalId = customViewExternalId,
                         Version = "v1",
                         Name = "Custom Time Series View",
-                        ExtendsView = TimeSeriesResource.View
+                        Implements = new[] { CogniteSdk.Resources.DataModels.CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView }
                     }
                 });
 
@@ -500,7 +500,7 @@ namespace Test.CSharp.Integration.Beta
             finally
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
-                try { await _fx.Write.DataModels.DeleteViews(new[] { new ViewIdentifier(space, customViewExternalId, "v1") }); }
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId , space, "v1")}); }
                 catch { /* best-effort */ }
             }
         }
@@ -533,13 +533,13 @@ namespace Test.CSharp.Integration.Beta
                 var customView = new ViewIdentifier(space, customViewExternalId, "v1");
                 await _fx.Write.DataModels.UpsertViews(new[]
                 {
-                    new ViewWrite
+                    new ViewCreate
                     {
                         Space = space,
                         ExternalId = customViewExternalId,
                         Version = "v1",
                         Name = "Custom Time Series Retrieve View",
-                        ExtendsView = TimeSeriesResource.View
+                        Implements = new[] { CogniteSdk.Resources.DataModels.CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView }
                     }
                 });
 
@@ -559,7 +559,7 @@ namespace Test.CSharp.Integration.Beta
             finally
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
-                try { await _fx.Write.DataModels.DeleteViews(new[] { new ViewIdentifier(space, customViewExternalId, "v1") }); }
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId , space, "v1")}); }
                 catch { /* best-effort */ }
             }
         }
@@ -581,5 +581,10 @@ namespace Test.CSharp.Integration.Beta
     /// </summary>
     internal class CustomTimeSeries : CogniteTimeSeriesBase
     {
+    }
+
+    internal class CustomTimeSeriesWithExtraProperties : CogniteTimeSeriesBase
+    {
+        public string ExtraProperty { get; set; }
     }
 }
