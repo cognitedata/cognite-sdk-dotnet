@@ -34,14 +34,33 @@ namespace CogniteSdk.Resources.Beta
 
         /// <summary>
         /// Create or update a list of time series.
+        /// Deprecated: Use <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, ViewIdentifier, UpsertOptions, CancellationToken)"/>
+        /// or <see cref="UpsertAsync(IEnumerable{SourcedNodeWrite{CogniteTimeSeriesBase}}, UpsertOptions, CancellationToken)"/> instead.
+        /// </summary>
+        [Obsolete("Use the overload taking ViewIdentifier instead.")]
+        public Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
+            IEnumerable<SourcedNodeWrite<T>> items,
+            UpsertOptions options = null,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
+        {
+            return UpsertAsync<T>(items, null, options, token);
+        }
+
+        /// <summary>
+        /// Create or update a list of time series.
         /// </summary>
         /// <param name="items">Time series to upsert.</param>
         /// <param name="options">Optional upsert options.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <param name="view">Optional view to write to. Defaults to the core time series
+        /// <see cref="View"/>. Pass a view that extends the core time series view (which implements
+        /// the core time series container) to write a subtype of <typeparamref name="T"/> carrying
+        /// additional properties, e.g. an extractor time series.</param>
         /// <typeparam name="T">Type of time series properties to upsert, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The upserted time series instances.</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
             IEnumerable<SourcedNodeWrite<T>> items,
+            ViewIdentifier view,
             UpsertOptions options = null,
             CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
@@ -49,7 +68,12 @@ namespace CogniteSdk.Resources.Beta
             {
                 throw new ArgumentNullException(nameof(items));
             }
+            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            {
+                throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
+            }
 
+            var targetView = view ?? View;
             var opts = options ?? new UpsertOptions();
             var request = new InstanceWriteRequest
             {
@@ -69,7 +93,7 @@ namespace CogniteSdk.Resources.Beta
                         new InstanceData<T>
                         {
                             Properties = item.Properties,
-                            Source = View
+                            Source = targetView
                         }
                     }
                 }).ToList()
@@ -91,7 +115,19 @@ namespace CogniteSdk.Resources.Beta
             UpsertOptions options = null,
             CancellationToken token = default)
         {
-            return await UpsertAsync<CogniteTimeSeriesBase>(items, options, token).ConfigureAwait(false);
+            return await UpsertAsync(items, null, options, token).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve a list of time series by instance ID.
+        /// Deprecated: Use <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, ViewIdentifier, CancellationToken)"/>
+        /// or <see cref="RetrieveAsync(IEnumerable{InstanceIdentifierWithType}, CancellationToken)"/> instead.
+        /// </summary>
+        [Obsolete("Use the overload taking ViewIdentifier instead.")]
+        public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(IEnumerable<InstanceIdentifierWithType> ids,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
+        {
+            return await RetrieveAsync<T>(ids, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -99,21 +135,30 @@ namespace CogniteSdk.Resources.Beta
         /// </summary>
         /// <param name="ids">Instance IDs to retrieve.</param>
         /// <param name="token">Optional cancellation token.</param>
+        /// <param name="view">Optional view to read from. Defaults to the core time series
+        /// <see cref="View"/>. Pass a view that extends the core time series view to read a subtype
+        /// of <typeparamref name="T"/> carrying additional properties, e.g. an extractor time series.</param>
         /// <typeparam name="T">Type of time series properties to return, e.g CogniteTimeSeriesBase or a custom subtype.</typeparam>
         /// <returns>The retrieved time series instances.</returns>
         public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(
             IEnumerable<InstanceIdentifierWithType> ids,
+            ViewIdentifier view,
             CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
             if (ids is null)
             {
                 throw new ArgumentNullException(nameof(ids));
             }
+            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            {
+                throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
+            }
 
+            var targetView = view ?? View;
             var request = new InstancesRetrieve
             {
                 Items = ids,
-                Sources = new[] { new InstanceSource { Source = View } }
+                Sources = new[] { new InstanceSource { Source = targetView } }
             };
 
             var req = Oryx.Cognite.Beta.DataModels.retrieveInstances<Dictionary<string, Dictionary<string, T>>>(request, GetContext(token));
@@ -132,7 +177,7 @@ namespace CogniteSdk.Resources.Beta
                 CreatedTime = r.CreatedTime,
                 LastUpdatedTime = r.LastUpdatedTime,
                 DeletedTime = r.DeletedTime,
-                Properties = DMHelpers.GetFromNestedDicts(r.Properties, View)
+                Properties = DMHelpers.GetFromNestedDicts(r.Properties, targetView)
             }).ToList();
         }
 
@@ -146,7 +191,7 @@ namespace CogniteSdk.Resources.Beta
             IEnumerable<InstanceIdentifierWithType> ids,
             CancellationToken token = default)
         {
-            return await RetrieveAsync<CogniteTimeSeriesBase>(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync<CogniteTimeSeriesBase>(ids, null, token).ConfigureAwait(false);
         }
     }
 }

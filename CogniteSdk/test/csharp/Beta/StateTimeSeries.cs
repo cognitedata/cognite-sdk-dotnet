@@ -170,7 +170,7 @@ namespace Test.CSharp.Integration.Beta
             string stateSetDescription = null,
             string tsDescription = null)
         {
-            await _fx.Write.Beta.StateSets.UpsertAsync(new[]
+            await _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(new[]
             {
                 new SourcedNodeWrite<CogniteStateSet>
                 {
@@ -183,10 +183,10 @@ namespace Test.CSharp.Integration.Beta
                         States = states
                     }
                 }
-            });
+            }, null);
 
             // State time series are only available in beta, so this must go through the beta API.
-            await _fx.Write.Beta.TimeSeries.UpsertAsync(new[]
+            await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
             {
                 new SourcedNodeWrite<CogniteTimeSeriesBase>
                 {
@@ -200,7 +200,7 @@ namespace Test.CSharp.Integration.Beta
                         StateSet = new DirectRelationIdentifier(space, stateSetXid)
                     }
                 }
-            }, new UpsertOptions { Replace = true });
+            }, null, new UpsertOptions { Replace = true });
         }
 
         [Fact]
@@ -386,7 +386,7 @@ namespace Test.CSharp.Integration.Beta
                             }
                         }
                     }
-                });
+                }, null);
 
                 await _fx.Write.Beta.TimeSeries.UpsertAsync<CustomTimeSeries>(new[]
                 {
@@ -401,7 +401,7 @@ namespace Test.CSharp.Integration.Beta
                             StateSet = new DirectRelationIdentifier(space, stateSetXid)
                         }
                     }
-                }, new UpsertOptions { Replace = true });
+                }, null, new UpsertOptions { Replace = true });
 
                 // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
                 var retrievedStateSet = await Retry.RunAsync(
@@ -414,7 +414,7 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
 
                 var retrievedTs = await Retry.RunAsync(
-                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId })).Single());
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId }, null)).Single());
                 Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
                 Assert.NotNull(retrievedTs.Properties.StateSet);
@@ -424,6 +424,143 @@ namespace Test.CSharp.Integration.Beta
             finally
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
+            }
+        }
+
+        [Fact]
+        public async Task UpsertTimeSeriesWithCustomView()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "valve_states_custom_view_" + Guid.NewGuid().ToString("N");
+            var tsXid = "valve_001_custom_view_" + Guid.NewGuid().ToString("N");
+            var customViewExternalId = "custom_ts_view_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                // First create the state set
+                await _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(new[]
+                {
+                    new SourcedNodeWrite<CogniteStateSet>
+                    {
+                        Space = space,
+                        ExternalId = stateSetXid,
+                        Properties = new CogniteStateSet
+                        {
+                            Name = "Valve States",
+                            States = new[]
+                            {
+                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                                new CogniteState { NumericValue = 1, StringValue = "OPEN" }
+                            }
+                        }
+                    }
+                });
+
+                // Create a custom view extending the core time series view
+                var customView = new ViewIdentifier(space, customViewExternalId, "v1");
+                await _fx.Write.DataModels.UpsertViews(new[]
+                {
+                    new ViewCreate
+                    {
+                        Space = space,
+                        ExternalId = customViewExternalId,
+                        Version = "v1",
+                        Name = "Custom Time Series View",
+                        Implements = new[] { CogniteSdk.Resources.DataModels.CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView }
+                    }
+                });
+
+                // Upsert time series to the custom view using the generic overload
+                await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
+                {
+                    new SourcedNodeWrite<CogniteTimeSeriesBase>
+                    {
+                        Space = space,
+                        ExternalId = tsXid,
+                        Properties = new CogniteTimeSeriesBase
+                        {
+                            Name = "Valve Position Custom View",
+                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                        }
+                    }
+                }, customView, new UpsertOptions { Replace = true });
+
+                // Retrieve from the custom view using the generic overload
+                var retrieved = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CogniteTimeSeriesBase>(
+                        new[] { tsId }, customView)).Single());
+                Assert.Equal("Valve Position Custom View", retrieved.Properties.Name);
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
+                Assert.NotNull(retrieved.Properties.StateSet);
+            }
+            finally
+            {
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") }); }
+                catch { /* best-effort */ }
+            }
+        }
+
+        [Fact]
+        public async Task RetrieveTimeSeriesWithCustomView()
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = "valve_states_retrieve_custom_view_" + Guid.NewGuid().ToString("N");
+            var tsXid = "valve_001_retrieve_custom_view_" + Guid.NewGuid().ToString("N");
+            var customViewExternalId = "custom_ts_retrieve_view_" + Guid.NewGuid().ToString("N");
+
+            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
+            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+
+            try
+            {
+                // Set up state set and time series using default view
+                await UpsertStateSetAndStateTimeSeries(
+                    space, stateSetXid, tsXid,
+                    stateSetName: "Pump States",
+                    states: new[]
+                    {
+                        new CogniteState { NumericValue = 0, StringValue = "OFF" },
+                        new CogniteState { NumericValue = 1, StringValue = "ON" }
+                    },
+                    tsName: "Pump Position Default View");
+
+                // Create a custom view extending the core time series view
+                var customView = new ViewIdentifier(space, customViewExternalId, "v1");
+                await _fx.Write.DataModels.UpsertViews(new[]
+                {
+                    new ViewCreate
+                    {
+                        Space = space,
+                        ExternalId = customViewExternalId,
+                        Version = "v1",
+                        Name = "Custom Time Series Retrieve View",
+                        Implements = new[] { CogniteSdk.Resources.DataModels.CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView }
+                    }
+                });
+
+                // Retrieve from the regular view using the non-generic overload
+                var retrieved = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(
+                        new[] { tsId })).Single());
+                Assert.Equal("Pump Position Default View", retrieved.Properties.Name);
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
+
+                // Retrieve using the generic overload with custom view
+                var retrievedCustom = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CogniteTimeSeriesBase>(
+                        new[] { tsId }, customView)).Single());
+                Assert.Equal("Pump Position Default View", retrievedCustom.Properties.Name);
+            }
+            finally
+            {
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
+                try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") }); }
+                catch { /* best-effort */ }
             }
         }
     }
@@ -444,5 +581,10 @@ namespace Test.CSharp.Integration.Beta
     /// </summary>
     internal class CustomTimeSeries : CogniteTimeSeriesBase
     {
+    }
+
+    internal class CustomTimeSeriesWithExtraProperties : CogniteTimeSeriesBase
+    {
+        public string ExtraProperty { get; set; }
     }
 }
