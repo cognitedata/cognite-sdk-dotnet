@@ -414,7 +414,7 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
 
                 var retrievedTs = await Retry.RunAsync(
-                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(new[] { tsId })).Single());
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId }, default)).Single());
                 Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
                 Assert.NotNull(retrievedTs.Properties.StateSet);
