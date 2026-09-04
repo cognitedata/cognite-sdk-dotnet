@@ -543,7 +543,7 @@ namespace Test.CSharp.Integration.Beta
                     }
                 });
 
-                // Retrieve from the custom view using the non-generic overload
+                // Retrieve from the regular view using the non-generic overload
                 var retrieved = await Retry.RunAsync(
                     async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(
                         new[] { tsId })).Single());

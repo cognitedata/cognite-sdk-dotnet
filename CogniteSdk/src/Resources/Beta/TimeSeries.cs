@@ -35,7 +35,7 @@ namespace CogniteSdk.Resources.Beta
         /// <summary>
         /// Create or update a list of time series.
         /// Deprecated: Use <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, ViewIdentifier, UpsertOptions, CancellationToken)"/>
-        /// or <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, UpsertOptions, CancellationToken)"/> instead.
+        /// or <see cref="UpsertAsync(IEnumerable{SourcedNodeWrite{CogniteTimeSeriesBase}}, UpsertOptions, CancellationToken)"/> instead.
         /// </summary>
         [Obsolete("Use the overload taking ViewIdentifier instead.")]
         public Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
@@ -121,7 +121,7 @@ namespace CogniteSdk.Resources.Beta
         /// <summary>
         /// Retrieve a list of time series by instance ID.
         /// Deprecated: Use <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, ViewIdentifier, CancellationToken)"/>
-        /// or <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, CancellationToken)"/> instead.
+        /// or <see cref="RetrieveAsync(IEnumerable{InstanceIdentifierWithType}, CancellationToken)"/> instead.
         /// </summary>
         [Obsolete("Use the overload taking ViewIdentifier instead.")]
         public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(IEnumerable<InstanceIdentifierWithType> ids,
