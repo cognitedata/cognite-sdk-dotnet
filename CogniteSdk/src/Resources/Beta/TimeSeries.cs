@@ -34,15 +34,16 @@ namespace CogniteSdk.Resources.Beta
 
         /// <summary>
         /// Create or update a list of time series.
-        /// Deprecated: Use <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, UpsertOptions, CancellationToken, ViewIdentifier)"/>
+        /// Deprecated: Use <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, ViewIdentifier, UpsertOptions, CancellationToken)"/>
         /// or <see cref="UpsertAsync{T}(IEnumerable{SourcedNodeWrite{T}}, UpsertOptions, CancellationToken)"/> instead.
         /// </summary>
+        [Obsolete("Use the overload taking ViewIdentifier instead.")]
         public Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
             IEnumerable<SourcedNodeWrite<T>> items,
             UpsertOptions options = null,
             CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
-            return UpsertAsync<T>(items, options, token, null);
+            return UpsertAsync<T>(items, null, options, token);
         }
 
         /// <summary>
@@ -59,9 +60,9 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>The upserted time series instances.</returns>
         public async Task<IEnumerable<SlimInstance>> UpsertAsync<T>(
             IEnumerable<SourcedNodeWrite<T>> items,
-            UpsertOptions options,
-            CancellationToken token,
-            ViewIdentifier view) where T : CogniteTimeSeriesBase
+            ViewIdentifier view,
+            UpsertOptions options = null,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
             if (items is null)
             {
@@ -114,18 +115,19 @@ namespace CogniteSdk.Resources.Beta
             UpsertOptions options = null,
             CancellationToken token = default)
         {
-            return await UpsertAsync<CogniteTimeSeriesBase>(items, options, token).ConfigureAwait(false);
+            return await UpsertAsync(items, null, options, token).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Retrieve a list of time series by instance ID.
-        /// Deprecated: Use <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, CancellationToken, ViewIdentifier)"/>
+        /// Deprecated: Use <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, ViewIdentifier, CancellationToken)"/>
         /// or <see cref="RetrieveAsync{T}(IEnumerable{InstanceIdentifierWithType}, CancellationToken)"/> instead.
         /// </summary>
+        [Obsolete("Use the overload taking ViewIdentifier instead.")]
         public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(IEnumerable<InstanceIdentifierWithType> ids,
             CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
-            return await RetrieveAsync<T>(ids, token, null).ConfigureAwait(false);
+            return await RetrieveAsync<T>(ids, null, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -140,8 +142,8 @@ namespace CogniteSdk.Resources.Beta
         /// <returns>The retrieved time series instances.</returns>
         public async Task<IEnumerable<SourcedNode<T>>> RetrieveAsync<T>(
             IEnumerable<InstanceIdentifierWithType> ids,
-            CancellationToken token = default,
-            ViewIdentifier view = null) where T : CogniteTimeSeriesBase
+            ViewIdentifier view,
+            CancellationToken token = default) where T : CogniteTimeSeriesBase
         {
             if (ids is null)
             {
@@ -189,7 +191,7 @@ namespace CogniteSdk.Resources.Beta
             IEnumerable<InstanceIdentifierWithType> ids,
             CancellationToken token = default)
         {
-            return await RetrieveAsync<CogniteTimeSeriesBase>(ids, token).ConfigureAwait(false);
+            return await RetrieveAsync<CogniteTimeSeriesBase>(ids, null, token).ConfigureAwait(false);
         }
     }
 }

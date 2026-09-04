@@ -183,7 +183,7 @@ namespace Test.CSharp.Integration.Beta
                         States = states
                     }
                 }
-            });
+            }, null);
 
             // State time series are only available in beta, so this must go through the beta API.
             await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
@@ -200,7 +200,7 @@ namespace Test.CSharp.Integration.Beta
                         StateSet = new DirectRelationIdentifier(space, stateSetXid)
                     }
                 }
-            }, new UpsertOptions { Replace = true });
+            }, null, new UpsertOptions { Replace = true });
         }
 
         [Fact]
@@ -351,9 +351,9 @@ namespace Test.CSharp.Integration.Beta
         public async Task UpsertWithNullThrows()
         {
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(null));
+                _fx.Write.Beta.StateSets.UpsertAsync(null));
             await Assert.ThrowsAnyAsync<Exception>(() =>
-                _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(null));
+                _fx.Write.Beta.TimeSeries.UpsertAsync(null));
         }
 
         [Fact]
@@ -386,7 +386,7 @@ namespace Test.CSharp.Integration.Beta
                             }
                         }
                     }
-                });
+                }, null);
 
                 await _fx.Write.Beta.TimeSeries.UpsertAsync<CustomTimeSeries>(new[]
                 {
@@ -401,7 +401,7 @@ namespace Test.CSharp.Integration.Beta
                             StateSet = new DirectRelationIdentifier(space, stateSetXid)
                         }
                     }
-                }, new UpsertOptions { Replace = true });
+                }, null, new UpsertOptions { Replace = true });
 
                 // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
                 var retrievedStateSet = await Retry.RunAsync(
@@ -414,7 +414,7 @@ namespace Test.CSharp.Integration.Beta
                 Assert.Contains(states, s => s.NumericValue == 1 && s.StringValue == "OPEN");
 
                 var retrievedTs = await Retry.RunAsync(
-                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId }, default)).Single());
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeries>(new[] { tsId }, null)).Single());
                 Assert.IsType<CustomTimeSeries>(retrievedTs.Properties);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
                 Assert.NotNull(retrievedTs.Properties.StateSet);
@@ -487,12 +487,12 @@ namespace Test.CSharp.Integration.Beta
                             StateSet = new DirectRelationIdentifier(space, stateSetXid)
                         }
                     }
-                }, new UpsertOptions { Replace = true }, default, customView);
+                }, customView, new UpsertOptions { Replace = true });
 
                 // Retrieve from the custom view using the generic overload
                 var retrieved = await Retry.RunAsync(
                     async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CogniteTimeSeriesBase>(
-                        new[] { tsId }, default, customView)).Single());
+                        new[] { tsId }, customView)).Single());
                 Assert.Equal("Valve Position Custom View", retrieved.Properties.Name);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
                 Assert.NotNull(retrieved.Properties.StateSet);
@@ -546,14 +546,14 @@ namespace Test.CSharp.Integration.Beta
                 // Retrieve from the custom view using the non-generic overload
                 var retrieved = await Retry.RunAsync(
                     async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync(
-                        new[] { tsId }, default)).Single());
+                        new[] { tsId })).Single());
                 Assert.Equal("Pump Position Default View", retrieved.Properties.Name);
                 Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
 
                 // Retrieve using the generic overload with custom view
                 var retrievedCustom = await Retry.RunAsync(
                     async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CogniteTimeSeriesBase>(
-                        new[] { tsId }, default, customView)).Single());
+                        new[] { tsId }, customView)).Single());
                 Assert.Equal("Pump Position Default View", retrievedCustom.Properties.Name);
             }
             finally
