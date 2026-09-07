@@ -508,6 +508,67 @@ namespace Test.CSharp.Integration
             }
         }
 
+        [Fact]
+        public async Task TestRetrieveAndAggregateThroughRecordView()
+        {
+            Assert.NotNull(tester.TestStreams);
+            Assert.True(tester.TestStreams.ContainsKey("BasicLiveData"));
+
+            var targetStream = tester.TestStreams["BasicLiveData"];
+            Assert.NotNull(targetStream);
+
+            var viewId = new ViewIdentifier(tester.TestSpace, "StreamTestRecordView", "1");
+
+            await tester.Write.DataModels.UpsertViews(new[]
+            {
+                new ViewCreate
+                {
+                    Space = viewId.Space,
+                    ExternalId = viewId.ExternalId,
+                    Version = viewId.Version,
+                    Name = "Stream test record view",
+                    StreamId = new[] { targetStream },
+                    Properties = new Dictionary<string, ICreateViewProperty>
+                    {
+                        { "prop", new ViewPropertyCreate { Container = tester.TestContainer, ContainerPropertyIdentifier = "prop" } },
+                        { "intProp", new ViewPropertyCreate { Container = tester.TestContainer, ContainerPropertyIdentifier = "intProp" } },
+                    }
+                }
+            });
+
+            try
+            {
+                var records = await tester.Write.Beta.StreamRecords.RetrieveAsync<StandardInstanceData>(
+                    targetStream,
+                    new StreamRecordsRetrieve
+                    {
+                        Sources = new[] { new StreamRecordSource { Source = viewId, Properties = new[] { "*" } } },
+                        Filter = new HasDataFilter { HasData = new SourceIdentifier[] { viewId } },
+                        Limit = 10,
+                    }
+                );
+                Assert.NotNull(records);
+
+                var response = await tester.Write.Beta.StreamRecords.AggregateAsync(
+                    targetStream,
+                    new StreamRecordsAggregate
+                    {
+                        Aggregates = new Dictionary<string, IStreamRecordAggregate>
+                        {
+                            { "view_count", new CountStreamRecordAggregate { Property = viewId.PropertyReference("intProp") } }
+                        }
+                    }
+                );
+                Assert.NotNull(response);
+                Assert.NotNull(response.Aggregates);
+                Assert.IsType<CountStreamRecordAggregateResult>(response.Aggregates["view_count"]);
+            }
+            finally
+            {
+                await tester.Write.DataModels.DeleteViews(new[] { viewId.FDMExternalId() });
+            }
+        }
+
     }
 
     /// <summary>
