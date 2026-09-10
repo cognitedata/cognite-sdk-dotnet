@@ -77,7 +77,7 @@ namespace CogniteSdk.Resources.Beta
             {
                 throw new ArgumentNullException(nameof(items));
             }
-            if (checkView(view))
+            if (!checkView(view))
             {
                 throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
@@ -158,7 +158,7 @@ namespace CogniteSdk.Resources.Beta
             {
                 throw new ArgumentNullException(nameof(ids));
             }
-            if (checkView(view))
+            if (!checkView(view))
             {
                 throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
