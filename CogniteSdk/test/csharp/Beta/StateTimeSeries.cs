@@ -37,15 +37,29 @@ namespace Test.CSharp.Integration.Beta
 
         public StateTimeSeriesTests(StateTimeSeriesFixture fx) => _fx = fx;
 
+        private static string NewExternalId(string prefix) => $"{prefix}{Guid.NewGuid():N}";
+
+        private (string Space, string StateSetXid, string TsXid, InstanceIdentifierWithType StateSetId, InstanceIdentifierWithType TsId)
+            CreateStateTimeSeriesTestContext(string stateSetPrefix, string tsPrefix)
+        {
+            var space = _fx.TestSpace;
+            var stateSetXid = NewExternalId(stateSetPrefix);
+            var tsXid = NewExternalId(tsPrefix);
+
+            return (
+                space,
+                stateSetXid,
+                tsXid,
+                new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid)),
+                new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid))
+            );
+        }
+
         [Fact]
         public async Task UpsertStateSetIngestAndQueryDatapoints()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "valve_states_" + Guid.NewGuid().ToString("N");
-            var tsXid = "valve_001_state_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_", "valve_001_state_");
 
             try
             {
@@ -168,50 +182,72 @@ namespace Test.CSharp.Integration.Beta
             IEnumerable<CogniteState> states,
             string tsName,
             string stateSetDescription = null,
-            string tsDescription = null)
+            string tsDescription = null,
+            ViewIdentifier timeSeriesView = null)
         {
-            await _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(new[]
+            await UpsertStateSetAndStateTimeSeries(
+                space,
+                stateSetXid,
+                tsXid,
+                new CogniteStateSet
+                {
+                    Name = stateSetName,
+                    Description = stateSetDescription,
+                    States = states
+                },
+                new CogniteTimeSeriesBase
+                {
+                    Name = tsName,
+                    Description = tsDescription,
+                    Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                    StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                },
+                timeSeriesView,
+                new UpsertOptions { Replace = true });
+        }
+
+        /// <summary>
+        /// Upsert a state set and a state time series referencing it, using generic property types.
+        /// Allows tests to verify custom subtypes and/or writing time series to a custom view.
+        /// </summary>
+        private async Task UpsertStateSetAndStateTimeSeries<TStateSet, TTimeSeries>(
+            string space,
+            string stateSetXid,
+            string tsXid,
+            TStateSet stateSetProperties,
+            TTimeSeries timeSeriesProperties,
+            ViewIdentifier timeSeriesView = null,
+            UpsertOptions timeSeriesUpsertOptions = null)
+            where TStateSet : CogniteStateSet
+            where TTimeSeries : CogniteTimeSeriesBase
+        {
+            await _fx.Write.Beta.StateSets.UpsertAsync<TStateSet>(new[]
             {
-                new SourcedNodeWrite<CogniteStateSet>
+                new SourcedNodeWrite<TStateSet>
                 {
                     Space = space,
                     ExternalId = stateSetXid,
-                    Properties = new CogniteStateSet
-                    {
-                        Name = stateSetName,
-                        Description = stateSetDescription,
-                        States = states
-                    }
+                    Properties = stateSetProperties
                 }
             }, null);
 
             // State time series are only available in beta, so this must go through the beta API.
-            await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
+            await _fx.Write.Beta.TimeSeries.UpsertAsync<TTimeSeries>(new[]
             {
-                new SourcedNodeWrite<CogniteTimeSeriesBase>
+                new SourcedNodeWrite<TTimeSeries>
                 {
                     Space = space,
                     ExternalId = tsXid,
-                    Properties = new CogniteTimeSeriesBase
-                    {
-                        Name = tsName,
-                        Description = tsDescription,
-                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
-                    }
+                    Properties = timeSeriesProperties
                 }
-            }, null, new UpsertOptions { Replace = true });
+            }, timeSeriesView, timeSeriesUpsertOptions ?? new UpsertOptions { Replace = true });
         }
 
         [Fact]
         public async Task UpsertAndRetrieveStateSetAndTimeSeriesTyped()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "valve_states_typed_" + Guid.NewGuid().ToString("N");
-            var tsXid = "valve_001_state_typed_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_typed_", "valve_001_state_typed_");
 
             var stateSets = _fx.Write.Beta.StateSets;
 
@@ -258,12 +294,8 @@ namespace Test.CSharp.Integration.Beta
         [Fact]
         public async Task CreateStateSetStateTimeSeriesAndAddDatapoints()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "pump_states_" + Guid.NewGuid().ToString("N");
-            var tsXid = "pump_001_state_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("pump_states_", "pump_001_state_");
 
             try
             {
@@ -310,12 +342,8 @@ namespace Test.CSharp.Integration.Beta
         [Fact]
         public async Task UpsertStateSetAndTimeSeriesWithNoStates()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "empty_states_" + Guid.NewGuid().ToString("N");
-            var tsXid = "empty_states_ts_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("empty_states_", "empty_states_ts_");
 
             try
             {
@@ -359,49 +387,32 @@ namespace Test.CSharp.Integration.Beta
         [Fact]
         public async Task UpsertAndRetrieveStateSetAndTimeSeriesWithGenericCustomType()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "valve_states_generic_" + Guid.NewGuid().ToString("N");
-            var tsXid = "valve_001_state_generic_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_generic_", "valve_001_state_generic_");
 
             try
             {
                 // Exercise the generic UpsertAsync<T> overloads directly, using custom subtypes
                 // of CogniteStateSet / CogniteTimeSeriesBase instead of the base types.
-                await _fx.Write.Beta.StateSets.UpsertAsync<CustomStateSet>(new[]
-                {
-                    new SourcedNodeWrite<CustomStateSet>
+                await UpsertStateSetAndStateTimeSeries(
+                    space,
+                    stateSetXid,
+                    tsXid,
+                    new CustomStateSet
                     {
-                        Space = space,
-                        ExternalId = stateSetXid,
-                        Properties = new CustomStateSet
+                        Name = "Valve Position States (generic)",
+                        States = new[]
                         {
-                            Name = "Valve Position States (generic)",
-                            States = new[]
-                            {
-                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
-                                new CogniteState { NumericValue = 1, StringValue = "OPEN" }
-                            }
+                            new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                            new CogniteState { NumericValue = 1, StringValue = "OPEN" }
                         }
-                    }
-                }, null);
-
-                await _fx.Write.Beta.TimeSeries.UpsertAsync<CustomTimeSeries>(new[]
-                {
-                    new SourcedNodeWrite<CustomTimeSeries>
+                    },
+                    new CustomTimeSeries
                     {
-                        Space = space,
-                        ExternalId = tsXid,
-                        Properties = new CustomTimeSeries
-                        {
-                            Name = "Valve 001 Position (generic)",
-                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
-                        }
-                    }
-                }, null, new UpsertOptions { Replace = true });
+                        Name = "Valve 001 Position (generic)",
+                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                        StateSet = new DirectRelationIdentifier(space, stateSetXid)
+                    });
 
                 // Exercise the generic RetrieveAsync<T> overloads, deserializing into the custom subtypes.
                 var retrievedStateSet = await Retry.RunAsync(
@@ -430,35 +441,12 @@ namespace Test.CSharp.Integration.Beta
         [Fact]
         public async Task UpsertTimeSeriesWithCustomView()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "valve_states_custom_view_" + Guid.NewGuid().ToString("N");
-            var tsXid = "valve_001_custom_view_" + Guid.NewGuid().ToString("N");
-            var customViewExternalId = "custom_ts_view_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_custom_view_", "valve_001_custom_view_");
+            var customViewExternalId = NewExternalId("custom_ts_view_");
 
             try
             {
-                // First create the state set
-                await _fx.Write.Beta.StateSets.UpsertAsync<CogniteStateSet>(new[]
-                {
-                    new SourcedNodeWrite<CogniteStateSet>
-                    {
-                        Space = space,
-                        ExternalId = stateSetXid,
-                        Properties = new CogniteStateSet
-                        {
-                            Name = "Valve States",
-                            States = new[]
-                            {
-                                new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
-                                new CogniteState { NumericValue = 1, StringValue = "OPEN" }
-                            }
-                        }
-                    }
-                });
-
                 // Create a custom view extending the core time series view
                 var customView = new ViewIdentifier(space, customViewExternalId, "v1");
                 await _fx.Write.DataModels.UpsertViews(new[]
@@ -473,29 +461,27 @@ namespace Test.CSharp.Integration.Beta
                     }
                 });
 
-                // Upsert time series to the custom view using the generic overload
-                await _fx.Write.Beta.TimeSeries.UpsertAsync<CogniteTimeSeriesBase>(new[]
-                {
-                    new SourcedNodeWrite<CogniteTimeSeriesBase>
+                // Upsert state set/time series to custom view using shared helper.
+                await UpsertStateSetAndStateTimeSeries(
+                    space,
+                    stateSetXid,
+                    tsXid,
+                    stateSetName: "Valve States",
+                    states: new[]
                     {
-                        Space = space,
-                        ExternalId = tsXid,
-                        Properties = new CogniteTimeSeriesBase
-                        {
-                            Name = "Valve Position Custom View",
-                            Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
-                            StateSet = new DirectRelationIdentifier(space, stateSetXid)
-                        }
-                    }
-                }, customView, new UpsertOptions { Replace = true });
+                        new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                        new CogniteState { NumericValue = 1, StringValue = "OPEN" }
+                    },
+                    tsName: "Valve Position Custom View",
+                    timeSeriesView: customView);
 
                 // Retrieve from the custom view using the generic overload
-                var retrieved = await Retry.RunAsync(
+                var retrievedTs = await Retry.RunAsync(
                     async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CogniteTimeSeriesBase>(
                         new[] { tsId }, customView)).Single());
-                Assert.Equal("Valve Position Custom View", retrieved.Properties.Name);
-                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
-                Assert.NotNull(retrieved.Properties.StateSet);
+                Assert.Equal("Valve Position Custom View", retrievedTs.Properties.Name);
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrievedTs.Properties.Type);
+                Assert.NotNull(retrievedTs.Properties.StateSet);
             }
             finally
             {
@@ -508,13 +494,9 @@ namespace Test.CSharp.Integration.Beta
         [Fact]
         public async Task RetrieveTimeSeriesWithCustomView()
         {
-            var space = _fx.TestSpace;
-            var stateSetXid = "valve_states_retrieve_custom_view_" + Guid.NewGuid().ToString("N");
-            var tsXid = "valve_001_retrieve_custom_view_" + Guid.NewGuid().ToString("N");
-            var customViewExternalId = "custom_ts_retrieve_view_" + Guid.NewGuid().ToString("N");
-
-            var stateSetId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, stateSetXid));
-            var tsId = new InstanceIdentifierWithType(InstanceType.node, new InstanceIdentifier(space, tsXid));
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_retrieve_custom_view_", "valve_001_retrieve_custom_view_");
+            var customViewExternalId = NewExternalId("custom_ts_retrieve_view_");
 
             try
             {
@@ -560,6 +542,107 @@ namespace Test.CSharp.Integration.Beta
             {
                 await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
                 try { await _fx.Write.DataModels.DeleteViews(new[] { new FDMExternalId(customViewExternalId, space, "v1") }); }
+                catch { /* best-effort */ }
+            }
+        }
+
+        [Fact]
+        public async Task UpsertAndRetrieveTimeSeriesWithCustomViewAndExtraProperty()
+        {
+            var (space, stateSetXid, tsXid, stateSetId, tsId) =
+                CreateStateTimeSeriesTestContext("valve_states_extra_prop_", "valve_001_extra_prop_");
+            var customViewExternalId = NewExternalId("custom_ts_extra_prop_view_");
+            var customContainerExternalId = NewExternalId("custom_ts_extra_prop_container_");
+            var customView = new ViewIdentifier(space, customViewExternalId, "v1");
+            var customContainer = new ContainerIdentifier(space, customContainerExternalId);
+
+            try
+            {
+                await _fx.Write.DataModels.UpsertContainers(new[]
+                {
+                    new ContainerCreate
+                    {
+                        Space = space,
+                        ExternalId = customContainerExternalId,
+                        Name = "Custom TS extra property container",
+                        UsedFor = UsedFor.node,
+                        Properties = new Dictionary<string, ContainerPropertyDefinition>
+                        {
+                            { "extraProperty", new ContainerPropertyDefinition
+                                {
+                                    Type = BasePropertyType.Text(),
+                                    Nullable = true
+                                }
+                            }
+                        }
+                    }
+                });
+
+                await _fx.Write.DataModels.UpsertViews(new[]
+                {
+                    new ViewCreate
+                    {
+                        Space = space,
+                        ExternalId = customViewExternalId,
+                        Version = "v1",
+                        Name = "Custom Time Series View With Extra Property",
+                        Implements = new[] { CogniteSdk.Resources.DataModels.CoreTimeSeriesResource<CogniteTimeSeriesBase>.DefaultView },
+                        Properties = new Dictionary<string, ICreateViewProperty>
+                        {
+                            { "extraProperty", new ViewPropertyCreate
+                                {
+                                    Container = customContainer,
+                                    ContainerPropertyIdentifier = "extraProperty",
+                                    Name = "Extra Property"
+                                }
+                            }
+                        }
+                    }
+                });
+
+                const string expectedExtraProperty = "round-trip-value";
+
+                await UpsertStateSetAndStateTimeSeries(
+                    space,
+                    stateSetXid,
+                    tsXid,
+                    new CogniteStateSet
+                    {
+                        Name = "Valve States",
+                        States = new[]
+                        {
+                            new CogniteState { NumericValue = 0, StringValue = "CLOSED" },
+                            new CogniteState { NumericValue = 1, StringValue = "OPEN" }
+                        }
+                    },
+                    new CustomTimeSeriesWithExtraProperties
+                    {
+                        Name = "Valve Position With Extra Property",
+                        Type = CogniteSdk.DataModels.Core.TimeSeriesType.State,
+                        StateSet = new DirectRelationIdentifier(space, stateSetXid),
+                        ExtraProperty = expectedExtraProperty
+                    },
+                    customView,
+                    new UpsertOptions { Replace = true });
+
+                var retrieved = await Retry.RunAsync(
+                    async () => (await _fx.Write.Beta.TimeSeries.RetrieveAsync<CustomTimeSeriesWithExtraProperties>(
+                        new[] { tsId }, customView)).Single());
+
+                Assert.IsType<CustomTimeSeriesWithExtraProperties>(retrieved.Properties);
+                Assert.Equal("Valve Position With Extra Property", retrieved.Properties.Name);
+                Assert.Equal(CogniteSdk.DataModels.Core.TimeSeriesType.State, retrieved.Properties.Type);
+                Assert.NotNull(retrieved.Properties.StateSet);
+                Assert.Equal(space, retrieved.Properties.StateSet.Space);
+                Assert.Equal(stateSetXid, retrieved.Properties.StateSet.ExternalId);
+                Assert.Equal(expectedExtraProperty, retrieved.Properties.ExtraProperty);
+            }
+            finally
+            {
+                await Retry.RunAsync(() => _fx.Write.DataModels.DeleteInstances(new[] { tsId, stateSetId }));
+                try { await _fx.Write.DataModels.DeleteViews(new[] { customView.FDMExternalId() }); }
+                catch { /* best-effort */ }
+                try { await _fx.Write.DataModels.DeleteContainers(new[] { customContainer.ContainerId() }); }
                 catch { /* best-effort */ }
             }
         }

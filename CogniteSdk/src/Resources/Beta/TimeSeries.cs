@@ -23,6 +23,15 @@ namespace CogniteSdk.Resources.Beta
         /// </summary>
         public static readonly ViewIdentifier View = new ViewIdentifier("cdf_cdm", "CogniteTimeSeries", "v1");
 
+        private static bool checkView(ViewIdentifier view)
+        {
+            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            {
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// Will only be instantiated by the client
         /// </summary>
@@ -68,7 +77,7 @@ namespace CogniteSdk.Resources.Beta
             {
                 throw new ArgumentNullException(nameof(items));
             }
-            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            if (checkView(view))
             {
                 throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
@@ -149,7 +158,7 @@ namespace CogniteSdk.Resources.Beta
             {
                 throw new ArgumentNullException(nameof(ids));
             }
-            if (view != null && (string.IsNullOrEmpty(view.Space) || string.IsNullOrEmpty(view.ExternalId) || string.IsNullOrEmpty(view.Version)))
+            if (checkView(view))
             {
                 throw new ArgumentException("View properties (Space, ExternalId, Version) must not be null or empty.", nameof(view));
             }
