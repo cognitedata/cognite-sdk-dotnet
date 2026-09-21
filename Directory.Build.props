@@ -29,7 +29,15 @@
     <RunAnalyzers>false</RunAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableDefaultAnalyzerOutputs>false</EnableDefaultAnalyzerOutputs>
-    <!-- Shared with Directory.Build.targets, which needs this to locate the analyzer DLL on disk. -->
+  </PropertyGroup>
+
+  <!--
+    Unconditioned (harmless for C# projects, unused unless referenced) because
+    Directory.Build.props is auto-imported before the F# SDK sets $(Language), so a
+    PropertyGroup conditioned on Language here would never actually apply.
+    Shared with Directory.Build.targets, which needs this to locate the analyzer DLL on disk.
+  -->
+  <PropertyGroup>
     <GResearchFSharpAnalyzersVersion>0.25.0</GResearchFSharpAnalyzersVersion>
   </PropertyGroup>
 
