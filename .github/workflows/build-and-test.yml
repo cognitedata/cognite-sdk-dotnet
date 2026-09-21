@@ -60,6 +60,16 @@ jobs:
       contents: read
       security-events: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - CogniteSdk.Types/CogniteSdk.Types.csproj
+          - CogniteSdk.Protobuf/CogniteSdk.Protobuf.csproj
+          - Oryx.Cognite/src/Oryx.Cognite.fsproj
+          - CogniteSdk.FSharp/src/CogniteSdk.FSharp.fsproj
+          - CogniteSdk/src/CogniteSdk.csproj
+
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -77,30 +87,26 @@ jobs:
       - name: Create SARIF output directory
         run: mkdir -p sarif-results
 
+      - name: Compute project name
+        run: |
+          filename=$(basename "${{ matrix.project }}")
+          echo "PROJECT_NAME=${filename%.*}" >> "$GITHUB_ENV"
+
       # EnableCiAnalysis is only read by Directory.Build.props, and only enables analyzers
       # here in CI, so it never affects the normal library build or ships as a
       # PackageReference that could propagate to consumers. TreatWarningsAsErrors is
       # forced off so this job reports findings via SARIF instead of failing the build;
       # merge-blocking on new findings is handled by a code-scanning branch protection
       # rule, not by this job's exit code.
-      - name: Run .NET code analysis
+      - name: Run .NET code analysis for ${{ matrix.project }}
         run: >
-          dotnet build --configuration Release --no-restore
+          dotnet build "${{ matrix.project }}" --configuration Release --no-restore
           -p:EnableCiAnalysis=true
           -p:TreatWarningsAsErrors=false
-
-      # Code scanning rejects multiple runs uploaded under the same category, and the
-      # compiler writes one SARIF file per project, so merge their "runs" arrays into a
-      # single file before uploading.
-      - name: Merge per-project SARIF files
-        if: always()
-        run: |
-          jq -s '{"$schema": .[0]["$schema"], version: "2.1.0", runs: (map(.runs) | add)}' \
-            sarif-results/*.sarif > sarif-results/merged.sarif
 
       - name: Upload SARIF to code scanning
         if: always()
         uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4
         with:
-          sarif_file: sarif-results/merged.sarif
-          category: dotnet-analyzers
+          sarif_file: sarif-results/${{ env.PROJECT_NAME }}.sarif
+          category: ${{ matrix.project }}
