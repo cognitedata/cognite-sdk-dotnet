@@ -2,7 +2,5 @@ group Examples
     FsConfig
     Microsoft.Extensions.Configuration
     FSharp.Core
-    Oryx
-    Oryx.Protobuf
     CogniteSdk.Protobuf
     Microsoft.Identity.Client

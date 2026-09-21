@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>Internal HTTP pipeline library, vendored from Oryx.</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>false</IsPackable>
+    <Author>Cognite AS</Author>
+    <Company>Cognite AS</Company>
+    <Copyright>Cognite AS</Copyright>
+    <AssemblyOriginatorKeyFile>../../strong_name.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Exception.fs" />
+    <Compile Include="Metrics.fs" />
+    <Compile Include="HttpContext.fs" />
+    <Compile Include="Core.fs" />
+    <Compile Include="Error.fs" />
+    <Compile Include="HttpHandler.fs" />
+    <Compile Include="Logging.fs" />
+    <Compile Include="Fetch.fs" />
+    <Compile Include="Builder.fs" />
+  </ItemGroup>
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

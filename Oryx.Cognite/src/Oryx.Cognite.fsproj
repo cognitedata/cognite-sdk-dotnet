@@ -13,6 +13,10 @@
     <SignAssembly>True</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Json/JsonPushStreamContent.fs" />
+    <Compile Include="Json/ResponseReader.fs" />
+    <Compile Include="ProtobufExt/ProtobufPushStreamContent.fs" />
+    <Compile Include="ProtobufExt/ResponseReader.fs" />
     <Compile Include="Common.fs" />
     <Compile Include="GZip.fs" />
     <Compile Include="Handler.fs" />
@@ -49,6 +53,7 @@
   <ItemGroup>
     <ProjectReference Include="../../CogniteSdk.Types/CogniteSdk.Types.csproj" />
     <ProjectReference Include="../../CogniteSdk.Protobuf/CogniteSdk.Protobuf.csproj" />
+    <ProjectReference Include="../../Oryx/src/Oryx.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
