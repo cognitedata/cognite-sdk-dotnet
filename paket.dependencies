@@ -7,7 +7,8 @@ group Http
     framework: netstandard2.0
 
     nuget FSharp.Core >= 7 lowest_matching: true
-    nuget Microsoft.Extensions.Logging
+    nuget Microsoft.Extensions.Logging ~> 8
+    nuget Microsoft.Extensions.Logging.Abstractions ~> 8
     nuget FsToolkit.ErrorHandling ~> 4
 
 group Sdk
