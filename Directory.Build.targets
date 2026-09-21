@@ -9,7 +9,9 @@
       code-root/report are anchored to $(MSBuildThisFileDirectory) (this repo's root)
       rather than a relative project-directory walk, so it works regardless of how deep
       a project's .fsproj sits (e.g. Oryx.Cognite/src/ vs a hypothetical nested layout).
+      $(GResearchFSharpAnalyzersVersion) is defined in Directory.Build.props, shared with
+      the PackageReference there so the two can't drift out of sync.
     -->
-    <FSharpAnalyzersOtherFlags>--analyzers-path "$(NuGetPackageRoot)g-research.fsharp.analyzers/0.25.0/analyzers/dotnet/fs" --code-root "$(MSBuildThisFileDirectory)" --report "$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif"</FSharpAnalyzersOtherFlags>
+    <FSharpAnalyzersOtherFlags>--analyzers-path "$(NuGetPackageRoot)g-research.fsharp.analyzers/$(GResearchFSharpAnalyzersVersion)/analyzers/dotnet/fs" --code-root "$(MSBuildThisFileDirectory)" --report "$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif"</FSharpAnalyzersOtherFlags>
   </PropertyGroup>
 </Project>
