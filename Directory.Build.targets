@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup Condition="'$(Language)' == 'F#'">
+    <!--
+      CLI arguments for the fsharp-analyzers host, consumed by the AnalyzeFSharpProject
+      target (see Directory.Build.props). Kept on ONE line: <Exec Command="..."> is
+      passed to sh verbatim, so any newline in the value would be treated as a separate
+      command. analyzers-path points at the G-Research rule DLL extracted from its NuGet
+      package (resolved via $(NuGetPackageRoot), same approach as ../energy-state-analyzer);
+      code-root/report are anchored to $(MSBuildThisFileDirectory) (this repo's root)
+      rather than a relative project-directory walk, so it works regardless of how deep
+      a project's .fsproj sits (e.g. Oryx.Cognite/src/ vs a hypothetical nested layout).
+    -->
+    <FSharpAnalyzersOtherFlags>--analyzers-path "$(NuGetPackageRoot)g-research.fsharp.analyzers/0.25.0/analyzers/dotnet/fs" --code-root "$(MSBuildThisFileDirectory)" --report "$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif"</FSharpAnalyzersOtherFlags>
+  </PropertyGroup>
+</Project>

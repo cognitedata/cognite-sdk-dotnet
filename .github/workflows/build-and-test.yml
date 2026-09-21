@@ -92,17 +92,28 @@ jobs:
           filename=$(basename "${{ matrix.project }}")
           echo "PROJECT_NAME=${filename%.*}" >> "$GITHUB_ENV"
 
-      # EnableCiAnalysis is only read by Directory.Build.props, and only enables analyzers
-      # here in CI, so it never affects the normal library build or ships as a
-      # PackageReference that could propagate to consumers. TreatWarningsAsErrors is
-      # forced off so this job reports findings via SARIF instead of failing the build;
-      # merge-blocking on new findings is handled by a code-scanning branch protection
-      # rule, not by this job's exit code.
+      # FSC doesn't support -p:ErrorLog (that's a Roslyn/C#-only compiler flag), so F#
+      # projects run through fsharp-analyzers via the AnalyzeFSharpProject target
+      # (Directory.Build.props/.targets) instead of the built-in .NET analyzers.
+      # EnableCiAnalysis is only read by Directory.Build.props, and only enables the C#
+      # analyzers here in CI, so it never affects the normal library build. In both
+      # cases TreatWarningsAsErrors/CLI exit codes never fail this step: findings are
+      # reported via SARIF, not by failing the build; merge-blocking on new findings is
+      # handled by a code-scanning branch protection rule instead.
       - name: Run .NET code analysis for ${{ matrix.project }}
-        run: >
-          dotnet build "${{ matrix.project }}" --configuration Release --no-restore
-          -p:EnableCiAnalysis=true
-          -p:TreatWarningsAsErrors=false
+        run: |
+          case "${{ matrix.project }}" in
+            *.fsproj)
+              dotnet msbuild /t:AnalyzeFSharpProject "${{ matrix.project }}"
+              ;;
+            *.csproj)
+              dotnet build "${{ matrix.project }}" --configuration Release --no-restore \
+                -p:EnableCiAnalysis=true -p:TreatWarningsAsErrors=false
+              ;;
+          esac
+
+      - name: Verify SARIF report exists
+        run: test -f "sarif-results/${{ env.PROJECT_NAME }}.sarif"
 
       - name: Upload SARIF to code scanning
         if: always()

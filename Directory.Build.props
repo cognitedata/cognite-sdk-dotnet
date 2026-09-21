@@ -1,8 +1,9 @@
 <Project>
   <!--
     Only takes effect when CI passes -p:EnableCiAnalysis=true (see the `analyze` job in
-    build-and-test.yml). Absent that flag this file is a no-op, so it never affects the
-    normal library build, local dev builds, or the published NuGet packages.
+    build-and-test.yml). Absent that flag this block is a no-op, so it never affects the
+    normal library build or local dev builds. FSC doesn't support ErrorLog, so this only
+    produces SARIF for C# projects; see Directory.Build.targets for F#.
   -->
   <PropertyGroup Condition="'$(EnableCiAnalysis)' == 'true'">
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
@@ -11,4 +12,32 @@
     <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     <ErrorLog>$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif,version=2.1</ErrorLog>
   </PropertyGroup>
+
+  <!--
+    F# analyzer (fsharp-analyzers) integration, mirroring ../energy-state-analyzer.
+
+    FSharp.Analyzers.Build only adds the AnalyzeFSharpProject MSBuild target (invoked
+    explicitly by the `analyze` job via `dotnet msbuild /t:AnalyzeFSharpProject`); it
+    never runs as part of a normal build. RunAnalyzers/RunAnalyzersDuringBuild/
+    EnableDefaultAnalyzerOutputs are forced off so referencing the rule package as an
+    "analyzers" asset can't make FSC try to load it during a normal build either. Both
+    packages are PrivateAssets="all" so neither flows to consumers of the published
+    packages, same intent as the CI-only properties above, just via PackageReference
+    because F# analyzers have no built-in/CLI-only equivalent.
+  -->
+  <PropertyGroup Condition="'$(Language)' == 'F#'">
+    <RunAnalyzers>false</RunAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <EnableDefaultAnalyzerOutputs>false</EnableDefaultAnalyzerOutputs>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Language)' == 'F#'">
+    <PackageReference Include="FSharp.Analyzers.Build" Version="0.5.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="G-Research.FSharp.Analyzers" Version="0.25.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>
