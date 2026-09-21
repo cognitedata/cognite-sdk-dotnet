@@ -45,7 +45,7 @@
 
   <!--
     sarif-results is git-ignored and won't exist on a clean checkout; both the C# ErrorLog
-    above and the F# --report path (Directory.Build.targets) write into it, so create it
+    above and the F# report path (Directory.Build.targets) write into it, so create it
     before either can run.
   -->
   <Target Name="CreateSarifResultsDirectory" BeforeTargets="BeforeBuild;AnalyzeFSharpProject" Condition="'$(EnableCiAnalysis)' == 'true' Or '$(Language)' == 'F#'">
