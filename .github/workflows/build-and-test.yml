@@ -52,3 +52,31 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
+
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      # Analyzer properties are passed on the command line rather than added to the
+      # .csproj/.fsproj files, so they only run here in CI and never affect the normal
+      # library build or ship as PackageReferences that could propagate to consumers.
+      - name: Run .NET code analysis
+        run: >
+          dotnet build --configuration Release --no-restore
+          -p:EnableNETAnalyzers=true
+          -p:AnalysisLevel=latest
+          -p:AnalysisMode=AllEnabledByDefault
+          -p:RunAnalyzersDuringBuild=true
