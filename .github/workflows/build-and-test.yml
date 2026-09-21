@@ -89,9 +89,18 @@ jobs:
           -p:EnableCiAnalysis=true
           -p:TreatWarningsAsErrors=false
 
+      # Code scanning rejects multiple runs uploaded under the same category, and the
+      # compiler writes one SARIF file per project, so merge their "runs" arrays into a
+      # single file before uploading.
+      - name: Merge per-project SARIF files
+        if: always()
+        run: |
+          jq -s '{"$schema": .[0]["$schema"], version: "2.1.0", runs: (map(.runs) | add)}' \
+            sarif-results/*.sarif > sarif-results/merged.sarif
+
       - name: Upload SARIF to code scanning
         if: always()
         uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4
         with:
-          sarif_file: sarif-results
+          sarif_file: sarif-results/merged.sarif
           category: dotnet-analyzers
