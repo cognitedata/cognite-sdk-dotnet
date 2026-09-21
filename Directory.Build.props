@@ -45,7 +45,7 @@
     <PackageReference Include="FSharp.Analyzers.Build" Version="0.5.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="G-Research.FSharp.Analyzers" Version="$(GResearchFSharpAnalyzersVersion)">
+    <PackageReference Include="G-Research.FSharp.Analyzers" Version="$(GResearchFSharpAnalyzersVersion)" GeneratePathProperty="true">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
