@@ -25,7 +25,7 @@
     packages, same intent as the CI-only properties above, just via PackageReference
     because F# analyzers have no built-in/CLI-only equivalent.
   -->
-  <PropertyGroup Condition="'$(Language)' == 'F#'">
+  <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
     <RunAnalyzers>false</RunAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableDefaultAnalyzerOutputs>false</EnableDefaultAnalyzerOutputs>
@@ -41,7 +41,7 @@
     <GResearchFSharpAnalyzersVersion>0.25.0</GResearchFSharpAnalyzersVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(Language)' == 'F#'">
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
     <PackageReference Include="FSharp.Analyzers.Build" Version="0.5.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -54,9 +54,15 @@
   <!--
     sarif-results is git-ignored and won't exist on a clean checkout; both the C# ErrorLog
     above and the F# report path (Directory.Build.targets) write into it, so create it
-    before either can run.
+    before either can run. Split in two so a plain local F# build (BeforeBuild) doesn't
+    create an empty directory when analysis isn't running; AnalyzeFSharpProject is only
+    invoked explicitly by the `analyze` CI job, so it's safe to always create it there.
   -->
-  <Target Name="CreateSarifResultsDirectory" BeforeTargets="BeforeBuild;AnalyzeFSharpProject" Condition="'$(EnableCiAnalysis)' == 'true' Or '$(Language)' == 'F#'">
+  <Target Name="CreateSarifResultsDirectory" BeforeTargets="BeforeBuild" Condition="'$(EnableCiAnalysis)' == 'true'">
+    <MakeDir Directories="$(MSBuildThisFileDirectory)sarif-results" />
+  </Target>
+
+  <Target Name="CreateSarifResultsDirectoryForFSharp" BeforeTargets="AnalyzeFSharpProject">
     <MakeDir Directories="$(MSBuildThisFileDirectory)sarif-results" />
   </Target>
 </Project>
