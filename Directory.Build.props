@@ -1,0 +1,14 @@
+<Project>
+  <!--
+    Only takes effect when CI passes -p:EnableCiAnalysis=true (see the `analyze` job in
+    build-and-test.yml). Absent that flag this file is a no-op, so it never affects the
+    normal library build, local dev builds, or the published NuGet packages.
+  -->
+  <PropertyGroup Condition="'$(EnableCiAnalysis)' == 'true'">
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
+    <ErrorLog>$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif,version=2.1</ErrorLog>
+  </PropertyGroup>
+</Project>
