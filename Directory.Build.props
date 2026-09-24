@@ -1,10 +1,5 @@
 <Project>
-  <!--
-    Only takes effect when CI passes -p:EnableCiAnalysis=true (see the `analyze` job in
-    build-and-test.yml). Absent that flag this block is a no-op, so it never affects the
-    normal library build or local dev builds. FSC doesn't support ErrorLog, so this only
-    produces SARIF for C# projects; see Directory.Build.targets for F#.
-  -->
+  <!-- Only active when CI passes -p:EnableCiAnalysis=true; no-op for local/normal builds. C# only (FSC has no ErrorLog) — see Directory.Build.targets for F#. -->
   <PropertyGroup Condition="'$(EnableCiAnalysis)' == 'true'">
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <AnalysisLevel>latest</AnalysisLevel>
@@ -13,30 +8,14 @@
     <ErrorLog>$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif,version=2.1</ErrorLog>
   </PropertyGroup>
 
-  <!--
-    F# analyzer (fsharp-analyzers) integration, mirroring ../energy-state-analyzer.
-
-    FSharp.Analyzers.Build only adds the AnalyzeFSharpProject MSBuild target (invoked
-    explicitly by the `analyze` job via `dotnet msbuild /t:AnalyzeFSharpProject`); it
-    never runs as part of a normal build. RunAnalyzers/RunAnalyzersDuringBuild/
-    EnableDefaultAnalyzerOutputs are forced off so referencing the rule package as an
-    "analyzers" asset can't make FSC try to load it during a normal build either. Both
-    packages are PrivateAssets="all" so neither flows to consumers of the published
-    packages, same intent as the CI-only properties above, just via PackageReference
-    because F# analyzers have no built-in/CLI-only equivalent.
-  -->
+  <!-- Force off so referencing the analyzer package as "analyzers" asset can't make FSC load it during a normal build. -->
   <PropertyGroup Condition="'$(MSBuildProjectExtension)' == '.fsproj'">
     <RunAnalyzers>false</RunAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableDefaultAnalyzerOutputs>false</EnableDefaultAnalyzerOutputs>
   </PropertyGroup>
 
-  <!--
-    Unconditioned (harmless for C# projects, unused unless referenced) because
-    Directory.Build.props is auto-imported before the F# SDK sets $(Language), so a
-    PropertyGroup conditioned on Language here would never actually apply.
-    Shared with Directory.Build.targets, which needs this to locate the analyzer DLL on disk.
-  -->
+  <!-- Unconditioned: $(Language) isn't set yet when this file is imported, so a Language condition here would never apply. -->
   <PropertyGroup>
     <GResearchFSharpAnalyzersVersion>0.25.0</GResearchFSharpAnalyzersVersion>
   </PropertyGroup>
@@ -51,13 +30,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <!--
-    sarif-results is git-ignored and won't exist on a clean checkout; both the C# ErrorLog
-    above and the F# report path (Directory.Build.targets) write into it, so create it
-    before either can run. Split in two so a plain local F# build (BeforeBuild) doesn't
-    create an empty directory when analysis isn't running; AnalyzeFSharpProject is only
-    invoked explicitly by the `analyze` CI job, so it's safe to always create it there.
-  -->
+  <!-- sarif-results is git-ignored; create it before analysis writes into it. Split so plain local F# builds don't create it unnecessarily. -->
   <Target Name="CreateSarifResultsDirectory" BeforeTargets="BeforeBuild" Condition="'$(EnableCiAnalysis)' == 'true'">
     <MakeDir Directories="$(MSBuildThisFileDirectory)sarif-results" />
   </Target>
