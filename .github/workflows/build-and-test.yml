@@ -92,13 +92,7 @@ jobs:
           filename=$(basename "${{ matrix.project }}")
           echo "PROJECT_NAME=${filename%.*}" >> "$GITHUB_ENV"
 
-      # FSC doesn't support -p:ErrorLog (that's a Roslyn/C#-only compiler flag), so F#
-      # projects run through fsharp-analyzers via the AnalyzeFSharpProject target
-      # (Directory.Build.props/.targets) instead of the built-in .NET analyzers.
-      # EnableCiAnalysis is only read by Directory.Build.props, and only enables the C#
-      # analyzers here in CI, so it never affects the normal library build. In both
-      # cases TreatWarningsAsErrors/CLI exit codes never fail this step: findings are
-      # reported via SARIF, not by failing the build; merge-blocking on new findings is
+      # Findings are reported via SARIF, not by failing the build; merge-blocking is
       # handled by a code-scanning branch protection rule instead.
       - name: Run .NET code analysis for ${{ matrix.project }}
         run: |
