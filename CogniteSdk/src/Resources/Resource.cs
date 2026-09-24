@@ -53,7 +53,7 @@ namespace CogniteSdk.Resources
         /// <param name="handler">The handler to run.</param>
         /// <typeparam name="T">The type of the response.</typeparam>
         /// <returns>Result.</returns>
-        protected async Task<T> RunAsync<T>(FSharpFunc<IHttpNext<T>, Task<Unit>> handler)
+        protected static async Task<T> RunAsync<T>(FSharpFunc<IHttpNext<T>, Task<Unit>> handler)
         {
             return await HttpHandler.runUnsafeAsync(handler).ConfigureAwait(false);
         }

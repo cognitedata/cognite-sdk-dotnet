@@ -13,7 +13,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <summary>
         /// Default view 
         /// </summary>
-        public static ViewIdentifier DefaultView = new ViewIdentifier("cdf_cdm", "CogniteAsset", "v1");
+        public static readonly ViewIdentifier DefaultView = new ViewIdentifier("cdf_cdm", "CogniteAsset", "v1");
         /// <inheritdoc />
         public override ViewIdentifier View { get; }
 
