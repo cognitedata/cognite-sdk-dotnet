@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: 8.0.x
 
@@ -52,3 +52,66 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
+
+  analyze:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - CogniteSdk.Types/CogniteSdk.Types.csproj
+          - CogniteSdk.Protobuf/CogniteSdk.Protobuf.csproj
+          - Oryx.Cognite/src/Oryx.Cognite.fsproj
+          - CogniteSdk.FSharp/src/CogniteSdk.FSharp.fsproj
+          - CogniteSdk/src/CogniteSdk.csproj
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Create SARIF output directory
+        run: mkdir -p sarif-results
+
+      - name: Compute project name
+        run: |
+          filename=$(basename "${{ matrix.project }}")
+          echo "PROJECT_NAME=${filename%.*}" >> "$GITHUB_ENV"
+
+      # Findings are reported via SARIF, not by failing the build; merge-blocking is
+      # handled by a code-scanning branch protection rule instead.
+      - name: Run .NET code analysis for ${{ matrix.project }}
+        run: |
+          case "${{ matrix.project }}" in
+            *.fsproj)
+              dotnet msbuild /t:AnalyzeFSharpProject "${{ matrix.project }}"
+              ;;
+            *.csproj)
+              dotnet build "${{ matrix.project }}" --configuration Release --no-restore \
+                -p:EnableCiAnalysis=true -p:TreatWarningsAsErrors=false
+              ;;
+          esac
+
+      - name: Verify SARIF report exists
+        run: test -f "sarif-results/${{ env.PROJECT_NAME }}.sarif"
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
+        with:
+          sarif_file: sarif-results/${{ env.PROJECT_NAME }}.sarif
+          category: ${{ matrix.project }}

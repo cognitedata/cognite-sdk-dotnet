@@ -19,6 +19,13 @@
       "commands": [
         "fantomas"
       ]
+    },
+    "fsharp-analyzers": {
+      "version": "0.39.2",
+      "commands": [
+        "fsharp-analyzers"
+      ],
+      "rollForward": false
     }
   }
 }

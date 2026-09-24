@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup Condition="'$(Language)' == 'F#'">
+    <!-- Keep on ONE line: passed verbatim to sh via <Exec Command="...">. -->
+    <FSharpAnalyzersOtherFlags>--analyzers-path "$(PkgG-Research_FSharp_Analyzers)/analyzers/dotnet/fs" --code-root "$(MSBuildThisFileDirectory)" --report "$(MSBuildThisFileDirectory)sarif-results/$(MSBuildProjectName).sarif"</FSharpAnalyzersOtherFlags>
+  </PropertyGroup>
+</Project>

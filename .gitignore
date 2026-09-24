@@ -6,6 +6,7 @@
 *.user
 .vscode
 coverage.lcov
+sarif-results/
 .ionide
 *.swp
 .idea
