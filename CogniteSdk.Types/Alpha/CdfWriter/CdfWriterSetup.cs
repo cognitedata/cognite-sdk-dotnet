@@ -31,7 +31,7 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Map from target field to expression, for custom mappings.
         /// </summary>
-        public Dictionary<string, string> Fields { get; set; }
+        public Dictionary<string, string> Fields { get; }
     }
 
     /// <summary>
