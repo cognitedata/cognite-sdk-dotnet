@@ -1,9 +1,13 @@
 // Copyright 2026 Cognite AS
 // SPDX-License-Identifier: Apache-2.0
 
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
+using CogniteSdk;
 using CogniteSdk.Alpha;
 using Xunit;
 
@@ -83,6 +87,19 @@ namespace Test.CSharp.Alpha
                 }
                 """);
             Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
+        }
+
+        [Fact]
+        public async Task TestSetupRejectsNullRequest()
+        {
+            using var httpClient = new HttpClient();
+            var client = Client.Builder.Create(httpClient)
+                .SetAppId("test")
+                .SetProject("project")
+                .SetTokenProvider(_ => Task.FromResult("token"))
+                .Build();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.Alpha.CdfWriter.SetupAsync(null));
         }
     }
 }

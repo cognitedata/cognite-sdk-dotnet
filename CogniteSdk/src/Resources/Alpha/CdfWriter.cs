@@ -31,6 +31,7 @@ namespace CogniteSdk.Resources.Alpha
         /// <param name="token">Optional cancellation token</param>
         public async Task SetupAsync(CdfWriterSetupRequest request, CancellationToken token = default)
         {
+            if (request is null) throw new ArgumentNullException(nameof(request));
             var req = CdfWriter.setup(request, GetContext(token));
             await RunAsync(req).ConfigureAwait(false);
         }
