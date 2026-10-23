@@ -26,6 +26,11 @@ namespace CogniteSdk.Resources
         public IntegrationsResource Integrations { get; }
 
         /// <summary>
+        /// CDF writer API extension methods.
+        /// </summary>
+        public CdfWriterResource CdfWriter { get; }
+
+        /// <summary>
         /// Will only be instantiated by the client.
         /// </summary>
         /// <param name="authHandler">The authentication handler.</param>
@@ -34,6 +39,7 @@ namespace CogniteSdk.Resources
         {
             Simulators = new SimulatorsResource(authHandler, ctx);
             Integrations = new IntegrationsResource(authHandler, ctx);
+            CdfWriter = new CdfWriterResource(authHandler, ctx);
         }
     }
 }

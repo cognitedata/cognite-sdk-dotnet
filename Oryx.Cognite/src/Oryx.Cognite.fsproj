@@ -43,6 +43,7 @@
     <Compile Include="Alpha/Handler.fs" />
     <Compile Include="Alpha/Simulators.fs" />
     <Compile Include="Alpha/Integrations.fs" />
+    <Compile Include="Alpha/CdfWriter.fs" />
     <None Include="..\..\LICENSE" Pack="true" Visible="false" PackagePath="" />
     <None Include="..\..\README.md" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
