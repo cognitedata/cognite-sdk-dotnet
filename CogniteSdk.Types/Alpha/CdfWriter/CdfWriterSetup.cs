@@ -31,7 +31,8 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Map from target field to expression, for custom mappings.
         /// </summary>
-        public Dictionary<string, string> Fields { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
+        public Dictionary<string, string> Fields { get; set; }
     }
 
     /// <summary>
