@@ -5,6 +5,7 @@ namespace Oryx.Cognite.Alpha
 
 open Oryx
 open Oryx.Cognite
+open Oryx.Cognite.Alpha
 
 open CogniteSdk
 open CogniteSdk.Alpha
@@ -15,4 +16,7 @@ module CdfWriter =
     let Url = "/cdfwriter"
 
     let setup (request: CdfWriterSetupRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
-        source |> withLogMessage "cdfwriter:setup" |> postV10 request (Url +/ "setup")
+        source
+        |> withLogMessage "cdfwriter:setup"
+        |> withAlphaHeader
+        |> postV10 request (Url +/ "setup")
