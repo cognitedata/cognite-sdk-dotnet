@@ -1,0 +1,5 @@
+group Http
+
+FSharp.Core
+Microsoft.Extensions.Logging
+FsToolkit.ErrorHandling

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
@@ -21,7 +22,37 @@ namespace CogniteSdk
     /// <summary>
     /// Metrics interface.
     /// </summary>
-    public interface IMetrics : Oryx.IMetrics { }
+    public interface IMetrics
+    {
+        /// <summary>
+        /// Increase a counter metric.
+        /// </summary>
+        void Counter(string metric, IDictionary<string, string> labels, long increase);
+
+        /// <summary>
+        /// Set a gauge metric.
+        /// </summary>
+        void Gauge(string metric, IDictionary<string, string> labels, double value);
+    }
+
+    /// <summary>
+    /// Adapts a <see cref="IMetrics"/> instance to the HTTP pipeline's internal metrics contract.
+    /// </summary>
+    internal sealed class MetricsAdapter : Oryx.IMetrics
+    {
+        private readonly IMetrics _metrics;
+
+        public MetricsAdapter(IMetrics metrics)
+        {
+            _metrics = metrics;
+        }
+
+        public void Counter(string metric, IDictionary<string, string> labels, long increase) =>
+            _metrics.Counter(metric, labels, increase);
+
+        public void Gauge(string metric, IDictionary<string, string> labels, double value) =>
+            _metrics.Gauge(metric, labels, value);
+    }
 
     /// <summary>
     /// Cognite SDK client.
@@ -387,7 +418,7 @@ namespace CogniteSdk
                     throw new ArgumentNullException(nameof(metrics));
                 }
 
-                _context = HttpHandler.withMetrics(metrics, _context);
+                _context = HttpHandler.withMetrics(new MetricsAdapter(metrics), _context);
                 return this;
             }
 

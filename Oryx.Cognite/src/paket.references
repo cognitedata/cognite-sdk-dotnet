@@ -1,6 +1,3 @@
 group Oryx.Cognite
-    System.Text.Json
-    FSharp.Core
-    Oryx
-    Oryx.SystemTextJson
-    Oryx.Protobuf
+System.Text.Json
+FSharp.Core

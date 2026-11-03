@@ -5,4 +5,3 @@ group Test
     xunit.runner.visualstudio
     FSharp.Core
     Unquote
-    Oryx
