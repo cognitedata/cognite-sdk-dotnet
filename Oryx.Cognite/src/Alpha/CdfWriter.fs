@@ -7,6 +7,8 @@ open Oryx
 open Oryx.Cognite
 open Oryx.Cognite.Alpha
 
+open System.Text.Json
+
 open CogniteSdk
 open CogniteSdk.Alpha
 
@@ -20,3 +22,9 @@ module CdfWriter =
         |> withLogMessage "cdfwriter:setup"
         |> withAlphaHeader
         |> postV10 request (Url +/ "setup")
+
+    let payload<'T> (request: CdfWriterPayloadRequest<'T>) (source: HttpHandler<unit>) : HttpHandler<JsonElement> =
+        source
+        |> withLogMessage "cdfwriter:payload"
+        |> withAlphaHeader
+        |> postV10 request (Url +/ "payload")

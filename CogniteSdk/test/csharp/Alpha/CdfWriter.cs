@@ -15,10 +15,12 @@ namespace Test.CSharp.Alpha
 {
     public class CdfWriterTests
     {
+        // Mirrors the converters registered by the SDK's own serializer options.
         private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            Converters = { new StatusCodeConverter(), new MultiValueConverter() },
         };
 
         [Fact]
@@ -87,6 +89,52 @@ namespace Test.CSharp.Alpha
                 }
                 """);
             Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
+        }
+
+        [Fact]
+        public void TestPayloadRequestSerialization()
+        {
+            var request = new CdfWriterPayloadRequest<Dictionary<string, IEnumerable<DataPoint>>>
+            {
+                IntegrationId = "my-integration",
+                TaskId = "datapoints",
+                Items = new Dictionary<string, IEnumerable<DataPoint>>
+                {
+                    ["ts1"] = new[]
+                    {
+                        new DataPoint { Timestamp = 1000, Value = MultiValue.Create(1.5), Status = StatusCode.FromCategory(StatusCodeCategory.Good) },
+                        new DataPoint { Timestamp = 2000, Value = MultiValue.Create("text"), Status = StatusCode.Create(0x80000000) },
+                    },
+                },
+            };
+
+            var json = JsonSerializer.Serialize(request, _jsonOptions);
+            var expected = JsonNode.Parse("""
+                {
+                    "integrationId": "my-integration",
+                    "taskId": "datapoints",
+                    "items": {
+                        "ts1": [
+                            { "timestamp": 1000, "value": 1.5, "status": { "code": 0 } },
+                            { "timestamp": 2000, "value": "text", "status": { "code": 2147483648 } }
+                        ]
+                    }
+                }
+                """);
+            Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
+        }
+
+        [Fact]
+        public async Task TestPayloadRejectsNullRequest()
+        {
+            using var httpClient = new HttpClient();
+            var client = Client.Builder.Create(httpClient)
+                .SetAppId("test")
+                .SetProject("project")
+                .SetTokenProvider(_ => Task.FromResult("token"))
+                .Build();
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => client.Alpha.CdfWriter.PayloadAsync<object>(null));
         }
 
         [Fact]
