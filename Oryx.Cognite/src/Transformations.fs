@@ -94,7 +94,7 @@ module Transformations =
     /// List metrics for the given job, like number of rows read or items created.
     let listJobMetrics (id: int64) (source: HttpHandler<unit>) : HttpHandler<TransformationJobMetric seq> =
         http {
-            let url = Url +/ $"jobs/{id}/metrics"
+            let url = Url +/ $"jobs/%d{id}/metrics"
 
             let! ret =
                 source

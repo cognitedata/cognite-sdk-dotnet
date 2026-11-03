@@ -25,7 +25,7 @@ namespace CogniteSdk.Resources.DataModels
         /// </summary>
         /// <param name="resource"></param>
         /// <param name="allowedViewIdentifiers">View Identifiers this resource is allowed to query for in addition to the default view.</param>
-        public BaseDataModelResource(DataModelsResource resource, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null)
+        protected BaseDataModelResource(DataModelsResource resource, IEnumerable<ViewIdentifier> allowedViewIdentifiers = null)
         {
             _resource = resource;
             _allowedViewIdentifiers = new HashSet<ViewIdentifier>((allowedViewIdentifiers ?? Enumerable.Empty<ViewIdentifier>()).Select(x => x.Clone()), ViewIdentifier.ValueTypeEqualityComparer);
@@ -94,7 +94,7 @@ namespace CogniteSdk.Resources.DataModels
                 SkipOnVersionConflict = opts.SkipOnVersionConflict,
                 Replace = opts.Replace,
                 Items = upserts
-            }, token);
+            }, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <returns>Retrieved instances.</returns>
         public async Task<IEnumerable<SourcedInstance<T>>> RetrieveAsync(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
-            return await _retrieveAsync<T>(ids, View, token);
+            return await _retrieveAsync<T>(ids, View, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace CogniteSdk.Resources.DataModels
         public async Task<IEnumerable<SourcedInstance<TResult>>> RetrieveAsync<TResult>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
             AssertViewIsAllowed(viewIdentifier);
-            return await _retrieveAsync<TResult>(ids, viewIdentifier, token);
+            return await _retrieveAsync<TResult>(ids, viewIdentifier, token).ConfigureAwait(false);
         }
 
         private async Task<IEnumerable<SourcedInstance<TResult>>> _retrieveAsync<TResult>(IEnumerable<InstanceIdentifierWithType> ids, ViewIdentifier viewIdentifier, CancellationToken token)
@@ -132,7 +132,7 @@ namespace CogniteSdk.Resources.DataModels
                         Source = viewIdentifier
                     }
                 }
-            }, token);
+            }, token).ConfigureAwait(false);
             return FromRaw(results.Items, viewIdentifier);
         }
 
@@ -144,7 +144,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <returns>Deleted instance IDs.</returns>
         public async Task<IEnumerable<InstanceIdentifierWithType>> DeleteAsync(IEnumerable<InstanceIdentifierWithType> ids, CancellationToken token = default)
         {
-            return await _resource.DeleteInstances(ids, token);
+            return await _resource.DeleteInstances(ids, token).ConfigureAwait(false);
         }
 
         private static IEnumerable<SourcedInstance<TResult>> FromRaw<TResult>(IEnumerable<BaseInstance<Dictionary<string, Dictionary<string, TResult>>>> items, ViewIdentifier view)
@@ -192,7 +192,7 @@ namespace CogniteSdk.Resources.DataModels
         /// <returns>Filtered items with optional cursor.</returns>
         public async Task<ItemsWithCursor<SourcedInstance<T>>> FilterAsync(SourcedInstanceFilter filter, CancellationToken token = default)
         {
-            return await _filterAsync<T>(filter, View, token);
+            return await _filterAsync<T>(filter, View, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace CogniteSdk.Resources.DataModels
         public async Task<ItemsWithCursor<SourcedInstance<TResult>>> FilterAsync<TResult>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token = default)
         {
             AssertViewIsAllowed(viewIdentifier);
-            return await _filterAsync<TResult>(filter, viewIdentifier, token);
+            return await _filterAsync<TResult>(filter, viewIdentifier, token).ConfigureAwait(false);
         }
 
         private async Task<ItemsWithCursor<SourcedInstance<TResult>>> _filterAsync<TResult>(SourcedInstanceFilter filter, ViewIdentifier viewIdentifier, CancellationToken token)
@@ -222,7 +222,7 @@ namespace CogniteSdk.Resources.DataModels
                 Sort = filter.Sort,
                 Filter = filter.Filter,
                 Cursor = filter.Cursor,
-            }, token);
+            }, token).ConfigureAwait(false);
 
             return new ItemsWithCursor<SourcedInstance<TResult>>
             {
@@ -248,7 +248,7 @@ namespace CogniteSdk.Resources.DataModels
                 Query = search.Query,
                 Properties = search.Properties,
                 View = View,
-            }, token);
+            }, token).ConfigureAwait(false);
 
             return FromRaw(res.Items, View);
         }
