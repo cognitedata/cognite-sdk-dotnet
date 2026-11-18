@@ -38,7 +38,7 @@ namespace CogniteSdk.Alpha
         /// Map from emitted resource, for example "CogniteTimeseries", to the view its upsert items are shaped for.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterViewReference>? EmittedViews { get; set; }
+        public Dictionary<string, CdfWriterViewReference>? EmittedViews { get; }
         /// <summary>
         /// Mapping definitions. External IDs must be unique within the request.
         /// </summary>
@@ -112,7 +112,7 @@ namespace CogniteSdk.Alpha
         /// Map from emitted resource to its config block.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterMappingResource>? Resources { get; set; }
+        public Dictionary<string, CdfWriterMappingResource>? Resources { get; }
     }
 
     /// <summary>
