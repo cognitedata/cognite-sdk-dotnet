@@ -39,7 +39,7 @@ namespace CogniteSdk.Alpha
         /// Map from emitted resource, for example "CogniteTimeseries", to its operations.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterResourceOperations>? Resources { get; set; }
+        public Dictionary<string, CdfWriterResourceOperations>? Resources { get; }
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ namespace CogniteSdk.Alpha
         /// Map from emitted resource to operation to result, with the same keys as the request.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, Dictionary<string, CdfWriterOperationResult>>? Resources { get; set; }
+        public Dictionary<string, Dictionary<string, CdfWriterOperationResult>>? Resources { get; }
     }
 
     /// <summary>
