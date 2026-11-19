@@ -253,5 +253,90 @@ namespace Test.CSharp.Alpha
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => client.Alpha.CdfWriter.SetupAsync(null));
         }
+
+        [Fact]
+        public void TestAddMethodsRejectNullArguments()
+        {
+            var setup = new CdfWriterSetupRequest();
+            var view = Assert.Throws<ArgumentNullException>(() => setup.AddEmittedView(null!, new CdfWriterViewReference()));
+            Assert.Equal("resource", view.ParamName);
+            var viewArg = Assert.Throws<ArgumentNullException>(() => setup.AddEmittedView("CogniteTimeseries", null!));
+            Assert.Equal("view", viewArg.ParamName);
+
+            var mapping = new CdfWriterMapping();
+            var resource = Assert.Throws<ArgumentNullException>(() => mapping.AddResource(null!, new CdfWriterMappingResource()));
+            Assert.Equal("resource", resource.ParamName);
+            var config = Assert.Throws<ArgumentNullException>(() => mapping.AddResource("CogniteTimeseries", null!));
+            Assert.Equal("config", config.ParamName);
+
+            var task = new CdfWriterTaskData();
+            var taskResource = Assert.Throws<ArgumentNullException>(() => task.AddResource(null!, new CdfWriterResourceOperations()));
+            Assert.Equal("resource", taskResource.ParamName);
+            var operations = Assert.Throws<ArgumentNullException>(() => task.AddResource("edges", null!));
+            Assert.Equal("operations", operations.ParamName);
+
+            // Failed calls must not create the collections.
+            Assert.Null(setup.EmittedViews);
+            Assert.Null(mapping.Resources);
+            Assert.Null(task.Resources);
+        }
+
+        [Fact]
+        public void TestAddMethodsCreateCollectionsOnFirstUse()
+        {
+            var setup = new CdfWriterSetupRequest();
+            Assert.Null(setup.EmittedViews);
+            setup.AddEmittedView("CogniteTimeseries", new CdfWriterViewReference { Space = "cdf_cdm", ExternalId = "CogniteTimeSeries", Version = "v1" });
+            Assert.Equal("CogniteTimeSeries", setup.EmittedViews!["CogniteTimeseries"].ExternalId);
+
+            var mapping = new CdfWriterMapping();
+            Assert.Null(mapping.Resources);
+            mapping.AddResource("CogniteTimeseries", new CdfWriterMappingResource { Properties = "input" });
+            Assert.Equal("input", mapping.Resources!["CogniteTimeseries"].Properties);
+
+            var task = new CdfWriterTaskData();
+            Assert.Null(task.Resources);
+            task.AddResource("edges", new CdfWriterResourceOperations());
+            Assert.Single(task.Resources!);
+        }
+
+        [Fact]
+        public void TestConstructorsCopyDictionaries()
+        {
+            var views = new Dictionary<string, CdfWriterViewReference>
+            {
+                ["CogniteTimeseries"] = new CdfWriterViewReference { Space = "cdf_cdm", ExternalId = "CogniteTimeSeries", Version = "v1" },
+            };
+            var setup = new CdfWriterSetupRequest(views);
+            views.Clear();
+            Assert.Single(setup.EmittedViews!);
+
+            var resources = new Dictionary<string, CdfWriterMappingResource> { ["CogniteTimeseries"] = new CdfWriterMappingResource() };
+            var mapping = new CdfWriterMapping(resources);
+            resources.Clear();
+            Assert.Single(mapping.Resources!);
+
+            var operations = new Dictionary<string, CdfWriterResourceOperations> { ["edges"] = new CdfWriterResourceOperations() };
+            var task = new CdfWriterTaskData(operations);
+            operations.Clear();
+            Assert.Single(task.Resources!);
+        }
+
+        [Fact]
+        public void TestUnsetCollectionsAreOmittedFromJson()
+        {
+            var setup = JsonNode.Parse(JsonSerializer.Serialize(new CdfWriterSetupRequest { IntegrationId = "my-integration" }, _jsonOptions))!.AsObject();
+            Assert.False(setup.ContainsKey("emittedViews"));
+            Assert.False(setup.ContainsKey("mappings"));
+
+            var fromNullCtor = JsonNode.Parse(JsonSerializer.Serialize(new CdfWriterSetupRequest(null), _jsonOptions))!.AsObject();
+            Assert.False(fromNullCtor.ContainsKey("emittedViews"));
+
+            var mapping = JsonNode.Parse(JsonSerializer.Serialize(new CdfWriterMapping { ExternalId = "m" }, _jsonOptions))!.AsObject();
+            Assert.False(mapping.ContainsKey("resources"));
+
+            var task = JsonNode.Parse(JsonSerializer.Serialize(new CdfWriterTaskData { TaskId = "t" }, _jsonOptions))!.AsObject();
+            Assert.False(task.ContainsKey("resources"));
+        }
     }
 }
