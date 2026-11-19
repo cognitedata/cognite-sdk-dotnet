@@ -26,6 +26,28 @@ namespace Test.CSharp.Alpha
         [Fact]
         public void TestSetupRequestSerialization()
         {
+            var mapping = new CdfWriterMapping
+            {
+                ExternalId = "fba8cb22-e44a-4ee1-9282-57ce84f23d7c",
+                Name = "Norway",
+                Kind = "spaceRouting",
+            };
+            mapping.AddResource("CogniteTimeseries", new CdfWriterMappingResource
+            {
+                Parameters = new CdfWriterSpaceRoutingParameters
+                {
+                    Property = new[] { "externalId" },
+                    Rules = new[] { new CdfWriterSpaceRoutingRule { Pattern = "nor-.*", Space = "sp-norway" } },
+                    Default = "sp-other",
+                },
+                Properties = "input",
+                AutoCreateDirectRelations = false,
+            });
+            mapping.AddResource("CogniteSourceSystem", new CdfWriterMappingResource
+            {
+                Parameters = new CdfWriterSpaceRoutingParameters { Default = "sp-norway" },
+            });
+
             var request = new CdfWriterSetupRequest
             {
                 IntegrationId = "my-integration",
@@ -36,42 +58,13 @@ namespace Test.CSharp.Alpha
                 {
                     new CdfWriterTaskDeclaration { Name = "Browse", Resources = new[] { "CogniteTimeseries", "CogniteSourceSystem" } },
                 },
-                EmittedViews = new Dictionary<string, CdfWriterViewReference>
-                {
-                    ["CogniteTimeseries"] = new CdfWriterViewReference { Space = "cdf_cdm", ExternalId = "CogniteTimeSeries", Version = "v1" },
-                },
-                Mappings = new[]
-                {
-                    new CdfWriterMapping
-                    {
-                        ExternalId = "fba8cb22-e44a-4ee1-9282-57ce84f23d7c",
-                        Name = "Norway",
-                        Kind = "spaceRouting",
-                        Resources = new Dictionary<string, CdfWriterMappingResource>
-                        {
-                            ["CogniteTimeseries"] = new CdfWriterMappingResource
-                            {
-                                Parameters = new CdfWriterSpaceRoutingParameters
-                                {
-                                    Property = new[] { "externalId" },
-                                    Rules = new[] { new CdfWriterSpaceRoutingRule { Pattern = "nor-.*", Space = "sp-norway" } },
-                                    Default = "sp-other",
-                                },
-                                Properties = "input",
-                                AutoCreateDirectRelations = false,
-                            },
-                            ["CogniteSourceSystem"] = new CdfWriterMappingResource
-                            {
-                                Parameters = new CdfWriterSpaceRoutingParameters { Default = "sp-norway" },
-                            },
-                        },
-                    },
-                },
+                Mappings = new[] { mapping },
                 Bindings = new[]
                 {
                     new CdfWriterBinding { TaskIds = new[] { "Browse" }, MappingId = "fba8cb22-e44a-4ee1-9282-57ce84f23d7c" },
                 },
             };
+            request.AddEmittedView("CogniteTimeseries", new CdfWriterViewReference { Space = "cdf_cdm", ExternalId = "CogniteTimeSeries", Version = "v1" });
 
             var json = JsonSerializer.Serialize(request, _jsonOptions);
             var expected = JsonNode.Parse("""
@@ -112,57 +105,50 @@ namespace Test.CSharp.Alpha
         [Fact]
         public void TestPayloadRequestSerialization()
         {
-            var request = new CdfWriterPayloadRequest
+            var task = new CdfWriterTaskData { TaskId = "Stream data to CDF" };
+            task.AddResource("CogniteTimeseries", new CdfWriterResourceOperations
             {
-                IntegrationId = "my-integration",
-                Data = new[]
+                Upsert = new[]
                 {
-                    new CdfWriterTaskData
+                    new CdfWriterUpsertItem
                     {
-                        TaskId = "Stream data to CDF",
-                        Resources = new Dictionary<string, CdfWriterResourceOperations>
+                        ExternalId = "ts1",
+                        Type = "ts-type",
+                        Properties = new Dictionary<string, object> { ["type"] = "numeric", ["name"] = "TS 1" },
+                    },
+                },
+                Datapoints = new[]
+                {
+                    new CdfWriterDatapointsItem
+                    {
+                        ExternalId = "ts1",
+                        Type = "numeric",
+                        Datapoints = new[]
                         {
-                            ["CogniteTimeseries"] = new CdfWriterResourceOperations
-                            {
-                                Upsert = new[]
-                                {
-                                    new CdfWriterUpsertItem
-                                    {
-                                        ExternalId = "ts1",
-                                        Type = "ts-type",
-                                        Properties = new Dictionary<string, object> { ["type"] = "numeric", ["name"] = "TS 1" },
-                                    },
-                                },
-                                Datapoints = new[]
-                                {
-                                    new CdfWriterDatapointsItem
-                                    {
-                                        ExternalId = "ts1",
-                                        Type = "numeric",
-                                        Datapoints = new[]
-                                        {
-                                            new CdfWriterDatapoint { Timestamp = 1000, Value = MultiValue.Create(1.5) },
-                                            new CdfWriterDatapoint { Timestamp = 2000, Status = StatusCode.Create(0x80000000) },
-                                        },
-                                    },
-                                    new CdfWriterDatapointsItem
-                                    {
-                                        ExternalId = "ts2",
-                                        Type = "state",
-                                        Datapoints = new[]
-                                        {
-                                            new CdfWriterDatapoint { Timestamp = 1000, Value = MultiValue.Create(3L), StringValue = "" },
-                                        },
-                                    },
-                                },
-                            },
-                            ["edges"] = new CdfWriterResourceOperations
-                            {
-                                Delete = new[] { new CdfWriterDeleteItem { ExternalId = "e1", InstanceType = "edge" } },
-                            },
+                            new CdfWriterDatapoint { Timestamp = 1000, Value = MultiValue.Create(1.5) },
+                            new CdfWriterDatapoint { Timestamp = 2000, Status = StatusCode.Create(0x80000000) },
+                        },
+                    },
+                    new CdfWriterDatapointsItem
+                    {
+                        ExternalId = "ts2",
+                        Type = "state",
+                        Datapoints = new[]
+                        {
+                            new CdfWriterDatapoint { Timestamp = 1000, Value = MultiValue.Create(3L), StringValue = "" },
                         },
                     },
                 },
+            });
+            task.AddResource("edges", new CdfWriterResourceOperations
+            {
+                Delete = new[] { new CdfWriterDeleteItem { ExternalId = "e1", InstanceType = "edge" } },
+            });
+
+            var request = new CdfWriterPayloadRequest
+            {
+                IntegrationId = "my-integration",
+                Data = new[] { task },
             };
 
             var json = JsonSerializer.Serialize(request, _jsonOptions);

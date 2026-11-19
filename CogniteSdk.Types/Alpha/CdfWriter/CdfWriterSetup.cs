@@ -3,6 +3,7 @@
 
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 
 namespace CogniteSdk.Alpha
@@ -13,6 +14,22 @@ namespace CogniteSdk.Alpha
     /// </summary>
     public class CdfWriterSetupRequest
     {
+        /// <summary>
+        /// Creates an empty setup request.
+        /// </summary>
+        public CdfWriterSetupRequest()
+        {
+        }
+
+        /// <summary>
+        /// Creates a setup request with the given emitted views. The dictionary is copied.
+        /// </summary>
+        /// <param name="emittedViews">Map from emitted resource to the view its upsert items are shaped for</param>
+        public CdfWriterSetupRequest(Dictionary<string, CdfWriterViewReference>? emittedViews)
+        {
+            EmittedViews = emittedViews is null ? null : new Dictionary<string, CdfWriterViewReference>(emittedViews);
+        }
+
         /// <summary>
         /// External ID of the integration.
         /// </summary>
@@ -37,8 +54,22 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Map from emitted resource, for example "CogniteTimeseries", to the view its upsert items are shaped for.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterViewReference>? EmittedViews { get; }
+        public Dictionary<string, CdfWriterViewReference>? EmittedViews { get; private set; }
+
+        /// <summary>
+        /// Adds the view that the upsert items for an emitted resource are shaped for.
+        /// </summary>
+        /// <param name="resource">Emitted resource, for example "CogniteTimeseries"</param>
+        /// <param name="view">View to shape the upsert items for</param>
+        /// <exception cref="ArgumentNullException"><paramref name="resource"/> or <paramref name="view"/> is null</exception>
+        public void AddEmittedView(string resource, CdfWriterViewReference view)
+        {
+            if (resource is null) throw new ArgumentNullException(nameof(resource));
+            if (view is null) throw new ArgumentNullException(nameof(view));
+            EmittedViews ??= new Dictionary<string, CdfWriterViewReference>();
+            EmittedViews[resource] = view;
+        }
+
         /// <summary>
         /// Mapping definitions. External IDs must be unique within the request.
         /// </summary>
@@ -89,6 +120,22 @@ namespace CogniteSdk.Alpha
     public class CdfWriterMapping
     {
         /// <summary>
+        /// Creates an empty mapping.
+        /// </summary>
+        public CdfWriterMapping()
+        {
+        }
+
+        /// <summary>
+        /// Creates a mapping with the given resource configs. The dictionary is copied.
+        /// </summary>
+        /// <param name="resources">Map from emitted resource to its config block</param>
+        public CdfWriterMapping(Dictionary<string, CdfWriterMappingResource>? resources)
+        {
+            Resources = resources is null ? null : new Dictionary<string, CdfWriterMappingResource>(resources);
+        }
+
+        /// <summary>
         /// Identifier of the mapping, scoped to the integration.
         /// </summary>
         public string? ExternalId { get; set; }
@@ -111,8 +158,21 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Map from emitted resource to its config block.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterMappingResource>? Resources { get; }
+        public Dictionary<string, CdfWriterMappingResource>? Resources { get; private set; }
+
+        /// <summary>
+        /// Adds the config block for an emitted resource.
+        /// </summary>
+        /// <param name="resource">Emitted resource, for example "CogniteTimeseries"</param>
+        /// <param name="config">Config block for the resource</param>
+        /// <exception cref="ArgumentNullException"><paramref name="resource"/> or <paramref name="config"/> is null</exception>
+        public void AddResource(string resource, CdfWriterMappingResource config)
+        {
+            if (resource is null) throw new ArgumentNullException(nameof(resource));
+            if (config is null) throw new ArgumentNullException(nameof(config));
+            Resources ??= new Dictionary<string, CdfWriterMappingResource>();
+            Resources[resource] = config;
+        }
     }
 
     /// <summary>

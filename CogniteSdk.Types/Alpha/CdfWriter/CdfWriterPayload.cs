@@ -3,6 +3,7 @@
 
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -32,14 +33,43 @@ namespace CogniteSdk.Alpha
     public class CdfWriterTaskData
     {
         /// <summary>
+        /// Creates an empty task data item.
+        /// </summary>
+        public CdfWriterTaskData()
+        {
+        }
+
+        /// <summary>
+        /// Creates a task data item with the given operations. The dictionary is copied.
+        /// </summary>
+        /// <param name="resources">Map from emitted resource to its operations</param>
+        public CdfWriterTaskData(Dictionary<string, CdfWriterResourceOperations>? resources)
+        {
+            Resources = resources is null ? null : new Dictionary<string, CdfWriterResourceOperations>(resources);
+        }
+
+        /// <summary>
         /// Name of a task declared in <see cref="CdfWriterSetupRequest.Tasks"/>.
         /// </summary>
         public string? TaskId { get; set; }
         /// <summary>
         /// Map from emitted resource, for example "CogniteTimeseries", to its operations.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, CdfWriterResourceOperations>? Resources { get; }
+        public Dictionary<string, CdfWriterResourceOperations>? Resources { get; private set; }
+
+        /// <summary>
+        /// Adds the operations for an emitted resource.
+        /// </summary>
+        /// <param name="resource">Emitted resource, for example "CogniteTimeseries"</param>
+        /// <param name="operations">Operations to send for the resource</param>
+        /// <exception cref="ArgumentNullException"><paramref name="resource"/> or <paramref name="operations"/> is null</exception>
+        public void AddResource(string resource, CdfWriterResourceOperations operations)
+        {
+            if (resource is null) throw new ArgumentNullException(nameof(resource));
+            if (operations is null) throw new ArgumentNullException(nameof(operations));
+            Resources ??= new Dictionary<string, CdfWriterResourceOperations>();
+            Resources[resource] = operations;
+        }
     }
 
     /// <summary>
@@ -169,8 +199,8 @@ namespace CogniteSdk.Alpha
         /// <summary>
         /// Map from emitted resource to operation to result, with the same keys as the request.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "System.Text.Json ignores properties that don't have setters")]
-        public Dictionary<string, Dictionary<string, CdfWriterOperationResult>>? Resources { get; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Setter is required so System.Text.Json can populate the response")]
+        public Dictionary<string, Dictionary<string, CdfWriterOperationResult>>? Resources { get; set; }
     }
 
     /// <summary>
