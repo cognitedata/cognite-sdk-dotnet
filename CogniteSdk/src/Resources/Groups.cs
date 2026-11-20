@@ -48,7 +48,7 @@ namespace CogniteSdk.Resources
         /// <returns>List of retrieved groups</returns>
         public async Task<IEnumerable<Group>> ListAsync(CancellationToken token = default)
         {
-            return await ListAsync(false, token);
+            return await ListAsync(false, token).ConfigureAwait(false);
         }
 
         /// <summary>
