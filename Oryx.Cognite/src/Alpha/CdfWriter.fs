@@ -15,8 +15,14 @@ module CdfWriter =
     [<Literal>]
     let Url = "/cdfwriter"
 
-    let setup (request: CdfWriterSetupRequest) (source: HttpHandler<unit>) : HttpHandler<EmptyResponse> =
+    let setup (request: CdfWriterSetupRequest) (source: HttpHandler<unit>) : HttpHandler<CdfWriterSetupResponse> =
         source
         |> withLogMessage "cdfwriter:setup"
         |> withAlphaHeader
         |> postV10 request (Url +/ "setup")
+
+    let payload (request: CdfWriterPayloadRequest) (source: HttpHandler<unit>) : HttpHandler<CdfWriterPayloadResponse> =
+        source
+        |> withLogMessage "cdfwriter:payload"
+        |> withAlphaHeader
+        |> postV10 request (Url +/ "payload")

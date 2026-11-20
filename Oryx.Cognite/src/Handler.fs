@@ -159,6 +159,14 @@ module HttpHandler =
 
         source |> withTokenRenewer renewer
 
+    /// Attach the response headers to the exception if it is a ResponseException.
+    let private withResponseHeaders (response: HttpResponse) (ex: exn) : exn =
+        match ex with
+        | :? ResponseException as rex ->
+            rex.Headers <- response.Headers |> Map.toSeq |> dict
+            ex
+        | _ -> ex
+
     /// Decode response message into a ResponseException.
     let decodeError (response: HttpResponse) (content: HttpContent) : Task<exn> =
         task {
@@ -188,15 +196,15 @@ module HttpHandler =
                         | null -> error.ToException(response.ReasonPhrase, int response.StatusCode)
                         | _ -> error.ToException()
 
-                    return ex
+                    return ex |> withResponseHeaders response
                 with ex ->
                     let exn = ResponseException(response.ReasonPhrase, ex)
                     exn.Code <- int response.StatusCode
-                    return exn :> _
+                    return exn :> exn |> withResponseHeaders response
             else
                 let exn = ResponseException response.ReasonPhrase
                 exn.Code <- int response.StatusCode
-                return exn :> _
+                return exn :> exn |> withResponseHeaders response
         }
 
     let getOptions<'TResult> (url: string) (options: JsonSerializerOptions) (source: HttpHandler<unit>) =

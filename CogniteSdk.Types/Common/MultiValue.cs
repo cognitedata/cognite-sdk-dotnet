@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// <summary>
     /// Abstract error value. Will either be LongValue, DoubleValue, StringValue or InstanceValue.
     /// </summary>
-    [JsonConverter(typeof(MultiValue))]
+    [JsonConverter(typeof(MultiValueConverter))]
     public abstract class MultiValue
     {
         /// <summary>
