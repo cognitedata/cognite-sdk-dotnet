@@ -41,8 +41,8 @@ namespace CogniteSdk.Resources.Alpha
         /// Send items to the CDF writer, grouped by task, emitted resource and operation. The CDF writer applies
         /// the mapping bound to each (task, resource) and forwards the result to CDF, making one CDF call per
         /// (task, resource, operation). If any item fails validation, nothing is forwarded and the request fails
-        /// with status 422. If some CDF calls fail, the request still succeeds: check the status of each operation in
-        /// the response.
+        /// with status 422. If some CDF calls fail, the server responds with status 207 (Multi-Status) and the request
+        /// still succeeds: check the status of each operation in the response.
         /// </summary>
         /// <param name="request">Items to send</param>
         /// <param name="token">Optional cancellation token</param>

@@ -3,9 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using CogniteSdk;
 using CogniteSdk.Alpha;
@@ -181,6 +184,17 @@ namespace Test.CSharp.Alpha
             Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
         }
 
+        [Theory]
+        [InlineData(double.NaN)]
+        [InlineData(double.PositiveInfinity)]
+        [InlineData(double.NegativeInfinity)]
+        public void TestNonFiniteDoubleIsRejectedWithClearMessage(double value)
+        {
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => MultiValue.Create(value));
+            Assert.Equal("value", ex.ParamName);
+            Assert.Contains("NaN and infinity cannot be sent to CDF", ex.Message);
+        }
+
         [Fact]
         public void TestObjectDictionaryWritesNestedValues()
         {
@@ -242,6 +256,39 @@ namespace Test.CSharp.Alpha
         }
 
         [Fact]
+        public async Task TestPayloadMultiStatusReturnsPerOperationResults()
+        {
+            // The CDF writer answers 207 when some CDF calls fail. That is a success for the client, and the
+            // per-operation results are in the body.
+            var handler = new StubHandler(HttpStatusCode.MultiStatus, """
+                {
+                    "data": [{
+                        "taskId": "Stream data to CDF",
+                        "resources": {
+                            "CogniteTimeseries": {
+                                "upsert": { "mappingId": "m1", "status": 200, "body": { "items": [] } },
+                                "datapoints": { "mappingId": "m1", "status": 500, "body": null }
+                            }
+                        }
+                    }]
+                }
+                """);
+            using var httpClient = new HttpClient(handler);
+            var client = Client.Builder.Create(httpClient)
+                .SetAppId("test")
+                .SetProject("project")
+                .SetTokenProvider(_ => Task.FromResult("token"))
+                .Build();
+
+            var response = await client.Alpha.CdfWriter.PayloadAsync(new CdfWriterPayloadRequest { IntegrationId = "my-integration" });
+
+            var task = Assert.Single(response.Data);
+            Assert.Equal("Stream data to CDF", task.TaskId);
+            Assert.Equal(200, task.Resources["CogniteTimeseries"]["upsert"].Status);
+            Assert.Equal(500, task.Resources["CogniteTimeseries"]["datapoints"].Status);
+        }
+
+        [Fact]
         public async Task TestPayloadRejectsNullRequest()
         {
             using var httpClient = new HttpClient();
@@ -265,6 +312,27 @@ namespace Test.CSharp.Alpha
                 .Build();
 
             await Assert.ThrowsAsync<ArgumentNullException>(() => client.Alpha.CdfWriter.SetupAsync(null));
+        }
+
+        private sealed class StubHandler : HttpMessageHandler
+        {
+            private readonly HttpStatusCode _status;
+            private readonly string _body;
+
+            public StubHandler(HttpStatusCode status, string body)
+            {
+                _status = status;
+                _body = body;
+            }
+
+            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                var response = new HttpResponseMessage(_status)
+                {
+                    Content = new StringContent(_body, Encoding.UTF8, "application/json"),
+                };
+                return Task.FromResult(response);
+            }
         }
 
         [Fact]
