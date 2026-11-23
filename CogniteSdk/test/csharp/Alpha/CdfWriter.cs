@@ -15,13 +15,8 @@ namespace Test.CSharp.Alpha
 {
     public class CdfWriterTests
     {
-        // Mirrors the converters registered by the SDK's own serializer options.
-        private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-            Converters = { new StatusCodeConverter(), new MultiValueConverter() },
-        };
+        // The SDK's own serializer options, so the tests check the same wire format the client sends.
+        private static readonly JsonSerializerOptions _jsonOptions = Oryx.Cognite.Common.jsonOptions;
 
         [Fact]
         public void TestSetupRequestSerialization()
@@ -182,6 +177,24 @@ namespace Test.CSharp.Alpha
                         }
                     }]
                 }
+                """);
+            Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
+        }
+
+        [Fact]
+        public void TestObjectDictionaryWritesNestedValues()
+        {
+            var properties = new Dictionary<string, object>
+            {
+                ["type"] = "numeric",
+                ["count"] = 2,
+                ["nested"] = new Dictionary<string, object> { ["enabled"] = true },
+                ["missing"] = null,
+            };
+
+            var json = JsonSerializer.Serialize(properties, _jsonOptions);
+            var expected = JsonNode.Parse("""
+                { "type": "numeric", "count": 2, "nested": { "enabled": true }, "missing": null }
                 """);
             Assert.True(JsonNode.DeepEquals(expected, JsonNode.Parse(json)), json);
         }
