@@ -39,6 +39,12 @@ namespace CogniteSdk
         public string RequestId { get; set; }
 
         /// <summary>
+        /// Headers of the failed response, if any.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only", Justification = "Set by the SDK when decoding the response")]
+        public IDictionary<string, IEnumerable<string>> Headers { get; set; }
+
+        /// <summary>
         /// Default empty constructor.
         /// </summary>
         public ResponseException() { }

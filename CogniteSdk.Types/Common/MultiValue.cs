@@ -10,7 +10,7 @@ namespace CogniteSdk
     /// <summary>
     /// Abstract error value. Will either be LongValue, DoubleValue, StringValue or InstanceValue.
     /// </summary>
-    [JsonConverter(typeof(MultiValue))]
+    [JsonConverter(typeof(MultiValueConverter))]
     public abstract class MultiValue
     {
         /// <summary>
@@ -100,9 +100,16 @@ namespace CogniteSdk
             /// <summary>
             /// Initialize new double value.
             /// </summary>
-            /// <param name="value">The value to set.</param>
+            /// <param name="value">The value to set. Must be finite.</param>
+            /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="value"/> is NaN or infinity, which JSON cannot represent.</exception>
             public Double(double value)
             {
+                if (double.IsNaN(value) || double.IsInfinity(value))
+                {
+                    throw new System.ArgumentOutOfRangeException(nameof(value), value,
+                        "NaN and infinity cannot be sent to CDF, because JSON cannot represent them. Use a finite number or a string value.");
+                }
+
                 Type = MultiValueType.DOUBLE;
                 Value = value;
             }

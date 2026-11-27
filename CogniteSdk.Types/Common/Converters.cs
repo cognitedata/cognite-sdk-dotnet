@@ -196,11 +196,32 @@ namespace CogniteSdk
         }
 
         /// <summary>
-        /// Writing a dictionary of objects to string is not supported.
+        /// Writes a dictionary of objects as a JSON object. Keys are written as-is, and each value is
+        /// serialized using its runtime type. Nested dictionaries are written by this converter again.
         /// </summary>
         public override void Write(Utf8JsonWriter writer, Dictionary<string, object> value, JsonSerializerOptions options)
         {
-            throw new NotSupportedException();
+            if (writer is null) throw new ArgumentNullException(nameof(writer));
+            if (value is null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartObject();
+            foreach (var entry in value)
+            {
+                writer.WritePropertyName(entry.Key);
+                if (entry.Value is null)
+                {
+                    writer.WriteNullValue();
+                }
+                else
+                {
+                    JsonSerializer.Serialize(writer, entry.Value, entry.Value.GetType(), options);
+                }
+            }
+            writer.WriteEndObject();
         }
 
         private object ReadValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
